@@ -45,8 +45,8 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
-    library: 'iexec-data-protector',
-    libraryTarget: 'umd',
-    globalObject: 'this',
+    library: {
+      type: 'commonjs-static',
+    },
   },
 };
