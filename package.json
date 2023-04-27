@@ -1,5 +1,5 @@
 {
-  "name": "web3Email",
+  "name": "web3Mail",
   "version": "1.0.0",
   "description": "This product enables users to confidentially store data–such as mail address, documents, personal information ...",
   "main": "dist/bundle.js",
