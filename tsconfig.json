@@ -1,13 +1,11 @@
 {
   "compilerOptions": {
-    "module": "es2015",
+    "module": "NodeNext",
     "target": "es6",
     "declaration": true,
-    "outDir": "dist/types",
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "outDir": "dist",
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "skipLibCheck": true
   },
   "include": ["src/**/*"],
