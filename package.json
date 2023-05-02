@@ -2,11 +2,12 @@
   "name": "web3Mail",
   "version": "1.0.0",
   "description": "This product enables users to confidentially store data–such as mail address, documents, personal information ...",
-  "main": "dist/bundle.js",
-  "typings": "dist/types/index.d.ts",
+  "main": "./dist/bundle.js",
   "type": "module",
+  "types": "dist/index.d.ts",
+  
   "scripts": {
-    "build": "webpack",
+    "build": "tsc && webpack",
     "start": "node dist/bundle.js",
     "test": "jest --coverage",
     "lint": "eslint . --ext .ts",
@@ -42,5 +43,9 @@
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",
     "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "iexec": "^8.0.0",
+    "yup": "^1.1.1"
   }
 }
