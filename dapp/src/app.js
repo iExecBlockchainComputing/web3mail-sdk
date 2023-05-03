@@ -35,7 +35,7 @@ async function start() {
     if (!data.email) {
       throw new Error("Missing email in protectedData");
     }
-    await sendEmail({
+    const response = await sendEmail({
       email: data.email,
       mailJetApiKeyPublic: envVars.mailJetApiKeyPublic,
       mailJetApiKeyPrivate: envVars.mailJetApiKeyPrivate,
@@ -43,9 +43,10 @@ async function start() {
       mailContent: envVars.mailContent,
       mailJetSender: envVars.mailJetSender,
     });
+
     await writeTaskOutput(
       `${envVars.iexecOut}/result.txt`,
-      "Email sent successfully",
+      JSON.stringify(response.body, null, 2),
     );
     await writeTaskOutput(
       `${envVars.iexecOut}/computed.json`,

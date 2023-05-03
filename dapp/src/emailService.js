@@ -29,16 +29,9 @@ async function sendEmail({
         },
       ],
     })
-    .catch(() => {
+    .catch((err) => {
       throw new Error("Failed to send email");
     });
-
-  if (response.response.status === 200) {
-    console.log(
-      `Email: ${mailObject} with content "${mailContent}" has been sent to ${email} successfully.`,
-    );
-  } else {
-    console.error(`Failed to send email to ${email}`);
-  }
+  return response;
 }
 module.exports = sendEmail;
