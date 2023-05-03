@@ -17,7 +17,6 @@ export class IExecWeb3Mail {
     } catch (e) {
       throw Error('Unsupported ethProvider');
     }
-
     this.fetchMyContacts = () => fetchMyContacts({ iexec });
   }
 }

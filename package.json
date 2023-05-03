@@ -1,11 +1,16 @@
 {
-  "name": "web3Mail",
+  "name": "web3mail",
   "version": "1.0.0",
   "description": "This product enables users to confidentially store data–such as mail address, documents, personal information ...",
   "main": "./dist/bundle.js",
   "type": "module",
   "types": "dist/index.d.ts",
-  
+  "exports": {
+    ".": {
+      "node": "./dist/index.js",
+      "default": "./dist/bundle.js"
+    }
+  },
   "scripts": {
     "build": "tsc && webpack",
     "start": "node dist/bundle.js",
