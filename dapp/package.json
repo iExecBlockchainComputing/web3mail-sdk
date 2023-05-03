@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --setupFiles dotenv/config --silent=false",
+    "ctest": "jest --setupFiles dotenv/config --silent=true --coverage"
   },
   "keywords": [],
   "author": "",
@@ -15,5 +16,8 @@
     "joi": "^17.9.2",
     "jszip": "^3.10.1",
     "node-mailjet": "^6.0.2"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0"
   }
 }

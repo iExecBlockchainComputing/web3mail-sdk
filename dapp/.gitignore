@@ -1,2 +1,5 @@
 .env
 node_modules
+coverage
+tests/iexec_in
+tests/iexec_out
