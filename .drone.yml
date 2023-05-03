@@ -1,25 +1,155 @@
-pipeline:
-  test_node16:
-    image: node:16
-    pull: true
-    commands:
-      - npm ci
-      - npm run build
-      - npm test
+kind: pipeline
+type: docker
+name: default
 
-  test_node14:
-    image: node:14
-    pull: true
-    commands:
-      - npm ci
-      - npm run build
-      - npm test
+trigger:
+  event:
+    exclude:
+      - promote
 
-  npm_publish:
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:18
+    pull: always
+    commands:
+      - npm run check-format
+
+  - name: test
+    image: node:18
+    pull: always
+    commands:
+      - npm run test
+
+  - name: build
+    image: node:18
+    pull: always
+    commands:
+      - npm run build
+
+---
+kind: pipeline
+type: docker
+name: publish-nightly
+
+trigger:
+  event:
+    - promote
+  target:
+    - nightly
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:18
+    pull: always
+    commands:
+      - npm run check-format
+
+  - name: test
+    image: node:18
+    pull: always
+    commands:
+      - npm run test
+
+  - name: build
+    image: node:18
+    pull: always
+    commands:
+      - npm run build
+
+  - name: set-version-nightly
+    image: node:18
+    pull: always
+    commands:
+      - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
+
+  - name: publish-dry-run
+    image: node:18
+    pull: always
+    commands:
+      - npm publish --tag nightly --dry-run
+
+  - name: publish
     image: plugins/npm
-    secrets: [npm_token]
-    username: iexecteam
-    email: dev@iex.ec
-    tag: latest
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+      tag: nightly
+      access: public
     when:
-      ref: [refs/tags/v*]
+      branch:
+        - develop
+
+---
+kind: pipeline
+type: docker
+name: publish-latest
+
+trigger:
+  event:
+    - promote
+  target:
+    - latest
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:18
+    pull: always
+    commands:
+      - npm run check-format
+
+  - name: test
+    image: node:18
+    pull: always
+    commands:
+      - npm run test
+
+  - name: build
+    image: node:18
+    pull: always
+    commands:
+      - npm run build
+
+  - name: publish-dry-run
+    image: node:18
+    pull: always
+    commands:
+      - npm publish --dry-run
+
+  - name: publish
+    image: plugins/npm
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+      tag: latest
+      access: public
+    when:
+      branch:
+        - main
