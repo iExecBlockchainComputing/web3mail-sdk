@@ -2,7 +2,6 @@ const { promises: fs } = require("fs");
 const sendEmail = require("./emailService");
 const validateInputs = require("./validateInputs");
 const extractZipAndBuildJson = require("./extractJsonFromZip");
-require("dotenv").config();
 
 async function writeTaskOutput(path, message) {
   try {
