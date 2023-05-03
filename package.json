@@ -17,7 +17,7 @@
     "test": "jest --coverage",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
-    "prettier": "prettier --check \"src/**/*.ts\""
+    "check-format": "prettier --check \"src/**/*.ts\""
   },
   "repository": {
     "type": "git",
