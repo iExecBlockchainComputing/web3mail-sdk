@@ -47,11 +47,15 @@ async function start() {
       `${envVars.iexecOut}/result.txt`,
       JSON.stringify(response.body, null, 2),
     );
+    console.log(`Result written to file: ${envVars.iexecOut}/result.txt`);
     await writeTaskOutput(
       `${envVars.iexecOut}/computed.json`,
       JSON.stringify({
         "deterministic-output-path": `${envVars.iexecOut}/result.txt`,
       }),
+    );
+    console.log(
+      `Computed output written to file: ${envVars.iexecOut}/result.txt`,
     );
   } catch (error) {
     console.error(`Error: ${error.message}`);

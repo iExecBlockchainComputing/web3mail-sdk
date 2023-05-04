@@ -24,7 +24,7 @@ async function extractZipAndBuildJson(zipPath) {
     }
   });
   await Promise.all(promises);
-  return data;
+  return Object.values(data)[0];
 }
 
 module.exports = extractZipAndBuildJson;
