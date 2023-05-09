@@ -180,7 +180,7 @@ steps:
       - npm ci
 
   - name: docker-dry-run
-    # plugin doc https://plugins.drone.io/plugins/docker
+    # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
     image: plugins/docker
     pull: always
     settings:
