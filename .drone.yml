@@ -45,7 +45,7 @@ trigger:
   event:
     - promote
   target:
-    - nightly
+    - npm-nightly
 
 steps:
   - name: install
@@ -109,7 +109,7 @@ trigger:
   event:
     - promote
   target:
-    - latest
+    - npm-latest
 
 steps:
   - name: install
@@ -198,7 +198,7 @@ trigger:
   event:
     - promote
   target:
-    - dapp-dev
+    - dapp-dev-non-tee
 
 steps:
   # TODO run tests before
