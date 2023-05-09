@@ -1,6 +1,7 @@
+# sdk @iexec/web3mail default pipeline
 kind: pipeline
 type: docker
-name: default
+name: sdk-default
 
 trigger:
   event:
@@ -35,9 +36,10 @@ steps:
       - npm run build
 
 ---
+# sdk @iexec/web3mail publish npm nightly pipeline
 kind: pipeline
 type: docker
-name: publish-nightly
+name: sdk-publish-nightly
 
 trigger:
   event:
@@ -98,9 +100,10 @@ steps:
         - develop
 
 ---
+# sdk @iexec/web3mail publish npm latest pipeline
 kind: pipeline
 type: docker
-name: publish-latest
+name: sdk-publish-latest
 
 trigger:
   event:
