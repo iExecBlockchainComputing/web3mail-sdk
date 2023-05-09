@@ -156,3 +156,44 @@ steps:
     when:
       branch:
         - main
+
+---
+# dapp web3mail-dapp default pipeline
+# /!\ every step must run in dapp/
+kind: pipeline
+type: docker
+name: dapp-default
+
+trigger:
+  event:
+    exclude:
+      - promote
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - cd dapp
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: docker-dry-run
+    # plugin doc https://plugins.drone.io/plugins/docker
+    image: plugins/docker
+    pull: always
+    settings:
+      dry_run: true
+      context: ./dapp
+      dockerfile: ./dapp/Dockerfile
+      registry: docker-regis.iex.ec
+      repo: product/web3mail-dapp
+      pull_image: true
+      username:
+        from_secret: nexus-user
+      password:
+        from_secret: nexus-password
+      tags:
+        - dev-non-tee
+        - dev-non-tee-$DRONE_COMMIT
