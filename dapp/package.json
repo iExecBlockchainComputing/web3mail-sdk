@@ -15,7 +15,8 @@
     "dotenv": "^16.0.3",
     "joi": "^17.9.2",
     "jszip": "^3.10.1",
-    "node-mailjet": "^6.0.2"
+    "node-mailjet": "^6.0.2",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "jest": "^29.5.0"
