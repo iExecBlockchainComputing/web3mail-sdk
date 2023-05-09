@@ -170,9 +170,7 @@ trigger:
       - promote
 
 steps:
-
-  # TODO: here we want to run the tests
-
+  # TODO run tests before
   - name: docker-dry-run
     # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
     image: plugins/docker
@@ -202,8 +200,8 @@ trigger:
   target:
     - dapp-dev
 
-  # TODO: here we want to run the tests
-
+steps:
+  # TODO run tests before
   - name: docker-publish-dev-non-tee
     # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
     image: plugins/docker
