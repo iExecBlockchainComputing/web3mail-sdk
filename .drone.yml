@@ -196,4 +196,3 @@ steps:
         from_secret: nexus-password
       tags:
         - dev-non-tee
-        - dev-non-tee-$DRONE_COMMIT
