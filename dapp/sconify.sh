@@ -2,7 +2,7 @@
 
 # declare the app entrypoint
 ENTRYPOINT="node /app/app.js"
-USER_DOCKER_HUB=luiscarlosiexec
+USER_DOCKER_HUB="your_docker_hub_username"
 # Declare image related variables
 IMG_NAME=web3mail
 NON_TEE_TAG=non-tee
