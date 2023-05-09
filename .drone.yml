@@ -170,14 +170,8 @@ trigger:
       - promote
 
 steps:
-  - name: install
-    image: node:18
-    pull: always
-    commands:
-      - cd dapp
-      - node -v
-      - npm -v
-      - npm ci
+
+  # TODO: here we want to run the tests
 
   - name: docker-dry-run
     # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
@@ -194,6 +188,39 @@ steps:
         from_secret: nexus-user
       password:
         from_secret: nexus-password
+
+---
+# dapp web3mail-dapp publish docker dev non-tee pipeline
+# /!\ every step must run in dapp/
+kind: pipeline
+type: docker
+name: dapp-dev-non-tee
+
+trigger:
+  event:
+    - promote
+  target:
+    - dapp-dev
+
+  # TODO: here we want to run the tests
+
+  - name: docker-publish-dev-non-tee
+    # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
+    image: plugins/docker
+    pull: always
+    settings:
+      context: ./dapp
+      dockerfile: ./dapp/Dockerfile
+      registry: docker-regis.iex.ec
+      repo: product/web3mail-dapp
+      pull_image: true
+      username:
+        from_secret: nexus-user
+      password:
+        from_secret: nexus-password
       tags:
         - dev-non-tee
         - 'dev-non-tee-${DRONE_COMMIT}'
+    when:
+      branch:
+        - develop
