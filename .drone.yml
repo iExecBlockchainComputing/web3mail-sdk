@@ -222,3 +222,46 @@ steps:
     when:
       branch:
         - develop
+
+---
+# dapp web3mail-dapp publish docker prod non-tee pipeline
+# /!\ every step must run in dapp/
+kind: pipeline
+type: docker
+name: dapp-prod-non-tee
+
+trigger:
+  event:
+    - promote
+  target:
+    - dapp-prod-non-tee
+
+steps:
+  # TODO run tests before
+  - name: extract-version-from-package
+    image: node:18
+    # generates the .tags file for the docker plugin
+    commands:
+      - cd dapp
+      - npm pkg get version | sed 's/"//g' > ../.tags
+
+  - name: docker-publish-prod-non-tee
+    # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
+    image: plugins/docker
+    pull: always
+    settings:
+      context: ./dapp
+      dockerfile: ./dapp/Dockerfile
+      # tag comme from .tags file
+      registry: docker-regis.iex.ec
+      repo: docker-regis.iex.ec/product/web3mail-dapp
+      pull_image: true
+      username:
+        from_secret: nexus-user
+      password:
+        from_secret: nexus-password
+
+    when:
+      branch:
+        # todo: only on main
+        - develop
