@@ -179,7 +179,7 @@ steps:
       dry_run: true
       context: ./dapp
       dockerfile: ./dapp/Dockerfile
-      registry: 'docker-regis.iex.ec'
+      registry: https://docker-regis.iex.ec/v2/
       repo: product/web3mail-dapp
       pull_image: true
       username:
@@ -209,7 +209,7 @@ steps:
     settings:
       context: ./dapp
       dockerfile: ./dapp/Dockerfile
-      registry: 'docker-regis.iex.ec'
+      registry: https://docker-regis.iex.ec/v2/
       repo: product/web3mail-dapp
       pull_image: true
       username:
