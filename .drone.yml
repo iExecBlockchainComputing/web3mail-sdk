@@ -252,7 +252,7 @@ steps:
     settings:
       context: ./dapp
       dockerfile: ./dapp/Dockerfile
-      # tag comme from .tags file
+      # tag comes from .tags file
       registry: docker-regis.iex.ec
       repo: docker-regis.iex.ec/product/web3mail-dapp
       pull_image: true
@@ -263,5 +263,4 @@ steps:
 
     when:
       branch:
-        # todo: only on main
-        - develop
+        - main
