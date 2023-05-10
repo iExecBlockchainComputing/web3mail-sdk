@@ -1,14 +1,14 @@
-const JSZip = require("jszip");
-const fs = require("fs").promises;
+const JSZip = require('jszip');
+const fs = require('fs').promises;
 
 async function extractZipAndBuildJson(zipPath) {
   // Check if the provided path is a string
-  if (typeof zipPath !== "string") {
-    throw new TypeError("The file path must be a string.");
+  if (typeof zipPath !== 'string') {
+    throw new TypeError('The file path must be a string.');
   }
   // Check if the provided file is a .zip file
-  if (!zipPath.endsWith(".zip")) {
-    throw new Error("The provided file is not a .zip file.");
+  if (!zipPath.endsWith('.zip')) {
+    throw new Error('The provided file is not a .zip file.');
   }
   const buffer = await fs.readFile(zipPath);
   const zip = new JSZip();
@@ -20,9 +20,9 @@ async function extractZipAndBuildJson(zipPath) {
     // Check if the file is not a directory
     if (!file.dir) {
       // Create a promise that reads the file content as a string and adds it to the data object
-      const promise = file.async("string").then((content) => {
+      const promise = file.async('string').then((content) => {
         // Split the file path into an array of segments
-        const pathSegments = relativePath.split("/");
+        const pathSegments = relativePath.split('/');
         // Traverse the data object using the path segments to create or update keys and values
         let current = data;
         for (let i = 0; i < pathSegments.length - 1; i++) {

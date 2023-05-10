@@ -1,4 +1,4 @@
-const Mailjet = require("node-mailjet");
+const Mailjet = require('node-mailjet');
 
 async function sendEmail({
   email,
@@ -10,18 +10,18 @@ async function sendEmail({
 }) {
   const mailjet = Mailjet.apiConnect(mailJetApiKeyPublic, mailJetApiKeyPrivate);
   const response = await mailjet
-    .post("send", { version: "v3.1" })
+    .post('send', { version: 'v3.1' })
     .request({
       Messages: [
         {
           From: {
             Email: mailJetSender,
-            Name: "Web3Mail Dapp Sender",
+            Name: 'Web3Mail Dapp Sender',
           },
           To: [
             {
               Email: email,
-              Name: "",
+              Name: '',
             },
           ],
           Subject: mailObject,
@@ -30,7 +30,7 @@ async function sendEmail({
       ],
     })
     .catch((err) => {
-      throw new Error("Failed to send email");
+      throw new Error('Failed to send email');
     });
   return response;
 }

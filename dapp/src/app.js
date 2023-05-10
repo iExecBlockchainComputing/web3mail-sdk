@@ -1,7 +1,7 @@
-const { promises: fs } = require("fs");
-const sendEmail = require("./emailService");
-const validateInputs = require("./validateInputs");
-const extractZipAndBuildJson = require("./extractJsonFromZip");
+const { promises: fs } = require('fs');
+const sendEmail = require('./emailService');
+const validateInputs = require('./validateInputs');
+const extractZipAndBuildJson = require('./extractJsonFromZip');
 
 async function writeTaskOutput(path, message) {
   try {
@@ -20,7 +20,7 @@ async function start() {
     try {
       developerSecret = JSON.parse(process.env.IEXEC_APP_DEVELOPER_SECRET);
     } catch (error) {
-      console.error("Failed to parse the developer secret:", error);
+      console.error('Failed to parse the developer secret:', error);
       process.exit(1);
     }
     const envVars = {
@@ -35,10 +35,10 @@ async function start() {
     };
     validateInputs(envVars);
     const data = await extractZipAndBuildJson(
-      `${envVars.iexecIn}/${envVars.dataFileName}`,
+      `${envVars.iexecIn}/${envVars.dataFileName}`
     );
     if (!data.email) {
-      throw new Error("Missing email in protectedData");
+      throw new Error('Missing email in protectedData');
     }
     const response = await sendEmail({
       email: data.email,
@@ -51,13 +51,13 @@ async function start() {
 
     await writeTaskOutput(
       `${envVars.iexecOut}/result.txt`,
-      JSON.stringify(response.body, null, 2),
+      JSON.stringify(response.body, null, 2)
     );
     await writeTaskOutput(
       `${envVars.iexecOut}/computed.json`,
       JSON.stringify({
-        "deterministic-output-path": `${envVars.iexecOut}/result.txt`,
-      }),
+        'deterministic-output-path': `${envVars.iexecOut}/result.txt`,
+      })
     );
   } catch (error) {
     console.error(`Error: ${error.message}`);
