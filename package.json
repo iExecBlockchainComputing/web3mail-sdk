@@ -1,0 +1,56 @@
+{
+  "name": "@iexec/web3mail",
+  "version": "0.0.0",
+  "description": "This product enables users to confidentially store data–such as mail address, documents, personal information ...",
+  "main": "./dist/bundle.js",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "node": "./dist/index.js",
+      "default": "./dist/bundle.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc && webpack",
+    "start": "node dist/bundle.js",
+    "test": "echo TODO",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "check-format": "prettier --check \"src/**/*.ts\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iExecBlockchainComputing/web3Mail.git"
+  },
+  "keywords": [
+    "iExec"
+  ],
+  "author": "iExec",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/iExecBlockchainComputing/web3Mail/issues"
+  },
+  "homepage": "https://github.com/iExecBlockchainComputing/web3Mail#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "assert": "^2.0.0",
+    "constants-browserify": "^1.0.0",
+    "crypto-browserify": "^3.12.0",
+    "eslint": "^8.35.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-standard-with-typescript": "^34.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "prettier": "^2.8.4",
+    "stream-browserify": "^3.0.0",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.5",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "iexec": "^8.0.0",
+    "yup": "^1.1.1"
+  }
+}

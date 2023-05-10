@@ -1,0 +1,21 @@
+# Compiled output
+/dist
+
+# Dependency directories
+/node_modules
+
+# IDE files
+/.vscode
+/.idea
+
+# Miscellaneous
+/.DS_Store
+/.env
+/*.log
+/*.env
+
+# TypeScript specific
+*.tsbuildinfo
+
+# sonar output
+.scannerwork
