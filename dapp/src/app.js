@@ -1,7 +1,7 @@
 const { promises: fs } = require('fs');
 const sendEmail = require('./emailService');
 const validateInputs = require('./validateInputs');
-const extractZipAndBuildJson = require('./extractJsonFromZip');
+const extractZipAndBuildJson = require('./extractEmailFromZipFile');
 
 async function writeTaskOutput(path, message) {
   try {
@@ -34,14 +34,14 @@ async function start() {
       mailContent: process.env.IEXEC_REQUESTER_SECRET_2,
     };
     validateInputs(envVars);
-    const data = await extractZipAndBuildJson(
+    const email = await extractZipAndBuildJson(
       `${envVars.iexecIn}/${envVars.dataFileName}`
     );
-    if (!data.email) {
+    if (!email) {
       throw new Error('Missing email in protectedData');
     }
     const response = await sendEmail({
-      email: data.email,
+      email,
       mailJetApiKeyPublic: envVars.mailJetApiKeyPublic,
       mailJetApiKeyPrivate: envVars.mailJetApiKeyPrivate,
       mailObject: envVars.mailObject,
