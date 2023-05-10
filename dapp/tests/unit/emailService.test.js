@@ -1,19 +1,19 @@
-const Mailjet = require("node-mailjet");
-const sendEmail = require("../../src/emailService");
+const Mailjet = require('node-mailjet');
+const sendEmail = require('../../src/emailService');
 
-describe("sendEmail", () => {
-  it("sends an email successfully", async () => {
-    const email = "recipient@example.com";
-    const mailJetApiKeyPublic = "myApiKeyPublic";
-    const mailJetApiKeyPrivate = "myApiKeyPrivate";
-    const mailObject = "Test email";
-    const mailContent = "This is a test email.";
-    const mailJetSender = "sender@example.com";
+describe('sendEmail', () => {
+  it('sends an email successfully', async () => {
+    const email = 'recipient@example.com';
+    const mailJetApiKeyPublic = 'myApiKeyPublic';
+    const mailJetApiKeyPrivate = 'myApiKeyPrivate';
+    const mailObject = 'Test email';
+    const mailContent = 'This is a test email.';
+    const mailJetSender = 'sender@example.com';
     const mockResponse = {
       body: {
         Messages: [
           {
-            Status: "success",
+            Status: 'success',
             To: [{ Email: email }],
           },
         ],
@@ -36,20 +36,20 @@ describe("sendEmail", () => {
 
     expect(Mailjet.apiConnect).toHaveBeenCalledWith(
       mailJetApiKeyPublic,
-      mailJetApiKeyPrivate,
+      mailJetApiKeyPrivate
     );
-    expect(mockMailjet.post).toHaveBeenCalledWith("send", { version: "v3.1" });
+    expect(mockMailjet.post).toHaveBeenCalledWith('send', { version: 'v3.1' });
     expect(mockMailjet.request).toHaveBeenCalledWith({
       Messages: [
         {
           From: {
             Email: mailJetSender,
-            Name: "Web3Mail Dapp Sender",
+            Name: 'Web3Mail Dapp Sender',
           },
           To: [
             {
               Email: email,
-              Name: "",
+              Name: '',
             },
           ],
           Subject: mailObject,
@@ -60,14 +60,14 @@ describe("sendEmail", () => {
     expect(response).toEqual(mockResponse);
   });
 
-  it("throws an error if the email fails to send", async () => {
-    const email = "recipient@example.com";
-    const mailJetApiKeyPublic = "myApiKeyPublic";
-    const mailJetApiKeyPrivate = "myApiKeyPrivate";
-    const mailObject = "Test email";
-    const mailContent = "This is a test email.";
-    const mailJetSender = "sender@example.com";
-    const mockError = new Error("Failed to send email");
+  it('throws an error if the email fails to send', async () => {
+    const email = 'recipient@example.com';
+    const mailJetApiKeyPublic = 'myApiKeyPublic';
+    const mailJetApiKeyPrivate = 'myApiKeyPrivate';
+    const mailObject = 'Test email';
+    const mailContent = 'This is a test email.';
+    const mailJetSender = 'sender@example.com';
+    const mockError = new Error('Failed to send email');
     const mockMailjet = {
       post: jest.fn().mockReturnThis(),
       request: jest.fn().mockRejectedValue(mockError),
@@ -82,7 +82,7 @@ describe("sendEmail", () => {
         mailObject,
         mailContent,
         mailJetSender,
-      }),
+      })
     ).rejects.toThrow(mockError);
   });
 });

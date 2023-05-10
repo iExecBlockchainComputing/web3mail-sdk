@@ -1,23 +1,23 @@
-const sendEmail = require("../../src/emailService");
-const extractZipAndBuildJson = require("../../src/extractJsonFromZip");
-const path = require("path");
+const sendEmail = require('../../src/emailService');
+const extractZipAndBuildJson = require('../../src/extractJsonFromZip');
+const path = require('path');
 
-describe("sendEmail", () => {
-  it("should send an email successfully", async () => {
+describe('sendEmail', () => {
+  it('should send an email successfully', async () => {
     // Place your .zip file in the /dapp/tests/_test_inputs_ directory
     // The .zip file should contain a file with the email content you want to protect
     // Define the absolute path of the .zip file containing the protected data
     const zipPath = path.join(
       __dirname,
-      "../_test_inputs_/myProtectedData.zip",
+      '../_test_inputs_/myProtectedData.zip'
     );
     const result = await extractZipAndBuildJson(zipPath);
 
     const { MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE, MJ_SENDER } = JSON.parse(
-      process.env.IEXEC_APP_DEVELOPER_SECRET,
+      process.env.IEXEC_APP_DEVELOPER_SECRET
     );
-    const mailObject = "Test Email";
-    const mailContent = "Hello World!";
+    const mailObject = 'Test Email';
+    const mailContent = 'Hello World!';
     const response = await sendEmail({
       email: result.email,
       mailJetApiKeyPublic: MJ_APIKEY_PUBLIC,

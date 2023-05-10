@@ -8,8 +8,8 @@
     "start-local": "node -r dotenv/config src/app.js",
     "test": "jest --setupFiles dotenv/config --silent=false",
     "ctest": "jest --setupFiles dotenv/config --silent=true --coverage",
-    "format": "prettier --write \"src/**/*.js\"",
-    "check-format": "prettier --check \"src/**/*.js\""
+    "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\"",
+    "check-format": "prettier --check \"src/**/*.js\" \"tests/**/*.js\""
   },
   "keywords": [],
   "author": "",
