@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
+    "start-local": "node -r dotenv/config src/app.js",
     "test": "jest --setupFiles dotenv/config --silent=false",
     "ctest": "jest --setupFiles dotenv/config --silent=true --coverage"
   },

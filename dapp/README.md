@@ -19,18 +19,8 @@ fill in the environment variables:
   - **MJ_SENDER**: The email address that will be used to send the emails.
   - **IEXEC_REQUESTER_SECRET_1**: The subject of the email to be sent to the email address retrieved from the data.zip file.
 - **IEXEC_REQUESTER_SECRET_2**: The content of the email to be sent to the email address retrieved from the data.zip file.
-
-### Install dependencies
-
-```sh
-npm ci
-```
-
-### Run
-
-```sh
-npm run start-local
-```
+- Install dependencies by running `npm ci`.
+- Start the app using `npm run start-local`.
 
 ## Running the Dapp locally using Docker
 
