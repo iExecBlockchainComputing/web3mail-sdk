@@ -6,10 +6,7 @@ const JSZip = require('jszip');
 
 describe('extractZipAndBuildJson', () => {
   it('returns an object containing email for a valid .zip file', async () => {
-    const zipPath = path.join(
-      __dirname,
-      '../_test_inputs_/myProtectedData.zip'
-    );
+    const zipPath = path.join(__dirname, '../_test_inputs_/data.zip');
     const result = await extractZipAndBuildJson(zipPath);
     expect(typeof result).toBe('object');
     expect(result).toHaveProperty('email');

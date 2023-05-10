@@ -7,10 +7,7 @@ describe('sendEmail', () => {
     // Place your .zip file in the /dapp/tests/_test_inputs_ directory
     // The .zip file should contain a file with the email content you want to protect
     // Define the absolute path of the .zip file containing the protected data
-    const zipPath = path.join(
-      __dirname,
-      '../_test_inputs_/myProtectedData.zip'
-    );
+    const zipPath = path.join(__dirname, '../_test_inputs_/data.zip');
     const result = await extractZipAndBuildJson(zipPath);
 
     const { MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE, MJ_SENDER } = JSON.parse(
