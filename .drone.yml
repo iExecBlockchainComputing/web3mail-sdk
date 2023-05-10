@@ -217,8 +217,8 @@ steps:
       password:
         from_secret: nexus-password
       tags:
-        - dev-non-tee
-        - 'dev-non-tee-${DRONE_COMMIT}'
+        - dev
+        - 'dev-${DRONE_COMMIT}'
     when:
       branch:
         - develop
