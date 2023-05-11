@@ -51,14 +51,7 @@ async function start() {
 
     await writeTaskOutput(
       `${envVars.iexecOut}/result.txt`,
-      JSON.stringify(
-        {
-          message: 'Your email has been sent successfully.',
-          status: response.response.status,
-        },
-        null,
-        2
-      )
+      JSON.stringify(response, null, 2)
     );
     await writeTaskOutput(
       `${envVars.iexecOut}/computed.json`,
