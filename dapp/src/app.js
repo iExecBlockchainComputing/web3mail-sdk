@@ -55,7 +55,6 @@ async function start() {
         {
           message: 'Your email has been sent successfully.',
           status: response.response.status,
-          headers: response.response.headers,
         },
         null,
         2
