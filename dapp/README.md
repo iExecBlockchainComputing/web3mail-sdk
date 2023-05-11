@@ -22,6 +22,8 @@ fill in the environment variables:
 - Install dependencies by running `npm ci`.
 - Start the app using `npm run start-local`.
 
+The Dapp will send an email using the object and content specified in .env, and your Mailjet account credentials. The email will be sent to the address specified in data.zip in the IEXEC_IN directory.
+
 ## Running the Dapp locally using Docker
 
 Build the Docker image by running the following command in the root directory of the project:
@@ -44,3 +46,11 @@ docker run --rm \
     -e IEXEC_REQUESTER_SECRET_2="<email_content>" \
     web3mail-dapp
 ```
+
+### Run Tests
+
+- Create a `.env` file at the root of the project and set the environment variables.
+- Create a `data.zip` file in the `tests/tests_inputs` directory with an email file containing the email address to receive the email sent by the dapp, along with the mail object and content specified in `.env`, using your Mailjet account keys.
+- To run the tests, use `npm run test`.
+After running the tests, check the inbox of the email address specified in the email file in the `tests/tests_inputs` directory to receive the email sent by the dapp.
+- To run the tests with code coverage, use `npm run ctest`.
