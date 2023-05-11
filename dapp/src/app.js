@@ -23,7 +23,7 @@ async function start() {
       console.error('Failed to parse the developer secret');
       process.exit(1);
     }
-    const envVars = {
+    const unsafeEnvVars = {
       iexecIn: process.env.IEXEC_IN,
       iexecOut: process.env.IEXEC_OUT,
       dataFileName: process.env.IEXEC_DATASET_FILENAME,
@@ -33,7 +33,7 @@ async function start() {
       mailObject: process.env.IEXEC_REQUESTER_SECRET_1,
       mailContent: process.env.IEXEC_REQUESTER_SECRET_2,
     };
-    validateInputs(envVars);
+    const envVars = validateInputs(unsafeEnvVars);
     const email = await extractZipAndBuildJson(
       `${envVars.iexecIn}/${envVars.dataFileName}`
     );
