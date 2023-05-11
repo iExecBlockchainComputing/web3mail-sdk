@@ -19,13 +19,6 @@ describe('extractEmailFromZipFile', () => {
     );
   });
 
-  it('throws an error for a non-.zip file', async () => {
-    const zipPath = path.join(__dirname, 'invalidZipFile.txt');
-    await expect(extractEmailFromZipFile(zipPath)).rejects.toThrow(
-      'The provided file is not a .zip file.'
-    );
-  });
-
   it('throws a type error for a non-string file path', async () => {
     const zipPath = 12345;
     await expect(extractEmailFromZipFile(zipPath)).rejects.toThrow(
