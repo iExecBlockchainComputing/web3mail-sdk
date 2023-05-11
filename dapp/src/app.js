@@ -7,8 +7,8 @@ async function writeTaskOutput(path, message) {
   try {
     await fs.writeFile(path, message);
     console.log(`File successfully written at path: ${path}`);
-  } catch (error) {
-    console.error(`Failed to write Task Output: ${error.message}`);
+  } catch {
+    console.error(`Failed to write Task Output`);
     process.exit(1);
   }
 }
@@ -16,11 +16,11 @@ async function writeTaskOutput(path, message) {
 async function start() {
   try {
     // Parse the developer secret environment variable
-    let developerSecret = {};
+    let developerSecret;
     try {
       developerSecret = JSON.parse(process.env.IEXEC_APP_DEVELOPER_SECRET);
-    } catch (error) {
-      console.error('Failed to parse the developer secret:', error);
+    } catch {
+      console.error('Failed to parse the developer secret');
       process.exit(1);
     }
     const envVars = {
