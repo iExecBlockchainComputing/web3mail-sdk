@@ -2,9 +2,6 @@ const JSZip = require('jszip');
 const fs = require('fs').promises;
 
 async function extractEmailFromZipFile(zipPath) {
-  if (typeof zipPath !== 'string') {
-    throw new TypeError('The file path must be a string.');
-  }
   const buffer = await fs.readFile(zipPath);
   const zip = new JSZip();
   await zip.loadAsync(buffer);
