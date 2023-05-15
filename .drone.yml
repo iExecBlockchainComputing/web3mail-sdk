@@ -19,25 +19,21 @@ steps:
 
   - name: format
     image: node:18
-    pull: always
     commands:
       - npm run check-format
 
   - name: test
     image: node:18
-    pull: always
     commands:
       - npm run test
 
   - name: build
     image: node:18
-    pull: always
     commands:
       - npm run build
 
   - name: npm-publish-dry-run
     image: node:18
-    pull: always
     commands:
       - npm publish --dry-run
 
@@ -66,30 +62,27 @@ steps:
 
   - name: format
     image: node:18
-    pull: always
     commands:
       - npm run check-format
 
   - name: test
     image: node:18
-    pull: always
     commands:
       - npm run test
 
   - name: build
     image: node:18
-    pull: always
     commands:
       - npm run build
 
   - name: set-version-nightly
     image: node:18
-    pull: always
     commands:
       - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
 
   - name: publish
     image: plugins/npm
+    pull: always
     settings:
       username:
         from_secret: npm_username
@@ -123,24 +116,22 @@ steps:
 
   - name: format
     image: node:18
-    pull: always
     commands:
       - npm run check-format
 
   - name: test
     image: node:18
-    pull: always
     commands:
       - npm run test
 
   - name: build
     image: node:18
-    pull: always
     commands:
       - npm run build
 
   - name: publish
     image: plugins/npm
+    pull: always
     settings:
       username:
         from_secret: npm_username
@@ -163,7 +154,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18
+    image: node:16-alpine3.15
     pull: always
     commands:
       - cd dapp
@@ -172,15 +163,13 @@ steps:
       - npm ci
 
   - name: format
-    image: node:18
-    pull: always
+    image: node:16-alpine3.15
     commands:
       - cd dapp
       - npm run check-format
 
   - name: unit-test
-    image: node:18
-    pull: always
+    image: node:16-alpine3.15
     commands:
       - cd dapp
       - npm run ctest tests/unit/
@@ -218,7 +207,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18
+    image: node:16-alpine3.15
     pull: always
     commands:
       - cd dapp
@@ -227,15 +216,13 @@ steps:
       - npm ci
 
   - name: format
-    image: node:18
-    pull: always
+    image: node:16-alpine3.15
     commands:
       - cd dapp
       - npm run check-format
 
   - name: unit-test
-    image: node:18
-    pull: always
+    image: node:16-alpine3.15
     commands:
       - cd dapp
       - npm run ctest tests/unit/
@@ -275,7 +262,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18
+    image: node:16-alpine3.15
     pull: always
     commands:
       - cd dapp
@@ -284,15 +271,13 @@ steps:
       - npm ci
 
   - name: format
-    image: node:18
-    pull: always
+    image: node:16-alpine3.15
     commands:
       - cd dapp
       - npm run check-format
 
   - name: unit-test
-    image: node:18
-    pull: always
+    image: node:16-alpine3.15
     commands:
       - cd dapp
       - npm run ctest tests/unit/
