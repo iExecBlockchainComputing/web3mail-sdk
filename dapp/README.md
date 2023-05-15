@@ -50,7 +50,7 @@ docker run --rm \
 ### Run Tests
 
 - Create a `.env` file at the root of the project and set the environment variables.
-- Create a `data.zip` file in the `tests/tests_inputs` directory with an email file containing the email address to receive the email sent by the dapp, along with the mail object and content specified in `.env`, using your Mailjet account keys.
+- Create a `data.zip` file in the `tests/_tests_inputs_` directory with an email file containing the email address to receive the email sent by the dapp, along with the mail object and content specified in `.env`, using your Mailjet account keys.
 - To run the tests, use `npm run test`.
-After running the tests, check the inbox of the email address specified in the email file in the `tests/tests_inputs` directory to receive the email sent by the dapp.
+After running the tests, check the inbox of the email address specified in the email file in the `tests/_tests_inputs_` directory to receive the email sent by the dapp.
 - To run the tests with code coverage, use `npm run ctest`.
