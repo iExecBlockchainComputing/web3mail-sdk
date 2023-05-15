@@ -168,7 +168,29 @@ trigger:
       - promote
 
 steps:
-  # TODO run tests before
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - cd dapp
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:18
+    pull: always
+    commands:
+      - cd dapp
+      - npm run check-format
+
+  - name: unit-test
+    image: node:18
+    pull: always
+    commands:
+      - cd dapp
+      - npm run ctest tests/unit/
+
   - name: docker-dry-run
     # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
     image: plugins/docker
@@ -201,7 +223,29 @@ trigger:
     - develop
 
 steps:
-  # TODO run tests before
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - cd dapp
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:18
+    pull: always
+    commands:
+      - cd dapp
+      - npm run check-format
+
+  - name: unit-test
+    image: node:18
+    pull: always
+    commands:
+      - cd dapp
+      - npm run ctest tests/unit/
+
   - name: docker-publish-dev-non-tee
     # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
     image: plugins/docker
@@ -236,7 +280,29 @@ trigger:
     - main
 
 steps:
-  # TODO run tests before
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - cd dapp
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:18
+    pull: always
+    commands:
+      - cd dapp
+      - npm run check-format
+
+  - name: unit-test
+    image: node:18
+    pull: always
+    commands:
+      - cd dapp
+      - npm run ctest tests/unit/
+
   - name: extract-version-from-package
     image: node:18
     # generates the .tags file for the docker plugin
