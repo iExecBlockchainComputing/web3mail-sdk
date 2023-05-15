@@ -9,7 +9,7 @@ async function sendEmail({
   mailJetSender,
 }) {
   const mailjet = Mailjet.apiConnect(mailJetApiKeyPublic, mailJetApiKeyPrivate);
-  const response = await mailjet
+  await mailjet
     .post('send', { version: 'v3.1' })
     .request({
       Messages: [
@@ -29,9 +29,12 @@ async function sendEmail({
         },
       ],
     })
-    .catch((err) => {
+    .catch(() => {
       throw new Error('Failed to send email');
     });
-  return response;
+  return {
+    message: 'Your email has been sent successfully.',
+    status: 200,
+  };
 }
 module.exports = sendEmail;

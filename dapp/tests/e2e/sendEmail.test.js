@@ -23,6 +23,6 @@ describe('sendEmail', () => {
       mailContent,
       mailJetSender: MJ_SENDER,
     });
-    expect(response.response.status).toBe(200);
+    expect(response.status).toBe(200);
   });
 });

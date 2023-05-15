@@ -10,14 +10,8 @@ describe('sendEmail', () => {
     const mailContent = 'This is a test email.';
     const mailJetSender = 'sender@example.com';
     const mockResponse = {
-      body: {
-        Messages: [
-          {
-            Status: 'success',
-            To: [{ Email: email }],
-          },
-        ],
-      },
+      message: 'Your email has been sent successfully.',
+      status: 200,
     };
     const mockMailjet = {
       post: jest.fn().mockReturnThis(),
