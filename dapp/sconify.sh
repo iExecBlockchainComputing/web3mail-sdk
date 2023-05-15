@@ -2,7 +2,7 @@
 
 # declare the app entrypoint
 ENTRYPOINT="node /app/app.js"
-USER_DOCKER_HUB=luiscarlosiexec
+USER_DOCKER_HUB="your_docker_hub_username"
 # Declare image related variables
 IMG_NAME=web3mail
 NON_TEE_TAG=non-tee
@@ -36,5 +36,3 @@ docker run -it --rm \
             && echo -e "\n------------------\n" \
             && echo "successfully built TEE docker image => ${IMG_TO}" \
             && echo "application mrenclave.fingerprint is $(docker run --rm -e SCONE_HASH=1 ${IMG_TO})"
-
-docker push ${USER_DOCKER_HUB}/${IMG_TO}

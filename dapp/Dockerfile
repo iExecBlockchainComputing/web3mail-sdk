@@ -1,4 +1,6 @@
-FROM node:14-alpine3.11
-RUN mkdir /app && cd /app && npm install node-mailjet && npm install jszip  && npm install joi
-COPY ./src /app
+FROM node:16-alpine3.15
+WORKDIR /app
+COPY package*.json .
+RUN npm ci --production
+COPY ./src .
 ENTRYPOINT [ "node", "/app/app.js"]
