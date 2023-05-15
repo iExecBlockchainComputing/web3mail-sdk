@@ -35,6 +35,12 @@ steps:
     commands:
       - npm run build
 
+  - name: npm-publish-dry-run
+    image: node:18
+    pull: always
+    commands:
+      - npm publish --dry-run
+
 ---
 # sdk @iexec/web3mail publish npm nightly pipeline
 kind: pipeline
@@ -81,12 +87,6 @@ steps:
     pull: always
     commands:
       - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
-
-  - name: publish-dry-run
-    image: node:18
-    pull: always
-    commands:
-      - npm publish --tag nightly --dry-run
 
   - name: publish
     image: plugins/npm
@@ -139,12 +139,6 @@ steps:
     commands:
       - npm run build
 
-  - name: publish-dry-run
-    image: node:18
-    pull: always
-    commands:
-      - npm publish --dry-run
-
   - name: publish
     image: plugins/npm
     settings:
@@ -191,7 +185,7 @@ steps:
       - cd dapp
       - npm run ctest tests/unit/
 
-  - name: docker-dry-run
+  - name: docker-publish-dry-run
     # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
     image: plugins/docker
     pull: always
