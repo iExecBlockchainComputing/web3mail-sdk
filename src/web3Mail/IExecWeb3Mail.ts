@@ -1,8 +1,9 @@
 import { IExec } from 'iexec';
 import { fetchMyContacts } from './fetchMyContacts.js';
+import { Contact } from './types.js';
 
 export class IExecWeb3Mail {
-  fetchMyContacts: () => Promise<any>;
+  fetchMyContacts: () => Promise<Contact[]>;
 
   constructor(
     ethProvider: any,
