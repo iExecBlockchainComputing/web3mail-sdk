@@ -47,7 +47,7 @@ trigger:
   event:
     - promote
   target:
-    - npm-nightly
+    - sdk-nightly
   branch:
     - develop
 
@@ -101,7 +101,7 @@ trigger:
   event:
     - promote
   target:
-    - npm-latest
+    - sdk-latest
   branch:
     - main
 
