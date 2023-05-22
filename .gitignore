@@ -17,5 +17,8 @@
 # TypeScript specific
 *.tsbuildinfo
 
+# CI
+.drone.yml
+
 # sonar output
 .scannerwork
