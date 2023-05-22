@@ -17,7 +17,7 @@ fill in the environment variables:
   - **MJ_APIKEY_PUBLIC**: Your [Mailjet public API key](https://app.mailjet.com/account/apikeys), which can be retrieved from your Mailjet account.
   - **MJ_APIKEY_PRIVATE**: Your [Mailjet private API key](https://app.mailjet.com/account/apikeys).
   - **MJ_SENDER**: The email address that will be used to send the emails.
-  - **IEXEC_REQUESTER_SECRET_1**: The subject of the email to be sent to the email address retrieved from the data.zip file.
+- **IEXEC_REQUESTER_SECRET_1**: The subject of the email to be sent to the email address retrieved from the data.zip file.
 - **IEXEC_REQUESTER_SECRET_2**: The content of the email to be sent to the email address retrieved from the data.zip file.
 - Install dependencies by running `npm ci`.
 - Start the app using `npm run start-local`.
@@ -26,26 +26,45 @@ The Dapp will send an email using the object and content specified in .env, and 
 
 ## Running the Dapp locally using Docker
 
-Build the Docker image by running the following command in the root directory of the project:
+1. **Build the Docker image**: Navigate to the `/web3mail/dapp` directory of the project and run the following command to build the Docker image:
 
-```sh
-docker build . --tag web3mail-dapp
-```
+    ```sh
+    docker build . --tag web3mail-dapp
+    ```
 
-Run the Docker container by executing the following command:
+2. **Create local directories**: In your terminal, execute the following commands to create two local directories on your machine:
 
-```sh
-docker run --rm \
-    -v /tmp/iexec_in:/iexec_in \
-    -v /tmp/iexec_out:/iexec_out \
-    -e IEXEC_IN=/iexec_in \
-    -e IEXEC_OUT=/iexec_out \
-    -e IEXEC_DATASET_FILENAME=myProtectedData.zip \
-    -e IEXEC_APP_DEVELOPER_SECRET='{"MJ_APIKEY_PUBLIC":"<your_mailjet_public_api_key>","MJ_APIKEY_PRIVATE":"<your_mailjet_private_api_key>","MJ_SENDER":"<your_sender_email_address>"}' \
-    -e IEXEC_REQUESTER_SECRET_1="<email_object>" \
-    -e IEXEC_REQUESTER_SECRET_2="<email_content>" \
-    web3mail-dapp
-```
+    ```sh
+    mkdir /tmp/iexec_in
+    mkdir /tmp/iexec_out
+    ```
+
+3. **Prepare your data**: Place your `data.zip` file inside the `/tmp/iexec_in` directory you just created. This file contains the data you want to protect, which in this case is the email you want to send. Ensure that the email is saved as a `email.txt` file within the `data.zip` archive.
+
+4. **Set up Mailjet credentials**: In the command provided in step 5, make sure to replace the placeholders:
+   - `<your_mailjet_public_api_key>`: Your [Mailjet public API key](https://app.mailjet.com/account/apikeys).
+   - `<your_mailjet_private_api_key>`:  Your [Mailjet private API key](https://app.mailjet.com/account/apikeys).
+   - `<your_sender_email_address>`: Your sender email address.
+   - `<email_object>`: The subject of the email you want to send.
+   - `<email_content>`: The content of the email you want to send.
+
+6. **Run the Docker container**: Execute the following command to run the 
+Docker container and execute the Dapp:
+
+    ```sh
+    docker run --rm \
+        -v /tmp/iexec_in:/iexec_in \
+        -v /tmp/iexec_out:/iexec_out \
+        -e IEXEC_IN=/iexec_in \
+        -e IEXEC_OUT=/iexec_out \
+        -e IEXEC_DATASET_FILENAME=data.zip \
+        -e IEXEC_APP_DEVELOPER_SECRET='{"MJ_APIKEY_PUBLIC":"<your_mailjet_public_api_key>","MJ_APIKEY_PRIVATE":"<your_mailjet_private_api_key>","MJ_SENDER":"<your_sender_email_address>"}' \
+        -e IEXEC_REQUESTER_SECRET_1="<email_object>" \
+        -e IEXEC_REQUESTER_SECRET_2="<email_content>" \
+        web3mail-dapp
+    ```
+
+After running the Docker container, you can find the result of the Dapp's execution in the `/tmp/iexec_out` directory on your machine.
 
 ### Run Tests
 
