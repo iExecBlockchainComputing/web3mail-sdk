@@ -14,12 +14,14 @@ export const fetchMyContacts = async ({
     });
     const myContacts: Contact[] = [];
     orders.map((order) => {
-      const contact = {
-        address: order.order.dataset,
-        owner: order.signer,
-        accessGrantTimestamp: order.publicationTimestamp,
-      };
-      myContacts.push(contact);
+      if (order.order.apprestrict === WEB3_MAIL_DAPP_ADDRESS) {
+        const contact = {
+          address: order.order.dataset,
+          owner: order.signer,
+          accessGrantTimestamp: order.publicationTimestamp,
+        };
+        myContacts.push(contact);
+      }
     });
     return myContacts;
   } catch (error) {
