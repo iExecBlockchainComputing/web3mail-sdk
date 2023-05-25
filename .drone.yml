@@ -154,7 +154,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:16-alpine3.15
+    image: node:14-alpine3.11
     pull: always
     commands:
       - cd dapp
@@ -163,13 +163,13 @@ steps:
       - npm ci
 
   - name: format
-    image: node:16-alpine3.15
+    image: node:14-alpine3.11
     commands:
       - cd dapp
       - npm run check-format
 
   - name: unit-test
-    image: node:16-alpine3.15
+    image: node:14-alpine3.11
     commands:
       - cd dapp
       - npm run ctest tests/unit/
@@ -207,7 +207,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:16-alpine3.15
+    image: node:14-alpine3.11
     pull: always
     commands:
       - cd dapp
@@ -216,13 +216,13 @@ steps:
       - npm ci
 
   - name: format
-    image: node:16-alpine3.15
+    image: node:14-alpine3.11
     commands:
       - cd dapp
       - npm run check-format
 
   - name: unit-test
-    image: node:16-alpine3.15
+    image: node:14-alpine3.11
     commands:
       - cd dapp
       - npm run ctest tests/unit/
@@ -262,7 +262,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:16-alpine3.15
+    image: node:14-alpine3.11
     pull: always
     commands:
       - cd dapp
@@ -271,13 +271,13 @@ steps:
       - npm ci
 
   - name: format
-    image: node:16-alpine3.15
+    image: node:14-alpine3.11
     commands:
       - cd dapp
       - npm run check-format
 
   - name: unit-test
-    image: node:16-alpine3.15
+    image: node:14-alpine3.11
     commands:
       - cd dapp
       - npm run ctest tests/unit/
