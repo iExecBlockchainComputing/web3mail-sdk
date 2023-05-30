@@ -21,6 +21,14 @@ const main = async () => {
   const mjPublicKey = process.env.MJ_API_KEY_PUBLIC;
   const mjPrivateKey = process.env.MJ_API_KEY_PRIVATE;
 
+  if (!droneTarget) return console.log("STEP: Didn't succeed to get drone target"); // If drone target is not set, do not continue
+  if (!walletAddressDev) return console.log("STEP: Didn't succeed to get wallet address dev"); // If wallet address is not set, do not continue
+  if (!walletPrivateKeyDev) return console.log("STEP: Didn't succeed to get wallet private key dev"); // If wallet private key is not set, do not continue
+  if (!walletAddressProd) return console.log("STEP: Didn't succeed to get wallet address prod"); // If wallet address is not set, do not continue
+  if (!walletPrivateKeyProd) return console.log("STEP: Didn't succeed to get wallet private key prod"); // If wallet private key is not set, do not continue
+  if (!mjPublicKey) return console.log("STEP: Didn't succeed to get mailjet public key"); // If mailjet public key is not set, do not continue
+  if (!mjPrivateKey) return console.log("STEP: Didn't succeed to get mailjet private key"); // If mailjet private key is not set, do not continue
+
   //chose correct env variables
   let chosenWalletAddress;
   let chosenPrivateKey;
@@ -34,23 +42,16 @@ const main = async () => {
     chosenPrivateKey = walletPrivateKeyProd;
     chosenEnsName = WEB3_MAIL_ENS_NAME_PROD;
   }
+  
+  if (!chosenWalletAddress) return console.log("STEP: Didn't succeed to get wallet address"); // If wallet address is not set, do not continue
+  if (!chosenPrivateKey) return console.log("STEP: Didn't succeed to get wallet private key"); // If wallet private key is not set, do not continue
+  if (!chosenEnsName) return console.log("STEP: Didn't succeed to get ens name"); // If ens name is not set, do not continue
 
-  if (
-    !chosenWalletAddress ||
-    !chosenPrivateKey ||
-    !chosenEnsName ||
-    !mjPublicKey ||
-    !mjPrivateKey ||
-    !droneTarget
-  )
-    return console.log(
-      "STEP: Didn't succeed to get all necessary secret value"
-    ); // If one of secret requiered secret is not set, do not continue
 
   //init iexec library
   let iexec;
   if (droneTarget === DRONE_TARGET_SELL_ORDER_DEV) {
-    iexec = await initIexecConstructorDev(chosenWalletAddress);
+    iexec = await initIexecConstructorDev(chosenPrivateKey);
   } else if (droneTarget === DRONE_TARGET_SELL_ORDER_PROD) {
     iexec = await initIexecConstructorProd(chosenPrivateKey);
   }

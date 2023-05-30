@@ -25,3 +25,6 @@
 
 # sonar output
 .scannerwork
+
+#dist
+**/dist/
