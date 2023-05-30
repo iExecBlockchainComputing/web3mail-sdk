@@ -12,7 +12,7 @@ export const initIexecConstructorDev = async (
     {
       smsURL: {
         scone: HOST_SMS_DEBUG,
-        gramine: "",
+        gramine: HOST_SMS_DEBUG,
       },
     }
   );
