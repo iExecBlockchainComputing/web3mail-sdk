@@ -304,3 +304,94 @@ steps:
         from_secret: nexus-user
       password:
         from_secret: nexus-password
+
+#pipeline to publish dapp contract on iexec
+---
+kind: pipeline
+type: docker
+name: deploy-dapp-contract
+
+trigger:
+  event:
+    - promote
+  target:
+    - dapp-dev
+    - dapp-production
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: compile
+    image: node:18
+    pull: always
+    commands:
+      - cd deployment-dapp
+      - npm ci
+      - npm run build
+
+  - name: deploy
+    image: plugins/docker
+    pull: always
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_ADDRESS_DEV:
+        from_secret: web3mail-dapp-owner-dev-address
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_ADDRESS_PROD:
+        from_secret: web3mail-dapp-owner-prod-address
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+      MJ_API_KEY_PUBLIC:
+        from_secret: drone_mj_public_key
+      MJ_API_KEY_PRIVATE:
+        from_secret: drone_mj_private_key
+    commands:
+      - cd deployment-dapp
+      - npm run deploy-dapp
+
+#pipeline to publish sell order
+---
+kind: pipeline
+type: docker
+name: deploy-dapp-on-bellecour
+
+trigger:
+  event:
+    - promote
+  target:
+    - dapp-sell-order-dev
+    - dapp-sell-order-production
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: compile
+    image: node:18
+    pull: always
+    commands:
+      - cd deployment-dapp
+      - npm ci
+      - npm run build
+
+  - name: sell_order
+    image: node:18
+    environment:
+    DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+    WALLET_ADDRESS_DEV:
+      from_secret: web3mail-dapp-owner-dev-address
+    WALLET_PRIVATE_KEY_DEV:
+      from_secret: web3mail-dapp-owner-dev-privatekey
+    WALLET_ADDRESS_PROD:
+      from_secret: web3mail-dapp-owner-prod-address
+    WALLET_PRIVATE_KEY_PROD:
+      from_secret: web3mail-dapp-owner-prod-privatekey
+    MJ_API_KEY_PUBLIC:
+      from_secret: drone_mj_public_key
+    MJ_API_KEY_PRIVATE:
+      from_secret: drone_mj_private_key
+    commands:
+      - cd deployment-dapp
+      - npm run publish-sell-order

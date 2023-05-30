@@ -1,0 +1,20 @@
+{
+  "name": "deployment-dapp",
+  "version": "1.0.0",
+  "description": "deploy dapp contract on iexec",
+  "type": "module",
+  "main": "deploy.js",
+  "scripts": {
+    "build": "tsc",
+    "deploy-dapp": "ts-node --esm ./src/deployScript.ts",
+    "publish-sell-order": "ts-node --ems ./src/publishSellOrderScript.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "iexec": "^8.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}
