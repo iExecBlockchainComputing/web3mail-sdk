@@ -331,7 +331,7 @@ steps:
       - npm run build
 
   - name: deploy
-    image: plugins/docker
+    image: node:18
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
