@@ -1,5 +1,5 @@
 import { IExec, utils } from "iexec";
-import { HOST, HOST_SMS_DEBUG } from "../config/config";
+import { HOST, HOST_SMS_DEBUG } from "../config/config.js";
 
 export const initIexecConstructorDev = async (
   privateKey: string

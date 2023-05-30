@@ -1,5 +1,5 @@
 import { Bytes32, IExec, TeeFramework } from "iexec";
-import { APP_NAME, APP_TYPE, DOCKER_IMAGE, FRAMEWORK } from "../config/config";
+import { APP_NAME, APP_TYPE, DOCKER_IMAGE, FRAMEWORK } from "../config/config.js";
 
 export const deployApp = async (
   iexec: IExec,

@@ -1,5 +1,5 @@
 import { IExec } from "iexec";
-import { APP_PRICE, APP_TAG, APP_VOLUME } from "../config/config";
+import { APP_PRICE, APP_TAG, APP_VOLUME } from "../config/config.js";
 
 export const publishSellOrder = async (
   iexec: IExec,

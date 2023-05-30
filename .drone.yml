@@ -330,6 +330,18 @@ steps:
       - npm ci
       - npm run build
 
+  # - name: format
+  #   image: node:14-alpine3.11
+  #   commands:
+  #     - cd dapp
+  #     - npm run check-format
+
+  # - name: unit-test
+  #   image: node:14-alpine3.11
+  #   commands:
+  #     - cd dapp
+  #     - npm run ctest tests/unit/
+
   - name: deploy
     image: node:18
     environment:
@@ -347,6 +359,7 @@ steps:
       MJ_API_KEY_PRIVATE:
         from_secret: drone_mj_private_key
     commands:
+      - cd dapp
       - npm run deploy-dapp
 
 #Publish sell order
@@ -391,4 +404,5 @@ steps:
     MJ_API_KEY_PRIVATE:
       from_secret: drone_mj_private_key
     commands:
+      - cd dapp
       - npm run publish-sell-order

@@ -41,7 +41,9 @@ const main = async () => {
     !mjPrivateKey ||
     !droneTarget
   )
-    return; // If one of secret requiered secret is not set, do not continue
+    return console.log(
+      "STEP: Didn't succeed to get all necessary secret value"
+    ); // If one of secret requiered secret is not set, do not continue
 
   //init iexec library
   let iexec;
@@ -51,12 +53,13 @@ const main = async () => {
     iexec = await initIexecConstructorProd(chosenPrivateKey);
   }
 
-  if (!iexec) return; // If iexec library was not init, do not continue
+  if (!iexec) return console.log("STEP: Didn't succeed to init iexec"); // If iexec library was not init, do not continue
 
   //resolve app ENS name
   const appAddress = await resolveName(iexec, chosenEnsName);
 
-  if (!appAddress) return; // If the app was not deployed, do not continue
+  if (!appAddress)
+    return console.log("STEP: Didn't succeed to deploy App contract"); // If the app was not deployed, do not continue
 
   //publish sell order for Tee app (scone)
   await publishSellOrder(iexec, appAddress);

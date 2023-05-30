@@ -2,6 +2,7 @@
   "name": "dapp",
   "version": "0.0.0",
   "description": "",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "build": "rm -rf dist && tsc",
@@ -11,8 +12,8 @@
     "ctest": "rm -rf dist && tsc && NODE_OPTIONS=--experimental-vm-modules npx jest --setupFiles dotenv/config --silent=true --coverage",
     "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
     "check-format": "prettier --check \"src/**/*.ts\" \"tests/**/*.ts\"",
-    "deploy-dapp": "ts-node ./deployment/deployScript.ts",
-    "publish-sell-order": "ts-node ./deployment/publishSellOrderScript.ts"
+    "deploy-dapp": "ts-node --esm ./deployment/deployScript.ts",
+    "publish-sell-order": "ts-node --esm ./deployment/publishSellOrderScript.ts"
   },
   "keywords": [],
   "author": "",

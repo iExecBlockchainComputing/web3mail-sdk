@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "target": "es6",
+    "module": "ESNext",
+    "target": "ESNext",
     "declaration": true,
     "outDir": "dist",
     "esModuleInterop": true,
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "node",
     "skipLibCheck": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "exclude": ["node_modules", "**/*.spec.ts", "dapp/**/*"]
 }

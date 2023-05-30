@@ -1,6 +1,6 @@
 import { exec } from "child_process";
 import * as util from "util";
-import { DOCKER_IMAGE } from "../config/config";
+import { DOCKER_IMAGE } from "../config/config.js";
 
 const execPromisified = util.promisify(exec);
 
