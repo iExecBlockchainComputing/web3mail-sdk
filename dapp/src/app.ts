@@ -1,7 +1,7 @@
-const { promises: fs } = require('fs');
-const sendEmail = require('./emailService');
-const validateInputs = require('./validateInputs');
-const extractZipAndBuildJson = require('./extractEmailFromZipFile');
+import fs from 'fs/promises';
+import { sendEmail } from './emailService';
+import { validateInputs } from './validateInputs';
+import { extractEmailFromZipFile } from './extractEmailFromZipFile';
 
 async function writeTaskOutput(path, message) {
   try {
@@ -34,7 +34,7 @@ async function start() {
       mailContent: process.env.IEXEC_REQUESTER_SECRET_2,
     };
     const envVars = validateInputs(unsafeEnvVars);
-    const email = await extractZipAndBuildJson(
+    const email = await extractEmailFromZipFile(
       `${envVars.iexecIn}/${envVars.dataFileName}`
     );
     if (!email) {
@@ -64,5 +64,3 @@ async function start() {
     process.exit(1);
   }
 }
-
-start();

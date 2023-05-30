@@ -1,8 +1,11 @@
-const extractEmailFromZipFile = require('../../src/extractEmailFromZipFile');
-const path = require('path');
+import { describe, it, expect } from '@jest/globals';
+import { extractEmailFromZipFile } from '../../src/extractEmailFromZipFile';
+import path from 'path';
+import fs from 'fs/promises';
+import JSZip from 'jszip';
+import * as url from 'url';
 
-const fs = require('fs').promises;
-const JSZip = require('jszip');
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 describe('extractEmailFromZipFile', () => {
   it('returns a valid email address for a valid .zip file', async () => {

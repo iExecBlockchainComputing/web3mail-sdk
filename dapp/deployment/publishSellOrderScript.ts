@@ -1,9 +1,9 @@
 import {
   initIexecConstructorDev,
   initIexecConstructorProd,
-} from './SingleFunction/initConstructor';
-import { publishSellOrder } from './SingleFunction/publishSellOrder';
-import { resolveName } from './SingleFunction/resolveName';
+} from './singleFunction/initConstructor';
+import { publishSellOrder } from './singleFunction/publishSellOrder';
+import { resolveName } from './singleFunction/resolveName';
 import {
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,

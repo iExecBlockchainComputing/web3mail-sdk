@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const schema = Joi.object({
   iexecIn: Joi.string().required(),
@@ -11,7 +11,7 @@ const schema = Joi.object({
   mailContent: Joi.string().required(),
 });
 
-function validateInputs(envVars) {
+export function validateInputs(envVars) {
   const { error, value } = schema.validate(envVars, { abortEarly: false });
   if (error) {
     const validationErrors = error.details.map((detail) => detail.message);
@@ -19,5 +19,3 @@ function validateInputs(envVars) {
   }
   return value;
 }
-
-module.exports = validateInputs;

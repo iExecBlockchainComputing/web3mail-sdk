@@ -326,12 +326,12 @@ steps:
     image: node:18
     pull: always
     commands:
+      - cd dapp
       - npm ci
       - npm run build
 
   - name: deploy
-    image: plugins/docker
-    pull: always
+    image: node:18
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
       WALLET_ADDRESS_DEV:
@@ -359,8 +359,8 @@ trigger:
   event:
     - promote
   target:
-    - dapp-dev
-    - dapp-prod
+    - dapp-order-dev
+    - dapp-order-prod
   branch:
     - develop
     - main
@@ -370,6 +370,7 @@ steps:
     image: node:18
     pull: always
     commands:
+      - cd dapp
       - npm ci
       - npm run build
 

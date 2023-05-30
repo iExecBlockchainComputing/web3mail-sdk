@@ -1,5 +1,5 @@
-const validateInputs = require('../../src/validateInputs');
-const Joi = require('joi');
+import { describe, it, expect, beforeEach } from '@jest/globals';
+import { validateInputs } from '../../src/validateInputs';
 
 describe('validateInputs function', () => {
   let envVars;

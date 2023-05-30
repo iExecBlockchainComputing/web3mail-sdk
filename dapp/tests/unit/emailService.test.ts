@@ -1,5 +1,6 @@
-const Mailjet = require('node-mailjet');
-const sendEmail = require('../../src/emailService');
+import { describe, it, expect, jest } from '@jest/globals';
+import Mailjet from 'node-mailjet';
+import { sendEmail } from '../../src/emailService';
 
 describe('sendEmail', () => {
   it('sends an email successfully', async () => {
@@ -13,6 +14,7 @@ describe('sendEmail', () => {
       message: 'Your email has been sent successfully.',
       status: 200,
     };
+
     const mockMailjet = {
       post: jest.fn().mockReturnThis(),
       request: jest.fn().mockResolvedValue(mockResponse),

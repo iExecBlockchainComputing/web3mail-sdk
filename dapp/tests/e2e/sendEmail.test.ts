@@ -1,6 +1,9 @@
-const sendEmail = require('../../src/emailService');
-const extractEmailFromZipFile = require('../../src/extractEmailFromZipFile');
-const path = require('path');
+import { sendEmail } from '../../src/emailService';
+import { extractEmailFromZipFile } from '../../src/extractEmailFromZipFile';
+import path from 'path';
+import * as url from 'url';
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 describe('sendEmail', () => {
   it('should send an email successfully', async () => {

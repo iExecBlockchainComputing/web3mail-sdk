@@ -1,6 +1,6 @@
-const Mailjet = require('node-mailjet');
+import Mailjet from 'node-mailjet';
 
-async function sendEmail({
+export async function sendEmail({
   email,
   mailJetApiKeyPublic,
   mailJetApiKeyPrivate,
@@ -37,4 +37,3 @@ async function sendEmail({
     status: 200,
   };
 }
-module.exports = sendEmail;

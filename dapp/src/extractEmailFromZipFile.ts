@@ -1,7 +1,7 @@
-const JSZip = require('jszip');
-const fs = require('fs').promises;
+import JSZip from 'jszip';
+import fs from 'fs/promises';
 
-async function extractEmailFromZipFile(zipPath) {
+export async function extractEmailFromZipFile(zipPath) {
   const buffer = await fs.readFile(zipPath);
   const zip = new JSZip();
   await zip.loadAsync(buffer);
@@ -16,5 +16,3 @@ async function extractEmailFromZipFile(zipPath) {
   }
   return emailContent;
 }
-
-module.exports = extractEmailFromZipFile;
