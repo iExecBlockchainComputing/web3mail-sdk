@@ -11,6 +11,10 @@
       "default": "./dist/bundle.js"
     }
   },
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "build": "tsc && webpack",
     "start": "node dist/bundle.js",
