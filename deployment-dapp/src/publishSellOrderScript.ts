@@ -1,13 +1,15 @@
 import {
   initIexecConstructorDev,
   initIexecConstructorProd,
-} from './singleFunction/initConstructor';
-import { publishSellOrder } from './singleFunction/publishSellOrder';
-import { resolveName } from './singleFunction/resolveName';
+} from './singleFunction/initConstructor.js';
+import { publishSellOrder } from './singleFunction/publishSellOrder.js';
+import { resolveName } from './singleFunction/resolveName.js';
 import {
+  DRONE_TARGET_SELL_ORDER_DEV,
+  DRONE_TARGET_SELL_ORDER_PROD,
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,
-} from './config/config';
+} from './config/config.js';
 
 const main = async () => {
   // get env variables from drone secret
@@ -23,11 +25,11 @@ const main = async () => {
   let chosenWalletAddress;
   let chosenPrivateKey;
   let chosenEnsName;
-  if (droneTarget === 'dev') {
+  if (droneTarget === DRONE_TARGET_SELL_ORDER_DEV) {
     chosenWalletAddress = walletAddressDev;
     chosenPrivateKey = walletPrivateKeyDev;
     chosenEnsName = WEB3_MAIL_ENS_NAME_DEV;
-  } else if (droneTarget === 'production') {
+  } else if (droneTarget === DRONE_TARGET_SELL_ORDER_PROD) {
     chosenWalletAddress = walletAddressProd;
     chosenPrivateKey = walletPrivateKeyProd;
     chosenEnsName = WEB3_MAIL_ENS_NAME_PROD;
@@ -47,9 +49,9 @@ const main = async () => {
 
   //init iexec library
   let iexec;
-  if (droneTarget === 'dev') {
+  if (droneTarget === DRONE_TARGET_SELL_ORDER_DEV) {
     iexec = await initIexecConstructorDev(chosenWalletAddress);
-  } else if (droneTarget === 'production') {
+  } else if (droneTarget === DRONE_TARGET_SELL_ORDER_PROD) {
     iexec = await initIexecConstructorProd(chosenPrivateKey);
   }
 

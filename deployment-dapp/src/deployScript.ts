@@ -7,8 +7,8 @@ import {
 import { publishSellOrder } from './singleFunction/publishSellOrder.js';
 import { pushSecret } from './singleFunction/pushSecret.js';
 import {
-  DRONE_TARGET_DEV,
-  DRONE_TARGET_PROD,
+  DRONE_TARGET_DEPLOY_DEV,
+  DRONE_TARGET_DEPLOY_PROD,
   MJ_SENDER,
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,
@@ -32,11 +32,11 @@ const main = async () => {
   let chosenWalletAddress;
   let chosenPrivateKey;
   let chosenEnsName;
-  if (droneTarget === 'dev') {
+  if (droneTarget === DRONE_TARGET_DEPLOY_DEV) {
     chosenWalletAddress = walletAddressDev;
     chosenPrivateKey = walletPrivateKeyDev;
     chosenEnsName = WEB3_MAIL_ENS_NAME_DEV;
-  } else if (droneTarget === 'production') {
+  } else if (droneTarget === DRONE_TARGET_DEPLOY_PROD) {
     chosenWalletAddress = walletAddressProd;
     chosenPrivateKey = walletPrivateKeyProd;
     chosenEnsName = WEB3_MAIL_ENS_NAME_PROD;
@@ -56,9 +56,9 @@ const main = async () => {
 
   //init iexec library
   let iexec;
-  if (droneTarget === DRONE_TARGET_DEV) {
+  if (droneTarget === DRONE_TARGET_DEPLOY_DEV) {
     iexec = await initIexecConstructorDev(chosenWalletAddress);
-  } else if (droneTarget === DRONE_TARGET_PROD) {
+  } else if (droneTarget === DRONE_TARGET_DEPLOY_PROD) {
     iexec = await initIexecConstructorProd(chosenWalletAddress);
   }
 
