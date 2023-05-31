@@ -321,6 +321,18 @@ trigger:
     - develop
     - main
 
+services:
+  - name: docker
+    image: docker:dind
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
+
+volumes:
+  - name: dockersock
+    temp: {}
+
 steps:
   - name: compile
     image: node:18
@@ -330,9 +342,12 @@ steps:
       - npm ci
       - npm run build
 
-  - name: deploy
-    image: node:18
+  - name: test
+    image: docker:dind
     pull: always
+    volumes:
+      - name: dockersock
+        path: /var/run
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
       WALLET_ADDRESS_DEV:
@@ -348,7 +363,12 @@ steps:
       MJ_API_KEY_PRIVATE:
         from_secret: drone_mj_private_key
     commands:
+      - apk add --update nodejs npm
+      - apk add --no-cache python3 make g++
+      - sleep 5 # give docker enough time to start
+      - docker ps -a
       - cd deployment-dapp
+      - npm ci
       - npm run deploy-dapp
 
 #pipeline to publish sell order
@@ -376,22 +396,31 @@ steps:
       - npm ci
       - npm run build
 
-  - name: sell_order
-    image: node:18
+  - name: test
+    image: docker:dind
+    pull: always
+    volumes:
+      - name: dockersock
+        path: /var/run
     environment:
-    DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
-    WALLET_ADDRESS_DEV:
-      from_secret: web3mail-dapp-owner-dev-address
-    WALLET_PRIVATE_KEY_DEV:
-      from_secret: web3mail-dapp-owner-dev-privatekey
-    WALLET_ADDRESS_PROD:
-      from_secret: web3mail-dapp-owner-prod-address
-    WALLET_PRIVATE_KEY_PROD:
-      from_secret: web3mail-dapp-owner-prod-privatekey
-    MJ_API_KEY_PUBLIC:
-      from_secret: drone_mj_public_key
-    MJ_API_KEY_PRIVATE:
-      from_secret: drone_mj_private_key
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_ADDRESS_DEV:
+        from_secret: web3mail-dapp-owner-dev-address
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_ADDRESS_PROD:
+        from_secret: web3mail-dapp-owner-prod-address
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+      MJ_API_KEY_PUBLIC:
+        from_secret: drone_mj_public_key
+      MJ_API_KEY_PRIVATE:
+        from_secret: drone_mj_private_key
     commands:
+      - apk add --update nodejs npm
+      - apk add --no-cache python3 make g++
+      - sleep 5 # give docker enough time to start
+      - docker ps -a
       - cd deployment-dapp
+      - npm ci
       - npm run publish-sell-order

@@ -7,13 +7,14 @@
   "scripts": {
     "build": "tsc",
     "deploy-dapp": "ts-node --esm ./src/deployScript.ts",
-    "publish-sell-order": "ts-node --ems ./src/publishSellOrderScript.ts"
+    "publish-sell-order": "ts-node --esm ./src/publishSellOrderScript.ts",
+    "start": "ts-node --esm ./src/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "docker": "^1.0.0",
+    "dockerode": "^3.3.5",
     "iexec": "^8.1.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"

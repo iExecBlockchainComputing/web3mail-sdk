@@ -1,5 +1,5 @@
 import { IExec, utils } from "iexec";
-import { HOST, HOST_SMS_DEBUG } from "../config/config.js";
+import { HOST, HOST_SMS_DEBUG_GRAMINE, HOST_SMS_DEBUG_SCONE } from "../config/config.js";
 
 export const initIexecConstructorDev = async (
   privateKey: string
@@ -11,8 +11,8 @@ export const initIexecConstructorDev = async (
     },
     {
       smsURL: {
-        scone: HOST_SMS_DEBUG,
-        gramine: HOST_SMS_DEBUG,
+        scone: HOST_SMS_DEBUG_SCONE,
+        gramine: HOST_SMS_DEBUG_GRAMINE,
       },
     }
   );

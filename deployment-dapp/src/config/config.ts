@@ -1,6 +1,7 @@
 //hosting url
 export const HOST = 'https://bellecour.iex.ec';
-export const HOST_SMS_DEBUG = 'https://sms.scone-debug.v8-bellecour.iex.ec';
+export const HOST_SMS_DEBUG_SCONE = 'https://sms.scone-debug.v8-bellecour.iex.ec';
+export const HOST_SMS_DEBUG_GRAMINE = 'https://sms.gramine.v8-bellecour.iex.ec';
 
 //deployement parameters
 export const APP_NAME = 'web3Mail_test_1';

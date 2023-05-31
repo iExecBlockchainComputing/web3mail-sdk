@@ -54,6 +54,7 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
+    "docker": "^1.0.0",
     "iexec": "^8.1.0",
     "yup": "^1.1.1"
   }
