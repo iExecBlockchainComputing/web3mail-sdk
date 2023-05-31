@@ -342,7 +342,7 @@ steps:
       - npm ci
       - npm run build
 
-  - name: test
+  - name: deploy dapp contract
     image: docker:dind
     pull: always
     volumes:
@@ -366,7 +366,6 @@ steps:
       - apk add --update nodejs npm
       - apk add --no-cache python3 make g++
       - sleep 5 # give docker enough time to start
-      - docker ps -a
       - cd deployment-dapp
       - npm ci
       - npm run deploy-dapp
@@ -408,7 +407,7 @@ steps:
       - npm ci
       - npm run build
 
-  - name: test
+  - name: publish sell order
     image: docker:dind
     pull: always
     volumes:
@@ -432,7 +431,6 @@ steps:
       - apk add --update nodejs npm
       - apk add --no-cache python3 make g++
       - sleep 5 # give docker enough time to start
-      - docker ps -a
       - cd deployment-dapp
       - npm ci
       - npm run publish-sell-order
