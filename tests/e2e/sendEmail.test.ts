@@ -45,7 +45,7 @@ describe('web3mail.sendEmail()', () => {
         userAddress: consumerWallet.address,
         mailObject: 'e2e mail object for test',
         mailContent: 'e2e mail content for test',
-        datasetAddress: protectedData.address,
+        protectedData: protectedData.address,
       };
 
       const sendEmailResponse = await web3mail.sendEmail(emailContent);

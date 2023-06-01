@@ -10,7 +10,7 @@ const sendEmail = async ({
   iexec = throwIfMissing(),
   mailObject = throwIfMissing(),
   mailContent = throwIfMissing(),
-  datasetAddress = throwIfMissing(),
+  protectedData = throwIfMissing(),
 }: IExecConsumer & SendEmailParams): Promise<SendEmailResponse> => {
   try {
     const requesterAddress = await iexec.wallet.getAddress();
@@ -23,7 +23,7 @@ const sendEmail = async ({
     }
     // Fetch dataset order
     const datasetOrderBook = await iexec.orderbook.fetchDatasetOrderbook(
-      datasetAddress,
+      protectedData,
       {
         app: WEB3_MAIL_DAPP_ADDRESS,
         requester: requesterAddress,
@@ -50,7 +50,7 @@ const sendEmail = async ({
     const workerpoolorderbook = await iexec.orderbook.fetchWorkerpoolOrderbook({
       workerpool: WORKERPOOL_ADDRESS,
       app: WEB3_MAIL_DAPP_ADDRESS,
-      dataset: datasetAddress,
+      dataset: protectedData,
       minTag: ['tee', 'scone'],
     });
     const workerpoolorder = workerpoolorderbook?.orders[0]?.order;
@@ -66,7 +66,7 @@ const sendEmail = async ({
     const requestorderToSign = await iexec.order.createRequestorder({
       app: WEB3_MAIL_DAPP_ADDRESS,
       category: workerpoolorder.category,
-      dataset: datasetAddress,
+      dataset: protectedData,
       appmaxprice: apporder.appprice,
       workerpoolmaxprice: workerpoolorder.workerpoolprice,
       tag: ['tee', 'scone'],

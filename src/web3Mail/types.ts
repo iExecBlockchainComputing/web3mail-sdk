@@ -17,7 +17,7 @@ export type SendEmailParams = {
   userAddress: Address;
   mailObject: string;
   mailContent: string;
-  datasetAddress: Address;
+  protectedData: Address;
 };
 
 export type SendEmailResponse = {
