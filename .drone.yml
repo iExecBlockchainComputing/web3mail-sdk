@@ -305,8 +305,8 @@ steps:
       password:
         from_secret: nexus-password
 
-#pipeline to publish dapp contract on iexec
 ---
+#pipeline to publish dapp contract on iexec
 kind: pipeline
 type: docker
 name: deploy-dapp-contract
@@ -321,33 +321,31 @@ trigger:
     - develop
     - main
 
-services:
-  - name: docker
-    image: docker:dind
-    privileged: true
-    volumes:
-      - name: dockersock
-        path: /var/run
-
-volumes:
-  - name: dockersock
-    temp: {}
-
 steps:
-  - name: compile
-    image: node:18
-    pull: always
+  - name: get scone fingerprint (dev)
+    image: iexechub/web3mail-dapp:dev-${DRONE_COMMIT}-sconify-5.7.5-v9-production
     commands:
-      - cd deployment-dapp
-      - npm ci
-      - npm run build
+      - SCONE_HASH=1 node > .scone-fingerprint
+    when:
+      target:
+        - dapp-dev
+      branch:
+        - develop
+
+  - name: get scone fingerprint (prod)
+    # /!\: maintain the version here
+    image: iexechub/web3mail-dapp:0.0.0-sconify-5.7.5-v9-production
+    commands:
+      - SCONE_HASH=1 node > .scone-fingerprint
+    when:
+      target:
+        - dapp-production
+      branch:
+        - main
 
   - name: deploy dapp contract
-    image: docker:dind
+    image: node:18
     pull: always
-    volumes:
-      - name: dockersock
-        path: /var/run
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
       WALLET_ADDRESS_DEV:
@@ -363,15 +361,12 @@ steps:
       MJ_API_KEY_PRIVATE:
         from_secret: drone_mj_private_key
     commands:
-      - apk add --update nodejs npm
-      - apk add --no-cache python3 make g++
-      - sleep 5 # give docker enough time to start
       - cd deployment-dapp
       - npm ci
       - npm run deploy-dapp
 
-#pipeline to publish sell order
 ---
+# pipeline to publish sell order
 kind: pipeline
 type: docker
 name: deploy-dapp-on-bellecour
@@ -386,18 +381,6 @@ trigger:
     - develop
     - main
 
-services:
-  - name: docker
-    image: docker:dind
-    privileged: true
-    volumes:
-      - name: dockersock
-        path: /var/run
-
-volumes:
-  - name: dockersock
-    temp: {}
-
 steps:
   - name: compile
     image: node:18
@@ -408,11 +391,8 @@ steps:
       - npm run build
 
   - name: publish sell order
-    image: docker:dind
+    image: node:18
     pull: always
-    volumes:
-      - name: dockersock
-        path: /var/run
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
       WALLET_ADDRESS_DEV:
@@ -423,14 +403,7 @@ steps:
         from_secret: web3mail-dapp-owner-prod-address
       WALLET_PRIVATE_KEY_PROD:
         from_secret: web3mail-dapp-owner-prod-privatekey
-      MJ_API_KEY_PUBLIC:
-        from_secret: drone_mj_public_key
-      MJ_API_KEY_PRIVATE:
-        from_secret: drone_mj_private_key
     commands:
-      - apk add --update nodejs npm
-      - apk add --no-cache python3 make g++
-      - sleep 5 # give docker enough time to start
       - cd deployment-dapp
       - npm ci
       - npm run publish-sell-order

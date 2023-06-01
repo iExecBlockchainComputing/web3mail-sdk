@@ -1,9 +1,11 @@
-import { IExec, utils } from "iexec";
-import { HOST, HOST_SMS_DEBUG_GRAMINE, HOST_SMS_DEBUG_SCONE } from "../config/config.js";
+import { IExec, utils } from 'iexec';
+import {
+  HOST,
+  HOST_SMS_DEBUG_GRAMINE,
+  HOST_SMS_DEBUG_SCONE,
+} from '../config/config.js';
 
-export const initIexecConstructorDev = async (
-  privateKey: string
-): Promise<IExec> => {
+export const initIexecConstructorDev = (privateKey: string): IExec => {
   const ethProvider = utils.getSignerFromPrivateKey(HOST, privateKey);
   const iexec = new IExec(
     {
@@ -19,9 +21,7 @@ export const initIexecConstructorDev = async (
   return iexec;
 };
 
-export const initIexecConstructorProd = async (
-  privateKey: string
-): Promise<IExec> => {
+export const initIexecConstructorProd = (privateKey: string): IExec => {
   const ethProvider = utils.getSignerFromPrivateKey(HOST, privateKey);
   const iexec = new IExec({
     ethProvider,

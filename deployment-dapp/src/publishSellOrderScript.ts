@@ -18,16 +18,9 @@ const main = async () => {
   const walletPrivateKeyDev = process.env.WALLET_PRIVATE_KEY_DEV;
   const walletAddressProd = process.env.WALLET_ADDRESS_PROD;
   const walletPrivateKeyProd = process.env.WALLET_PRIVATE_KEY_PROD;
-  const mjPublicKey = process.env.MJ_API_KEY_PUBLIC;
-  const mjPrivateKey = process.env.MJ_API_KEY_PRIVATE;
 
-  if (!droneTarget) return console.log("STEP: Didn't succeed to get drone target"); // If drone target is not set, do not continue
-  if (!walletAddressDev) return console.log("STEP: Didn't succeed to get wallet address dev"); // If wallet address is not set, do not continue
-  if (!walletPrivateKeyDev) return console.log("STEP: Didn't succeed to get wallet private key dev"); // If wallet private key is not set, do not continue
-  if (!walletAddressProd) return console.log("STEP: Didn't succeed to get wallet address prod"); // If wallet address is not set, do not continue
-  if (!walletPrivateKeyProd) return console.log("STEP: Didn't succeed to get wallet private key prod"); // If wallet private key is not set, do not continue
-  if (!mjPublicKey) return console.log("STEP: Didn't succeed to get mailjet public key"); // If mailjet public key is not set, do not continue
-  if (!mjPrivateKey) return console.log("STEP: Didn't succeed to get mailjet private key"); // If mailjet private key is not set, do not continue
+  if (!droneTarget)
+    return console.log("STEP: Didn't succeed to get drone target"); // If drone target is not set, do not continue
 
   //chose correct env variables
   let chosenWalletAddress;
@@ -42,11 +35,13 @@ const main = async () => {
     chosenPrivateKey = walletPrivateKeyProd;
     chosenEnsName = WEB3_MAIL_ENS_NAME_PROD;
   }
-  
-  if (!chosenWalletAddress) return console.log("STEP: Didn't succeed to get wallet address"); // If wallet address is not set, do not continue
-  if (!chosenPrivateKey) return console.log("STEP: Didn't succeed to get wallet private key"); // If wallet private key is not set, do not continue
-  if (!chosenEnsName) return console.log("STEP: Didn't succeed to get ens name"); // If ens name is not set, do not continue
 
+  if (!chosenWalletAddress)
+    return console.log("STEP: Didn't succeed to get wallet address"); // If wallet address is not set, do not continue
+  if (!chosenPrivateKey)
+    return console.log("STEP: Didn't succeed to get wallet private key"); // If wallet private key is not set, do not continue
+  if (!chosenEnsName)
+    return console.log("STEP: Didn't succeed to get ens name"); // If ens name is not set, do not continue
 
   //init iexec library
   let iexec;

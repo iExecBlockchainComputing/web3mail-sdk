@@ -7,16 +7,17 @@ import {
 import { publishSellOrder } from './singleFunction/publishSellOrder.js';
 import { pushSecret } from './singleFunction/pushSecret.js';
 import {
+  DOCKER_IMAGE_DEV_TAG,
+  DOCKER_IMAGE_NAMESPACE,
+  DOCKER_IMAGE_PROD_TAG,
+  DOCKER_IMAGE_REPOSITORY,
   DRONE_TARGET_DEPLOY_DEV,
   DRONE_TARGET_DEPLOY_PROD,
   MJ_SENDER,
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,
 } from './config/config.js';
-import {
-  getDockerImageChecksum,
-  getFingerprintFromScone,
-} from './utils/utils.js';
+import { getDockerImageChecksum, getSconeFingerprint } from './utils/utils.js';
 
 const main = async () => {
   // get env variables from drone secret
@@ -28,13 +29,12 @@ const main = async () => {
   const mjPublicKey = process.env.MJ_API_KEY_PUBLIC;
   const mjPrivateKey = process.env.MJ_API_KEY_PRIVATE;
 
-  if (!droneTarget) return console.log("STEP: Didn't succeed to get drone target"); // If drone target is not set, do not continue
-  if (!walletAddressDev) return console.log("STEP: Didn't succeed to get wallet address dev"); // If wallet address is not set, do not continue
-  if (!walletPrivateKeyDev) return console.log("STEP: Didn't succeed to get wallet private key dev"); // If wallet private key is not set, do not continue
-  if (!walletAddressProd) return console.log("STEP: Didn't succeed to get wallet address prod"); // If wallet address is not set, do not continue
-  if (!walletPrivateKeyProd) return console.log("STEP: Didn't succeed to get wallet private key prod"); // If wallet private key is not set, do not continue
-  if (!mjPublicKey) return console.log("STEP: Didn't succeed to get mailjet public key"); // If mailjet public key is not set, do not continue
-  if (!mjPrivateKey) return console.log("STEP: Didn't succeed to get mailjet private key"); // If mailjet private key is not set, do not continue
+  if (!droneTarget)
+    return console.log("STEP: Didn't succeed to get drone target"); // If drone target is not set, do not continue
+  if (!mjPublicKey)
+    return console.log("STEP: Didn't succeed to get mailjet public key"); // If mailjet public key is not set, do not continue
+  if (!mjPrivateKey)
+    return console.log("STEP: Didn't succeed to get mailjet private key"); // If mailjet private key is not set, do not continue
 
   //chose correct env variables
   let chosenWalletAddress;
@@ -49,26 +49,38 @@ const main = async () => {
     chosenPrivateKey = walletPrivateKeyProd;
     chosenEnsName = WEB3_MAIL_ENS_NAME_PROD;
   }
-  
-  if (!chosenWalletAddress) return console.log("STEP: Didn't succeed to get wallet address"); // If wallet address is not set, do not continue
-  if (!chosenPrivateKey) return console.log("STEP: Didn't succeed to get wallet private key"); // If wallet private key is not set, do not continue
-  if (!chosenEnsName) return console.log("STEP: Didn't succeed to get ens name"); // If ens name is not set, do not continue
 
+  if (!chosenWalletAddress)
+    return console.log("STEP: Didn't succeed to get wallet address"); // If wallet address is not set, do not continue
+  if (!chosenPrivateKey)
+    return console.log("STEP: Didn't succeed to get wallet private key"); // If wallet private key is not set, do not continue
+  if (!chosenEnsName)
+    return console.log("STEP: Didn't succeed to get ens name"); // If ens name is not set, do not continue
 
-  //init iexec library
   let iexec;
   if (droneTarget === DRONE_TARGET_DEPLOY_DEV) {
-    iexec = await initIexecConstructorDev(chosenPrivateKey);
+    iexec = initIexecConstructorDev(chosenPrivateKey);
   } else if (droneTarget === DRONE_TARGET_DEPLOY_PROD) {
-    iexec = await initIexecConstructorProd(chosenPrivateKey);
+    iexec = initIexecConstructorProd(chosenPrivateKey);
   }
 
   if (!iexec) return console.log("STEP: Didn't succeed to init iexec"); // If iexec library was not init, do not continue
 
+  let dockerImageTag;
+  if (droneTarget === DRONE_TARGET_DEPLOY_DEV) {
+    dockerImageTag = DOCKER_IMAGE_DEV_TAG;
+  } else if (droneTarget === DRONE_TARGET_DEPLOY_PROD) {
+    dockerImageTag = DOCKER_IMAGE_PROD_TAG;
+  }
+
   //get checksum of the docker image from docker hub
   let checksum;
   try {
-    checksum = await getDockerImageChecksum();
+    checksum = await getDockerImageChecksum(
+      DOCKER_IMAGE_NAMESPACE,
+      DOCKER_IMAGE_REPOSITORY,
+      dockerImageTag
+    );
   } catch (error) {
     console.log(error);
   }
@@ -78,7 +90,7 @@ const main = async () => {
   //get fingerprint of the docker image from docker hub
   let fingerprint;
   try {
-    fingerprint = await getFingerprintFromScone();
+    fingerprint = await getSconeFingerprint();
   } catch (error) {
     console.log(error);
   }
@@ -87,12 +99,13 @@ const main = async () => {
     return console.log("STEP: Didn't succeed to get fingerprint"); // If fingerprint is not set, do not continue
 
   //deploy app
-  const appAddress = await deployApp(
-    iexec,
-    chosenWalletAddress,
+  const appAddress = await deployApp({
+    iexec: iexec,
+    owner: chosenWalletAddress,
+    multiaddr: `${DOCKER_IMAGE_NAMESPACE}/${DOCKER_IMAGE_REPOSITORY}:${dockerImageTag}`,
     checksum,
-    fingerprint
-  );
+    fingerprint,
+  });
 
   if (!appAddress)
     return console.log("STEP: Didn't succeed to deploy App contract"); // If the app was not deployed, do not continue
