@@ -1,9 +1,11 @@
 import { IExec } from 'iexec';
 import { fetchMyContacts } from './fetchMyContacts.js';
-import { Contact } from './types.js';
+import { Contact, SendEmailParams, SendEmailResponse } from './types.js';
+import sendEmail from './sendEmail.js';
 
 export class IExecWeb3Mail {
   fetchMyContacts: () => Promise<Contact[]>;
+  sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
 
   constructor(
     ethProvider: any,
@@ -19,5 +21,10 @@ export class IExecWeb3Mail {
       throw Error('Unsupported ethProvider');
     }
     this.fetchMyContacts = () => fetchMyContacts({ iexec });
+    this.sendEmail = (args: SendEmailParams) =>
+      sendEmail({
+        ...args,
+        iexec,
+      });
   }
 }
