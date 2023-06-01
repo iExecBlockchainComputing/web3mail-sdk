@@ -1,4 +1,4 @@
-import { IExec, TeeFramework } from 'iexec';
+import { IExec } from 'iexec';
 import {
   APP_NAME,
   APP_TYPE,
@@ -30,7 +30,7 @@ export const deployApp = async ({
   );
   const fingerprint = await loadSconeFingerprint();
   const mrenclave = {
-    framework: 'scone' as TeeFramework,
+    framework: 'SCONE',
     version: 'v5',
     entrypoint: 'node /app/app.js',
     heapSize: 1073741824,
