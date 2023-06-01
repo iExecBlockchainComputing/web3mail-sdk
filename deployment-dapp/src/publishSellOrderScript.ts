@@ -1,7 +1,4 @@
-import {
-  initIexecConstructorDev,
-  initIexecConstructorProd,
-} from './singleFunction/initConstructor.js';
+import { getIExec } from './singleFunction/getIExec.js';
 import { publishSellOrder } from './singleFunction/publishSellOrder.js';
 import { resolveName } from './singleFunction/resolveName.js';
 import {
@@ -44,13 +41,7 @@ const main = async () => {
     return console.log("STEP: Didn't succeed to get ens name"); // If ens name is not set, do not continue
 
   //init iexec library
-  let iexec;
-  if (droneTarget === DRONE_TARGET_SELL_ORDER_DEV) {
-    iexec = await initIexecConstructorDev(chosenPrivateKey);
-  } else if (droneTarget === DRONE_TARGET_SELL_ORDER_PROD) {
-    iexec = await initIexecConstructorProd(chosenPrivateKey);
-  }
-
+  const iexec = getIExec(chosenPrivateKey);
   if (!iexec) return console.log("STEP: Didn't succeed to init iexec"); // If iexec library was not init, do not continue
 
   //resolve app ENS name

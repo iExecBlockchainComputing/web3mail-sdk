@@ -1,9 +1,6 @@
 import { configureEnsName } from './singleFunction/configureEnsName.js';
 import { deployApp } from './singleFunction/deployApp.js';
-import {
-  initIexecConstructorDev,
-  initIexecConstructorProd,
-} from './singleFunction/initConstructor.js';
+import { getIExec } from './singleFunction/getIExec.js';
 import { publishSellOrder } from './singleFunction/publishSellOrder.js';
 import { pushSecret } from './singleFunction/pushSecret.js';
 import {
@@ -57,13 +54,7 @@ const main = async () => {
   if (!chosenEnsName)
     return console.log("STEP: Didn't succeed to get ens name"); // If ens name is not set, do not continue
 
-  let iexec;
-  if (droneTarget === DRONE_TARGET_DEPLOY_DEV) {
-    iexec = initIexecConstructorDev(chosenPrivateKey);
-  } else if (droneTarget === DRONE_TARGET_DEPLOY_PROD) {
-    iexec = initIexecConstructorProd(chosenPrivateKey);
-  }
-
+  const iexec = getIExec(chosenPrivateKey);
   if (!iexec) return console.log("STEP: Didn't succeed to init iexec"); // If iexec library was not init, do not continue
 
   let dockerImageTag;
