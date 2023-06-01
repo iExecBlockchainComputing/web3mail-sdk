@@ -30,7 +30,7 @@ export const deployApp = async ({
   );
   const fingerprint = await loadSconeFingerprint();
   const mrenclave = {
-    framework: 'scone',
+    framework: 'SCONE' as any, // workaround framework not auto capitalized
     version: 'v5',
     entrypoint: 'node /app/app.js',
     heapSize: 1073741824,
