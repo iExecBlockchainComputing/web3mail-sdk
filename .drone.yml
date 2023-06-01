@@ -360,6 +360,7 @@ steps:
       WALLET_PRIVATE_KEY_PROD:
         from_secret: web3mail-dapp-owner-prod-privatekey
     commands:
+      - cd deployment-dapp
       - npm run deploy-dapp
 
   - name: push dapp secret
@@ -376,6 +377,7 @@ steps:
       MJ_API_KEY_PRIVATE:
         from_secret: drone_mj_private_key
     commands:
+      - cd deployment-dapp
       - npm run push-dapp-secret
 
   - name: publish sell order
@@ -388,6 +390,7 @@ steps:
       WALLET_PRIVATE_KEY_PROD:
         from_secret: web3mail-dapp-owner-prod-privatekey
     commands:
+      - cd deployment-dapp
       - npm run publish-sell-order
 
   - name: configure ENS
@@ -408,12 +411,13 @@ steps:
       MJ_API_KEY_PRIVATE:
         from_secret: drone_mj_private_key
     commands:
+      - cd deployment-dapp
       - npm run configure-ens
 ---
 # pipeline to publish sell order
 kind: pipeline
 type: docker
-name: deploy-dapp-on-bellecour
+name: publish-apporder
 
 trigger:
   event:
@@ -443,4 +447,5 @@ steps:
       WALLET_PRIVATE_KEY_PROD:
         from_secret: web3mail-dapp-owner-prod-privatekey
     commands:
+      - cd deployment-dapp
       - npm run publish-sell-order
