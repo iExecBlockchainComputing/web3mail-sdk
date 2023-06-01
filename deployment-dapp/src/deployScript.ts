@@ -1,6 +1,5 @@
 import { configureEnsName } from './singleFunction/configureEnsName.js';
 import { deployApp } from './singleFunction/deployApp.js';
-import { getIExec } from './singleFunction/getIExec.js';
 import { publishSellOrder } from './singleFunction/publishSellOrder.js';
 import { pushSecret } from './singleFunction/pushSecret.js';
 import {
@@ -14,7 +13,11 @@ import {
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,
 } from './config/config.js';
-import { getDockerImageChecksum, getSconeFingerprint } from './utils/utils.js';
+import {
+  getDockerImageChecksum,
+  getSconeFingerprint,
+  getIExec,
+} from './utils/utils.js';
 
 const main = async () => {
   // get env variables from drone secret

@@ -1,4 +1,4 @@
-import { getIExec } from './singleFunction/getIExec.js';
+import { getIExec } from './utils/utils.js';
 import { publishSellOrder } from './singleFunction/publishSellOrder.js';
 import { resolveName } from './singleFunction/resolveName.js';
 import {
