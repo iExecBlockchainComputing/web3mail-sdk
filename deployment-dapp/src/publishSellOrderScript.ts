@@ -19,17 +19,25 @@ const main = async () => {
     !DRONE_DEPLOY_TO ||
     ![
       DRONE_TARGET_DEPLOY_DEV,
-      DRONE_TARGET_DEPLOY_PROD,
       DRONE_TARGET_SELL_ORDER_DEV,
+      DRONE_TARGET_DEPLOY_PROD,
       DRONE_TARGET_SELL_ORDER_PROD,
     ].includes(DRONE_DEPLOY_TO)
   )
     throw Error(`Invalid promote target ${DRONE_DEPLOY_TO}`);
 
   let privateKey;
-  if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_DEV) {
+  if (
+    [DRONE_TARGET_DEPLOY_DEV, DRONE_TARGET_SELL_ORDER_DEV].includes(
+      DRONE_DEPLOY_TO
+    )
+  ) {
     privateKey = WALLET_PRIVATE_KEY_DEV;
-  } else if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_PROD) {
+  } else if (
+    [DRONE_TARGET_DEPLOY_PROD, DRONE_TARGET_SELL_ORDER_PROD].includes(
+      DRONE_DEPLOY_TO
+    )
+  ) {
     privateKey = WALLET_PRIVATE_KEY_PROD;
   }
 
