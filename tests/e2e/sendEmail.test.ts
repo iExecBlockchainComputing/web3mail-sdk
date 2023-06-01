@@ -42,7 +42,6 @@ describe('web3mail.sendEmail()', () => {
         numberOfAccess: 10000,
       });
       const emailContent = {
-        userAddress: consumerWallet.address,
         mailObject: 'e2e mail object for test',
         mailContent: 'e2e mail content for test',
         protectedData: protectedData.address,

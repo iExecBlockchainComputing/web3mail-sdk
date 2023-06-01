@@ -14,7 +14,6 @@ export type Contact = {
   accessGrantTimestamp: TimeStamp;
 };
 export type SendEmailParams = {
-  userAddress: Address;
   mailObject: string;
   mailContent: string;
   protectedData: Address;
