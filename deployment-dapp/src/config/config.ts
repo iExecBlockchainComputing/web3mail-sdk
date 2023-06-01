@@ -18,7 +18,7 @@ export const WEB3_MAIL_ENS_NAME_DEV = 'web3mail-dev.apps.iexec.eth';
 export const WEB3_MAIL_ENS_NAME_PROD = 'web3mail.apps.iexec.eth';
 
 //secret parameters
-export const MJ_SENDER = 'team-product@iex.ec';
+export const MJ_SENDER = 'web3mail@iex.ec';
 
 export const DOCKER_IMAGE =
   'iexechub/web3mail-dapp:0.0.0-sconify-5.7.5-v9-production';
