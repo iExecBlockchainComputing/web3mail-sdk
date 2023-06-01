@@ -1,36 +1,51 @@
-import { Bytes32, IExec, TeeFramework } from 'iexec';
-import { APP_NAME, APP_TYPE, FRAMEWORK } from '../config/config.js';
+import { IExec, TeeFramework } from 'iexec';
+import {
+  APP_NAME,
+  APP_TYPE,
+  DOCKER_IMAGE_NAMESPACE,
+  DOCKER_IMAGE_REPOSITORY,
+} from '../config/config.js';
+import {
+  getDockerImageChecksum,
+  loadSconeFingerprint,
+} from '../utils/utils.js';
 
 export const deployApp = async ({
   iexec,
-  owner,
-  multiaddr,
-  checksum,
-  fingerprint,
+  dockerNamespace = DOCKER_IMAGE_NAMESPACE,
+  dockerRepository = DOCKER_IMAGE_REPOSITORY,
+  dockerTag,
 }: {
   iexec: IExec;
-  owner: string;
-  multiaddr: string;
-  checksum: Bytes32;
-  fingerprint: string;
+  dockerNamespace?: string;
+  dockerRepository?: string;
+  dockerTag: string;
 }): Promise<string> => {
   const name = APP_NAME;
   const type = APP_TYPE;
-  const framework: TeeFramework = FRAMEWORK;
+  const checksum = await getDockerImageChecksum(
+    dockerNamespace,
+    dockerRepository,
+    dockerTag
+  );
+  const fingerprint = await loadSconeFingerprint();
   const mrenclave = {
-    framework: framework,
+    framework: 'scone' as TeeFramework,
     version: 'v5',
     entrypoint: 'node /app/app.js',
     heapSize: 1073741824,
     fingerprint: fingerprint,
   };
-  const deployResult = await iexec.app.deployApp({
-    owner,
+  const app = {
+    owner: await iexec.wallet.getAddress(),
     name,
     type,
-    multiaddr,
+    multiaddr: `${dockerNamespace}/${dockerRepository}:${dockerTag}`,
     checksum,
     mrenclave,
-  });
-  return deployResult.address;
+  };
+  console.log(`Deploying app:\n${JSON.stringify(app, undefined, 2)}`);
+  const { address, txHash } = await iexec.app.deployApp(app);
+  console.log(`Deployed app at ${address} (tx: ${txHash})`);
+  return address;
 };

@@ -325,7 +325,7 @@ steps:
   - name: get scone fingerprint (dev)
     image: iexechub/web3mail-dapp:dev-${DRONE_COMMIT}-sconify-5.7.5-v9-production
     commands:
-      - SCONE_HASH=1 node > .scone-fingerprint
+      - SCONE_HASH=1 node > deployment-dapp/.scone-fingerprint
     when:
       target:
         - dapp-dev
@@ -336,14 +336,61 @@ steps:
     # /!\: maintain the version here
     image: iexechub/web3mail-dapp:0.0.0-sconify-5.7.5-v9-production
     commands:
-      - SCONE_HASH=1 node > .scone-fingerprint
+      - SCONE_HASH=1 node > deployment-dapp/.scone-fingerprint
     when:
       target:
         - dapp-production
       branch:
         - main
 
+  - name: install deps
+    image: node:18
+    pull: always
+    commands:
+      - cd deployment-dapp
+      - npm ci
+
   - name: deploy dapp contract
+    image: node:18
+    pull: always
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+    commands:
+      - npm run deploy-dapp
+
+  - name: push dapp secret
+    image: node:18
+    pull: always
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+      MJ_API_KEY_PUBLIC:
+        from_secret: drone_mj_public_key
+      MJ_API_KEY_PRIVATE:
+        from_secret: drone_mj_private_key
+    commands:
+      - npm run push-dapp-secret
+
+  - name: publish sell order
+    image: node:18
+    pull: always
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+    commands:
+      - npm run publish-sell-order
+
+  - name: configure ENS
     image: node:18
     pull: always
     environment:
@@ -361,10 +408,7 @@ steps:
       MJ_API_KEY_PRIVATE:
         from_secret: drone_mj_private_key
     commands:
-      - cd deployment-dapp
-      - npm ci
-      - npm run deploy-dapp
-
+      - npm run configure-ens
 ---
 # pipeline to publish sell order
 kind: pipeline
@@ -382,28 +426,21 @@ trigger:
     - main
 
 steps:
-  - name: compile
+  - name: install deps
     image: node:18
     pull: always
     commands:
       - cd deployment-dapp
       - npm ci
-      - npm run build
 
   - name: publish sell order
     image: node:18
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
-      WALLET_ADDRESS_DEV:
-        from_secret: web3mail-dapp-owner-dev-address
       WALLET_PRIVATE_KEY_DEV:
         from_secret: web3mail-dapp-owner-dev-privatekey
-      WALLET_ADDRESS_PROD:
-        from_secret: web3mail-dapp-owner-prod-address
       WALLET_PRIVATE_KEY_PROD:
         from_secret: web3mail-dapp-owner-prod-privatekey
     commands:
-      - cd deployment-dapp
-      - npm ci
       - npm run publish-sell-order

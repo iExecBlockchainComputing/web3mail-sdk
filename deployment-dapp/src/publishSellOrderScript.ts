@@ -1,57 +1,63 @@
-import { getIExec } from './utils/utils.js';
+import { getIExec, loadAppAddress } from './utils/utils.js';
 import { publishSellOrder } from './singleFunction/publishSellOrder.js';
 import { resolveName } from './singleFunction/resolveName.js';
 import {
   DRONE_TARGET_SELL_ORDER_DEV,
   DRONE_TARGET_SELL_ORDER_PROD,
+  DRONE_TARGET_DEPLOY_DEV,
+  DRONE_TARGET_DEPLOY_PROD,
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,
 } from './config/config.js';
 
 const main = async () => {
-  // get env variables from drone secret
-  const droneTarget = process.env.DRONE_DEPLOY_TO;
-  const walletAddressDev = process.env.WALLET_ADDRESS_DEV;
-  const walletPrivateKeyDev = process.env.WALLET_PRIVATE_KEY_DEV;
-  const walletAddressProd = process.env.WALLET_ADDRESS_PROD;
-  const walletPrivateKeyProd = process.env.WALLET_PRIVATE_KEY_PROD;
+  // get env variables from drone
+  const { DRONE_DEPLOY_TO, WALLET_PRIVATE_KEY_DEV, WALLET_PRIVATE_KEY_PROD } =
+    process.env;
 
-  if (!droneTarget)
-    return console.log("STEP: Didn't succeed to get drone target"); // If drone target is not set, do not continue
+  if (
+    !DRONE_DEPLOY_TO ||
+    ![
+      DRONE_TARGET_DEPLOY_DEV,
+      DRONE_TARGET_DEPLOY_PROD,
+      DRONE_TARGET_SELL_ORDER_DEV,
+      DRONE_TARGET_SELL_ORDER_PROD,
+    ].includes(DRONE_DEPLOY_TO)
+  )
+    throw Error(`Invalid promote target ${DRONE_DEPLOY_TO}`);
 
-  //chose correct env variables
-  let chosenWalletAddress;
-  let chosenPrivateKey;
-  let chosenEnsName;
-  if (droneTarget === DRONE_TARGET_SELL_ORDER_DEV) {
-    chosenWalletAddress = walletAddressDev;
-    chosenPrivateKey = walletPrivateKeyDev;
-    chosenEnsName = WEB3_MAIL_ENS_NAME_DEV;
-  } else if (droneTarget === DRONE_TARGET_SELL_ORDER_PROD) {
-    chosenWalletAddress = walletAddressProd;
-    chosenPrivateKey = walletPrivateKeyProd;
-    chosenEnsName = WEB3_MAIL_ENS_NAME_PROD;
+  let privateKey;
+  if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_DEV) {
+    privateKey = WALLET_PRIVATE_KEY_DEV;
+  } else if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_PROD) {
+    privateKey = WALLET_PRIVATE_KEY_PROD;
   }
 
-  if (!chosenWalletAddress)
-    return console.log("STEP: Didn't succeed to get wallet address"); // If wallet address is not set, do not continue
-  if (!chosenPrivateKey)
-    return console.log("STEP: Didn't succeed to get wallet private key"); // If wallet private key is not set, do not continue
-  if (!chosenEnsName)
-    return console.log("STEP: Didn't succeed to get ens name"); // If ens name is not set, do not continue
+  if (!privateKey)
+    throw Error(`Failed to get privateKey for target ${DRONE_DEPLOY_TO}`);
 
-  //init iexec library
-  const iexec = getIExec(chosenPrivateKey);
-  if (!iexec) return console.log("STEP: Didn't succeed to init iexec"); // If iexec library was not init, do not continue
+  const iexec = getIExec(privateKey);
 
-  //resolve app ENS name
-  const appAddress = await resolveName(iexec, chosenEnsName);
+  const appAddress = await loadAppAddress().catch(() => {
+    console.log('No app address found falling back to ENS');
+    let ensName;
+    if (DRONE_DEPLOY_TO === DRONE_TARGET_SELL_ORDER_DEV) {
+      ensName = WEB3_MAIL_ENS_NAME_DEV;
+    } else if (DRONE_DEPLOY_TO === DRONE_TARGET_SELL_ORDER_PROD) {
+      ensName = WEB3_MAIL_ENS_NAME_PROD;
+    }
+    if (!ensName)
+      throw Error(`Failed to get ens name for target ${DRONE_DEPLOY_TO}`);
+    return resolveName(iexec, ensName);
+  });
 
-  if (!appAddress)
-    return console.log("STEP: Didn't succeed to deploy App contract"); // If the app was not deployed, do not continue
+  if (!appAddress) throw Error('Failed to get app address'); // If the app was not deployed, do not continue
 
   //publish sell order for Tee app (scone)
   await publishSellOrder(iexec, appAddress);
 };
 
-main();
+main().catch((e) => {
+  console.log(e);
+  process.exit(1);
+});

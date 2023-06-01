@@ -1,16 +1,20 @@
-import { deployApp } from './singleFunction/deployApp.js';
 import {
-  DOCKER_IMAGE_DEV_TAG,
-  DOCKER_IMAGE_PROD_TAG,
   DRONE_TARGET_DEPLOY_DEV,
   DRONE_TARGET_DEPLOY_PROD,
+  MJ_SENDER,
 } from './config/config.js';
-import { getIExec, saveAppAddress } from './utils/utils.js';
+import { getIExec, loadAppAddress } from './utils/utils.js';
+import { pushSecret } from './singleFunction/pushSecret.js';
 
 const main = async () => {
   // get env variables from drone
-  const { DRONE_DEPLOY_TO, WALLET_PRIVATE_KEY_DEV, WALLET_PRIVATE_KEY_PROD } =
-    process.env;
+  const {
+    DRONE_DEPLOY_TO,
+    WALLET_PRIVATE_KEY_DEV,
+    WALLET_PRIVATE_KEY_PROD,
+    MJ_API_KEY_PUBLIC,
+    MJ_API_KEY_PRIVATE,
+  } = process.env;
 
   if (
     !DRONE_DEPLOY_TO ||
@@ -18,6 +22,11 @@ const main = async () => {
       DRONE_DEPLOY_TO !== DRONE_TARGET_DEPLOY_PROD)
   )
     throw Error(`Invalid promote target ${DRONE_DEPLOY_TO}`);
+
+  if (!MJ_API_KEY_PUBLIC) throw Error('Missing env MJ_API_KEY_PUBLIC');
+  if (!MJ_API_KEY_PRIVATE) throw Error('Missing env MJ_API_KEY_PRIVATE');
+
+  const appAddress = await loadAppAddress();
 
   let privateKey;
   if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_DEV) {
@@ -31,19 +40,14 @@ const main = async () => {
 
   const iexec = getIExec(privateKey);
 
-  let dockerImageTag;
-  if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_DEV) {
-    dockerImageTag = DOCKER_IMAGE_DEV_TAG;
-  } else if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_PROD) {
-    dockerImageTag = DOCKER_IMAGE_PROD_TAG;
-  }
-
   //deploy app
-  const address = await deployApp({
-    iexec,
-    dockerTag: dockerImageTag,
+  //push app secret to the secret management
+  const jsonSecret = JSON.stringify({
+    MJ_API_KEY_PUBLIC,
+    MJ_API_KEY_PRIVATE,
+    MJ_SENDER,
   });
-  await saveAppAddress(address);
+  await pushSecret(iexec, appAddress, jsonSecret);
 };
 
 main().catch((e) => {

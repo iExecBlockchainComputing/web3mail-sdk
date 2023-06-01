@@ -5,10 +5,10 @@
   "type": "module",
   "main": "deploy.js",
   "scripts": {
-    "build": "tsc",
     "deploy-dapp": "ts-node --esm ./src/deployScript.ts",
+    "push-dapp-secret": "ts-node --esm ./src/pushSecretScript.ts",
     "publish-sell-order": "ts-node --esm ./src/publishSellOrderScript.ts",
-    "start": "ts-node --esm ./src/index.ts"
+    "configure-ens": "ts-node --esm ./src/configureEnsNameScript.ts"
   },
   "keywords": [],
   "author": "",

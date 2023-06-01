@@ -10,11 +10,11 @@ export const getIExec = (privateKey: string): IExec => {
   return iexec;
 };
 
-export async function getDockerImageChecksum(
+export const getDockerImageChecksum = async (
   namespace: string,
   repository: string,
   tag: string
-): Promise<string | null> {
+): Promise<string> => {
   try {
     const manifest = await fetch(
       `https://hub.docker.com/v2/namespaces/${namespace}/repositories/${repository}/tags/${tag}`
@@ -24,20 +24,38 @@ export async function getDockerImageChecksum(
       return digest.replace('sha256:', '0x');
     }
   } catch (err) {
-    console.error(
+    throw Error(
       `Error inspecting image ${namespace}/${repository}:${tag}: ${err}`
     );
-    return null;
   }
-}
+};
 
-// read from previously generated file
-export async function getSconeFingerprint(): Promise<string | null> {
+/**
+ * read the scone fingerprint from previously generated `.scone-fingerprint`
+ */
+export const loadSconeFingerprint = async (): Promise<string> => {
   try {
-    const fingerprint = await fs.readFile('../.scone-fingerprint', 'utf-8');
+    const fingerprint = await fs.readFile('.scone-fingerprint', 'utf8');
     return fingerprint.trim();
   } catch (err) {
-    console.error(`Error reading .scone-fingerprint: ${err}`);
-    return null;
+    throw Error(`Error reading .scone-fingerprint: ${err}`);
   }
-}
+};
+
+const APP_ADDRESS_FILE = '.app-address';
+/**
+ * save the app address in `.app-address` file for next usages
+ */
+export const saveAppAddress = async (address: string) =>
+  fs.writeFile(APP_ADDRESS_FILE, address);
+/**
+ * read the app address from previously generated `.appAddress`
+ */
+export const loadAppAddress = async () => {
+  try {
+    const fingerprint = await fs.readFile(APP_ADDRESS_FILE, 'utf8');
+    return fingerprint.trim();
+  } catch (err) {
+    throw Error(`Error reading .app-address: ${err}`);
+  }
+};
