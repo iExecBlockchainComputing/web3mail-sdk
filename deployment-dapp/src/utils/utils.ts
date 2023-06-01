@@ -25,7 +25,7 @@ export async function getDockerImageChecksum(
 export async function getSconeFingerprint(): Promise<string | null> {
   try {
     const fingerprint = await fs.readFile('../.scone-fingerprint', 'utf-8');
-    return fingerprint;
+    return fingerprint.trim();
   } catch (err) {
     console.error(`Error reading .scone-fingerprint: ${err}`);
     return null;
