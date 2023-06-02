@@ -8,7 +8,7 @@ export IEXEC_TAG="tee,scone"
 # Install iExec CLI if not already installed
 if ! command -v iexec &> /dev/null; then
   echo "iExec CLI not found. Installing iExec CLI..."
-  npm install -g iexec
+  sudo npm install -g iexec
 fi
 
 
@@ -37,7 +37,7 @@ echo
 echo "Importing your wallet to iexec cli from the .env File, please define your wallet password, please memorize the password you will use it later on"
 echo
 echo "**************************"
-iexec wallet import "$PRIVATE_KEY"
+iexec wallet import $PRIVATE_KEY
 
 
 
@@ -47,7 +47,7 @@ echo
 echo "Initializing iExec environment..." 
 echo
 echo "**************************"
-iexec init --skip-wallet
+sudo iexec init --skip-wallet
 
 # Update the debug SMG
 sms_debug='{"sms": { "scone": "https://sms.scone-debug.v8-bellecour.iex.ec" }'
@@ -56,8 +56,16 @@ echo
 echo "Updating the debug SMG..."
 echo
 echo "**************************"
-chain_contents=$(cat chain.json)
-sed 's|"bellecour": {|"bellecour": '"$sms_debug"'|g' chain.json > tmp.json && mv tmp.json chain.json
+
+# Check if sms_debug exists in chain.json
+if grep -qF "$sms_debug" chain.json; then
+  echo "sms_debug already exists in chain.json. No changes needed."
+else
+  # Modify chain.json using sed
+  chain_contents=$(cat chain.json)
+  sed 's|"bellecour": {|"bellecour": '"$sms_debug"'|g' chain.json > tmp.json && mv tmp.json chain.json
+  echo "sms_debug added to chain.json."
+fi
 
 
 # Deploy the email as a data to the Blockchain
@@ -67,8 +75,17 @@ echo "Deploying email data to the Blockchain..."
 echo
 echo "**************************"
 cd "datadeployer"
+echo "**************************"
+echo
 echo "installing data deployer dependencies"
+echo
+echo "**************************"
+echo "npm version"
+npm -v
+echo "node version"
+node -v
 npm install
+
 output=$(node index.js)
 
 # Extract the address variable using grep and awk
