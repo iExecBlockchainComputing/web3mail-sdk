@@ -1,6 +1,7 @@
 import { IExecDataProtector } from '@iexec/dataprotector';
 import dotenv from 'dotenv';
 import { NULL_ADDRESS, getSignerFromPrivateKey } from 'iexec/utils';
+import { SMS_URL, WEB3_MAIL_DAPP_ADDRESS } from './config.js';
 const main = async () => {
   dotenv.config();
   const private_Key = process.env.PRIVATE_KEY;
@@ -12,7 +13,7 @@ const main = async () => {
 
   const dataProtector = new IExecDataProtector(ethProvider, {
     iexecOptions: {
-      smsURL: { scone: 'https://sms.scone-debug.v8-bellecour.iex.ec' },
+      smsURL: { scone: SMS_URL },
     },
   });
 
@@ -23,7 +24,7 @@ const main = async () => {
     name: 'my e-mail',
   });
   const grantedAccess = await dataProtector.grantAccess({
-    authorizedApp: '0x3ef531f670B12dc21490Fff2f81c20A59e17d254',
+    authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
     protectedData: address,
     authorizedUser: NULL_ADDRESS,
   });
