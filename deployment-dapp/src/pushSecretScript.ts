@@ -1,7 +1,6 @@
 import {
   DRONE_TARGET_DEPLOY_DEV,
   DRONE_TARGET_DEPLOY_PROD,
-  MJ_SENDER,
 } from './config/config.js';
 import { getIExec, loadAppAddress } from './utils/utils.js';
 import { pushSecret } from './singleFunction/pushSecret.js';
@@ -14,6 +13,7 @@ const main = async () => {
     WALLET_PRIVATE_KEY_PROD,
     MJ_APIKEY_PUBLIC,
     MJ_APIKEY_PRIVATE,
+    MJ_SENDER,
   } = process.env;
 
   if (
@@ -25,6 +25,7 @@ const main = async () => {
 
   if (!MJ_APIKEY_PUBLIC) throw Error('Missing env MJ_APIKEY_PUBLIC');
   if (!MJ_APIKEY_PRIVATE) throw Error('Missing env MJ_APIKEY_PRIVATE');
+  if (!MJ_SENDER) throw Error('Missing env MJ_SENDER');
 
   const appAddress = await loadAppAddress();
 

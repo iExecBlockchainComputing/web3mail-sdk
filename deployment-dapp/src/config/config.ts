@@ -17,9 +17,6 @@ export const APP_TAG = ['tee', 'scone'];
 export const WEB3_MAIL_ENS_NAME_DEV = 'web3mail-dev.apps.iexec.eth';
 export const WEB3_MAIL_ENS_NAME_PROD = 'web3mail.apps.iexec.eth';
 
-//secret parameters
-export const MJ_SENDER = 'web3mail@iex.ec';
-
 // image
 const SCONIFIER_VERSION = '5.7.5-v9';
 const dappVersion = JSON.parse(
