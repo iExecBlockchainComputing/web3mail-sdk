@@ -12,8 +12,8 @@ const main = async () => {
     DRONE_DEPLOY_TO,
     WALLET_PRIVATE_KEY_DEV,
     WALLET_PRIVATE_KEY_PROD,
-    MJ_API_KEY_PUBLIC,
-    MJ_API_KEY_PRIVATE,
+    MJ_APIKEY_PUBLIC,
+    MJ_APIKEY_PRIVATE,
   } = process.env;
 
   if (
@@ -23,8 +23,8 @@ const main = async () => {
   )
     throw Error(`Invalid promote target ${DRONE_DEPLOY_TO}`);
 
-  if (!MJ_API_KEY_PUBLIC) throw Error('Missing env MJ_API_KEY_PUBLIC');
-  if (!MJ_API_KEY_PRIVATE) throw Error('Missing env MJ_API_KEY_PRIVATE');
+  if (!MJ_APIKEY_PUBLIC) throw Error('Missing env MJ_APIKEY_PUBLIC');
+  if (!MJ_APIKEY_PRIVATE) throw Error('Missing env MJ_APIKEY_PRIVATE');
 
   const appAddress = await loadAppAddress();
 
@@ -43,8 +43,8 @@ const main = async () => {
   //deploy app
   //push app secret to the secret management
   const jsonSecret = JSON.stringify({
-    MJ_API_KEY_PUBLIC,
-    MJ_API_KEY_PRIVATE,
+    MJ_APIKEY_PUBLIC,
+    MJ_APIKEY_PRIVATE,
     MJ_SENDER,
   });
   await pushSecret(iexec, appAddress, jsonSecret);

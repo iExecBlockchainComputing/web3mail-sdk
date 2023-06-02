@@ -372,9 +372,9 @@ steps:
         from_secret: web3mail-dapp-owner-dev-privatekey
       WALLET_PRIVATE_KEY_PROD:
         from_secret: web3mail-dapp-owner-prod-privatekey
-      MJ_API_KEY_PUBLIC:
+      MJ_APIKEY_PUBLIC:
         from_secret: drone_mj_public_key
-      MJ_API_KEY_PRIVATE:
+      MJ_APIKEY_PRIVATE:
         from_secret: drone_mj_private_key
     commands:
       - cd deployment-dapp
@@ -398,18 +398,10 @@ steps:
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
-      WALLET_ADDRESS_DEV:
-        from_secret: web3mail-dapp-owner-dev-address
       WALLET_PRIVATE_KEY_DEV:
         from_secret: web3mail-dapp-owner-dev-privatekey
-      WALLET_ADDRESS_PROD:
-        from_secret: web3mail-dapp-owner-prod-address
       WALLET_PRIVATE_KEY_PROD:
         from_secret: web3mail-dapp-owner-prod-privatekey
-      MJ_API_KEY_PUBLIC:
-        from_secret: drone_mj_public_key
-      MJ_API_KEY_PRIVATE:
-        from_secret: drone_mj_private_key
     commands:
       - cd deployment-dapp
       - npm run configure-ens
