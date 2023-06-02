@@ -15,14 +15,16 @@ import {
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: Wallet;
+  let providerWallet: Wallet;
   let web3mail: IExecWeb3Mail;
   let dataProtector: IExecDataProtector;
   let protectedData: ProtectedDataWithSecretProps;
   let grantedAccessList: GrantedAccess;
   beforeAll(() => {
+    providerWallet = getRandomWallet();
     consumerWallet = getRandomWallet();
     dataProtector = new IExecDataProtector(
-      getEthProvider(consumerWallet.privateKey)
+      getEthProvider(providerWallet.privateKey)
     );
     web3mail = new IExecWeb3Mail(getEthProvider(consumerWallet.privateKey));
   });

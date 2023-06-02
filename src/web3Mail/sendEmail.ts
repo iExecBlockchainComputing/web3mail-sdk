@@ -52,6 +52,8 @@ const sendEmail = async ({
       app: WEB3_MAIL_DAPP_ADDRESS,
       dataset: protectedData,
       minTag: ['tee', 'scone'],
+      maxTag: ['tee', 'scone'],
+      category: 0,
     });
     const workerpoolorder = workerpoolorderbook?.orders[0]?.order;
     if (!workerpoolorder) {
