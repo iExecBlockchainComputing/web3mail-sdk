@@ -18,9 +18,16 @@ export const fetchMyContacts = async ({
     const { orders } = await autoPaginateRequest({
       request: showDatasetOrderbookRequest,
     });
-    const myContacts: Contact[] = [];
+    let myContacts: Contact[] = [];
+    const web3DappResolvedAddress = await iexec.ens.resolveName(
+      WEB3_MAIL_DAPP_ADDRESS
+    );
+
     orders.forEach((order) => {
-      if (order.order.apprestrict === WEB3_MAIL_DAPP_ADDRESS) {
+      if (
+        order.order.apprestrict.toLowerCase() ===
+        web3DappResolvedAddress.toLowerCase()
+      ) {
         const contact = {
           address: order.order.dataset,
           owner: order.signer,
