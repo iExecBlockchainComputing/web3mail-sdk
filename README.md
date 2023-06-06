@@ -1,9 +1,5 @@
-<!-- markdownlint-disable-next-line -->
-
-[//]: # "Have an image iExec on the project"
-
 <p align="center">
-  <a href="https://iex.ec/" rel="noopener" target="_blank"><img width="150" src="./logo.png" alt="iExec logo"/></a>
+  <a href="https://iex.ec/" rel="noopener" target="_blank"><img width="150" src="./logo-iexec.png" alt="iExec logo"/></a>
 </p>
 
 <h1 align="center">Web3Mail</h1>
