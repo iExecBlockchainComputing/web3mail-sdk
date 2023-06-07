@@ -39,13 +39,13 @@ describe('web3mail.sendEmail()', () => {
         authorizedUser: consumerWallet.address, // consumer wallet
         numberOfAccess: 10000,
       });
-      const emailContent = {
+      const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
         protectedData: protectedData.address,
       };
 
-      const sendEmailResponse = await web3mail.sendEmail(emailContent);
+      const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
     },
     3 * MAX_EXPECTED_BLOCKTIME
