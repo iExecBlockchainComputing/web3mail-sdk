@@ -6,10 +6,10 @@ import {
 import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { NULL_ADDRESS } from 'iexec/utils';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../../dist/config/config';
-import { IExecWeb3Mail } from '../../../dist/index';
-import { WorkflowError } from '../../../dist/utils/errors';
-import { getEthProvider } from '../../test-utils';
+import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
+import { IExecWeb3Mail } from '../../dist/index';
+import { WorkflowError } from '../../dist/utils/errors';
+import { getEthProvider } from '../test-utils';
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: Wallet;
   let web3mail: IExecWeb3Mail;
