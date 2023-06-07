@@ -1,5 +1,7 @@
 import { EnhancedWallet, IExec } from 'iexec';
 
+export type Web3SignerProvider = EnhancedWallet;
+
 export type IExecConsumer = {
   iexec: IExec;
 };
