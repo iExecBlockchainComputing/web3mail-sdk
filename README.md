@@ -11,50 +11,59 @@
 
 Web3Mail is composed of 2 methods:
 
-- fetchContact—that enables an entity to retrieve a list of Ethereum accounts whose owners have authorized the entity to email them
-- sendMail—that allows an entity to email a user (previously fetched via the fetchContact method) knowing only her/his Ethereum account.
+- **fetchMyContacts** — that enables an entity to retrieve a list of Ethereum accounts whose owners have authorized the entity to email them
+- **sendEmail** — that allows an entity to email a user (previously fetched via the fetchMyContacts method) knowing only her/his Ethereum account.
 
 <div align="center">
 
-**[Stable channel v1](https://iex.ec/)**
-
-[![npm](https://img.shields.io/npm/v/web3mail-sdk)](https://www.npmjs.com/package/web3mail-sdk)[![license](https://img.shields.io/badge/license-Apache%202-blue)](/LICENSE)
+[![npm](https://img.shields.io/npm/v/web3mail-sdk)](https://www.npmjs.com/package/@iexec/web3mail)[![license](https://img.shields.io/badge/license-Apache%202-blue)](/LICENSE)
 
 </div>
 
 ## Installation
 
-### Web3Mail
-
-[//]: # "Add link to npm package Web3Mail"
-
-Web3Mail is available as an [npm package](https://www.npmjs.com/package/web3mail-sdk).
+Web3Mail is available as an [npm package](https://www.npmjs.com/package/@iexec/web3mail).
 
 **npm:**
 
 ```sh
-npm install web3mail-sdk
+npm install @iexec/web3mail
 ```
 
 **yarn:**
 
 ```sh
-yarn add web3mail-sdk
+yarn add @iexec/web3mail
 ```
 
 ## Get started
 
-[//]: # "Add initialize code for getting started to use SDK"
+### Browser
+
+```ts
+import { IExecWeb3Mail } from "@iexec/web3Mail";
+
+const web3Provider = window.ethereum;
+const web3Mail = new IExecWeb3Mail(web3Provider);
+```
+
+### NodeJS
+
+```ts
+import { IExecWeb3Mail, getWeb3Provider } from "@iexec/web3Mail";
+
+const { PRIVATE_KEY } = process.env; 
+
+const web3Provider = getWeb3Provider(PRIVATE_KEY);
+const web3Mail = new IExecWeb3Mail(web3Provider);
+```
 
 ## Documentation
 
-[//]: # "Add link to documentation gitbook when published"
-
-- [Web3Mail](#documentation)
+- [Web3Mail documentation](https://tools.docs.iex.ec/tools/web3mail)
+- [Web3Mail technical design](./technical-design/index.md)
+- [iExec Protocol documentation](https://protocol.docs.iex.ec)
 
 ## License
 
-[//]: # "Add link to apache license"
-
-This project is licensed under the terms of the
-[Apache 2.0](/LICENSE).
+This project is licensed under the terms of the [Apache 2.0](/LICENSE).
