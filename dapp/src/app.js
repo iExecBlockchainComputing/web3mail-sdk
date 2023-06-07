@@ -30,8 +30,8 @@ async function start() {
       mailJetApiKeyPublic: developerSecret.MJ_APIKEY_PUBLIC,
       mailJetApiKeyPrivate: developerSecret.MJ_APIKEY_PRIVATE,
       mailJetSender: developerSecret.MJ_SENDER,
-      mailObject: process.env.IEXEC_REQUESTER_SECRET_1,
-      mailContent: process.env.IEXEC_REQUESTER_SECRET_2,
+      emailSubject: process.env.IEXEC_REQUESTER_SECRET_1,
+      emailContent: process.env.IEXEC_REQUESTER_SECRET_2,
     };
     const envVars = validateInputs(unsafeEnvVars);
     const email = await extractZipAndBuildJson(
@@ -44,8 +44,8 @@ async function start() {
       email,
       mailJetApiKeyPublic: envVars.mailJetApiKeyPublic,
       mailJetApiKeyPrivate: envVars.mailJetApiKeyPrivate,
-      mailObject: envVars.mailObject,
-      mailContent: envVars.mailContent,
+      emailSubject: envVars.emailSubject,
+      emailContent: envVars.emailContent,
       mailJetSender: envVars.mailJetSender,
     });
 
