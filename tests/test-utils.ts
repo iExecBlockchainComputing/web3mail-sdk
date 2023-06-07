@@ -1,6 +1,11 @@
 import { getSignerFromPrivateKey } from 'iexec/utils';
 import { Wallet } from 'ethers';
 
+export const getRequiredFieldMessage = (field: string = 'this') =>
+  `${field} is a required field`;
+
+export const getRandomAddress = () => Wallet.createRandom().address;
+
 export const getRandomWallet = () => Wallet.createRandom();
 
 export const getEthProvider = (privateKey) =>
