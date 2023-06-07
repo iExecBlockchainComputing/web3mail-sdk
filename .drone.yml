@@ -1,0 +1,445 @@
+# sdk @iexec/web3mail default pipeline
+kind: pipeline
+type: docker
+name: sdk-default
+
+trigger:
+  event:
+    exclude:
+      - promote
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:18
+    commands:
+      - npm run check-format
+
+  - name: test
+    image: node:18
+    commands:
+      - npm run test
+
+  - name: build
+    image: node:18
+    commands:
+      - npm run build
+
+  - name: npm-publish-dry-run
+    image: node:18
+    commands:
+      - npm publish --dry-run
+
+---
+# sdk @iexec/web3mail publish npm nightly pipeline
+kind: pipeline
+type: docker
+name: sdk-publish-nightly
+
+trigger:
+  event:
+    - promote
+  target:
+    - sdk-nightly
+  branch:
+    - develop
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:18
+    commands:
+      - npm run check-format
+
+  - name: test
+    image: node:18
+    commands:
+      - npm run test
+
+  - name: build
+    image: node:18
+    commands:
+      - npm run build
+
+  - name: set-version-nightly
+    image: node:18
+    commands:
+      - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
+
+  - name: publish
+    image: plugins/npm
+    pull: always
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+      tag: nightly
+      access: public
+
+---
+# sdk @iexec/web3mail publish npm latest pipeline
+kind: pipeline
+type: docker
+name: sdk-publish-latest
+
+trigger:
+  event:
+    - promote
+  target:
+    - sdk-latest
+  branch:
+    - main
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:18
+    commands:
+      - npm run check-format
+
+  - name: test
+    image: node:18
+    commands:
+      - npm run test
+
+  - name: build
+    image: node:18
+    commands:
+      - npm run build
+
+  - name: publish
+    image: plugins/npm
+    pull: always
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+      tag: latest
+      access: public
+
+---
+# dapp web3mail-dapp default pipeline
+# /!\ every step must run in dapp/
+kind: pipeline
+type: docker
+name: dapp-default
+
+trigger:
+  event:
+    exclude:
+      - promote
+
+steps:
+  - name: install
+    image: node:14-alpine3.11
+    pull: always
+    commands:
+      - cd dapp
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:14-alpine3.11
+    commands:
+      - cd dapp
+      - npm run check-format
+
+  - name: unit-test
+    image: node:14-alpine3.11
+    commands:
+      - cd dapp
+      - npm run ctest tests/unit/
+
+  - name: docker-publish-dry-run
+    # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
+    image: plugins/docker
+    pull: always
+    settings:
+      dry_run: true
+      context: ./dapp
+      dockerfile: ./dapp/Dockerfile
+      registry: docker-regis.iex.ec
+      repo: docker-regis.iex.ec/product/web3mail-dapp
+      pull_image: true
+      username:
+        from_secret: nexus-user
+      password:
+        from_secret: nexus-password
+
+---
+# dapp web3mail-dapp publish docker dev non-tee pipeline
+# /!\ every step must run in dapp/
+kind: pipeline
+type: docker
+name: dapp-dev-non-tee
+
+trigger:
+  event:
+    - promote
+  target:
+    - dapp-dev-non-tee
+  branch:
+    - develop
+
+steps:
+  - name: install
+    image: node:14-alpine3.11
+    pull: always
+    commands:
+      - cd dapp
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:14-alpine3.11
+    commands:
+      - cd dapp
+      - npm run check-format
+
+  - name: unit-test
+    image: node:14-alpine3.11
+    commands:
+      - cd dapp
+      - npm run ctest tests/unit/
+
+  - name: docker-publish-dev-non-tee
+    # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
+    image: plugins/docker
+    pull: always
+    settings:
+      context: ./dapp
+      dockerfile: ./dapp/Dockerfile
+      registry: docker-regis.iex.ec
+      repo: docker-regis.iex.ec/product/web3mail-dapp
+      pull_image: true
+      username:
+        from_secret: nexus-user
+      password:
+        from_secret: nexus-password
+      tags:
+        - dev
+        - 'dev-${DRONE_COMMIT}'
+
+---
+# dapp web3mail-dapp publish docker prod non-tee pipeline
+# /!\ every step must run in dapp/
+kind: pipeline
+type: docker
+name: dapp-prod-non-tee
+
+trigger:
+  event:
+    - promote
+  target:
+    - dapp-prod-non-tee
+  branch:
+    - main
+
+steps:
+  - name: install
+    image: node:14-alpine3.11
+    pull: always
+    commands:
+      - cd dapp
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:14-alpine3.11
+    commands:
+      - cd dapp
+      - npm run check-format
+
+  - name: unit-test
+    image: node:14-alpine3.11
+    commands:
+      - cd dapp
+      - npm run ctest tests/unit/
+
+  - name: extract-version-from-package
+    image: node:18
+    # generates the .tags file for the docker plugin
+    commands:
+      - cd dapp
+      - npm pkg get version | sed 's/"//g' > ../.tags
+
+  - name: docker-publish-prod-non-tee
+    # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
+    image: plugins/docker
+    pull: always
+    settings:
+      context: ./dapp
+      dockerfile: ./dapp/Dockerfile
+      # tag comes from .tags file
+      registry: docker-regis.iex.ec
+      repo: docker-regis.iex.ec/product/web3mail-dapp
+      pull_image: true
+      username:
+        from_secret: nexus-user
+      password:
+        from_secret: nexus-password
+
+---
+#pipeline to publish dapp contract on iexec
+kind: pipeline
+type: docker
+name: deploy-dapp-contract
+
+trigger:
+  event:
+    - promote
+  target:
+    - dapp-dev
+    - dapp-production
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: get scone fingerprint (dev)
+    image: iexechub/web3mail-dapp:dev-${DRONE_COMMIT}-sconify-5.7.5-v9-production
+    commands:
+      - SCONE_HASH=1 node > deployment-dapp/.scone-fingerprint
+    when:
+      target:
+        - dapp-dev
+      branch:
+        - develop
+
+  - name: get scone fingerprint (prod)
+    # /!\: maintain the version here
+    image: iexechub/web3mail-dapp:0.0.0-sconify-5.7.5-v9-production
+    commands:
+      - SCONE_HASH=1 node > deployment-dapp/.scone-fingerprint
+    when:
+      target:
+        - dapp-production
+      branch:
+        - main
+
+  - name: install deps
+    image: node:18
+    pull: always
+    commands:
+      - cd deployment-dapp
+      - npm ci
+
+  - name: deploy dapp contract
+    image: node:18
+    pull: always
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+    commands:
+      - cd deployment-dapp
+      - npm run deploy-dapp
+
+  - name: push dapp secret
+    image: node:18
+    pull: always
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+      MJ_APIKEY_PUBLIC:
+        from_secret: mj_apikey_public
+      MJ_APIKEY_PRIVATE:
+        from_secret: mj_apikey_private
+      MJ_SENDER:
+        from_secret: mj_sender
+    commands:
+      - cd deployment-dapp
+      - npm run push-dapp-secret
+
+  - name: publish sell order
+    image: node:18
+    pull: always
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+    commands:
+      - cd deployment-dapp
+      - npm run publish-sell-order
+
+  - name: configure ENS
+    image: node:18
+    pull: always
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+    commands:
+      - cd deployment-dapp
+      - npm run configure-ens
+---
+# pipeline to publish sell order
+kind: pipeline
+type: docker
+name: publish-apporder
+
+trigger:
+  event:
+    - promote
+  target:
+    - dapp-sell-order-dev
+    - dapp-sell-order-production
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: install deps
+    image: node:18
+    pull: always
+    commands:
+      - cd deployment-dapp
+      - npm ci
+
+  - name: publish sell order
+    image: node:18
+    pull: always
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+    commands:
+      - cd deployment-dapp
+      - npm run publish-sell-order
