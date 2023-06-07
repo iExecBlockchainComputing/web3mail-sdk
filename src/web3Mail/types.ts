@@ -10,8 +10,6 @@ export type Address = string;
 
 export type TimeStamp = string;
 
-export type Web3SignerProvider = EnhancedWallet;
-
 export type Contact = {
   address: Address;
   owner: Address;
