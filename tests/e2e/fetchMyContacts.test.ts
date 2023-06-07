@@ -7,9 +7,8 @@ import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { NULL_ADDRESS } from 'iexec/utils';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
-import { IExecWeb3Mail } from '../../dist/index';
+import { IExecWeb3Mail, getWeb3Provider } from '../../dist/index';
 import { WorkflowError } from '../../dist/utils/errors';
-import { getEthProvider } from '../test-utils';
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: Wallet;
   let web3mail: IExecWeb3Mail;
@@ -20,8 +19,8 @@ describe('web3mail.fetchMyContacts()', () => {
   let grantedAccessForAnyRequester: GrantedAccess;
   beforeAll(async () => {
     wallet = Wallet.createRandom();
-    dataProtector = new IExecDataProtector(getEthProvider(wallet.privateKey));
-    web3mail = new IExecWeb3Mail(getEthProvider(wallet.privateKey));
+    dataProtector = new IExecDataProtector(getWeb3Provider(wallet.privateKey));
+    web3mail = new IExecWeb3Mail(getWeb3Provider(wallet.privateKey));
   }, 30_000);
   it('pass with a granted access for a specific requester', async () => {
     protectedDataForASpecificRequester = await dataProtector.protectData({
@@ -74,7 +73,9 @@ describe('web3mail.fetchMyContacts()', () => {
   }, 40_000);
 
   it('should return no contact', async () => {
-    const mockedWeb3Mail = new IExecWeb3Mail(getEthProvider(wallet.privateKey));
+    const mockedWeb3Mail = new IExecWeb3Mail(
+      getWeb3Provider(wallet.privateKey)
+    );
     jest.spyOn(mockedWeb3Mail, 'fetchMyContacts').mockResolvedValue([]);
 
     const contacts = await mockedWeb3Mail.fetchMyContacts();
@@ -83,7 +84,9 @@ describe('web3mail.fetchMyContacts()', () => {
   });
 
   it('should throw a WorkflowError with a specific message', async () => {
-    const mockedWeb3Mail = new IExecWeb3Mail(getEthProvider(wallet.privateKey));
+    const mockedWeb3Mail = new IExecWeb3Mail(
+      getWeb3Provider(wallet.privateKey)
+    );
     jest
       .spyOn(mockedWeb3Mail, 'fetchMyContacts')
       .mockRejectedValue(
