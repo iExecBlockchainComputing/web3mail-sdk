@@ -41,7 +41,7 @@ yarn add @iexec/web3mail
 ### Browser
 
 ```ts
-import { IExecWeb3Mail } from "@iexec/web3Mail";
+import { IExecWeb3Mail } from "@iexec/web3mail";
 
 const web3Provider = window.ethereum;
 const web3Mail = new IExecWeb3Mail(web3Provider);
@@ -50,7 +50,7 @@ const web3Mail = new IExecWeb3Mail(web3Provider);
 ### NodeJS
 
 ```ts
-import { IExecWeb3Mail, getWeb3Provider } from "@iexec/web3Mail";
+import { IExecWeb3Mail, getWeb3Provider } from "@iexec/web3mail";
 
 const { PRIVATE_KEY } = process.env; 
 

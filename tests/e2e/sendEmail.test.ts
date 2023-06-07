@@ -5,13 +5,9 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
-import { IExecWeb3Mail } from '../../dist/web3Mail/IExecWeb3Mail';
+import { IExecWeb3Mail, getWeb3Provider } from '../../dist/index';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
-import {
-  MAX_EXPECTED_BLOCKTIME,
-  getEthProvider,
-  getRandomWallet,
-} from '../test-utils';
+import { MAX_EXPECTED_BLOCKTIME, getRandomWallet } from '../test-utils';
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: Wallet;
@@ -24,9 +20,9 @@ describe('web3mail.sendEmail()', () => {
     providerWallet = getRandomWallet();
     consumerWallet = getRandomWallet();
     dataProtector = new IExecDataProtector(
-      getEthProvider(providerWallet.privateKey)
+      getWeb3Provider(providerWallet.privateKey)
     );
-    web3mail = new IExecWeb3Mail(getEthProvider(consumerWallet.privateKey));
+    web3mail = new IExecWeb3Mail(getWeb3Provider(consumerWallet.privateKey));
   });
 
   it(
