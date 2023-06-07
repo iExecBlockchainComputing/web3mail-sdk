@@ -12,8 +12,8 @@ describe('validateInputs function', () => {
       mailJetApiKeyPublic: 'api_public_key',
       mailJetApiKeyPrivate: 'api_private_key',
       mailJetSender: 'sender@example.com',
-      mailObject: 'Test email',
-      mailContent: 'This is a it email',
+      emailSubject: 'Test email',
+      emailContent: 'This is a it email',
     };
   });
 
@@ -43,9 +43,9 @@ describe('validateInputs function', () => {
   it('should include all validation errors in the thrown error message', () => {
     delete envVars.iexecOut;
     envVars.mailJetApiKeyPublic = 12345;
-    envVars.mailContent = '';
+    envVars.emailContent = '';
     expect(() => validateInputs(envVars)).toThrow(
-      /"iexecOut" is required; "mailJetApiKeyPublic" must be a string; "mailContent" is not allowed to be empty/i
+      /"iexecOut" is required; "mailJetApiKeyPublic" must be a string; "emailContent" is not allowed to be empty/i
     );
   });
 });

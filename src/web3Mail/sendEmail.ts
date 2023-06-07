@@ -8,8 +8,8 @@ import { throwIfMissing } from '../utils/validators.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
 const sendEmail = async ({
   iexec = throwIfMissing(),
-  mailObject = throwIfMissing(),
-  mailContent = throwIfMissing(),
+  emailSubject = throwIfMissing(),
+  emailContent = throwIfMissing(),
   protectedData = throwIfMissing(),
 }: IExecConsumer & SendEmailParams): Promise<SendEmailResponse> => {
   try {
@@ -62,8 +62,8 @@ const sendEmail = async ({
     // Push requester secrets
     const mailObjectId = generateSecureUniqueId(16);
     const mailContentId = generateSecureUniqueId(16);
-    await iexec.secrets.pushRequesterSecret(mailObjectId, mailObject);
-    await iexec.secrets.pushRequesterSecret(mailContentId, mailContent);
+    await iexec.secrets.pushRequesterSecret(mailObjectId, emailSubject);
+    await iexec.secrets.pushRequesterSecret(mailContentId, emailContent);
     // Create and sign request order
     const requestorderToSign = await iexec.order.createRequestorder({
       app: WEB3_MAIL_DAPP_ADDRESS,
