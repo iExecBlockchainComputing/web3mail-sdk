@@ -7,8 +7,8 @@ const schema = Joi.object({
   mailJetApiKeyPublic: Joi.string().required(),
   mailJetApiKeyPrivate: Joi.string().required(),
   mailJetSender: Joi.string().email().required(),
-  mailObject: Joi.string().required(),
-  mailContent: Joi.string().required(),
+  emailSubject: Joi.string().required(),
+  emailContent: Joi.string().required(),
 });
 
 function validateInputs(envVars) {
