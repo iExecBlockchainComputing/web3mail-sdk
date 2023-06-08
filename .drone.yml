@@ -163,10 +163,10 @@ steps:
       - npm ci
 
   - name: check version match [get scone fingerprint (prod)]
-    pull: always
+    image: node:18
     commands:
       - cd dapp
-      - cat ../.drone.yml | grep iexechub/web3mail-dapp:$(npm pkg get version | sed 's/"//g')-sconify-
+      - cat ../.drone.yml | grep "iexechub/web3mail-dapp:$(npm pkg get version | sed 's/"//g')-sconify-"
 
   - name: format
     image: node:14-alpine3.11
