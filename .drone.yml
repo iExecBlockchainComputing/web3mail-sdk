@@ -162,6 +162,12 @@ steps:
       - npm -v
       - npm ci
 
+  - name: check version match [get scone fingerprint (prod)]
+    image: node:18
+    commands:
+      - cd dapp
+      - cat ../.drone.yml | grep "iexechub/web3mail-dapp:$(npm pkg get version | sed 's/"//g')-sconify-"
+
   - name: format
     image: node:14-alpine3.11
     commands:
@@ -334,7 +340,7 @@ steps:
 
   - name: get scone fingerprint (prod)
     # /!\: maintain the version here
-    image: iexechub/web3mail-dapp:0.0.0-sconify-5.7.5-v9-production
+    image: iexechub/web3mail-dapp:0.1.0-sconify-5.7.5-v9-production
     commands:
       - SCONE_HASH=1 node > deployment-dapp/.scone-fingerprint
     when:
