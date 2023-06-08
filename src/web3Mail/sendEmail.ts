@@ -12,8 +12,8 @@ import {
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
 const sendEmail = async ({
   iexec = throwIfMissing(),
-  mailObject,
-  mailContent,
+  emailSubject,
+  emailContent,
   protectedData,
 }: IExecConsumer & SendEmailParams): Promise<SendEmailResponse> => {
   try {
@@ -24,11 +24,11 @@ const sendEmail = async ({
     const vEmailSubject = emailSubjectSchema()
       .required()
       .label('emailSubject')
-      .validateSync(mailObject);
+      .validateSync(emailSubject);
     const vEmailContent = emailSubjectSchema()
       .required()
       .label('emailContent')
-      .validateSync(mailContent);
+      .validateSync(emailContent);
 
     // TODO: check the protectedData implements the schema `{email: "string"}`
 
