@@ -35,7 +35,7 @@ describe('web3mail.sendEmail()', () => {
         authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
         protectedData: protectedData.address,
         authorizedUser: consumerWallet.address, // consumer wallet
-        numberOfAccess: 10000,
+        numberOfAccess: 1,
       });
       const params = {
         emailSubject: 'e2e mail object for test',
