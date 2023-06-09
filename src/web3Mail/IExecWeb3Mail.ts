@@ -1,10 +1,10 @@
+import { providers } from 'ethers';
 import { IExec } from 'iexec';
 import { IExecConfigOptions } from 'iexec/IExecConfig';
 import { fetchMyContacts } from './fetchMyContacts.js';
 import sendEmail from './sendEmail.js';
 import {
   Contact,
-  ExternalProvider,
   SendEmailParams,
   SendEmailResponse,
   Web3SignerProvider,
@@ -15,7 +15,7 @@ export class IExecWeb3Mail {
   sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
 
   constructor(
-    ethProvider: ExternalProvider | Web3SignerProvider,
+    ethProvider: providers.ExternalProvider | Web3SignerProvider,
     options?: {
       iexecOptions?: IExecConfigOptions;
     }
