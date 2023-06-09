@@ -1,5 +1,4 @@
 import {
-  GrantedAccess,
   IExecDataProtector,
   ProtectedDataWithSecretProps,
 } from '@iexec/dataprotector';
@@ -15,7 +14,6 @@ describe('web3mail.sendEmail()', () => {
   let web3mail: IExecWeb3Mail;
   let dataProtector: IExecDataProtector;
   let protectedData: ProtectedDataWithSecretProps;
-  let grantedAccessList: GrantedAccess;
   beforeAll(() => {
     providerWallet = getRandomWallet();
     consumerWallet = getRandomWallet();
@@ -33,7 +31,7 @@ describe('web3mail.sendEmail()', () => {
         data: { email: 'example@test.com' },
         name: 'test do not use',
       });
-      grantedAccessList = await dataProtector.grantAccess({
+      await dataProtector.grantAccess({
         authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
         protectedData: protectedData.address,
         authorizedUser: consumerWallet.address, // consumer wallet
