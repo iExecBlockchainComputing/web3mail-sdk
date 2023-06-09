@@ -10,7 +10,7 @@ import {
   Web3SignerProvider,
 } from './types.js';
 
-export class IExecWeb3Mail {
+export class IExecWeb3mail {
   fetchMyContacts: () => Promise<Contact[]>;
   sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
 

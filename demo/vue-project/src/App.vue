@@ -1,13 +1,12 @@
 <script setup>
-import { IExecWeb3Mail } from '@iexec/web3mail';
+import { IExecWeb3mail } from '@iexec/web3mail';
 import HelloWorld from './components/HelloWorld.vue';
 
 const connection = async () => {
-
   if (window.ethereum !== undefined) {
-    const web3Mail = new IExecWeb3Mail(window.ethereum);
+    const web3mail = new IExecWeb3mail(window.ethereum);
   }
-}
+};
 </script>
 
 <template>

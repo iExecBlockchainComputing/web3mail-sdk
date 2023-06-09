@@ -1,3 +1,3 @@
-export { IExecWeb3Mail } from './web3Mail/IExecWeb3Mail.js';
-export * from './web3Mail/types.js';
+export { IExecWeb3mail as IExecWeb3mail } from './web3mail/IExecWeb3mail.js';
+export * from './web3mail/types.js';
 export { getWeb3Provider } from './utils/getWeb3Provider.js';
