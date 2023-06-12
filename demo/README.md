@@ -2,7 +2,7 @@
 
 basic `@iexec/web3mail` demos using various environment and bundlers.
 
-the demo creates a dummy protected data.
+the demo recovers the contacts (eth address) who have authorized the web3mail dapp to send them emails.
 
 ## Usage
 
@@ -34,6 +34,6 @@ npm start
 **NB:** for browser demos
 
 - you will need an ethereum wallet connected to [iexec sidechain](https://chainlist.org/chain/134)
-- click the `TEST` button to start the protected data creation
+- click the `TEST` button to start fetching contacts
 
 **NB:** `create-react-app` demos use the `@iexec/web3mail` package from npm
