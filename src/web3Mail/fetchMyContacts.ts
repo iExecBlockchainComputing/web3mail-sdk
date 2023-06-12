@@ -5,9 +5,8 @@ import { autoPaginateRequest } from '../utils/paginate.js';
 import { throwIfMissing } from '../utils/validators.js';
 import {
   Contact,
-  GraphQLResponse,
   IExecConsumer,
-  ProtectedDataQuery,
+  ProtectedData,
   SubgraphConsumer,
 } from './types.js';
 
@@ -69,7 +68,7 @@ export const fetchMyContacts = async ({
 
 const getProtectedData = async (
   graphQLClient: GraphQLClient
-): Promise<ProtectedDataQuery[]> => {
+): Promise<ProtectedData[]> => {
   try {
     const schemaArray = ['email:string'];
     const SchemaFilteredProtectedData = gql`
@@ -87,7 +86,7 @@ const getProtectedData = async (
     `;
 
     // Pagination
-    let allProtectedDataArray: ProtectedDataQuery[] = [];
+    let allProtectedDataArray: ProtectedData[] = [];
     let start = 0;
     const range = 1000;
     let continuePagination = true;
@@ -99,15 +98,15 @@ const getProtectedData = async (
         range: range,
       };
 
-      let protectedDataResultQuery: GraphQLResponse =
+      let protectedDataResultQuery: ProtectedData[] =
         await graphQLClient.request(SchemaFilteredProtectedData, variables);
 
       allProtectedDataArray = [
         ...allProtectedDataArray,
-        ...protectedDataResultQuery.protectedDatas,
+        ...protectedDataResultQuery,
       ];
 
-      if (protectedDataResultQuery.protectedDatas.length < range) {
+      if (protectedDataResultQuery.length < range) {
         continuePagination = false;
       } else {
         start += range;

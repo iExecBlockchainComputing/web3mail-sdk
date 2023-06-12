@@ -29,12 +29,8 @@ export type SendEmailResponse = {
 /**
  * Internal props for querying the subgraph
  */
-export type ProtectedDataQuery = {
+export type ProtectedData = {
   id: string;
-};
-
-export type GraphQLResponse = {
-  protectedDatas: ProtectedDataQuery[];
 };
 
 export type SubgraphConsumer = {
