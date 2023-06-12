@@ -35,5 +35,3 @@ npm start
 
 - you will need an ethereum wallet connected to [iexec sidechain](https://chainlist.org/chain/134)
 - click the `TEST` button to start fetching contacts
-
-**NB:** `create-react-app` demos use the `@iexec/web3mail` package from npm
