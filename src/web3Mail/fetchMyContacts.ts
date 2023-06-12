@@ -1,11 +1,20 @@
+import { GraphQLClient, gql } from 'graphql-request';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { throwIfMissing } from '../utils/validators.js';
-import { Contact, IExecConsumer } from './types.js';
+import {
+  Contact,
+  GraphQLResponse,
+  IExecConsumer,
+  ProtectedDataQuery,
+  SubgraphConsumer,
+} from './types.js';
+
 export const fetchMyContacts = async ({
+  graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-}: IExecConsumer): Promise<Contact[]> => {
+}: IExecConsumer & SubgraphConsumer): Promise<Contact[]> => {
   try {
     const userAddress = await iexec.wallet.getAddress();
     const showDatasetOrderbookRequest = iexec.orderbook.fetchDatasetOrderbook(
@@ -29,17 +38,85 @@ export const fetchMyContacts = async ({
         web3DappResolvedAddress.toLowerCase()
       ) {
         const contact = {
-          address: order.order.dataset,
-          owner: order.signer,
+          address: order.order.dataset.toLowerCase(),
+          owner: order.signer.toLowerCase(),
           accessGrantTimestamp: order.publicationTimestamp,
         };
         myContacts.push(contact);
       }
     });
+
+    const protectedDataResultQuery = await getProtectedData(graphQLClient);
+
+    // Convert protectedDatas into a Set
+    const protectedDataIds = new Set(
+      protectedDataResultQuery.map((data) => data.id)
+    );
+
+    // Filter myContacts list with protected data
+    myContacts = myContacts.filter((contact) => {
+      return protectedDataIds.has(contact.address);
+    });
+
     return myContacts;
   } catch (error) {
     throw new WorkflowError(
       `Failed to fetch my contacts: ${error.message}`,
+      error
+    );
+  }
+};
+
+const getProtectedData = async (
+  graphQLClient: GraphQLClient
+): Promise<ProtectedDataQuery[]> => {
+  try {
+    const schemaArray = ['email:string'];
+    const SchemaFilteredProtectedData = gql`
+      query ($requiredSchema: [String!]!, $start: Int!, $range: Int!) {
+        protectedDatas(
+          where: { transactionHash_not: "0x", schema_contains: $requiredSchema }
+          skip: $start
+          first: $range
+          orderBy: creationTimestamp
+          orderDirection: desc
+        ) {
+          id
+        }
+      }
+    `;
+
+    // Pagination
+    let allProtectedDataArray: ProtectedDataQuery[] = [];
+    let start = 0;
+    const range = 1000;
+    let continuePagination = true;
+
+    while (continuePagination) {
+      const variables = {
+        requiredSchema: schemaArray,
+        start: start,
+        range: range,
+      };
+
+      let protectedDataResultQuery: GraphQLResponse =
+        await graphQLClient.request(SchemaFilteredProtectedData, variables);
+
+      allProtectedDataArray = [
+        ...allProtectedDataArray,
+        ...protectedDataResultQuery.protectedDatas,
+      ];
+
+      if (protectedDataResultQuery.protectedDatas.length < range) {
+        continuePagination = false;
+      } else {
+        start += range;
+      }
+    }
+    return allProtectedDataArray;
+  } catch (error) {
+    throw new WorkflowError(
+      `Failed to fetch protected data: ${error.message}`,
       error
     );
   }

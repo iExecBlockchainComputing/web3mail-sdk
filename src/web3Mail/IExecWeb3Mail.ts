@@ -9,6 +9,8 @@ import {
   SendEmailResponse,
   Web3SignerProvider,
 } from './types.js';
+import { GraphQLClient } from 'graphql-request';
+import { DATAPROTECTOR_SUBGRAPH_ENDPOINT } from '../config/config.js';
 
 export class IExecWeb3Mail {
   fetchMyContacts: () => Promise<Contact[]>;
@@ -21,12 +23,20 @@ export class IExecWeb3Mail {
     }
   ) {
     let iexec: IExec;
+    let graphQLClient: GraphQLClient;
     try {
       iexec = new IExec({ ethProvider }, options?.iexecOptions);
     } catch (e) {
       throw Error('Unsupported ethProvider');
     }
-    this.fetchMyContacts = () => fetchMyContacts({ iexec });
+
+    try {
+      graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
+    } catch (e) {
+      throw Error('Impossible to create GraphQLClient');
+    }
+
+    this.fetchMyContacts = () => fetchMyContacts({ iexec, graphQLClient });
     this.sendEmail = (args: SendEmailParams) =>
       sendEmail({
         ...args,
