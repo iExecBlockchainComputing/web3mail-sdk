@@ -1,16 +1,29 @@
 import { GraphQLClient, gql } from 'graphql-request';
-import { ProtectedData } from '../index.js';
+import { Contact, GraphQLResponse, ProtectedDataQuery } from '../index.js';
 import { WorkflowError } from './errors.js';
 
-export const getProtectedData = async (
-  graphQLClient: GraphQLClient
-): Promise<ProtectedData[]> => {
+export const getValidContact = async (
+  graphQLClient: GraphQLClient,
+  contacts: Contact[]
+): Promise<Contact[]> => {
   try {
-    const schemaArray = ['email:string'];
+    // Contacts addresses
+    const contactsAddresses = contacts.map((contact) => contact.address);
+
+    // Query protected data
     const SchemaFilteredProtectedData = gql`
-      query ($requiredSchema: [String!]!, $start: Int!, $range: Int!) {
+      query (
+        $requiredSchema: [String!]!
+        $id: [String!]!
+        $start: Int!
+        $range: Int!
+      ) {
         protectedDatas(
-          where: { transactionHash_not: "0x", schema_contains: $requiredSchema }
+          where: {
+            transactionHash_not: "0x"
+            schema_contains: $requiredSchema
+            id_in: $id
+          }
           skip: $start
           first: $range
           orderBy: creationTimestamp
@@ -22,36 +35,40 @@ export const getProtectedData = async (
     `;
 
     // Pagination
-    let allProtectedDataArray: ProtectedData[] = [];
+    let protectedDataList: ProtectedDataQuery[] = [];
     let start = 0;
     const range = 1000;
     let continuePagination = true;
 
-    while (continuePagination) {
+    do {
       const variables = {
-        requiredSchema: schemaArray,
-        start: start,
-        range: range,
+        requiredSchema: ['email:string'],
+        id: contactsAddresses,
+        start,
+        range,
       };
 
-      let protectedDataResultQuery: ProtectedData[] =
+      const protectedDataResultQuery: GraphQLResponse =
         await graphQLClient.request(SchemaFilteredProtectedData, variables);
 
-      allProtectedDataArray = [
-        ...allProtectedDataArray,
-        ...protectedDataResultQuery,
-      ];
+      const { protectedDatas } = protectedDataResultQuery;
+      protectedDataList.push(...protectedDatas);
 
-      if (protectedDataResultQuery.length < range) {
-        continuePagination = false;
-      } else {
-        start += range;
-      }
-    }
-    return allProtectedDataArray;
+      continuePagination = protectedDatas.length === range;
+      start += range;
+    } while (continuePagination);
+
+    // Convert protectedData [] into Contact[]
+    const validContacts = protectedDataList.map(({ id }) => ({
+      address: id,
+      owner: contacts[id].owner,
+      accessGrantTimestamp: contacts[id].accessGrantTimestamp,
+    }));
+
+    return validContacts;
   } catch (error) {
     throw new WorkflowError(
-      `Failed to fetch protected data: ${error.message}`,
+      `Failed to fetch subgraph: ${error.message}`,
       error
     );
   }

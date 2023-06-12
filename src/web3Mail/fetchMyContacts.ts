@@ -1,13 +1,9 @@
 import { WEB3_MAIL_DAPP_ADDRESS } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
-import { getProtectedData } from '../utils/subgraphQuery.js';
+import { getValidContact } from '../utils/subgraphQuery.js';
 import { throwIfMissing } from '../utils/validators.js';
-import {
-  Contact,
-  IExecConsumer,
-  SubgraphConsumer,
-} from './types.js';
+import { Contact, IExecConsumer, SubgraphConsumer } from './types.js';
 
 export const fetchMyContacts = async ({
   graphQLClient = throwIfMissing(),
@@ -44,19 +40,9 @@ export const fetchMyContacts = async ({
       }
     });
 
-    const protectedDataResultQuery = await getProtectedData(graphQLClient);
+    const validContacts = await getValidContact(graphQLClient, myContacts);
 
-    // Convert protectedData into a Set
-    const protectedDataIds = new Set(
-      protectedDataResultQuery.map((data) => data.id)
-    );
-
-    // Filter myContacts list with protected data
-    myContacts = myContacts.filter((contact) => {
-      return protectedDataIds.has(contact.address);
-    });
-
-    return myContacts;
+    return validContacts;
   } catch (error) {
     throw new WorkflowError(
       `Failed to fetch my contacts: ${error.message}`,
@@ -64,4 +50,3 @@ export const fetchMyContacts = async ({
     );
   }
 };
-
