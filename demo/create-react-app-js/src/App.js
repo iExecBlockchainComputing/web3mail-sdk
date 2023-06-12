@@ -1,5 +1,5 @@
 import './App.css';
-import { test } from './web3mail';
+import { test } from './web3mail.js';
 
 function App() {
   return (
