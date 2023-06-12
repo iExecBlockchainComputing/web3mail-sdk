@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && webpack",
+    "build": "rm -rf dist && tsc && webpack",
     "start": "node dist/bundle.js",
     "test": "rm -rf dist && tsc && NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
     "lint": "eslint . --ext .ts",

@@ -1,5 +1,5 @@
 <script setup>
-import { test } from './dataprotector';
+import { test } from './web3mail';
 </script>
 
 <template>
