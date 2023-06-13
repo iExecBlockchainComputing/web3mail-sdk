@@ -1,4 +1,5 @@
 import { EnhancedWallet, IExec } from 'iexec';
+import { GraphQLClient } from 'graphql-request';
 
 export type Web3SignerProvider = EnhancedWallet;
 
@@ -23,4 +24,19 @@ export type SendEmailParams = {
 
 export type SendEmailResponse = {
   taskId: Address;
+};
+
+/**
+ * Internal props for querying the subgraph
+ */
+export type ProtectedDataQuery = {
+  id: string;
+};
+
+export type GraphQLResponse = {
+  protectedDatas: ProtectedDataQuery[];
+};
+
+export type SubgraphConsumer = {
+  graphQLClient: GraphQLClient;
 };
