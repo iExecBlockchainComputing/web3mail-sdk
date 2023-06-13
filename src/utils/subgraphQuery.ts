@@ -89,27 +89,37 @@ export const checkProtectedDataValidity = async (
   protectedData: string
 ): Promise<boolean> => {
   try {
-    const SchemaFilteredProtectedData = gql`
-      query ($requiredSchema: [String!]!, $id: String!) {
-        protectedDatas(
-          where: {
-            transactionHash_not: "0x"
-            schema_contains: $requiredSchema
-            id: $id
-          }
-        ) {
-          id
+const getQuery = (requiredSchema: string[], id: string) => {
+  return gql`
+    query CheckProtectedDataValidity($requiredSchema: [String!]!, $id: String!) {
+      protectedDatas(
+        where: {
+          transactionHash_not: "0x",
+          schema_contains: $requiredSchema,
+          id: $id
         }
+      ) {
+        id
       }
-    `;
+    }
+  `;
+};
 
-    const variables = {
-      requiredSchema: ['email:string'],
-      id: protectedData,
-    };
+const createVariables = (protectedData: string) => {
+  return {
+    requiredSchema: ['email:string'],
+    id: protectedData,
+  };
+};
+export const checkProtectedDataValidity = async (
+  graphQLClient: GraphQLClient,
+  protectedData: string
+): Promise<boolean> => {
+  try {
+    const query = getQuery(['email:string'], protectedData);
+    const variables = createVariables(protectedData);
 
-    const protectedDataResultQuery: GraphQLResponse =
-      await graphQLClient.request(SchemaFilteredProtectedData, variables);
+    const result: GraphQLResponse = await graphQLClient.request(query, variables);
 
     const { protectedDatas } = protectedDataResultQuery;
 
