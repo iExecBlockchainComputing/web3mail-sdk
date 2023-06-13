@@ -13,8 +13,7 @@ describe('web3mail.sendEmail()', () => {
   let providerWallet: Wallet;
   let web3mail: IExecWeb3Mail;
   let dataProtector: IExecDataProtector;
-  let protectedData: ProtectedDataWithSecretProps;
-  beforeAll(() => {
+  beforeAll(async () => {
     providerWallet = getRandomWallet();
     consumerWallet = getRandomWallet();
     dataProtector = new IExecDataProtector(
@@ -26,11 +25,12 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should successfully send email',
     async () => {
-      protectedData = await dataProtector.protectData({
-        // You can use your email to verify if you receive an email
-        data: { email: 'example@test.com' },
-        name: 'test do not use',
-      });
+      const protectedData: ProtectedDataWithSecretProps =
+        await dataProtector.protectData({
+          // You can use your email to verify if you receive an email
+          data: { email: 'example@test.com' },
+          name: 'test do not use',
+        });
       await dataProtector.grantAccess({
         authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
         protectedData: protectedData.address,
@@ -45,6 +45,46 @@ describe('web3mail.sendEmail()', () => {
 
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it(
+    'should fail if the protected data is not valid',
+    async () => {
+      const data = {
+        numberZero: 0,
+        numberOne: 1,
+        numberMinusOne: -1,
+        booleanTrue: true,
+        booleanFalse: false,
+        string: 'hello world!',
+        nested: {
+          object: {
+            with: {
+              binary: {
+                data: {
+                  pngImage: 'placeholder',
+                },
+              },
+            },
+          },
+        },
+      };
+      const protectedData: ProtectedDataWithSecretProps =
+        await dataProtector.protectData({
+          // You can use your email to verify if you receive an email
+          data: data,
+          name: 'test do not use',
+        });
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: protectedData.address,
+      };
+
+      await expect(web3mail.sendEmail(params)).rejects.toThrow(
+        'ProtectedData is not valid'
+      );
     },
     3 * MAX_EXPECTED_BLOCKTIME
   );

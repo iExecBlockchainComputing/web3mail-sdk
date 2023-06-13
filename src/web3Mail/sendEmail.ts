@@ -1,4 +1,9 @@
-import { IExecConsumer, SendEmailParams, SendEmailResponse } from './types.js';
+import {
+  IExecConsumer,
+  SendEmailParams,
+  SendEmailResponse,
+  SubgraphConsumer,
+} from './types.js';
 import {
   WEB3_MAIL_DAPP_ADDRESS,
   WORKERPOOL_ADDRESS,
@@ -10,12 +15,17 @@ import {
   throwIfMissing,
 } from '../utils/validators.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
-const sendEmail = async ({
+import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
+
+export const sendEmail = async ({
+  graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
   emailSubject,
   emailContent,
   protectedData,
-}: IExecConsumer & SendEmailParams): Promise<SendEmailResponse> => {
+}: IExecConsumer &
+  SubgraphConsumer &
+  SendEmailParams): Promise<SendEmailResponse> => {
   try {
     const vDatasetAddress = addressOrEnsSchema()
       .required()
@@ -30,7 +40,14 @@ const sendEmail = async ({
       .label('emailContent')
       .validateSync(emailContent);
 
-    // TODO: check the protectedData implements the schema `{email: "string"}`
+    const isValidProtectedData = await checkProtectedDataValidity(
+      graphQLClient,
+      vDatasetAddress
+    );
+
+    if (!isValidProtectedData) {
+      throw new Error('ProtectedData is not valid');
+    }
 
     const requesterAddress = await iexec.wallet.getAddress();
     // Initialize IPFS storage if not already initialized
@@ -117,5 +134,3 @@ const sendEmail = async ({
     throw new WorkflowError(`${error.message}`, error);
   }
 };
-
-export default sendEmail;

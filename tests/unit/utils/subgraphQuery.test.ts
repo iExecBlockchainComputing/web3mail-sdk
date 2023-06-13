@@ -1,6 +1,9 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import { GraphQLClient } from 'graphql-request';
-import { getValidContact } from '../../../dist/utils/subgraphQuery';
+import {
+  getValidContact,
+  checkProtectedDataValidity,
+} from '../../../dist/utils/subgraphQuery';
 import { Contact } from '../../../dist/web3Mail/types';
 
 describe('getValidContact', () => {
@@ -73,5 +76,38 @@ describe('getValidContact', () => {
     await expect(getValidContact(graphQLClient, contacts)).rejects.toThrow(
       'Failed to fetch subgraph'
     );
+  });
+});
+
+describe('checkProtectedDataValidity', () => {
+  it('should return true if protected data is valid', async () => {
+    const graphQLClient = new GraphQLClient('');
+    jest.spyOn(graphQLClient, 'request').mockResolvedValue({
+      protectedDatas: [{ id: 'address1' }],
+    });
+
+    const isValid = await checkProtectedDataValidity(graphQLClient, 'address1');
+
+    expect(isValid).toBe(true);
+  });
+  it('should return false if protected data is invalid', async () => {
+    const graphQLClient = new GraphQLClient('');
+    jest.spyOn(graphQLClient, 'request').mockResolvedValue({
+      protectedDatas: [],
+    });
+
+    const isValid = await checkProtectedDataValidity(graphQLClient, 'address2');
+
+    expect(isValid).toBe(false);
+  });
+  it('should handle error when fetching protected data', async () => {
+    const graphQLClient = new GraphQLClient('');
+    jest
+      .spyOn(graphQLClient, 'request')
+      .mockRejectedValue(new Error('Request failed'));
+
+    await expect(
+      checkProtectedDataValidity(graphQLClient, 'address1')
+    ).rejects.toThrow('Failed to fetch subgraph');
   });
 });

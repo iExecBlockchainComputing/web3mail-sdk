@@ -83,3 +83,41 @@ export const getValidContact = async (
     );
   }
 };
+
+export const checkProtectedDataValidity = async (
+  graphQLClient: GraphQLClient,
+  protectedData: string
+): Promise<boolean> => {
+  try {
+    const SchemaFilteredProtectedData = gql`
+      query ($requiredSchema: [String!]!, $id: String!) {
+        protectedDatas(
+          where: {
+            transactionHash_not: "0x"
+            schema_contains: $requiredSchema
+            id: $id
+          }
+        ) {
+          id
+        }
+      }
+    `;
+
+    const variables = {
+      requiredSchema: ['email:string'],
+      id: protectedData,
+    };
+
+    const protectedDataResultQuery: GraphQLResponse =
+      await graphQLClient.request(SchemaFilteredProtectedData, variables);
+
+    const { protectedDatas } = protectedDataResultQuery;
+
+    return protectedDatas.length === 1;
+  } catch (error) {
+    throw new WorkflowError(
+      `Failed to fetch subgraph: ${error.message}`,
+      error
+    );
+  }
+}

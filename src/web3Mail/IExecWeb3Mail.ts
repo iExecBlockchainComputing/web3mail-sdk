@@ -2,7 +2,7 @@ import { providers } from 'ethers';
 import { IExec } from 'iexec';
 import { IExecConfigOptions } from 'iexec/IExecConfig';
 import { fetchMyContacts } from './fetchMyContacts.js';
-import sendEmail from './sendEmail.js';
+import { sendEmail } from './sendEmail.js';
 import {
   Contact,
   SendEmailParams,
@@ -41,6 +41,7 @@ export class IExecWeb3Mail {
       sendEmail({
         ...args,
         iexec,
+        graphQLClient,
       });
   }
 }
