@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iExecBlockchainComputing/web3Mail.git"
+    "url": "git+https://github.com/iExecBlockchainComputing/web3mail-sdk.git"
   },
   "keywords": [
     "iExec"
@@ -35,9 +35,9 @@
   "author": "iExec",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/iExecBlockchainComputing/web3Mail/issues"
+    "url": "https://github.com/iExecBlockchainComputing/web3mail-sdk/issues"
   },
-  "homepage": "https://github.com/iExecBlockchainComputing/web3Mail#readme",
+  "homepage": "https://github.com/iExecBlockchainComputing/web3mail-sdk#readme",
   "devDependencies": {
     "@iexec/dataprotector": "0.0.0-nightly-8395225223034e4980135f6bf58f0a370721b496",
     "@types/jest": "^29.5.1",

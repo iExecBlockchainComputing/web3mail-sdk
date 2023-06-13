@@ -1,22 +1,28 @@
+import { providers } from 'ethers';
 import { IExec } from 'iexec';
+import { IExecConfigOptions } from 'iexec/IExecConfig';
 import { fetchMyContacts } from './fetchMyContacts.js';
-import { Contact, SendEmailParams, SendEmailResponse } from './types.js';
 import sendEmail from './sendEmail.js';
+import {
+  Contact,
+  SendEmailParams,
+  SendEmailResponse,
+  Web3SignerProvider,
+} from './types.js';
 
 export class IExecWeb3Mail {
   fetchMyContacts: () => Promise<Contact[]>;
   sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
 
   constructor(
-    ethProvider: any,
-    { providerOptions = {}, iexecOptions = {} }: any = {}
+    ethProvider: providers.ExternalProvider | Web3SignerProvider,
+    options?: {
+      iexecOptions?: IExecConfigOptions;
+    }
   ) {
     let iexec: IExec;
     try {
-      iexec = new IExec(
-        { ethProvider },
-        { confirms: 3, providerOptions, ...iexecOptions }
-      );
+      iexec = new IExec({ ethProvider }, options?.iexecOptions);
     } catch (e) {
       throw Error('Unsupported ethProvider');
     }
