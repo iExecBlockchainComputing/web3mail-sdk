@@ -8,7 +8,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    
     "@iexec/web3mail": "file:../.."
   },
   "author": "",
@@ -18,6 +17,6 @@
     "parcel": "^2.8.3"
   },
   "alias": {
-    "@iexec/dataprotector": "@iexec/dataprotector/dist/bundle.js"
+    "@iexec/web3mail": "@iexec/web3mail/dist/bundle.js"
   }
 }

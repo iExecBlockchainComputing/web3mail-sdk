@@ -1,13 +1,5 @@
 <script setup>
-import { IExecWeb3Mail } from '@iexec/web3mail';
-import HelloWorld from './components/HelloWorld.vue';
-
-const connection = async () => {
-
-  if (window.ethereum !== undefined) {
-    const web3Mail = new IExecWeb3Mail(window.ethereum);
-  }
-}
+import { test } from './web3mail';
 </script>
 
 <template>
@@ -19,11 +11,10 @@ const connection = async () => {
       width="125"
       height="125"
     />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <div>
+      <button @click="test">TEST</button>
+      <p>Open the console to see logs</p>
     </div>
-    <button v-on:click="connection">Connection</button>
   </header>
 </template>
 
@@ -46,12 +37,6 @@ header {
 
   .logo {
     margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
   }
 }
 </style>
