@@ -11,28 +11,59 @@ export const getValidContact = async (
     const contactsAddresses = contacts.map((contact) => contact.address);
 
     // Query protected data
-    const SchemaFilteredProtectedData = gql`
-      query (
-        $requiredSchema: [String!]!
-        $id: [String!]!
-        $start: Int!
-        $range: Int!
-      ) {
-        protectedDatas(
-          where: {
-            transactionHash_not: "0x"
-            schema_contains: $requiredSchema
-            id_in: $id
-          }
-          skip: $start
-          first: $range
-          orderBy: creationTimestamp
-          orderDirection: desc
-        ) {
-          id
+const getProtectedDataQuery = (requiredSchema: string[], id: string[], start: number, range: number) => {
+  return gql`
+    query GetValidContacts(
+      $requiredSchema: [String!]!
+      $id: [String!]!
+      $start: Int!
+      $range: Int!
+    ) {
+      protectedDatas(
+        where: {
+          transactionHash_not: "0x"
+          schema_contains: $requiredSchema
+          id_in: $id
         }
+        skip: $start
+        first: $range
+        orderBy: creationTimestamp
+        orderDirection: desc
+      ) {
+        id
       }
-    `;
+    }
+  `;
+};
+
+export const getValidContact = async (
+  graphQLClient: GraphQLClient,
+  contacts: Contact[]
+): Promise<Contact[]> => {
+  try {
+    // Contacts addresses
+    const contactsAddresses = contacts.map((contact) => contact.address);
+
+    // Pagination
+    let protectedDataList: ProtectedDataQuery[] = [];
+    let start = 0;
+    const range = 1000;
+    let continuePagination = true;
+
+    do {
+      const protectedDataQuery = getProtectedDataQuery(['email:string'], contactsAddresses, start, range);
+
+      const variables = {
+        requiredSchema: ['email:string'],
+        id: contactsAddresses,
+        start,
+        range,
+      };
+
+      const protectedDataResultQuery: GraphQLResponse = await graphQLClient.request(
+        protectedDataQuery,
+        variables
+      );
 
     // Pagination
     let protectedDataList: ProtectedDataQuery[] = [];
