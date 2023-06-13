@@ -1,6 +1,6 @@
 import { IExecWeb3Mail } from '@iexec/web3mail';
 
-const test = async () => {
+export const test = async () => {
   if (!window.ethereum) {
     throw Error('missing injected ethereum provider in page');
   }
@@ -15,6 +15,3 @@ const test = async () => {
     console.log('contacts', contacts);
   });
 };
-
-document.getElementById('test-button').addEventListener('click', test);
-

@@ -9,8 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@iexec/web3mail": "file:../..",
-    "ethers":"5.7.0"
+    "@iexec/web3mail": "file:../.."
   },
   "author": "",
   "license": "ISC"
