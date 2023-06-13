@@ -2,6 +2,29 @@ import { GraphQLClient, gql } from 'graphql-request';
 import { Contact, GraphQLResponse, ProtectedDataQuery } from '../index.js';
 import { WorkflowError } from './errors.js';
 
+const checkProtectedDataQuery = gql`
+  query GetValidContacts(
+    $requiredSchema: [String!]!
+    $id: [String!]!
+    $start: Int!
+    $range: Int!
+  ) {
+    protectedDatas(
+      where: {
+        transactionHash_not: "0x"
+        schema_contains: $requiredSchema
+        id_in: $id
+      }
+      skip: $start
+      first: $range
+      orderBy: creationTimestamp
+      orderDirection: desc
+    ) {
+      id
+    }
+  }
+`;
+
 export const getValidContact = async (
   graphQLClient: GraphQLClient,
   contacts: Contact[]
@@ -9,30 +32,6 @@ export const getValidContact = async (
   try {
     // Contacts addresses
     const contactsAddresses = contacts.map((contact) => contact.address);
-
-    // Query protected data
-    const schemaFilteredProtectedData = gql`
-      query (
-        $requiredSchema: [String!]!
-        $id: [String!]!
-        $start: Int!
-        $range: Int!
-      ) {
-        protectedDatas(
-          where: {
-            transactionHash_not: "0x"
-            schema_contains: $requiredSchema
-            id_in: $id
-          }
-          skip: $start
-          first: $range
-          orderBy: creationTimestamp
-          orderDirection: desc
-        ) {
-          id
-        }
-      }
-    `;
 
     // Pagination
     let protectedDataList: ProtectedDataQuery[] = [];
@@ -49,7 +48,7 @@ export const getValidContact = async (
       };
 
       const protectedDataResultQuery: GraphQLResponse =
-        await graphQLClient.request(schemaFilteredProtectedData, variables);
+        await graphQLClient.request(checkProtectedDataQuery, variables);
 
       const { protectedDatas } = protectedDataResultQuery;
       protectedDataList.push(...protectedDatas);
@@ -89,27 +88,15 @@ export const checkProtectedDataValidity = async (
   protectedData: string
 ): Promise<boolean> => {
   try {
-    const schemaFilteredProtectedData = gql`
-      query ($requiredSchema: [String!]!, $id: String!) {
-        protectedDatas(
-          where: {
-            transactionHash_not: "0x"
-            schema_contains: $requiredSchema
-            id: $id
-          }
-        ) {
-          id
-        }
-      }
-    `;
-
     const variables = {
       requiredSchema: ['email:string'],
-      id: protectedData,
+      id: [protectedData],
+      start: 0,
+      range: 1,
     };
 
     const protectedDataResultQuery: GraphQLResponse =
-      await graphQLClient.request(schemaFilteredProtectedData, variables);
+      await graphQLClient.request(checkProtectedDataQuery, variables);
 
     const { protectedDatas } = protectedDataResultQuery;
 
