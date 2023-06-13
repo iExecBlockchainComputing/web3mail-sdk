@@ -1,12 +1,23 @@
 import { describe, it, expect, jest } from '@jest/globals';
-import { GraphQLClient } from 'graphql-request';
+import { GraphQLClient, request } from 'graphql-request';
 import { getValidContact } from '../../../dist/utils/subgraphQuery';
-import { Contact } from '../../../dist/web3Mail/types';
+import { Contact, GraphQLResponse } from '../../../dist/web3Mail/types';
 
-// Mock the GraphQLClient and the subgraph response
-jest.mock('graphql-request');
+// Mock GraphQLClient
+jest.mock('graphql-request', () => {
+  // @ts-ignore
+  const originalModule = jest.requireActual('graphql-request');
+  return {
+    // @ts-ignore
+    ...originalModule,
+    GraphQLClient: jest.fn().mockImplementation(() => ({
+      request: jest.fn<() => Promise<GraphQLResponse>>().mockResolvedValue({
+        protectedDatas: [{ id: 'address1' }, { id: 'address3' }],
+      }),
+    })),
+  };
+});
 
-// Sample test data
 const contacts: Contact[] = [
   {
     address: 'address1',
@@ -21,16 +32,8 @@ const contacts: Contact[] = [
 ];
 
 describe('getValidContact', () => {
-  it('should fetch valid contacts', async () => {
-    const mockRequest = jest.fn().mockImplementation(async () => ({
-      protectedDatas: [{ id: 'address1' }, { id: 'address3' }],
-    }));
-
-    // Mock the GraphQLClient instance
-    (GraphQLClient as jest.MockedClass<any>).mockImplementation(() => ({
-      request: mockRequest,
-    }));
-
+  it.only('should fetch valid contacts', async () => {
+    // Create a new instance of GraphQLClient
     const graphQLClient = new GraphQLClient('https://example.com/graphql');
 
     const validContacts = await getValidContact(graphQLClient, contacts);
@@ -42,7 +45,8 @@ describe('getValidContact', () => {
         accessGrantTimestamp: '2023-06-08T09:32:29.761Z',
       },
     ]);
-    expect(mockRequest).toHaveBeenCalledWith(
+
+    expect(graphQLClient.request).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({
         requiredSchema: ['email:string'],
@@ -54,14 +58,10 @@ describe('getValidContact', () => {
   });
 
   it('should handle error when fetching protected data', async () => {
-    const mockRequest = jest
-      .fn()
-      .mockRejectedValue(await Promise.reject(new Error('Request failed')));
-
-    // Mock the GraphQLClient instance
-    (GraphQLClient as jest.MockedClass<any>).mockImplementation(() => ({
-      request: mockRequest,
-    }));
+    // Change the implementation of the mock request to simulate an error
+    GraphQLClient.prototype.request = jest
+      .fn<() => Promise<string>>()
+      .mockRejectedValue(new Error('Request failed'));
 
     const graphQLClient = new GraphQLClient('https://example.com/graphql');
 
