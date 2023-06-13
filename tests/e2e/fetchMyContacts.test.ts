@@ -7,13 +7,13 @@ import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { NULL_ADDRESS } from 'iexec/utils';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
-import { IExecWeb3Mail, getWeb3Provider } from '../../dist/index';
+import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { WorkflowError } from '../../dist/utils/errors';
 import { IExec } from 'iexec';
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: Wallet;
-  let web3mail: IExecWeb3Mail;
+  let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
   let protectedDataForASpecificRequester: ProtectedDataWithSecretProps;
   let protectedDataForAnyRequester: ProtectedDataWithSecretProps;
@@ -25,7 +25,7 @@ describe('web3mail.fetchMyContacts()', () => {
     wallet = Wallet.createRandom();
     ethProvider = getWeb3Provider(wallet.privateKey);
     dataProtector = new IExecDataProtector(ethProvider);
-    web3mail = new IExecWeb3Mail(ethProvider);
+    web3mail = new IExecWeb3mail(ethProvider);
   }, 30_000);
 
   it('pass with a granted access for a specific requester', async () => {
@@ -89,22 +89,22 @@ describe('web3mail.fetchMyContacts()', () => {
   }, 40_000);
 
   it('should return no contact', async () => {
-    const mockedWeb3Mail = new IExecWeb3Mail(
+    const mockedWeb3mail = new IExecWeb3mail(
       getWeb3Provider(wallet.privateKey)
     );
-    jest.spyOn(mockedWeb3Mail, 'fetchMyContacts').mockResolvedValue([]);
+    jest.spyOn(mockedWeb3mail, 'fetchMyContacts').mockResolvedValue([]);
 
-    const contacts = await mockedWeb3Mail.fetchMyContacts();
+    const contacts = await mockedWeb3mail.fetchMyContacts();
 
     expect(contacts).toEqual([]);
   });
 
   it('should throw a WorkflowError with a specific message', async () => {
-    const mockedWeb3Mail = new IExecWeb3Mail(
+    const mockedWeb3mail = new IExecWeb3mail(
       getWeb3Provider(wallet.privateKey)
     );
     jest
-      .spyOn(mockedWeb3Mail, 'fetchMyContacts')
+      .spyOn(mockedWeb3mail, 'fetchMyContacts')
       .mockRejectedValue(
         new WorkflowError(
           'Failed to fetch my contacts: wrong address is not a valid ethereum address',
@@ -115,10 +115,10 @@ describe('web3mail.fetchMyContacts()', () => {
     const expectedErrorMessage =
       'Failed to fetch my contacts: wrong address is not a valid ethereum address';
 
-    await expect(mockedWeb3Mail.fetchMyContacts()).rejects.toThrowError(
+    await expect(mockedWeb3mail.fetchMyContacts()).rejects.toThrowError(
       WorkflowError
     );
-    await expect(mockedWeb3Mail.fetchMyContacts()).rejects.toThrowError(
+    await expect(mockedWeb3mail.fetchMyContacts()).rejects.toThrowError(
       expectedErrorMessage
     );
   });

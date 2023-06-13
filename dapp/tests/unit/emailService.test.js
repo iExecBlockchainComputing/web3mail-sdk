@@ -38,7 +38,7 @@ describe('sendEmail', () => {
         {
           From: {
             Email: mailJetSender,
-            Name: 'Web3Mail Dapp Sender',
+            Name: 'Web3mail Dapp Sender',
           },
           To: [
             {

@@ -12,7 +12,7 @@ import {
 import { GraphQLClient } from 'graphql-request';
 import { DATAPROTECTOR_SUBGRAPH_ENDPOINT } from '../config/config.js';
 
-export class IExecWeb3Mail {
+export class IExecWeb3mail {
   fetchMyContacts: () => Promise<Contact[]>;
   sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
 

@@ -2,14 +2,14 @@
   <a href="https://iex.ec/" rel="noopener" target="_blank"><img width="150" src="./logo-iexec.png" alt="iExec logo"/></a>
 </p>
 
-<h1 align="center">Web3Mail</h1>
+<h1 align="center">Web3mail</h1>
 
-**Web3Mail** offers developers methods to create apps that:
+**Web3mail** offers developers methods to create apps that:
 
 - enable an entity (such as a (d)app provider or an end-user) to email an Ethereum account holder without knowing her/his email address
 - eliminate the need for end-users to share their email address with multiple third-parties, reducing the risk of data breaches and spam.
 
-Web3Mail is composed of 2 methods:
+Web3mail is composed of 2 methods:
 
 - **fetchMyContacts** — that enables an entity to retrieve a list of Ethereum accounts whose owners have authorized the entity to email them
 - **sendEmail** — that allows an entity to email a user (previously fetched via the fetchMyContacts method) knowing only her/his Ethereum account.
@@ -22,7 +22,7 @@ Web3Mail is composed of 2 methods:
 
 ## Installation
 
-Web3Mail is available as an [npm package](https://www.npmjs.com/package/@iexec/web3mail).
+Web3mail is available as an [npm package](https://www.npmjs.com/package/@iexec/web3mail).
 
 **npm:**
 
@@ -41,27 +41,27 @@ yarn add @iexec/web3mail
 ### Browser
 
 ```ts
-import { IExecWeb3Mail } from "@iexec/web3mail";
+import { IExecWeb3mail } from "@iexec/web3mail";
 
 const web3Provider = window.ethereum;
-const web3Mail = new IExecWeb3Mail(web3Provider);
+const web3mail = new IExecWeb3mail(web3Provider);
 ```
 
 ### NodeJS
 
 ```ts
-import { IExecWeb3Mail, getWeb3Provider } from "@iexec/web3mail";
+import { IExecWeb3mail, getWeb3Provider } from "@iexec/web3mail";
 
 const { PRIVATE_KEY } = process.env; 
 
 const web3Provider = getWeb3Provider(PRIVATE_KEY);
-const web3Mail = new IExecWeb3Mail(web3Provider);
+const web3mail = new IExecWeb3mail(web3Provider);
 ```
 
 ## Documentation
 
-- [Web3Mail documentation](https://tools.docs.iex.ec/tools/web3mail)
-- [Web3Mail technical design](./technical-design/index.md)
+- [Web3mail documentation](https://tools.docs.iex.ec/tools/web3mail)
+- [Web3mail technical design](./technical-design/index.md)
 - [iExec Protocol documentation](https://protocol.docs.iex.ec)
 
 ## License

@@ -1,4 +1,4 @@
-import { IExecWeb3Mail } from '@iexec/web3mail';
+import { IExecWeb3mail } from '@iexec/web3mail';
 
 const test = async () => {
   if (!window.ethereum) {
@@ -9,12 +9,11 @@ const test = async () => {
     method: 'eth_requestAccounts',
   });
 
-  const web3Mail = new IExecWeb3Mail(window.ethereum);
+  const web3mail = new IExecWeb3mail(window.ethereum);
 
-  web3Mail.fetchMyContacts().then((contacts) => {
+  web3mail.fetchMyContacts().then((contacts) => {
     console.log('contacts', contacts);
   });
 };
 
 document.getElementById('test-button').addEventListener('click', test);
-
