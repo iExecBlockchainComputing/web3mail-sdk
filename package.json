@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/iExecBlockchainComputing/web3mail-sdk#readme",
   "devDependencies": {
-    "@iexec/dataprotector": "0.0.0-nightly-8395225223034e4980135f6bf58f0a370721b496",
+    "@iexec/dataprotector": "^0.1.0",
     "@types/jest": "^29.5.1",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "assert": "^2.0.0",
@@ -60,6 +60,7 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
+    "graphql-request": "^6.1.0",
     "iexec": "^8.1.0",
     "yup": "^1.1.1"
   }
