@@ -58,12 +58,22 @@ export const getValidContact = async (
       start += range;
     } while (continuePagination);
 
-    // Convert protectedData [] into Contact[]
-    const validContacts = protectedDataList.map(({ id }) => ({
-      address: id,
-      owner: contacts[id].owner,
-      accessGrantTimestamp: contacts[id].accessGrantTimestamp,
-    }));
+    // Convert contacts array into a map where the key is the contact's address
+    const contactsMap = new Map(
+      contacts.map((contact) => [contact.address, contact])
+    );
+
+    // Convert protectedData[] into Contact[] using the map for constant time lookups
+    const validContacts = protectedDataList.map(({ id }) => {
+      const contact = contactsMap.get(id);
+      if (contact) {
+        return {
+          address: id,
+          owner: contact.owner,
+          accessGrantTimestamp: contact.accessGrantTimestamp,
+        };
+      }
+    });
 
     return validContacts;
   } catch (error) {
