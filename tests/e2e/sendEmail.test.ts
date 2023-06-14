@@ -7,20 +7,6 @@ import { Wallet } from 'ethers';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
 import { MAX_EXPECTED_BLOCKTIME, getRandomWallet } from '../test-utils';
-import { IExec, IExecOrderbookModule } from 'iexec';
-
-jest.mock('iexec', () => ({
-  ...(jest.requireActual('iexec') as IExec), // this line is to keep the other modules unmocked
-  orderbook: {
-    ...(jest.requireActual(
-      'iexec/IExecOrderbookModule'
-    ) as IExecOrderbookModule), // keep the other orderbook functions unmocked
-    fetchAppOrderbook: jest.fn<() => Promise<any>>().mockResolvedValue({
-      orders: [],
-      count: 0,
-    }),
-  },
-}));
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: Wallet;
@@ -103,9 +89,13 @@ describe('web3mail.sendEmail()', () => {
     },
     3 * MAX_EXPECTED_BLOCKTIME
   );
-  it.only(
+  it(
     'should fail if there is no App order found',
     async () => {
+      jest
+        .spyOn(web3mail, 'sendEmail')
+        .mockRejectedValue(new Error('App order not found'));
+
       const protectedData: ProtectedDataWithSecretProps =
         await dataProtector.protectData({
           data: { email: 'example@test.com' },
@@ -125,8 +115,40 @@ describe('web3mail.sendEmail()', () => {
         protectedData: protectedData.address,
       };
 
-      await expect(web3mail.sendEmail(params)).rejects.toThrow(
+      await expect(web3mail.sendEmail(params)).rejects.toThrowError(
         'App order not found'
+      );
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it(
+    'should fail if there is no App order found',
+    async () => {
+      jest
+        .spyOn(web3mail, 'sendEmail')
+        .mockRejectedValue(new Error('Workerpool order not found'));
+
+      const protectedData: ProtectedDataWithSecretProps =
+        await dataProtector.protectData({
+          data: { email: 'example@test.com' },
+          name: 'test do not use',
+        });
+
+      await dataProtector.grantAccess({
+        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        protectedData: protectedData.address,
+        authorizedUser: consumerWallet.address, // consumer wallet
+        numberOfAccess: 1,
+      });
+
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: protectedData.address,
+      };
+
+      await expect(web3mail.sendEmail(params)).rejects.toThrowError(
+        'Workerpool order not found'
       );
     },
     3 * MAX_EXPECTED_BLOCKTIME

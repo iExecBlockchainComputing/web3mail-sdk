@@ -16,6 +16,7 @@ import {
 } from '../utils/validators.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
 import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
+import { IExecOrderbookModule } from 'iexec';
 
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
@@ -26,6 +27,7 @@ export const sendEmail = async ({
 }: IExecConsumer &
   SubgraphConsumer &
   SendEmailParams): Promise<SendEmailResponse> => {
+  let test: IExecOrderbookModule;
   try {
     const vDatasetAddress = addressOrEnsSchema()
       .required()
