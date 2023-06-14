@@ -12,8 +12,12 @@ import {
 
 const main = async () => {
   // get env variables from drone
-  const { DRONE_DEPLOY_TO, WALLET_PRIVATE_KEY_DEV, WALLET_PRIVATE_KEY_PROD } =
-    process.env;
+  const {
+    DRONE_DEPLOY_TO,
+    WALLET_PRIVATE_KEY_DEV,
+    WALLET_PRIVATE_KEY_PROD,
+    PRICE,
+  } = process.env;
 
   if (
     !DRONE_DEPLOY_TO ||
@@ -61,8 +65,25 @@ const main = async () => {
 
   if (!appAddress) throw Error('Failed to get app address'); // If the app was not deployed, do not continue
 
-  //publish sell order for Tee app (scone)
-  await publishSellOrder(iexec, appAddress);
+  const isNumeric = /^-?\d+(\.\d+)?$/.test(PRICE);
+
+  if (!isNumeric && PRICE !== undefined) {
+      throw new Error('Price must be a string that represents a number.');
+  }
+  
+  if (PRICE === undefined) {
+      console.log(
+          'No price set for the app sell order, using default price 0 RLC'
+      );
+      //publish sell order for Tee app (scone)
+      await publishSellOrder(iexec, appAddress);
+  } else {
+      const priceValue = parseInt(PRICE);
+      console.log('price in RLC for the app sell order :', priceValue);
+      //publish sell order for Tee app (scone)
+      await publishSellOrder(iexec, appAddress, priceValue * 10e9);
+  }
+  
 };
 
 main().catch((e) => {

@@ -3,9 +3,10 @@ import { APP_PRICE, APP_TAG, APP_VOLUME } from '../config/config.js';
 
 export const publishSellOrder = async (
   iexec: IExec,
-  appAddress: string
+  appAddress: string,
+  price?: number
 ): Promise<string> => {
-  const appprice = APP_PRICE;
+  const appprice = price || APP_PRICE;
   const volume = APP_VOLUME;
   const sconeTeeTag = APP_TAG;
   console.log(`Publishing apporder for app ${appAddress}`);
