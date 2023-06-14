@@ -40,16 +40,17 @@ export const sendEmail = async ({
       .label('emailContent')
       .validateSync(emailContent);
 
+    // Check protected data validity through subgraph
     const isValidProtectedData = await checkProtectedDataValidity(
       graphQLClient,
       vDatasetAddress
     );
-
     if (!isValidProtectedData) {
       throw new Error('ProtectedData is not valid');
     }
 
     const requesterAddress = await iexec.wallet.getAddress();
+
     // Initialize IPFS storage if not already initialized
     const isIpfsStorageInitialized =
       await iexec.storage.checkStorageTokenExists(requesterAddress);
@@ -57,6 +58,7 @@ export const sendEmail = async ({
       const token = await iexec.storage.defaultStorageLogin();
       await iexec.storage.pushStorageToken(token);
     }
+
     // Fetch dataset order
     const datasetOrderbook = await iexec.orderbook.fetchDatasetOrderbook(
       vDatasetAddress,
@@ -69,6 +71,7 @@ export const sendEmail = async ({
     if (!datasetorder) {
       throw new Error('Dataset order not found');
     }
+
     // Fetch app order
     const appOrderbook = await iexec.orderbook.fetchAppOrderbook(
       WEB3_MAIL_DAPP_ADDRESS,
@@ -82,6 +85,7 @@ export const sendEmail = async ({
     if (!apporder) {
       throw new Error('App order not found');
     }
+
     // Fetch workerpool order
     const workerpoolOrderbook = await iexec.orderbook.fetchWorkerpoolOrderbook({
       workerpool: WORKERPOOL_ADDRESS,
@@ -95,11 +99,13 @@ export const sendEmail = async ({
     if (!workerpoolorder) {
       throw new Error('Workerpool order not found');
     }
+
     // Push requester secrets
     const emailSubjectId = generateSecureUniqueId(16);
     const emailContentId = generateSecureUniqueId(16);
     await iexec.secrets.pushRequesterSecret(emailSubjectId, vEmailSubject);
     await iexec.secrets.pushRequesterSecret(emailContentId, vEmailContent);
+
     // Create and sign request order
     const requestorderToSign = await iexec.order.createRequestorder({
       app: WEB3_MAIL_DAPP_ADDRESS,
@@ -118,6 +124,7 @@ export const sendEmail = async ({
       },
     });
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
+
     // Match orders and compute task ID
     const { dealid } = await iexec.order.matchOrders({
       apporder,

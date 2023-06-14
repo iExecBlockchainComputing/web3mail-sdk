@@ -2,17 +2,31 @@ import {
   IExecDataProtector,
   ProtectedDataWithSecretProps,
 } from '@iexec/dataprotector';
-import { beforeAll, describe, expect, it } from '@jest/globals';
+import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
 import { MAX_EXPECTED_BLOCKTIME, getRandomWallet } from '../test-utils';
+import { IExec } from 'iexec';
+
+jest.mock('iexec', () => ({
+  ...(jest.requireActual('iexec') as IExec), // this line is to keep the other functions unmocked
+  orderbook: {
+    ...(jest.requireActual('iexec').orderbook as any), // keep the other orderbook functions unmocked
+    fetchAppOrderbook: jest.fn<() => Promise<any>>().mockResolvedValue({
+      orders: [],
+      count: 0,
+    }),
+  },
+}));
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: Wallet;
   let providerWallet: Wallet;
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
+  let iexec: IExec;
+
   beforeAll(async () => {
     providerWallet = getRandomWallet();
     consumerWallet = getRandomWallet();
@@ -20,6 +34,9 @@ describe('web3mail.sendEmail()', () => {
       getWeb3Provider(providerWallet.privateKey)
     );
     web3mail = new IExecWeb3mail(getWeb3Provider(consumerWallet.privateKey));
+    iexec = new IExec({
+      ethProvider: getWeb3Provider(providerWallet.privateKey),
+    });
   });
 
   it(
@@ -51,29 +68,9 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should fail if the protected data is not valid',
     async () => {
-      const data = {
-        numberZero: 0,
-        numberOne: 1,
-        numberMinusOne: -1,
-        booleanTrue: true,
-        booleanFalse: false,
-        string: 'hello world!',
-        nested: {
-          object: {
-            with: {
-              binary: {
-                data: {
-                  pngImage: 'placeholder',
-                },
-              },
-            },
-          },
-        },
-      };
       const protectedData: ProtectedDataWithSecretProps =
         await dataProtector.protectData({
-          // You can use your email to verify if you receive an email
-          data: data,
+          data: { foo: 'bar' },
           name: 'test do not use',
         });
       const params = {
@@ -84,6 +81,59 @@ describe('web3mail.sendEmail()', () => {
 
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
         'ProtectedData is not valid'
+      );
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it(
+    'should fail if there is no dataset order found',
+    async () => {
+      const protectedData: ProtectedDataWithSecretProps =
+        await dataProtector.protectData({
+          data: { email: 'example@test.com' },
+          name: 'test do not use',
+        });
+
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: protectedData.address,
+      };
+      await expect(web3mail.sendEmail(params)).rejects.toThrow(
+        'Dataset order not found'
+      );
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it.only(
+    'should fail if there is no App order found',
+    async () => {
+      //mocked the fetchAppOrderbook function
+      jest.mock('iexec', () => ({
+        orderbook: { fetchAppOrderbook: orderbook.fetchAppOrderbook },
+      }));
+
+      const protectedData: ProtectedDataWithSecretProps =
+        await dataProtector.protectData({
+          data: { email: 'example@test.com' },
+          name: 'test do not use',
+        });
+
+      await dataProtector.grantAccess({
+        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        protectedData: protectedData.address,
+        authorizedUser: consumerWallet.address, // consumer wallet
+        numberOfAccess: 1,
+      });
+
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: protectedData.address,
+      };
+
+      await expect(web3mail.sendEmail(params)).rejects.toThrow(
+        'App order not found'
       );
     },
     3 * MAX_EXPECTED_BLOCKTIME
