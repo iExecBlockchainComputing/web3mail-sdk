@@ -7,12 +7,14 @@ import { Wallet } from 'ethers';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
 import { MAX_EXPECTED_BLOCKTIME, getRandomWallet } from '../test-utils';
-import { IExec } from 'iexec';
+import { IExec, IExecOrderbookModule } from 'iexec';
 
 jest.mock('iexec', () => ({
-  ...(jest.requireActual('iexec') as IExec), // this line is to keep the other functions unmocked
+  ...(jest.requireActual('iexec') as IExec), // this line is to keep the other modules unmocked
   orderbook: {
-    ...(jest.requireActual('iexec').orderbook as any), // keep the other orderbook functions unmocked
+    ...(jest.requireActual(
+      'iexec/IExecOrderbookModule'
+    ) as IExecOrderbookModule), // keep the other orderbook functions unmocked
     fetchAppOrderbook: jest.fn<() => Promise<any>>().mockResolvedValue({
       orders: [],
       count: 0,
@@ -25,7 +27,6 @@ describe('web3mail.sendEmail()', () => {
   let providerWallet: Wallet;
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
-  let iexec: IExec;
 
   beforeAll(async () => {
     providerWallet = getRandomWallet();
@@ -34,9 +35,6 @@ describe('web3mail.sendEmail()', () => {
       getWeb3Provider(providerWallet.privateKey)
     );
     web3mail = new IExecWeb3mail(getWeb3Provider(consumerWallet.privateKey));
-    iexec = new IExec({
-      ethProvider: getWeb3Provider(providerWallet.privateKey),
-    });
   });
 
   it(
@@ -108,11 +106,6 @@ describe('web3mail.sendEmail()', () => {
   it.only(
     'should fail if there is no App order found',
     async () => {
-      //mocked the fetchAppOrderbook function
-      jest.mock('iexec', () => ({
-        orderbook: { fetchAppOrderbook: orderbook.fetchAppOrderbook },
-      }));
-
       const protectedData: ProtectedDataWithSecretProps =
         await dataProtector.protectData({
           data: { email: 'example@test.com' },
