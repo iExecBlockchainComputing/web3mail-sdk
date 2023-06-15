@@ -2,8 +2,8 @@ import { getIExec, loadAppAddress } from './utils/utils.js';
 import { revokeSellOrder } from './singleFunction/revokeSellOrder.js';
 import { resolveName } from './singleFunction/resolveName.js';
 import {
-  DRONE_TARGET_SELL_ORDER_DEV,
-  DRONE_TARGET_SELL_ORDER_PROD,
+  DRONE_TARGET_REVOKE_SELL_ORDER_DEV,
+  DRONE_TARGET_REVOKE_SELL_ORDER_PROD,
   DRONE_TARGET_DEPLOY_DEV,
   DRONE_TARGET_DEPLOY_PROD,
   WEB3_MAIL_ENS_NAME_DEV,
@@ -23,22 +23,22 @@ const main = async () => {
     !DRONE_DEPLOY_TO ||
     ![
       DRONE_TARGET_DEPLOY_DEV,
-      DRONE_TARGET_SELL_ORDER_DEV,
+      DRONE_TARGET_REVOKE_SELL_ORDER_DEV,
       DRONE_TARGET_DEPLOY_PROD,
-      DRONE_TARGET_SELL_ORDER_PROD,
+      DRONE_TARGET_REVOKE_SELL_ORDER_PROD,
     ].includes(DRONE_DEPLOY_TO)
   )
     throw Error(`Invalid promote target ${DRONE_DEPLOY_TO}`);
 
   let privateKey;
   if (
-    [DRONE_TARGET_DEPLOY_DEV, DRONE_TARGET_SELL_ORDER_DEV].includes(
+    [DRONE_TARGET_DEPLOY_DEV, DRONE_TARGET_REVOKE_SELL_ORDER_DEV].includes(
       DRONE_DEPLOY_TO
     )
   ) {
     privateKey = WALLET_PRIVATE_KEY_DEV;
   } else if (
-    [DRONE_TARGET_DEPLOY_PROD, DRONE_TARGET_SELL_ORDER_PROD].includes(
+    [DRONE_TARGET_DEPLOY_PROD, DRONE_TARGET_REVOKE_SELL_ORDER_PROD].includes(
       DRONE_DEPLOY_TO
     )
   ) {
@@ -53,9 +53,9 @@ const main = async () => {
   const appAddress = await loadAppAddress().catch(() => {
     console.log('No app address found falling back to ENS');
     let ensName;
-    if (DRONE_DEPLOY_TO === DRONE_TARGET_SELL_ORDER_DEV) {
+    if (DRONE_DEPLOY_TO === DRONE_TARGET_REVOKE_SELL_ORDER_DEV) {
       ensName = WEB3_MAIL_ENS_NAME_DEV;
-    } else if (DRONE_DEPLOY_TO === DRONE_TARGET_SELL_ORDER_PROD) {
+    } else if (DRONE_DEPLOY_TO === DRONE_TARGET_REVOKE_SELL_ORDER_PROD) {
       ensName = WEB3_MAIL_ENS_NAME_PROD;
     }
     if (!ensName)
