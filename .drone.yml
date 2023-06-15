@@ -322,7 +322,7 @@ trigger:
     - promote
   target:
     - dapp-dev
-    - dapp-production
+    - dapp-prod
   branch:
     - develop
     - main
@@ -345,7 +345,7 @@ steps:
       - SCONE_HASH=1 node > deployment-dapp/.scone-fingerprint
     when:
       target:
-        - dapp-production
+        - dapp-prod
       branch:
         - main
 
@@ -413,6 +413,7 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run configure-ens
+      
 ---
 # pipeline to publish sell order
 kind: pipeline
@@ -423,8 +424,8 @@ trigger:
   event:
     - promote
   target:
-    - dapp-sell-order-dev
-    - dapp-sell-order-production
+    - dapp-publish-sell-order-dev
+    - dapp-publish-sell-order-prod
   branch:
     - develop
     - main
@@ -440,7 +441,7 @@ steps:
   - name: publish sell order
     image: node:18
     pull: always
-    params: 
+    params:
       - PRICE
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -451,3 +452,42 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run publish-sell-order
+
+---
+# pipeline to revoke sell order
+kind: pipeline
+type: docker
+name: publish-apporder
+
+trigger:
+  event:
+    - promote
+  target:
+    - dapp-revoke-sell-order-dev
+    - dapp-revoke-sell-order-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: install deps
+    image: node:18
+    pull: always
+    commands:
+      - cd deployment-dapp
+      - npm ci
+
+  - name: publish sell order
+    image: node:18
+    pull: always
+    params:
+      - PRICE
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+    commands:
+      - cd deployment-dapp
+      - npm run revoke-sell-order

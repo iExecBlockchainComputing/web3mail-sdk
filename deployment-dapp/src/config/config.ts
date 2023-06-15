@@ -9,7 +9,7 @@ export const APP_TYPE = 'DOCKER';
 export const FRAMEWORK = 'scone';
 
 //publish sell order parameters
-export const APP_PRICE = 0;
+export const DEFAULT_APP_PRICE = 0;
 export const APP_VOLUME = 1000;
 export const APP_TAG = ['tee', 'scone'];
 
