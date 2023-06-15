@@ -10,6 +10,7 @@ sequenceDiagram
     end
     box iExec Protocol
         participant Market as Marketplace API
+        participant Graph as The Graph
     end
 
     User -) SDK: fetchMyContacts()
@@ -24,7 +25,18 @@ sequenceDiagram
 
     deactivate SDK
 
-    SDK -->> User: myContacts[]
+    SDK ->> Graph: protectedDatas(requiredSchema,<br>id,<br>start,<br>range)
+
+    Graph -->> SDK: protectedDatas[]
+
+    activate SDK
+
+    SDK ->> SDK: checkProtectedDataValidity(protectedData)
+
+    deactivate SDK
+    
+
+    SDK -->> User: validContacts[]
 ```
 
 ## resources
