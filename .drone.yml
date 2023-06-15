@@ -417,7 +417,7 @@ steps:
 # pipeline to publish sell order
 kind: pipeline
 type: docker
-name: revoke-apporder
+name: publish-apporder
 
 trigger:
   event:
