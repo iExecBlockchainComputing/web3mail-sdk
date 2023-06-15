@@ -9,7 +9,7 @@ export const APP_TYPE = 'DOCKER';
 export const FRAMEWORK = 'scone';
 
 //publish sell order parameters
-export const APP_PRICE = 0;
+export const DEFAULT_APP_PRICE = 0;
 export const APP_VOLUME = 1000;
 export const APP_TAG = ['tee', 'scone'];
 
@@ -30,6 +30,8 @@ export const DOCKER_IMAGE_DEV_TAG = `dev-${process.env.DRONE_COMMIT}-sconify-${S
 
 //drone target
 export const DRONE_TARGET_DEPLOY_DEV = 'dapp-dev';
-export const DRONE_TARGET_DEPLOY_PROD = 'dapp-production';
-export const DRONE_TARGET_SELL_ORDER_DEV = 'dapp-sell-order-dev';
-export const DRONE_TARGET_SELL_ORDER_PROD = 'dapp-sell-order-production';
+export const DRONE_TARGET_DEPLOY_PROD = 'dapp-prod';
+export const DRONE_TARGET_SELL_ORDER_DEV = 'dapp-publish-sell-order-dev';
+export const DRONE_TARGET_SELL_ORDER_PROD = 'dapp-publish-sell-order-prod';
+export const DRONE_TARGET_REVOKE_SELL_ORDER_DEV = 'dapp-revoke-sell-order-dev';
+export const DRONE_TARGET_REVOKE_SELL_ORDER_PROD = 'dapp-revoke-sell-order-prod';

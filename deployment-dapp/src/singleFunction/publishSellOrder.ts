@@ -1,12 +1,12 @@
 import { IExec } from 'iexec';
-import { APP_PRICE, APP_TAG, APP_VOLUME } from '../config/config.js';
+import { DEFAULT_APP_PRICE, APP_TAG, APP_VOLUME } from '../config/config.js';
 
 export const publishSellOrder = async (
   iexec: IExec,
   appAddress: string,
   price?: number
 ): Promise<string> => {
-  const appprice = price || APP_PRICE;
+  const appprice = price || DEFAULT_APP_PRICE;
   const volume = APP_VOLUME;
   const sconeTeeTag = APP_TAG;
   console.log(`Publishing apporder for app ${appAddress}`);
