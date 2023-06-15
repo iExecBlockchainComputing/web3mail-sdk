@@ -14,7 +14,10 @@ export const revokeSellOrder = async (
     (o) => o.order.appprice === appprice
   )?.orderHash;
 
-  if (!orderHash) throw Error('No corresponding appOrder found');
+  if (!orderHash)
+    throw Error(
+      `No corresponding appOrder to revoke for the price ${appprice}`
+    );
   const txHash = await iexec.order.unpublishApporder(orderHash);
   console.log(`Revoked apporder ${orderHash}\n${txHash}`);
   return txHash;

@@ -72,9 +72,7 @@ const main = async () => {
   }
 
   if (PRICE === undefined) {
-    console.log(
-      'No price set for the app sell order, using default price 0 RLC'
-    );
+    console.log('Trying to revoke a free app sell order');
     try {
       //publish sell order for Tee app (scone)
       await revokeSellOrder(iexec, appAddress);
@@ -83,7 +81,10 @@ const main = async () => {
     }
   } else {
     const priceValue = parseInt(PRICE);
-    console.log('price in RLC for the app sell order :', priceValue);
+    console.log(
+      'Trying to revoke a app sell order with the price (in xRLC) :',
+      priceValue * 10e9
+    );
     try {
       //publish sell order for Tee app (scone)
       await revokeSellOrder(iexec, appAddress, priceValue * 10e9);
