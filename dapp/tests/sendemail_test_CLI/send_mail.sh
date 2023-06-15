@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Set the necessary environment variables
-export IEXEC_APP_ADDRESS="0x3ef531f670B12dc21490Fff2f81c20A59e17d254"
-export IEXEC_WORKERPOOL_ADDRESS="debug-v8-bellecour.main.pools.iexec.eth"
+export IEXEC_APP_ADDRESS="web3mail.apps.iexec.eth"
+export IEXEC_WORKERPOOL_ADDRESS="prod-v8-bellecour.main.pools.iexec.eth"
 export IEXEC_TAG="tee,scone"
 
 # Install iExec CLI if not already installed
@@ -49,21 +49,21 @@ echo
 echo "**************************"
 sudo iexec init --skip-wallet
 
-# Update the debug SMG
-sms_debug='{"sms": { "scone": "https://sms.scone-debug.v8-bellecour.iex.ec" }'
+# Update the prod SMG
+sms_prod='{"sms": { "scone": "https://sms.scone-prod.v8-bellecour.iex.ec" }'
 echo "**************************"
 echo
-echo "Updating the debug SMG..."
+echo "Updating the prod SMG..."
 echo
 echo "**************************"
 
-# Check if sms_debug exists in chain.json
-if grep -qF "$sms_debug" chain.json; then
-  echo "sms_debug already exists in chain.json. No changes needed."
+# Check if sms_prod exists in chain.json
+if grep -qF "$sms_prod" chain.json; then
+  echo "sms_prod already exists in chain.json. No changes needed."
 else
   # Modify chain.json using sed
   chain_contents=$(cat chain.json)
-  sed 's|"bellecour": {|"bellecour": '"$sms_debug"'|g' chain.json > tmp.json && mv tmp.json chain.json
+  sed 's|"bellecour": {|"bellecour": '"$sms_prod"'|g' chain.json > tmp.json && mv tmp.json chain.json
   echo "sms_debug added to chain.json."
 fi
 
