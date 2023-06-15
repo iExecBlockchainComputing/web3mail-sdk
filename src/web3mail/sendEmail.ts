@@ -1,21 +1,21 @@
 import {
-  IExecConsumer,
-  SendEmailParams,
-  SendEmailResponse,
-  SubgraphConsumer,
-} from './types.js';
-import {
   WEB3_MAIL_DAPP_ADDRESS,
   WORKERPOOL_ADDRESS,
 } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
+import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
+import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
   emailSubjectSchema,
   throwIfMissing,
 } from '../utils/validators.js';
-import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
-import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
+import {
+  IExecConsumer,
+  SendEmailParams,
+  SendEmailResponse,
+  SubgraphConsumer,
+} from './types.js';
 
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
@@ -78,9 +78,16 @@ export const sendEmail = async ({
         workerpool: WORKERPOOL_ADDRESS,
       }
     );
-    const apporder = appOrderbook?.orders[0]?.order;
-    if (!apporder) {
+    const appOrder = appOrderbook?.orders[0]?.order;
+    if (!appOrder) {
       throw new Error('App order not found');
+    }
+    const freeAppOrderbook = appOrderbook.orders.filter(
+      (order) => order.order.appprice === 0
+    );
+    const freeAppOrder = freeAppOrderbook[0]?.order;
+    if (!freeAppOrder) {
+      throw new Error('No free App order found');
     }
     // Fetch workerpool order
     const workerpoolOrderbook = await iexec.orderbook.fetchWorkerpoolOrderbook({
@@ -105,7 +112,7 @@ export const sendEmail = async ({
       app: WEB3_MAIL_DAPP_ADDRESS,
       category: workerpoolorder.category,
       dataset: vDatasetAddress,
-      appmaxprice: apporder.appprice,
+      appmaxprice: freeAppOrder.appprice,
       workerpoolmaxprice: workerpoolorder.workerpoolprice,
       tag: ['tee', 'scone'],
       workerpool: WORKERPOOL_ADDRESS,
@@ -120,10 +127,10 @@ export const sendEmail = async ({
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
     // Match orders and compute task ID
     const { dealid } = await iexec.order.matchOrders({
-      apporder,
-      datasetorder,
-      workerpoolorder,
-      requestorder,
+      apporder: freeAppOrder,
+      datasetorder: datasetorder,
+      workerpoolorder: workerpoolorder,
+      requestorder: requestorder,
     });
     const taskId = await iexec.deal.computeTaskId(dealid, 0);
 
