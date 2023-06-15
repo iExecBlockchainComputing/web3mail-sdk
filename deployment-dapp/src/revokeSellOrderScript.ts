@@ -75,13 +75,21 @@ const main = async () => {
     console.log(
       'No price set for the app sell order, using default price 0 RLC'
     );
-    //publish sell order for Tee app (scone)
-    await revokeSellOrder(iexec, appAddress);
+    try {
+      //publish sell order for Tee app (scone)
+      await revokeSellOrder(iexec, appAddress);
+    } catch (e) {
+      console.log(e);
+    }
   } else {
     const priceValue = parseInt(PRICE);
     console.log('price in RLC for the app sell order :', priceValue);
-    //publish sell order for Tee app (scone)
-    await revokeSellOrder(iexec, appAddress, priceValue * 10e9);
+    try {
+      //publish sell order for Tee app (scone)
+      await revokeSellOrder(iexec, appAddress, priceValue * 10e9);
+    } catch (e) {
+      console.log(e);
+    }
   }
 };
 
