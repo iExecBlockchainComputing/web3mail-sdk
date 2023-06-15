@@ -1,4 +1,6 @@
 import {
+  DESIRED_APP_ORDER_PRICE,
+  DESIRED_WORKERPOOL_ORDER_PRICE,
   WEB3_MAIL_DAPP_ADDRESS,
   WORKERPOOL_ADDRESS,
 } from '../config/config.js';
@@ -82,12 +84,12 @@ export const sendEmail = async ({
     if (!appOrder) {
       throw new Error('App order not found');
     }
-    const freeAppOrderbook = appOrderbook.orders.filter(
-      (order) => order.order.appprice === 0
+    const desiredPriceAppOrderbook = appOrderbook.orders.filter(
+      (order) => order.order.appprice === DESIRED_APP_ORDER_PRICE
     );
-    const freeAppOrder = freeAppOrderbook[0]?.order;
-    if (!freeAppOrder) {
-      throw new Error('No free App order found');
+    const desiredPriceAppOrder = desiredPriceAppOrderbook[0]?.order;
+    if (!desiredPriceAppOrder) {
+      throw new Error('No App order found for the desired price');
     }
     // Fetch workerpool order
     const workerpoolOrderbook = await iexec.orderbook.fetchWorkerpoolOrderbook({
@@ -98,9 +100,18 @@ export const sendEmail = async ({
       maxTag: ['tee', 'scone'],
       category: 0,
     });
+
     const workerpoolorder = workerpoolOrderbook?.orders[0]?.order;
     if (!workerpoolorder) {
       throw new Error('Workerpool order not found');
+    }
+    const desiredPriceWorkerpoolOrderbook = workerpoolOrderbook.orders.filter(
+      (order) => order.order.workerpoolprice === DESIRED_WORKERPOOL_ORDER_PRICE
+    );
+    const desiredPriceWorkerpoolOrder =
+      desiredPriceWorkerpoolOrderbook[0]?.order;
+    if (!desiredPriceWorkerpoolOrder) {
+      throw new Error('No Workerpool order found for the desired price');
     }
     // Push requester secrets
     const emailSubjectId = generateSecureUniqueId(16);
@@ -110,10 +121,10 @@ export const sendEmail = async ({
     // Create and sign request order
     const requestorderToSign = await iexec.order.createRequestorder({
       app: WEB3_MAIL_DAPP_ADDRESS,
-      category: workerpoolorder.category,
+      category: desiredPriceWorkerpoolOrder.category,
       dataset: vDatasetAddress,
-      appmaxprice: freeAppOrder.appprice,
-      workerpoolmaxprice: workerpoolorder.workerpoolprice,
+      appmaxprice: desiredPriceAppOrder.appprice,
+      workerpoolmaxprice: desiredPriceWorkerpoolOrder.workerpoolprice,
       tag: ['tee', 'scone'],
       workerpool: WORKERPOOL_ADDRESS,
       params: {
@@ -127,9 +138,9 @@ export const sendEmail = async ({
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
     // Match orders and compute task ID
     const { dealid } = await iexec.order.matchOrders({
-      apporder: freeAppOrder,
+      apporder: desiredPriceAppOrder,
       datasetorder: datasetorder,
-      workerpoolorder: workerpoolorder,
+      workerpoolorder: desiredPriceWorkerpoolOrder,
       requestorder: requestorder,
     });
     const taskId = await iexec.deal.computeTaskId(dealid, 0);
