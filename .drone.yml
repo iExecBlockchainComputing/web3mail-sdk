@@ -441,7 +441,7 @@ steps:
   - name: publish sell order
     image: node:18
     pull: always
-    params:
+    params: 
       - PRICE
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
