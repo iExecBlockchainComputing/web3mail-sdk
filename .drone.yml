@@ -388,7 +388,7 @@ steps:
       - cd deployment-dapp
       - npm run push-dapp-secret
 
-  - name: publish sell order
+  - name: publish free sell order
     image: node:18
     pull: always
     environment:
@@ -440,6 +440,8 @@ steps:
   - name: publish sell order
     image: node:18
     pull: always
+    params: 
+      - PRICE
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
       WALLET_PRIVATE_KEY_DEV:
