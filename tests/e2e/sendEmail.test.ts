@@ -26,7 +26,6 @@ describe('web3mail.sendEmail()', () => {
 
     //create valid protected data
     validProtectedData = await dataProtector.protectData({
-      // You can use your email to verify if you receive an email
       data: { email: 'example@test.com' },
       name: 'test do not use',
     });
@@ -34,7 +33,7 @@ describe('web3mail.sendEmail()', () => {
       authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
       protectedData: validProtectedData.address,
       authorizedUser: consumerWallet.address, // consumer wallet
-      numberOfAccess: 1,
+      numberOfAccess: 1000,
     });
 
     //create unvalid protected data
@@ -44,10 +43,15 @@ describe('web3mail.sendEmail()', () => {
     });
   }, 3 * MAX_EXPECTED_BLOCKTIME);
 
+  afterAll(async () => {
+    await dataProtector.revokeAllAccessObservable({
+      protectedData: validProtectedData.address,
+    });
+  }, 3 * MAX_EXPECTED_BLOCKTIME);
+
   it(
     'should successfully send email',
     async () => {
-      console.log('protectedData', validProtectedData.address);
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
@@ -62,7 +66,6 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should fail if the protected data is not valid',
     async () => {
-      console.log('protectedData', unvalidProtectedData.address);
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
@@ -76,13 +79,17 @@ describe('web3mail.sendEmail()', () => {
     3 * MAX_EXPECTED_BLOCKTIME
   );
   it(
-    'should fail if there is no dataset order found',
+    'should fail if there is no Dataset order found',
     async () => {
-      console.log('protectedData', validProtectedData.address);
+      //create valid protected data with blank order to not have: datasetorder is fully consumed error from iexec sdk
+      const protectedData = await dataProtector.protectData({
+        data: { email: 'example@test.com' },
+        name: 'test do not use',
+      });
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
-        protectedData: validProtectedData.address,
+        protectedData: protectedData.address,
       };
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
         'Dataset order not found'
@@ -125,7 +132,7 @@ describe('web3mail.sendEmail()', () => {
     3 * MAX_EXPECTED_BLOCKTIME
   );
   it(
-    'should fail if there is no App order found',
+    'should fail if there is no Workerpool order found',
     async () => {
       // To see with Pierre
 

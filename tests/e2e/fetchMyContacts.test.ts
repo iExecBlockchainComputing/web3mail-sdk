@@ -15,10 +15,7 @@ describe('web3mail.fetchMyContacts()', () => {
   let wallet: Wallet;
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
-  let protectedDataForASpecificRequester: ProtectedDataWithSecretProps;
-  let protectedDataForAnyRequester: ProtectedDataWithSecretProps;
-  let grantedAccessForASpecificRequester: GrantedAccess;
-  let grantedAccessForAnyRequester: GrantedAccess;
+  let protectedData: ProtectedDataWithSecretProps;
   let ethProvider: EnhancedWallet;
 
   beforeAll(async () => {
@@ -26,6 +23,12 @@ describe('web3mail.fetchMyContacts()', () => {
     ethProvider = getWeb3Provider(wallet.privateKey);
     dataProtector = new IExecDataProtector(ethProvider);
     web3mail = new IExecWeb3mail(ethProvider);
+
+    //create valid protected data
+    protectedData = await dataProtector.protectData({
+      data: { email: 'test@gmail.com' },
+      name: 'test do not use',
+    });
   }, 30_000);
 
   afterEach(() => {
@@ -33,23 +36,15 @@ describe('web3mail.fetchMyContacts()', () => {
   });
 
   it('pass with a granted access for a specific requester', async () => {
-    protectedDataForASpecificRequester = await dataProtector.protectData({
-      data: { email: 'test@gmail.com' },
-      name: 'test do not use',
-    });
-
-    grantedAccessForASpecificRequester = await dataProtector.grantAccess({
+    await dataProtector.grantAccess({
       authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-      protectedData: protectedDataForASpecificRequester.address,
+      protectedData: protectedData.address,
       authorizedUser: wallet.address,
     });
 
     const res = await web3mail.fetchMyContacts();
     const foundContactForASpecificRequester = res.find((obj) => {
-      return (
-        obj['address'] ===
-        protectedDataForASpecificRequester.address.toLocaleLowerCase()
-      );
+      return obj['address'] === protectedData.address.toLocaleLowerCase();
     });
     expect(
       foundContactForASpecificRequester &&
@@ -58,32 +53,27 @@ describe('web3mail.fetchMyContacts()', () => {
     expect(
       foundContactForASpecificRequester &&
         foundContactForASpecificRequester['address']
-    ).toBe(protectedDataForASpecificRequester.address.toLocaleLowerCase());
+    ).toBe(protectedData.address.toLocaleLowerCase());
   }, 40_000);
 
   it('pass with a granted access for any requester', async () => {
-    protectedDataForAnyRequester = await dataProtector.protectData({
-      data: { email: 'test@gmail.com' },
-      name: 'test do not use',
-    });
-    grantedAccessForAnyRequester = await dataProtector.grantAccess({
+    const grantedAccessForAnyRequester = await dataProtector.grantAccess({
       authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-      protectedData: protectedDataForAnyRequester.address,
+      protectedData: protectedData.address,
       authorizedUser: NULL_ADDRESS,
     });
 
     const res = await web3mail.fetchMyContacts();
 
     const foundContactForAnyRequester = res.find(
-      (obj) =>
-        obj['address'] === protectedDataForAnyRequester.address.toLowerCase()
+      (obj) => obj['address'] === protectedData.address.toLowerCase()
     );
     expect(
       foundContactForAnyRequester && foundContactForAnyRequester['address']
     ).toBeDefined();
     expect(
       foundContactForAnyRequester && foundContactForAnyRequester['address']
-    ).toBe(protectedDataForAnyRequester.address.toLocaleLowerCase());
+    ).toBe(protectedData.address.toLocaleLowerCase());
 
     //revoke access to not appear as contact for anyone
     const revoke = await dataProtector.revokeOneAccess(
