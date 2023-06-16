@@ -8,8 +8,6 @@ import {
   DRONE_TARGET_DEPLOY_PROD,
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,
-  DEFAULT_APP_PRICE,
-  DEFAULT_APP_VOLUME,
 } from './config/config.js';
 import { isUndefined, params } from './utils/validator.js';
 
@@ -20,7 +18,6 @@ const main = async () => {
     WALLET_PRIVATE_KEY_DEV,
     WALLET_PRIVATE_KEY_PROD,
     PRICE,
-    VOLUME,
   } = process.env;
 
   if (
@@ -71,24 +68,26 @@ const main = async () => {
 
   // validate params
   params().validate(PRICE);
-  params().validate(VOLUME);
 
   if (isUndefined(PRICE)) {
     console.log(
-      `No price set for the app sell order, using default price ${DEFAULT_APP_PRICE} xRLC`
+      'No price set for the app sell order, using default price 0 RLC'
     );
-  }
-  if (isUndefined(VOLUME)) {
-    console.log(
-      `No volume set for the app sell order, using default volume ${DEFAULT_APP_VOLUME}`
-    );
-  }
-
-  try {
-    //publish sell order for Tee app (scone)
-    await publishSellOrder(iexec, appAddress, PRICE, VOLUME);
-  } catch (e) {
-    throw Error('Failed to publish paying sell order');
+    try {
+      //publish sell order for Tee app (scone)
+      await publishSellOrder(iexec, appAddress);
+    } catch (e) {
+      throw Error('Failed to publish free sell order');
+    }
+  } else {
+    const priceValue = parseInt(PRICE);
+    console.log('price in RLC for the app sell order :', priceValue);
+    try {
+      //publish sell order for Tee app (scone)
+      await publishSellOrder(iexec, appAddress, priceValue * 10e9);
+    } catch (e) {
+      throw Error('Failed to publish paying sell order');
+    }
   }
 };
 
