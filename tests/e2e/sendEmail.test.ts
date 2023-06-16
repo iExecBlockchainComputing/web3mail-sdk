@@ -13,6 +13,8 @@ describe('web3mail.sendEmail()', () => {
   let providerWallet: Wallet;
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
+  let validProtectedData: ProtectedDataWithSecretProps;
+  let unvalidProtectedData: ProtectedDataWithSecretProps;
 
   beforeAll(async () => {
     providerWallet = getRandomWallet();
@@ -21,27 +23,35 @@ describe('web3mail.sendEmail()', () => {
       getWeb3Provider(providerWallet.privateKey)
     );
     web3mail = new IExecWeb3mail(getWeb3Provider(consumerWallet.privateKey));
-  });
+
+    //create valid protected data
+    validProtectedData = await dataProtector.protectData({
+      // You can use your email to verify if you receive an email
+      data: { email: 'example@test.com' },
+      name: 'test do not use',
+    });
+    await dataProtector.grantAccess({
+      authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+      protectedData: validProtectedData.address,
+      authorizedUser: consumerWallet.address, // consumer wallet
+      numberOfAccess: 1,
+    });
+
+    //create unvalid protected data
+    unvalidProtectedData = await dataProtector.protectData({
+      data: { foo: 'bar' },
+      name: 'test do not use',
+    });
+  }, 3 * MAX_EXPECTED_BLOCKTIME);
 
   it(
     'should successfully send email',
     async () => {
-      const protectedData: ProtectedDataWithSecretProps =
-        await dataProtector.protectData({
-          // You can use your email to verify if you receive an email
-          data: { email: 'example@test.com' },
-          name: 'test do not use',
-        });
-      await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-        protectedData: protectedData.address,
-        authorizedUser: consumerWallet.address, // consumer wallet
-        numberOfAccess: 1,
-      });
+      console.log('protectedData', validProtectedData.address);
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
-        protectedData: protectedData.address,
+        protectedData: validProtectedData.address,
       };
 
       const sendEmailResponse = await web3mail.sendEmail(params);
@@ -52,15 +62,11 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should fail if the protected data is not valid',
     async () => {
-      const protectedData: ProtectedDataWithSecretProps =
-        await dataProtector.protectData({
-          data: { foo: 'bar' },
-          name: 'test do not use',
-        });
+      console.log('protectedData', unvalidProtectedData.address);
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
-        protectedData: protectedData.address,
+        protectedData: unvalidProtectedData.address,
       };
 
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
@@ -72,16 +78,11 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should fail if there is no dataset order found',
     async () => {
-      const protectedData: ProtectedDataWithSecretProps =
-        await dataProtector.protectData({
-          data: { email: 'example@test.com' },
-          name: 'test do not use',
-        });
-
+      console.log('protectedData', validProtectedData.address);
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
-        protectedData: protectedData.address,
+        protectedData: validProtectedData.address,
       };
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
         'Dataset order not found'
@@ -111,23 +112,10 @@ describe('web3mail.sendEmail()', () => {
         .spyOn(web3mail, 'sendEmail')
         .mockRejectedValue(new Error('App order not found'));
 
-      const protectedData: ProtectedDataWithSecretProps =
-        await dataProtector.protectData({
-          data: { email: 'example@test.com' },
-          name: 'test do not use',
-        });
-
-      await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-        protectedData: protectedData.address,
-        authorizedUser: consumerWallet.address, // consumer wallet
-        numberOfAccess: 1,
-      });
-
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
-        protectedData: protectedData.address,
+        protectedData: validProtectedData.address,
       };
 
       await expect(web3mail.sendEmail(params)).rejects.toThrowError(
@@ -158,23 +146,10 @@ describe('web3mail.sendEmail()', () => {
         .spyOn(web3mail, 'sendEmail')
         .mockRejectedValue(new Error('Workerpool order not found'));
 
-      const protectedData: ProtectedDataWithSecretProps =
-        await dataProtector.protectData({
-          data: { email: 'example@test.com' },
-          name: 'test do not use',
-        });
-
-      await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-        protectedData: protectedData.address,
-        authorizedUser: consumerWallet.address, // consumer wallet
-        numberOfAccess: 1,
-      });
-
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
-        protectedData: protectedData.address,
+        protectedData: validProtectedData.address,
       };
 
       await expect(web3mail.sendEmail(params)).rejects.toThrowError(
