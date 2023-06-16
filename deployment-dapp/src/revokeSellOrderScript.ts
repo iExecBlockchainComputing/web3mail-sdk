@@ -8,7 +8,10 @@ import {
   DRONE_TARGET_DEPLOY_PROD,
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,
+  DEFAULT_APP_VOLUME,
+  DEFAULT_APP_PRICE,
 } from './config/config.js';
+import { isUndefined, params } from './utils/validator.js';
 
 const main = async () => {
   // get env variables from drone
@@ -17,6 +20,7 @@ const main = async () => {
     WALLET_PRIVATE_KEY_DEV,
     WALLET_PRIVATE_KEY_PROD,
     PRICE,
+    VOLUME,
   } = process.env;
 
   if (
@@ -65,31 +69,26 @@ const main = async () => {
 
   if (!appAddress) throw Error('Failed to get app address'); // If the app was not deployed, do not continue
 
-  const isNumeric = /^-?\d+(\.\d+)?$/.test(PRICE);
+  // validate params
+  params().validate(PRICE);
+  params().validate(VOLUME);
 
-  if (!isNumeric && PRICE !== undefined) {
-    throw new Error('Price must be a string that represents a number.');
+  if (isUndefined(PRICE)) {
+    console.log(
+      `No price set for the app sell order, using default price ${DEFAULT_APP_PRICE} xRLC`
+    );
+  }
+  if (isUndefined(VOLUME)) {
+    console.log(
+      `No volume set for the app sell order, using default volume ${DEFAULT_APP_VOLUME}`
+    );
   }
 
-  if (PRICE === undefined) {
-    console.log(
-      'No price set for the app sell order, using default price 0 RLC'
-    );
-    try {
-      //publish sell order for Tee app (scone)
-      await revokeSellOrder(iexec, appAddress);
-    } catch (e) {
-      console.log(e);
-    }
-  } else {
-    const priceValue = parseInt(PRICE);
-    console.log('price in RLC for the app sell order :', priceValue);
-    try {
-      //publish sell order for Tee app (scone)
-      await revokeSellOrder(iexec, appAddress, priceValue * 10e9);
-    } catch (e) {
-      console.log(e);
-    }
+  try {
+    //revoke sell order for Tee app (scone)
+    await revokeSellOrder(iexec, appAddress, PRICE, VOLUME);
+  } catch (e) {
+    throw Error(`Failed to revoke app sell order: ${e}`);
   }
 };
 
