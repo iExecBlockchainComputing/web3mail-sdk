@@ -88,7 +88,7 @@ const main = async () => {
     //revoke sell order for Tee app (scone)
     await revokeSellOrder(iexec, appAddress, PRICE, VOLUME);
   } catch (e) {
-    throw Error(`Failed to revoke app sell order: ${e}`);
+    console.log(e);
   }
 };
 

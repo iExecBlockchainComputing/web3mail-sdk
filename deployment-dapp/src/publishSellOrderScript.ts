@@ -88,7 +88,7 @@ const main = async () => {
     //publish sell order for Tee app (scone)
     await publishSellOrder(iexec, appAddress, PRICE, VOLUME);
   } catch (e) {
-    throw Error(`Failed to publish app sell order: ${e}`);
+    throw Error('Failed to publish paying sell order');
   }
 };
 
