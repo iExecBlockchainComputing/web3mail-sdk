@@ -9,9 +9,9 @@ export const revokeSellOrder = async (
   volume?: string
 ): Promise<string> => {
   const appPrice = isUndefined(price)
-    ? parseInt(price) * 10e9
-    : DEFAULT_APP_PRICE;
-  const appVolume = isUndefined(volume) ? parseInt(volume) : DEFAULT_APP_VOLUME;
+    ? DEFAULT_APP_PRICE
+    : parseInt(price) * 10e9;
+  const appVolume = isUndefined(volume) ? DEFAULT_APP_VOLUME : parseInt(volume);
   console.log(
     `Revoking apporder for app ${appAddress} with price ${appPrice} and volume ${appVolume}`
   );
