@@ -89,7 +89,7 @@ export const sendEmail = async ({
     if (!appOrder) {
       throw new Error('App order not found');
     }
-    
+
     const desiredPriceAppOrderbook = appOrderbook.orders.filter(
       (order) => order.order.appprice === DESIRED_APP_ORDER_PRICE
     );

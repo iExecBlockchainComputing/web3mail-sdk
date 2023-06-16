@@ -92,6 +92,21 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should fail if there is no App order found',
     async () => {
+      // To see with Pierre
+
+      // jest.mock('iexec', () => ({
+      //   ...(jest.requireActual('iexec') as IExec), // this line is to keep the other modules unmocked
+      //   orderbook: {
+      //     ...(jest.requireActual(
+      //       'iexec/IExecOrderbookModule'
+      //     ) as IExecOrderbookModule), // keep the other orderbook functions unmocked
+      //     fetchAppOrderbook: jest.fn<() => Promise<any>>().mockResolvedValue({
+      //       orders: [],
+      //       count: 0,
+      //     }),
+      //   },
+      // }));
+
       jest
         .spyOn(web3mail, 'sendEmail')
         .mockRejectedValue(new Error('App order not found'));
@@ -124,6 +139,21 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should fail if there is no App order found',
     async () => {
+      // To see with Pierre
+
+      // jest.mock('iexec', () => ({
+      //   ...(jest.requireActual('iexec') as IExec), // this line is to keep the other modules unmocked
+      //   orderbook: {
+      //     ...(jest.requireActual(
+      //       'iexec/IExecOrderbookModule'
+      //     ) as IExecOrderbookModule), // keep the other orderbook functions unmocked
+      //     fetchWorkerpoolOrderbook: jest.fn<() => Promise<any>>().mockResolvedValue({
+      //       orders: [],
+      //       count: 0,
+      //     }),
+      //   },
+      // }));
+
       jest
         .spyOn(web3mail, 'sendEmail')
         .mockRejectedValue(new Error('Workerpool order not found'));
