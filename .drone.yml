@@ -481,7 +481,7 @@ steps:
       - cd deployment-dapp
       - npm ci
 
-  - name: publish sell order
+  - name: revoke sell order
     image: node:18
     pull: always
     params:
