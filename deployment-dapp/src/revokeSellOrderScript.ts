@@ -9,6 +9,7 @@ import {
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,
 } from './config/config.js';
+import { isUndefined, params } from './utils/validator.js';
 
 const main = async () => {
   // get env variables from drone
@@ -65,13 +66,10 @@ const main = async () => {
 
   if (!appAddress) throw Error('Failed to get app address'); // If the app was not deployed, do not continue
 
-  const isNumeric = /^-?\d+(\.\d+)?$/.test(PRICE);
+  // validate params
+  params().validate(PRICE);
 
-  if (!isNumeric && PRICE !== undefined) {
-    throw new Error('Price must be a string that represents a number.');
-  }
-
-  if (PRICE === undefined) {
+  if (isUndefined(PRICE)) {
     console.log(
       'No price set for the app sell order, using default price 0 RLC'
     );
