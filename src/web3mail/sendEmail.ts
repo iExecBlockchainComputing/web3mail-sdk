@@ -29,7 +29,6 @@ export const sendEmail = async ({
 }: IExecConsumer &
   SubgraphConsumer &
   SendEmailParams): Promise<SendEmailResponse> => {
-  let test: IExecOrderbookModule;
   try {
     const vDatasetAddress = addressOrEnsSchema()
       .required()
