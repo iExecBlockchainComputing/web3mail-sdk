@@ -10,7 +10,7 @@ export const FRAMEWORK = 'scone';
 
 //publish sell order parameters
 export const DEFAULT_APP_PRICE = 0;
-export const APP_VOLUME = 1000;
+export const DEFAULT_APP_VOLUME = 1000;
 export const APP_TAG = ['tee', 'scone'];
 
 //ENS name
