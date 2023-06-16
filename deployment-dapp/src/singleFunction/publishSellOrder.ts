@@ -18,7 +18,7 @@ export const publishSellOrder = async (
   const appVolume = isUndefined(volume) ? DEFAULT_APP_VOLUME : parseInt(volume);
   const sconeTeeTag = APP_TAG;
   console.log(
-    `Publishing apporder for app ${appAddress} with price ${appPrice} and volume ${appVolume}`
+    `Publishing apporder for app ${appAddress} with price ${appPrice*10e-9} xRLC and volume ${appVolume}`
   );
 
   const apporderTemplate = await iexec.order.createApporder({

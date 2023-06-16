@@ -13,7 +13,7 @@ export const revokeSellOrder = async (
     : parseInt(price) * 10e9;
   const appVolume = isUndefined(volume) ? DEFAULT_APP_VOLUME : parseInt(volume);
   console.log(
-    `Revoking apporder for app ${appAddress} with price ${appPrice} and volume ${appVolume}`
+    `Revoking apporder for app ${appAddress} with price ${appPrice*10e-9} xRLC and volume ${appVolume}`
   );
 
   const appOrders = await iexec.orderbook.fetchAppOrderbook(appAddress);
