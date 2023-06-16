@@ -10,10 +10,12 @@ export const revokeSellOrder = async (
 ): Promise<string> => {
   const appPrice = isUndefined(price)
     ? DEFAULT_APP_PRICE
-    : parseInt(price) * 10e9;
+    : parseInt(price) * Math.pow(10, 9);
   const appVolume = isUndefined(volume) ? DEFAULT_APP_VOLUME : parseInt(volume);
   console.log(
-    `Revoking apporder for app ${appAddress} with price ${appPrice*10e-9} xRLC and volume ${appVolume}`
+    `Revoking apporder for app ${appAddress} with price ${
+      appPrice * Math.pow(10, -9)
+    } xRLC and volume ${appVolume}`
   );
 
   const appOrders = await iexec.orderbook.fetchAppOrderbook(appAddress);
@@ -21,7 +23,12 @@ export const revokeSellOrder = async (
     (o) => o.order.appprice === appPrice && o.order.volume === appVolume
   )?.orderHash;
 
-  if (!orderHash) throw Error('No corresponding appOrder found');
+  if (!orderHash)
+    throw Error(
+      `No corresponding appOrder found with price ${
+        appPrice * Math.pow(10, -9)
+      } xRLC and volume ${appVolume}`
+    );
   const txHash = await iexec.order.unpublishApporder(orderHash);
   console.log(`Revoked apporder ${orderHash}\n${txHash}`);
   return txHash;

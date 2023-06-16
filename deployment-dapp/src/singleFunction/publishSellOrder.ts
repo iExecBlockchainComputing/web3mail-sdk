@@ -14,11 +14,13 @@ export const publishSellOrder = async (
 ): Promise<string> => {
   const appPrice = isUndefined(price)
     ? DEFAULT_APP_PRICE
-    : parseInt(price) * 10e9;
+    : parseInt(price) * Math.pow(10, 9);
   const appVolume = isUndefined(volume) ? DEFAULT_APP_VOLUME : parseInt(volume);
   const sconeTeeTag = APP_TAG;
   console.log(
-    `Publishing apporder for app ${appAddress} with price ${appPrice*10e-9} xRLC and volume ${appVolume}`
+    `Publishing apporder for app ${appAddress} with price ${
+      appPrice * Math.pow(10, -9)
+    } xRLC and volume ${appVolume}`
   );
 
   const apporderTemplate = await iexec.order.createApporder({
