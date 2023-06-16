@@ -12,7 +12,6 @@ import {
   emailSubjectSchema,
   throwIfMissing,
 } from '../utils/validators.js';
-import { IExecOrderbookModule } from 'iexec';
 import {
   IExecConsumer,
   SendEmailParams,
