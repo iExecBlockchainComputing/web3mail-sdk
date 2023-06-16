@@ -391,6 +391,9 @@ steps:
   - name: publish free sell order
     image: node:18
     pull: always
+    params: 
+      - PRICE
+      - VOLUME
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
       WALLET_PRIVATE_KEY_DEV:
@@ -443,6 +446,7 @@ steps:
     pull: always
     params: 
       - PRICE
+      - VOLUME
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
       WALLET_PRIVATE_KEY_DEV:
@@ -482,6 +486,7 @@ steps:
     pull: always
     params:
       - PRICE
+      - VOLUME
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
       WALLET_PRIVATE_KEY_DEV:

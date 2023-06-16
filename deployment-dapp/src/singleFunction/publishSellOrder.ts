@@ -1,19 +1,30 @@
 import { IExec } from 'iexec';
-import { DEFAULT_APP_PRICE, APP_TAG, APP_VOLUME } from '../config/config.js';
+import {
+  DEFAULT_APP_PRICE,
+  APP_TAG,
+  DEFAULT_APP_VOLUME,
+} from '../config/config.js';
+import { isUndefined } from '../utils/validator.js';
 
 export const publishSellOrder = async (
   iexec: IExec,
   appAddress: string,
-  price?: number
+  price?: string,
+  volume?: string
 ): Promise<string> => {
-  const appprice = price || DEFAULT_APP_PRICE;
-  const volume = APP_VOLUME;
+  const appPrice = isUndefined(price)
+    ? parseInt(price) * 10e9
+    : DEFAULT_APP_PRICE;
+  const appVolume = isUndefined(volume) ? parseInt(volume) : DEFAULT_APP_VOLUME;
   const sconeTeeTag = APP_TAG;
-  console.log(`Publishing apporder for app ${appAddress}`);
+  console.log(
+    `Publishing apporder for app ${appAddress} with price ${appPrice} and volume ${appVolume}`
+  );
+  
   const apporderTemplate = await iexec.order.createApporder({
     app: appAddress,
-    appprice,
-    volume,
+    appprice: appPrice,
+    volume: appVolume,
     tag: sconeTeeTag,
   });
   const apporder = await iexec.order.signApporder(apporderTemplate);
