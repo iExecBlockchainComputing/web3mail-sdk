@@ -8,10 +8,8 @@ import {
   DRONE_TARGET_DEPLOY_PROD,
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,
-  DEFAULT_APP_VOLUME,
-  DEFAULT_APP_PRICE,
 } from './config/config.js';
-import { isUndefined, params } from './utils/validator.js';
+import { orderHashSchema } from './utils/validator.js';
 
 const main = async () => {
   // get env variables from drone
@@ -19,8 +17,7 @@ const main = async () => {
     DRONE_DEPLOY_TO,
     WALLET_PRIVATE_KEY_DEV,
     WALLET_PRIVATE_KEY_PROD,
-    PRICE,
-    VOLUME,
+    ORDER_HASH,
   } = process.env;
 
   if (
@@ -70,26 +67,11 @@ const main = async () => {
   if (!appAddress) throw Error('Failed to get app address'); // If the app was not deployed, do not continue
 
   // validate params
-  params().validate(PRICE);
-  params().validate(VOLUME);
+  const orderHash = await orderHashSchema().validate(ORDER_HASH);
 
-  if (isUndefined(PRICE)) {
-    console.log(
-      `No price set for the app sell order, using default price ${DEFAULT_APP_PRICE} xRLC`
-    );
-  }
-  if (isUndefined(VOLUME)) {
-    console.log(
-      `No volume set for the app sell order, using default volume ${DEFAULT_APP_VOLUME}`
-    );
-  }
-
-  try {
-    //revoke sell order for Tee app (scone)
-    await revokeSellOrder(iexec, appAddress, PRICE, VOLUME);
-  } catch (e) {
-    throw Error(`Failed to revoke app sell order: ${e}`);
-  }
+  //revoke sell order for Tee app (scone)
+  const txHash = await revokeSellOrder(iexec, appAddress, orderHash);
+  if (!txHash) throw Error(`Failed to revoke app sell order: ${orderHash}`);
 };
 
 main().catch((e) => {
