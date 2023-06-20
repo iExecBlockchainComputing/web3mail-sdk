@@ -11,7 +11,10 @@ import {
   DEFAULT_APP_PRICE,
   DEFAULT_APP_VOLUME,
 } from './config/config.js';
-import { isUndefined, params } from './utils/validator.js';
+import {
+  positiveStrictIntegerSchema,
+  positiveNumberSchema,
+} from './utils/validator.js';
 
 const main = async () => {
   // get env variables from drone
@@ -70,23 +73,21 @@ const main = async () => {
   if (!appAddress) throw Error('Failed to get app address'); // If the app was not deployed, do not continue
 
   // validate params
-  params().validate(PRICE);
-  params().validate(VOLUME);
+  const price = await positiveNumberSchema()
+    .default(DEFAULT_APP_PRICE)
+    .label('PRICE')
+    .validate(PRICE);
+  const volume = await positiveStrictIntegerSchema()
+    .default(DEFAULT_APP_VOLUME)
+    .label('VOLUME')
+    .validate(VOLUME);
 
-  if (isUndefined(PRICE)) {
-    console.log(
-      `No price set for the app sell order, using default price ${DEFAULT_APP_PRICE} xRLC`
-    );
-  }
-  if (isUndefined(VOLUME)) {
-    console.log(
-      `No volume set for the app sell order, using default volume ${DEFAULT_APP_VOLUME}`
-    );
-  }
+  console.log(`Price is ${price} xRLC`);
+  console.log(`Volume is ${volume}`);
 
   try {
     //publish sell order for Tee app (scone)
-    await publishSellOrder(iexec, appAddress, PRICE, VOLUME);
+    await publishSellOrder(iexec, appAddress, price, volume);
   } catch (e) {
     throw Error(`Failed to publish app sell order: ${e}`);
   }
