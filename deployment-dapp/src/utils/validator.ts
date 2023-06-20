@@ -1,7 +1,7 @@
 import { number, string } from 'yup';
 
 export const positiveNumberSchema = () => number().positive();
-export const positiveIntegerSchema = () =>
+export const positiveStrictIntegerSchema = () =>
   number().integer().positive().moreThan(0);
 
 export const orderHashSchema = () =>

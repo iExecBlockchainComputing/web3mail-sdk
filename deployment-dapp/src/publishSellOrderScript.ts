@@ -12,7 +12,7 @@ import {
   DEFAULT_APP_VOLUME,
 } from './config/config.js';
 import {
-  positiveIntegerSchema,
+  positiveStrictIntegerSchema,
   positiveNumberSchema,
 } from './utils/validator.js';
 
@@ -77,7 +77,7 @@ const main = async () => {
     .default(DEFAULT_APP_PRICE)
     .label('PRICE')
     .validate(PRICE);
-  const volume = await positiveIntegerSchema()
+  const volume = await positiveStrictIntegerSchema()
     .default(DEFAULT_APP_VOLUME)
     .label('VOLUME')
     .validate(VOLUME);
