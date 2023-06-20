@@ -74,7 +74,7 @@ const main = async () => {
   if (!appAddress) throw Error('Failed to get app address'); // If the app was not deployed, do not continue
 
   // validate params
-  const price: Params = await positiveNumberSchema()
+  const price = await positiveNumberSchema()
     .default(DEFAULT_APP_PRICE)
     .label('PRICE')
     .validate(PRICE);
