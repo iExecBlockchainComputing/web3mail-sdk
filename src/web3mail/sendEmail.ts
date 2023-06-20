@@ -114,8 +114,11 @@ export const sendEmail = async ({
     const desiredPriceWorkerpoolOrderbook = workerpoolOrderbook.orders.filter(
       (order) => order.order.workerpoolprice === DESIRED_WORKERPOOL_ORDER_PRICE
     );
+    const randomIndex = Math.floor(
+      Math.random() * desiredPriceWorkerpoolOrderbook.length
+    );
     const desiredPriceWorkerpoolOrder =
-      desiredPriceWorkerpoolOrderbook[0]?.order;
+      desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
     if (!desiredPriceWorkerpoolOrder) {
       throw new Error('No Workerpool order found for the desired price');
     }
