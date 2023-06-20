@@ -15,7 +15,7 @@ export const revokeSellOrder = async (
     txHash = await iexec.order.unpublishApporder(orderHash);
     console.log(`Revoked apporder ${orderHash}\n${txHash}`);
   } catch (error) {
-    throw Error(`Failed to canceled apporder ${orderHash}: ${error}`);
+    throw Error(`Failed to cancel apporder ${orderHash}: ${error}`);
   }
   return txHash;
 };
