@@ -78,7 +78,7 @@ const main = async () => {
     .default(DEFAULT_APP_PRICE)
     .label('PRICE')
     .validate(PRICE);
-  const volume: Params = await positiveIntegerSchema()
+  const volume = await positiveIntegerSchema()
     .default(DEFAULT_APP_VOLUME)
     .label('VOLUME')
     .validate(VOLUME);
