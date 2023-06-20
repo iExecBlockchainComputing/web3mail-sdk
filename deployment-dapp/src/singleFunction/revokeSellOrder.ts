@@ -1,10 +1,7 @@
 import { IExec } from 'iexec';
-import { DEFAULT_APP_PRICE, DEFAULT_APP_VOLUME } from '../config/config.js';
-import { isUndefined } from '../utils/validator.js';
 
 export const revokeSellOrder = async (
   iexec: IExec,
-  appAddress: string,
   orderHash: string
 ): Promise<string> => {
   console.log(
