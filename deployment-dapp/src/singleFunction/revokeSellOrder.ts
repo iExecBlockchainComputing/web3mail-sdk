@@ -8,7 +8,7 @@ export const revokeSellOrder = async (
   orderHash: string
 ): Promise<string> => {
   console.log(
-    `Revoking apporder for app ${appAddress} with the orderHash: ${orderHash} `
+    `Revoking apporder with the orderHash: ${orderHash}`
   );
   let txHash = null;
   try {
