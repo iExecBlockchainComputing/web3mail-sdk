@@ -84,9 +84,7 @@ const main = async () => {
     .validate(VOLUME);
 
   console.log(`Price is ${price} xRLC`);
-  console.log(
-    `No volume set for the app sell order, using default volume ${DEFAULT_APP_VOLUME}`
-  );
+  console.log(`Volume is ${volume}`);
 
   try {
     //publish sell order for Tee app (scone)
