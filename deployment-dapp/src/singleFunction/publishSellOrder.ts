@@ -1,10 +1,5 @@
 import { IExec } from 'iexec';
-import {
-  DEFAULT_APP_PRICE,
-  APP_TAG,
-  DEFAULT_APP_VOLUME,
-} from '../config/config.js';
-import { isUndefined } from '../utils/validator.js';
+import { APP_TAG } from '../config/config.js';
 
 export const publishSellOrder = async (
   iexec: IExec,

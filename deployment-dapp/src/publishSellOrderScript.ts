@@ -15,7 +15,6 @@ import {
   positiveIntegerSchema,
   positiveNumberSchema,
 } from './utils/validator.js';
-import { Params } from './utils/types.js';
 
 const main = async () => {
   // get env variables from drone
