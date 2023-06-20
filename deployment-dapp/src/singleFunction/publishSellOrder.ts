@@ -9,8 +9,8 @@ import { isUndefined } from '../utils/validator.js';
 export const publishSellOrder = async (
   iexec: IExec,
   appAddress: string,
-  price?: number | undefined,
-  volume?: number | undefined
+  price?: number,
+  volume?: number
 ): Promise<string> => {
   const sconeTeeTag = APP_TAG;
   console.log(
