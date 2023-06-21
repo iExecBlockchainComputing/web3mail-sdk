@@ -391,7 +391,7 @@ steps:
   - name: publish free sell order
     image: node:18
     pull: always
-    params: 
+    params:
       - PRICE
       - VOLUME
     environment:
@@ -416,7 +416,7 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run configure-ens
-      
+
 ---
 # pipeline to publish sell order
 kind: pipeline
@@ -444,7 +444,7 @@ steps:
   - name: publish sell order
     image: node:18
     pull: always
-    params: 
+    params:
       - PRICE
       - VOLUME
     environment:
@@ -495,3 +495,46 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run revoke-sell-order
+
+---
+# pipeline to push app secrets
+kind: pipeline
+type: docker
+name: push-app-secret
+
+trigger:
+  event:
+    - promote
+  target:
+    - dapp-push-secret-dev
+    - dapp-push-secret-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: install deps
+    image: node:18
+    pull: always
+    commands:
+      - cd deployment-dapp
+      - npm ci
+
+  - name: push dapp secret
+    image: node:18
+    pull: always
+    environment:
+      DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
+      WALLET_PRIVATE_KEY_DEV:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      WALLET_PRIVATE_KEY_PROD:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+      MJ_APIKEY_PUBLIC:
+        from_secret: mj_apikey_public
+      MJ_APIKEY_PRIVATE:
+        from_secret: mj_apikey_private
+      MJ_SENDER:
+        from_secret: mj_sender
+    commands:
+      - cd deployment-dapp
+      - npm run push-dapp-secret
