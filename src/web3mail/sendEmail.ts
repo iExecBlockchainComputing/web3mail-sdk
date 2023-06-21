@@ -1,6 +1,6 @@
 import {
-  DESIRED_APP_ORDER_PRICE,
-  DESIRED_WORKERPOOL_ORDER_PRICE,
+  MAX_DESIRED_APP_ORDER_PRICE,
+  MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   WEB3_MAIL_DAPP_ADDRESS,
   WORKERPOOL_ADDRESS,
 } from '../config/config.js';
@@ -89,7 +89,7 @@ export const sendEmail = async ({
     }
 
     const desiredPriceAppOrderbook = appOrderbook.orders.filter(
-      (order) => order.order.appprice === DESIRED_APP_ORDER_PRICE
+      (order) => order.order.appprice <= MAX_DESIRED_APP_ORDER_PRICE
     );
     const desiredPriceAppOrder = desiredPriceAppOrderbook[0]?.order;
     if (!desiredPriceAppOrder) {
@@ -112,7 +112,8 @@ export const sendEmail = async ({
     }
 
     const desiredPriceWorkerpoolOrderbook = workerpoolOrderbook.orders.filter(
-      (order) => order.order.workerpoolprice === DESIRED_WORKERPOOL_ORDER_PRICE
+      (order) =>
+        order.order.workerpoolprice <= MAX_DESIRED_WORKERPOOL_ORDER_PRICE
     );
     const randomIndex = Math.floor(
       Math.random() * desiredPriceWorkerpoolOrderbook.length
