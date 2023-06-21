@@ -497,7 +497,7 @@ steps:
       - npm run revoke-sell-order
 
 ---
-# pipeline to push app secrets
+# pipeline to push app secret
 kind: pipeline
 type: docker
 name: push-app-secret
