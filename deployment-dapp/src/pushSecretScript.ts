@@ -1,9 +1,11 @@
 import {
   DRONE_TARGET_DEPLOY_DEV,
   DRONE_TARGET_DEPLOY_PROD,
+  DRONE_TARGET_PUSH_SECRET_DEV,
+  DRONE_TARGET_PUSH_SECRET_PROD,
 } from './config/config.js';
-import { getIExec, loadAppAddress } from './utils/utils.js';
 import { pushSecret } from './singleFunction/pushSecret.js';
+import { getIExec, loadAppAddress } from './utils/utils.js';
 
 const main = async () => {
   // get env variables from drone
@@ -19,7 +21,9 @@ const main = async () => {
   if (
     !DRONE_DEPLOY_TO ||
     (DRONE_DEPLOY_TO !== DRONE_TARGET_DEPLOY_DEV &&
-      DRONE_DEPLOY_TO !== DRONE_TARGET_DEPLOY_PROD)
+      DRONE_DEPLOY_TO !== DRONE_TARGET_DEPLOY_PROD &&
+      DRONE_DEPLOY_TO !== DRONE_TARGET_PUSH_SECRET_DEV &&
+      DRONE_DEPLOY_TO !== DRONE_TARGET_PUSH_SECRET_PROD)
   )
     throw Error(`Invalid promote target ${DRONE_DEPLOY_TO}`);
 
@@ -30,9 +34,15 @@ const main = async () => {
   const appAddress = await loadAppAddress();
 
   let privateKey;
-  if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_DEV) {
+  if (
+    DRONE_DEPLOY_TO ===
+    (DRONE_TARGET_DEPLOY_DEV || DRONE_TARGET_PUSH_SECRET_DEV)
+  ) {
     privateKey = WALLET_PRIVATE_KEY_DEV;
-  } else if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_PROD) {
+  } else if (
+    DRONE_DEPLOY_TO ===
+    (DRONE_TARGET_DEPLOY_PROD || DRONE_TARGET_PUSH_SECRET_PROD)
+  ) {
     privateKey = WALLET_PRIVATE_KEY_PROD;
   }
 
