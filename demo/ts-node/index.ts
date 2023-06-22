@@ -1,11 +1,14 @@
-import { IExecWeb3Mail } from '@iexec/web3mail';
-import { getSignerFromPrivateKey } from 'iexec/utils';
-const main = async () => {
-  const ethProvider = getSignerFromPrivateKey(
-    'https://bellecour.iex.ec',
-    '100fa1624ee42e114f70e9a7a0212ac18c529aecee6a08ceb3b7562959447d4f'
-  );
-  const web3mail = new IExecWeb3Mail(ethProvider);
+import { IExecWeb3mail, getWeb3Provider } from '@iexec/web3mail';
+import { Wallet } from 'ethers';
+
+const test = async () => {
+  const ethProvider = getWeb3Provider(Wallet.createRandom().privateKey);
+
+  const web3mail = new IExecWeb3mail(ethProvider);
+
+  web3mail.fetchMyContacts().then((contacts) => {
+    console.log('contacts', contacts);
+  });
 };
 
-main();
+test();

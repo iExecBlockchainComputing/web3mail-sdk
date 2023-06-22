@@ -6,8 +6,8 @@ describe('sendEmail', () => {
     const email = 'recipient@example.com';
     const mailJetApiKeyPublic = 'myApiKeyPublic';
     const mailJetApiKeyPrivate = 'myApiKeyPrivate';
-    const mailObject = 'Test email';
-    const mailContent = 'This is a test email.';
+    const emailSubject = 'Test email';
+    const emailContent = 'This is a test email.';
     const mailJetSender = 'sender@example.com';
     const mockResponse = {
       message: 'Your email has been sent successfully.',
@@ -23,8 +23,8 @@ describe('sendEmail', () => {
       email,
       mailJetApiKeyPublic,
       mailJetApiKeyPrivate,
-      mailObject,
-      mailContent,
+      emailSubject,
+      emailContent,
       mailJetSender,
     });
 
@@ -38,7 +38,7 @@ describe('sendEmail', () => {
         {
           From: {
             Email: mailJetSender,
-            Name: 'Web3Mail Dapp Sender',
+            Name: 'Web3mail Dapp Sender',
           },
           To: [
             {
@@ -46,8 +46,8 @@ describe('sendEmail', () => {
               Name: '',
             },
           ],
-          Subject: mailObject,
-          TextPart: mailContent,
+          Subject: emailSubject,
+          TextPart: emailContent,
         },
       ],
     });
@@ -58,8 +58,8 @@ describe('sendEmail', () => {
     const email = 'recipient@example.com';
     const mailJetApiKeyPublic = 'myApiKeyPublic';
     const mailJetApiKeyPrivate = 'myApiKeyPrivate';
-    const mailObject = 'Test email';
-    const mailContent = 'This is a test email.';
+    const emailSubject = 'Test email';
+    const emailContent = 'This is a test email.';
     const mailJetSender = 'sender@example.com';
     const mockError = new Error('Failed to send email');
     const mockMailjet = {
@@ -73,8 +73,8 @@ describe('sendEmail', () => {
         email,
         mailJetApiKeyPublic,
         mailJetApiKeyPrivate,
-        mailObject,
-        mailContent,
+        emailSubject,
+        emailContent,
         mailJetSender,
       })
     ).rejects.toThrow(mockError);

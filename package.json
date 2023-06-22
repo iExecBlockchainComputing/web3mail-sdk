@@ -1,6 +1,6 @@
 {
   "name": "@iexec/web3mail",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "This product enables users to confidentially store data–such as mail address, documents, personal information ...",
   "main": "./dist/bundle.js",
   "type": "module",
@@ -18,7 +18,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && webpack",
+    "build": "rm -rf dist && tsc && webpack",
     "start": "node dist/bundle.js",
     "test": "rm -rf dist && tsc && NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
     "lint": "eslint . --ext .ts",
@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iExecBlockchainComputing/web3Mail.git"
+    "url": "git+https://github.com/iExecBlockchainComputing/web3mail-sdk.git"
   },
   "keywords": [
     "iExec"
@@ -35,11 +35,11 @@
   "author": "iExec",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/iExecBlockchainComputing/web3Mail/issues"
+    "url": "https://github.com/iExecBlockchainComputing/web3mail-sdk/issues"
   },
-  "homepage": "https://github.com/iExecBlockchainComputing/web3Mail#readme",
+  "homepage": "https://github.com/iExecBlockchainComputing/web3mail-sdk#readme",
   "devDependencies": {
-    "@iexec/dataprotector": "0.0.0-nightly-8395225223034e4980135f6bf58f0a370721b496",
+    "@iexec/dataprotector": "^0.1.0",
     "@types/jest": "^29.5.1",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "assert": "^2.0.0",
@@ -60,6 +60,7 @@
     "webpack-cli": "^5.0.1"
   },
   "dependencies": {
+    "graphql-request": "^6.1.0",
     "iexec": "^8.1.0",
     "yup": "^1.1.1"
   }

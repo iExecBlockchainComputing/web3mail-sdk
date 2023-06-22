@@ -4,8 +4,8 @@ async function sendEmail({
   email,
   mailJetApiKeyPublic,
   mailJetApiKeyPrivate,
-  mailObject,
-  mailContent,
+  emailSubject,
+  emailContent,
   mailJetSender,
 }) {
   const mailjet = Mailjet.apiConnect(mailJetApiKeyPublic, mailJetApiKeyPrivate);
@@ -16,7 +16,7 @@ async function sendEmail({
         {
           From: {
             Email: mailJetSender,
-            Name: 'Web3Mail Dapp Sender',
+            Name: 'Web3mail Dapp Sender',
           },
           To: [
             {
@@ -24,8 +24,8 @@ async function sendEmail({
               Name: '',
             },
           ],
-          Subject: mailObject,
-          TextPart: mailContent,
+          Subject: emailSubject,
+          TextPart: emailContent,
         },
       ],
     })
