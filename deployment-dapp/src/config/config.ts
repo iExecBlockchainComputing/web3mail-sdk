@@ -34,4 +34,7 @@ export const DRONE_TARGET_DEPLOY_PROD = 'dapp-prod';
 export const DRONE_TARGET_SELL_ORDER_DEV = 'dapp-publish-sell-order-dev';
 export const DRONE_TARGET_SELL_ORDER_PROD = 'dapp-publish-sell-order-prod';
 export const DRONE_TARGET_REVOKE_SELL_ORDER_DEV = 'dapp-revoke-sell-order-dev';
-export const DRONE_TARGET_REVOKE_SELL_ORDER_PROD = 'dapp-revoke-sell-order-prod';
+export const DRONE_TARGET_REVOKE_SELL_ORDER_PROD =
+  'dapp-revoke-sell-order-prod';
+export const DRONE_TARGET_PUSH_SECRET_DEV = 'dapp-push-secret-dev';
+export const DRONE_TARGET_PUSH_SECRET_PROD = 'dapp-push-secret-prod';
