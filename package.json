@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "graphql-request": "^6.1.0",
-    "iexec": "^8.1.0",
+    "iexec": "^8.1.5",
     "yup": "^1.1.1"
   }
 }
