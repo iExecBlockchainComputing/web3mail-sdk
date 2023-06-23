@@ -6,7 +6,7 @@ import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
-import { MAX_EXPECTED_BLOCKTIME, getRandomWallet } from '../test-utils';
+import { MAX_EXPECTED_BLOCKTIME, getRandomWallet, sleep } from '../test-utils';
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: Wallet;
@@ -14,7 +14,7 @@ describe('web3mail.sendEmail()', () => {
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
   let validProtectedData: ProtectedDataWithSecretProps;
-  let unvalidProtectedData: ProtectedDataWithSecretProps;
+  let invalidProtectedData: ProtectedDataWithSecretProps;
 
   beforeAll(async () => {
     providerWallet = getRandomWallet();
@@ -36,12 +36,14 @@ describe('web3mail.sendEmail()', () => {
       numberOfAccess: 1000,
     });
 
-    //create unvalid protected data
-    unvalidProtectedData = await dataProtector.protectData({
+    //create invalid protected data
+    invalidProtectedData = await dataProtector.protectData({
       data: { foo: 'bar' },
       name: 'test do not use',
     });
-  }, 3 * MAX_EXPECTED_BLOCKTIME);
+    // avoid race condition with subgraph indexation
+    await sleep(5_000);
+  }, 3 * MAX_EXPECTED_BLOCKTIME + 5_000);
 
   afterAll(async () => {
     await dataProtector.revokeAllAccessObservable({
@@ -69,7 +71,7 @@ describe('web3mail.sendEmail()', () => {
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
-        protectedData: unvalidProtectedData.address,
+        protectedData: invalidProtectedData.address,
       };
 
       await expect(web3mail.sendEmail(params)).rejects.toThrow(

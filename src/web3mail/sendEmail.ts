@@ -9,6 +9,7 @@ import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
 import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
+  emailContentSchema,
   emailSubjectSchema,
   throwIfMissing,
 } from '../utils/validators.js';
@@ -37,7 +38,7 @@ export const sendEmail = async ({
       .required()
       .label('emailSubject')
       .validateSync(emailSubject);
-    const vEmailContent = emailSubjectSchema()
+    const vEmailContent = emailContentSchema()
       .required()
       .label('emailContent')
       .validateSync(emailContent);
