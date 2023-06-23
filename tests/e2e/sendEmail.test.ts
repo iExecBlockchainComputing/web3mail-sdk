@@ -14,7 +14,7 @@ describe('web3mail.sendEmail()', () => {
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
   let validProtectedData: ProtectedDataWithSecretProps;
-  let unvalidProtectedData: ProtectedDataWithSecretProps;
+  let invalidProtectedData: ProtectedDataWithSecretProps;
 
   beforeAll(async () => {
     providerWallet = getRandomWallet();
@@ -36,8 +36,8 @@ describe('web3mail.sendEmail()', () => {
       numberOfAccess: 1000,
     });
 
-    //create unvalid protected data
-    unvalidProtectedData = await dataProtector.protectData({
+    //create invalid protected data
+    invalidProtectedData = await dataProtector.protectData({
       data: { foo: 'bar' },
       name: 'test do not use',
     });
@@ -69,7 +69,7 @@ describe('web3mail.sendEmail()', () => {
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
-        protectedData: unvalidProtectedData.address,
+        protectedData: invalidProtectedData.address,
       };
 
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
