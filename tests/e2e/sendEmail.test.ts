@@ -6,7 +6,7 @@ import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
-import { MAX_EXPECTED_BLOCKTIME, getRandomWallet } from '../test-utils';
+import { MAX_EXPECTED_BLOCKTIME, getRandomWallet, sleep } from '../test-utils';
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: Wallet;
@@ -41,7 +41,9 @@ describe('web3mail.sendEmail()', () => {
       data: { foo: 'bar' },
       name: 'test do not use',
     });
-  }, 3 * MAX_EXPECTED_BLOCKTIME);
+    // avoid race condition with subgraph indexation
+    await sleep(5_000);
+  }, 3 * MAX_EXPECTED_BLOCKTIME + 5_000);
 
   afterAll(async () => {
     await dataProtector.revokeAllAccessObservable({
