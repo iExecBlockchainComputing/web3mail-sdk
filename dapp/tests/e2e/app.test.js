@@ -77,7 +77,7 @@ describe('sendEmail', () => {
     process.env.MJ_APIKEY_PRIVATE &&
     process.env.MJ_SENDER
   ) {
-    skip('should send an email successfully', async () => {
+    it('should send an email successfully', async () => {
       await fsPromises.rm(IEXEC_OUT, { recursive: true });
 
       // developer secret setup
