@@ -94,7 +94,7 @@ describe('sendEmail', () => {
 
       // requester secret setup
       process.env.IEXEC_REQUESTER_SECRET_1 = `web3mail test ${process.env.DRONE_COMMIT}`;
-      process.env.IEXEC_REQUESTER_SECRET_1 = `Hey!<br/>tests are running on <a href="${process.env.DRONE_REPO_LINK}/commit/${process.env.DRONE_COMMIT}">${process.env.DRONE_REPO}</a>`;
+      process.env.IEXEC_REQUESTER_SECRET_2 = `Hey!<br/>tests are running on <a href="${process.env.DRONE_REPO_LINK}/commit/${process.env.DRONE_COMMIT}">${process.env.DRONE_REPO}</a>`;
       process.env.IEXEC_REQUESTER_SECRET_3 = JSON.stringify({
         contentType: 'text/html',
       });
