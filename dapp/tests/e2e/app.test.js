@@ -78,7 +78,11 @@ describe('sendEmail', () => {
     process.env.MJ_SENDER
   ) {
     it('should send an email successfully', async () => {
-      await fsPromises.rm(IEXEC_OUT, { recursive: true });
+      // clean IEXEC_OUT
+      await fsPromises
+        .rm(process.env.IEXEC_OUT, { recursive: true })
+        .catch(() => {});
+      await fsPromises.mkdir(process.env.IEXEC_OUT, { recursive: true });
 
       // developer secret setup
       const { MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE, MJ_SENDER } = process.env;
