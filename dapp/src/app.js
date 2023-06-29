@@ -20,8 +20,15 @@ async function start() {
     try {
       developerSecret = JSON.parse(process.env.IEXEC_APP_DEVELOPER_SECRET);
     } catch {
-      console.error('Failed to parse the developer secret');
-      process.exit(1);
+      throw Error('Failed to parse the developer secret');
+    }
+    let options;
+    try {
+      options = process.env.IEXEC_REQUESTER_SECRET_3
+        ? JSON.parse(process.env.IEXEC_REQUESTER_SECRET_3)
+        : {};
+    } catch {
+      throw Error('Failed to parse options from requester secret');
     }
     const unsafeEnvVars = {
       iexecIn: process.env.IEXEC_IN,
@@ -32,6 +39,7 @@ async function start() {
       mailJetSender: developerSecret.MJ_SENDER,
       emailSubject: process.env.IEXEC_REQUESTER_SECRET_1,
       emailContent: process.env.IEXEC_REQUESTER_SECRET_2,
+      contentType: options.contentType,
     };
     const envVars = validateInputs(unsafeEnvVars);
     const email = await extractZipAndBuildJson(
@@ -47,6 +55,7 @@ async function start() {
       emailSubject: envVars.emailSubject,
       emailContent: envVars.emailContent,
       mailJetSender: envVars.mailJetSender,
+      contentType: envVars.contentType,
     });
 
     await writeTaskOutput(
