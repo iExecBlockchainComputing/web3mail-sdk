@@ -93,6 +93,7 @@ describe('web3mail.sendEmail()', () => {
         emailContent: 'e2e mail content for test',
         protectedData: protectedData.address,
       };
+      await sleep(5_000);
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
         'Dataset order not found'
       );
