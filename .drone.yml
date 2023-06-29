@@ -227,11 +227,18 @@ steps:
       - cd dapp
       - npm run check-format
 
-  - name: unit-test
+  - name: test
     image: node:14-alpine3.11
+    environment:
+      MJ_APIKEY_PUBLIC:
+        from_secret: mj_apikey_public
+      MJ_APIKEY_PRIVATE:
+        from_secret: mj_apikey_private
+      MJ_SENDER:
+        from_secret: mj_sender
     commands:
       - cd dapp
-      - npm run ctest tests/unit/
+      - npm run ctest
 
   - name: docker-publish-dev-non-tee
     # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
@@ -282,11 +289,18 @@ steps:
       - cd dapp
       - npm run check-format
 
-  - name: unit-test
+  - name: test
     image: node:14-alpine3.11
+    environment:
+      MJ_APIKEY_PUBLIC:
+        from_secret: mj_apikey_public
+      MJ_APIKEY_PRIVATE:
+        from_secret: mj_apikey_private
+      MJ_SENDER:
+        from_secret: mj_sender
     commands:
       - cd dapp
-      - npm run ctest tests/unit/
+      - npm run ctest
 
   - name: extract-version-from-package
     image: node:18
