@@ -1,6 +1,6 @@
 {
   "name": "@iexec/web3mail",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "This product enables users to confidentially store data–such as mail address, documents, personal information ...",
   "main": "./dist/bundle.js",
   "type": "module",
@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "graphql-request": "^6.1.0",
-    "iexec": "^8.1.0",
+    "iexec": "^8.1.5",
     "yup": "^1.1.1"
   }
 }
