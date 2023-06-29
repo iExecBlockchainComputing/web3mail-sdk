@@ -7,5 +7,6 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - fixed installation issue for Windows users
+- fixed email content validation issue
 
 ## [0.1.0] Initial release
