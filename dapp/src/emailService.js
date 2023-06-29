@@ -7,8 +7,13 @@ async function sendEmail({
   emailSubject,
   emailContent,
   mailJetSender,
+  contentType = 'text/plain',
 }) {
   const mailjet = Mailjet.apiConnect(mailJetApiKeyPublic, mailJetApiKeyPrivate);
+
+  const TextPart = contentType === 'text/plain' ? emailContent : undefined;
+  const HTMLPart = contentType === 'text/html' ? emailContent : undefined;
+
   await mailjet
     .post('send', { version: 'v3.1' })
     .request({
@@ -25,7 +30,8 @@ async function sendEmail({
             },
           ],
           Subject: emailSubject,
-          TextPart: emailContent,
+          TextPart,
+          HTMLPart,
         },
       ],
     })
