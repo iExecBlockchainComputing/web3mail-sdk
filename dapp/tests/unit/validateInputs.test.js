@@ -21,6 +21,20 @@ describe('validateInputs function', () => {
     expect(() => validateInputs(envVars)).not.toThrow();
   });
 
+  it('should accept valid contentType', () => {
+    const res = validateInputs({
+      ...envVars,
+      contentType: 'text/html',
+    });
+    expect(res.contentType).toStrictEqual('text/html');
+  });
+
+  it('should throw an error if contentType is invalid', () => {
+    expect(() => validateInputs({ ...envVars, contentType: 'foo' })).toThrow(
+      Error('"contentType" must be one of [text/plain, text/html]')
+    );
+  });
+
   it('should throw an error if any required input is missing', () => {
     delete envVars.iexecIn;
     expect(() => validateInputs(envVars)).toThrow(/"iexecIn" is required/i);
