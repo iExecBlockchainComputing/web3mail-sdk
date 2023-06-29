@@ -88,6 +88,7 @@ describe('web3mail.sendEmail()', () => {
         data: { email: 'example@test.com' },
         name: 'test do not use',
       });
+      await sleep(5_000);
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
