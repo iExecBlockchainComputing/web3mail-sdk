@@ -1,6 +1,6 @@
 import { number, string } from 'yup';
 
-export const positiveNumberSchema = () => number().positive();
+export const positiveNumberSchema = () => number().min(0);
 export const positiveStrictIntegerSchema = () =>
   number().integer().positive().moreThan(0);
 
