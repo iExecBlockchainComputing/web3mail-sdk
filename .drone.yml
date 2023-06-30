@@ -405,15 +405,14 @@ steps:
   - name: publish free sell order
     image: node:18
     pull: always
-    params:
-      - PRICE
-      - VOLUME
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
       WALLET_PRIVATE_KEY_DEV:
         from_secret: web3mail-dapp-owner-dev-privatekey
       WALLET_PRIVATE_KEY_PROD:
         from_secret: web3mail-dapp-owner-prod-privatekey
+      PRICE: '0'
+      VOLUME: '1000000000'
     commands:
       - cd deployment-dapp
       - npm run publish-sell-order
