@@ -14,7 +14,7 @@ export const publishSellOrder = async (
 
   const apporderTemplate = await iexec.order.createApporder({
     app: appAddress,
-    appprice: price + ' RLC',
+    appprice: price.toFixed(9) + ' RLC',
     volume: volume,
     tag: sconeTeeTag,
   });

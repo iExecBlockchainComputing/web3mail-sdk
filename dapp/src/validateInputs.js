@@ -9,6 +9,7 @@ const schema = Joi.object({
   mailJetSender: Joi.string().email().required(),
   emailSubject: Joi.string().required(),
   emailContent: Joi.string().required(),
+  contentType: Joi.string().valid('text/plain', 'text/html'),
 });
 
 function validateInputs(envVars) {
