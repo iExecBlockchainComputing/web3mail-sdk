@@ -1,7 +1,7 @@
 import {
-  GrantedAccess,
   IExecDataProtector,
   ProtectedDataWithSecretProps,
+  getWeb3Provider as dataprotectorGetWeb3Provider,
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { Wallet } from 'ethers';
@@ -21,7 +21,9 @@ describe('web3mail.fetchMyContacts()', () => {
   beforeAll(async () => {
     wallet = Wallet.createRandom();
     ethProvider = getWeb3Provider(wallet.privateKey);
-    dataProtector = new IExecDataProtector(ethProvider);
+    dataProtector = new IExecDataProtector(
+      dataprotectorGetWeb3Provider(wallet.privateKey)
+    );
     web3mail = new IExecWeb3mail(ethProvider);
 
     //create valid protected data
