@@ -1,8 +1,9 @@
 import {
   IExecDataProtector,
   ProtectedDataWithSecretProps,
+  getWeb3Provider as dataprotectorGetWeb3Provider,
 } from '@iexec/dataprotector';
-import { beforeAll, describe, expect, it, jest } from '@jest/globals';
+import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
@@ -20,7 +21,7 @@ describe('web3mail.sendEmail()', () => {
     providerWallet = getRandomWallet();
     consumerWallet = getRandomWallet();
     dataProtector = new IExecDataProtector(
-      getWeb3Provider(providerWallet.privateKey)
+      dataprotectorGetWeb3Provider(providerWallet.privateKey)
     );
     web3mail = new IExecWeb3mail(getWeb3Provider(consumerWallet.privateKey));
 
