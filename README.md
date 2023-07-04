@@ -16,7 +16,7 @@ Web3mail is composed of 2 methods:
 
 <div align="center">
 
-[![npm](https://img.shields.io/npm/v/web3mail-sdk)](https://www.npmjs.com/package/@iexec/web3mail)[![license](https://img.shields.io/badge/license-Apache%202-blue)](/LICENSE)
+[![npm](https://img.shields.io/npm/v/@iexec/web3mail)](https://www.npmjs.com/package/@iexec/web3mail)[![license](https://img.shields.io/badge/license-Apache%202-blue)](/LICENSE)
 
 </div>
 
