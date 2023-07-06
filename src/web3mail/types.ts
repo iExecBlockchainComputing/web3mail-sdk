@@ -27,7 +27,7 @@ export type SendEmailResponse = {
 };
 
 export type FetchUserContactsParams = {
-  userAddress: Address;
+  address: Address;
 };
 /**
  * Internal props for querying the subgraph

@@ -13,22 +13,22 @@ import {
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  userAddress,
+  address,
 }: IExecConsumer & SubgraphConsumer & FetchUserContactsParams): Promise<
   Contact[]
 > => {
   //TODO : accept an ENS & resolve it if its one
-  const vDatasetAddress = address()
+  const vAddress = address()
     .required()
     .label('userAddress')
-    .validateSync(userAddress);
+    .validateSync(address);
 
   try {
     const showDatasetOrderbookRequest = iexec.orderbook.fetchDatasetOrderbook(
       'any',
       {
         app: WEB3_MAIL_DAPP_ADDRESS,
-        requester: vDatasetAddress,
+        requester: vAddress,
       }
     );
     const { orders } = await autoPaginateRequest({
