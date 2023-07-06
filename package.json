@@ -23,8 +23,7 @@
     "test": "rm -rf dist && tsc && NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write \"src/**/*.ts\"",
-    "check-format": "prettier --check \"src/**/*.ts\"",
-    "privacy-pass": "ts-node --esm scripts/privacyPassScript.ts"
+    "check-format": "prettier --check \"src/**/*.ts\""
   },
   "repository": {
     "type": "git",
