@@ -2,7 +2,7 @@ import { WEB3_MAIL_DAPP_ADDRESS } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
-import { address, throwIfMissing } from '../utils/validators.js';
+import { addressOrEnsSchema, throwIfMissing } from '../utils/validators.js';
 import {
   Contact,
   FetchUserContactsParams,
@@ -17,10 +17,9 @@ export const fetchUserContacts = async ({
 }: IExecConsumer & SubgraphConsumer & FetchUserContactsParams): Promise<
   Contact[]
 > => {
-  //TODO : accept an ENS & resolve it if its one
-  const vAddress = address()
+  const vAddress = addressOrEnsSchema()
     .required()
-    .label('userAddress')
+    .label('address')
     .validateSync(address);
 
   try {
