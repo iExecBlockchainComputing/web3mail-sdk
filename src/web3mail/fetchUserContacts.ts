@@ -2,7 +2,7 @@ import { WEB3_MAIL_DAPP_ADDRESS } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
-import { throwIfMissing } from '../utils/validators.js';
+import { address, throwIfMissing } from '../utils/validators.js';
 import {
   Contact,
   FetchUserContactsParams,
@@ -17,12 +17,18 @@ export const fetchUserContacts = async ({
 }: IExecConsumer & SubgraphConsumer & FetchUserContactsParams): Promise<
   Contact[]
 > => {
+  //TODO : accept an ENS & resolve it if its one
+  const vDatasetAddress = address()
+    .required()
+    .label('userAddress')
+    .validateSync(userAddress);
+
   try {
     const showDatasetOrderbookRequest = iexec.orderbook.fetchDatasetOrderbook(
       'any',
       {
         app: WEB3_MAIL_DAPP_ADDRESS,
-        requester: userAddress,
+        requester: vDatasetAddress,
       }
     );
     const { orders } = await autoPaginateRequest({

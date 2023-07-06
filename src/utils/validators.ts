@@ -20,6 +20,15 @@ export const addressOrEnsSchema = () =>
       (value) => isUndefined(value) || isAddressTest(value) || isEnsTest(value)
     );
 
+export const address = () =>
+  string()
+    .transform((value: string) => value?.toLowerCase() || value)
+    .test(
+      'is-address',
+      '${path} should be an ethereum address',
+      (value) => isUndefined(value) || isAddressTest(value)
+    );
+
 // 78 char length for email subject (rfc2822)
 export const emailSubjectSchema = () => string().max(78).strict();
 
