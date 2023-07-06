@@ -551,3 +551,33 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run push-dapp-secret
+
+---
+# pipeline to count the registrations
+kind: pipeline
+type: docker
+name: count-registrations
+
+trigger:
+  event:
+    - cron
+    - promote
+  branch:
+    - feature/privacypass-feature
+
+steps:
+  - name: install deps
+    image: node:18
+    pull: always
+    commands:
+      - npm ci
+
+  - name: build
+    image: node:18
+    commands:
+      - npm run build
+
+  - name: count registrations
+    image: node:18
+    commands:
+      - npm run privacy-pass
