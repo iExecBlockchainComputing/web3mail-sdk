@@ -8,8 +8,8 @@ export const fetchMyContacts = async ({
   iexec = throwIfMissing(),
 }: IExecConsumer & SubgraphConsumer): Promise<Contact[]> => {
   try {
-    const address = await iexec.wallet.getAddress();
-    return fetchUserContacts({ graphQLClient, iexec, address });
+    const user = await iexec.wallet.getAddress();
+    return fetchUserContacts({ graphQLClient, iexec, user });
   } catch (error) {
     throw new WorkflowError(
       `Failed to fetch my contacts: ${error.message}`,

@@ -13,14 +13,14 @@ import {
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  address,
+  user,
 }: IExecConsumer & SubgraphConsumer & FetchUserContactsParams): Promise<
   Contact[]
 > => {
   const vAddress = addressOrEnsSchema()
     .required()
-    .label('address')
-    .validateSync(address);
+    .label('userAddress')
+    .validateSync(user);
 
   try {
     const showDatasetOrderbookRequest = iexec.orderbook.fetchDatasetOrderbook(
