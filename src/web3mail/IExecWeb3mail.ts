@@ -1,6 +1,6 @@
 import { providers } from 'ethers';
 import { IExec } from 'iexec';
-import { Address, IExecConfigOptions } from 'iexec/IExecConfig';
+import { IExecConfigOptions } from 'iexec/IExecConfig';
 import { fetchMyContacts } from './fetchMyContacts.js';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import { sendEmail } from './sendEmail.js';
