@@ -19,8 +19,20 @@ fill in the environment variables:
   - **MJ_SENDER**: The email address that will be used to send the emails.
 - **IEXEC_REQUESTER_SECRET_1**: The subject of the email to be sent to the email address retrieved from the data.zip file.
 - **IEXEC_REQUESTER_SECRET_2**: The content of the email to be sent to the email address retrieved from the data.zip file.
-- Install dependencies by running `npm ci`.
-- Start the app using `npm run start-local`.
+- **IEXEC_REQUESTER_SECRET_3** _(optional)_: A JSON string with the following keys:
+  - **contentType** _(optional)_: the email content type `"text/plain"` or `"text/html"`
+
+### Install dependencies
+
+```bash
+npm ci
+```
+
+### Start the app
+
+```bash
+npm run start-local
+```
 
 The Dapp will send an email using the object and content specified in .env, and your Mailjet account credentials. The email will be sent to the address specified in data.zip in the IEXEC_IN directory.
 
