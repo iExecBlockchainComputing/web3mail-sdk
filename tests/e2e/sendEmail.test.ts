@@ -2,10 +2,10 @@ import {
   IExecDataProtector,
   ProtectedDataWithSecretProps,
 } from '@iexec/dataprotector';
-import { beforeAll, describe, expect, it, jest } from '@jest/globals';
+import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
-import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
+import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { MAX_EXPECTED_BLOCKTIME, getRandomWallet, sleep } from '../test-utils';
 
 describe('web3mail.sendEmail()', () => {
@@ -58,6 +58,22 @@ describe('web3mail.sendEmail()', () => {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
         protectedData: validProtectedData.address,
+      };
+
+      const sendEmailResponse = await web3mail.sendEmail(params);
+      expect(sendEmailResponse.taskId).toBeDefined();
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it(
+    'should successfully send email with content type html',
+    async () => {
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent:
+          '<html><body><h1>Test html</h1> <p>test paragraph </p></body></html>',
+        protectedData: validProtectedData.address,
+        contentType: 'text/html',
       };
 
       const sendEmailResponse = await web3mail.sendEmail(params);
