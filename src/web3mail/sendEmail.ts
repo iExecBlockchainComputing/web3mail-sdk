@@ -136,12 +136,12 @@ export const sendEmail = async ({
     // Push requester secrets
     const emailSubjectId = generateSecureUniqueId(16);
     const emailContentId = generateSecureUniqueId(16);
-    const contentTypeId = generateSecureUniqueId(16);
+    const optionsId = generateSecureUniqueId(16);
     await iexec.secrets.pushRequesterSecret(emailSubjectId, vEmailSubject);
     await iexec.secrets.pushRequesterSecret(emailContentId, vEmailContent);
     await iexec.secrets.pushRequesterSecret(
-      contentTypeId,
-      JSON.stringify({contentType: vContentType})
+      optionsId,
+      JSON.stringify({ contentType: vContentType })
     );
     // Create and sign request order
     const requestorderToSign = await iexec.order.createRequestorder({
@@ -157,7 +157,7 @@ export const sendEmail = async ({
         iexec_secrets: {
           1: emailSubjectId,
           2: emailContentId,
-          ...(vContentType ? { 3: contentTypeId } : {}),
+          3: optionsId,
         },
       },
     });
