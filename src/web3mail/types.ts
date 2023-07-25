@@ -1,5 +1,5 @@
-import { EnhancedWallet, IExec } from 'iexec';
 import { GraphQLClient } from 'graphql-request';
+import { EnhancedWallet, IExec } from 'iexec';
 
 export type Web3SignerProvider = EnhancedWallet;
 
@@ -20,6 +20,7 @@ export type SendEmailParams = {
   emailSubject: string;
   emailContent: string;
   protectedData: Address;
+  contentType?: string;
 };
 
 export type SendEmailResponse = {
