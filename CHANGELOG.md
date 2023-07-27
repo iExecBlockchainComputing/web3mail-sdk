@@ -4,9 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [0.2.0]
 
-### Changed
+### Added
 
-- add content type to sendEmail method (you can send plain text or a html type content)
+- add optional `contentType: 'text/plain' | 'text/html'` (default `'text/plain'`) to `sendEmail` method (you can send plain text or a html type content)
 
 ## [0.1.1]
 
