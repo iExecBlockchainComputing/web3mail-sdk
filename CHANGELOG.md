@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0]
+
+### Changed
+
+- add content type to sendEmail method (you can send plain text or a html type content)
+
 ## [0.1.1]
 
 ### Changed
