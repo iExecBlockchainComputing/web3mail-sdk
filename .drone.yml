@@ -521,9 +521,6 @@ trigger:
   target:
     - dapp-push-secret-dev
     - dapp-push-secret-prod
-  branch:
-    - develop
-    - main
 
 steps:
   - name: install deps
