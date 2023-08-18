@@ -1,4 +1,5 @@
 import {
+  DEFAULT_CONTENT_TYPE,
   MAX_DESIRED_APP_ORDER_PRICE,
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   WEB3_MAIL_DAPP_ADDRESS,
@@ -9,6 +10,7 @@ import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
 import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
+  contentTypeSchema,
   emailContentSchema,
   emailSubjectSchema,
   throwIfMissing,
@@ -25,6 +27,7 @@ export const sendEmail = async ({
   iexec = throwIfMissing(),
   emailSubject,
   emailContent,
+  contentType = DEFAULT_CONTENT_TYPE,
   protectedData,
 }: IExecConsumer &
   SubgraphConsumer &
@@ -42,6 +45,11 @@ export const sendEmail = async ({
       .required()
       .label('emailContent')
       .validateSync(emailContent);
+
+    const vContentType = contentTypeSchema()
+      .required()
+      .label('contentType')
+      .validateSync(contentType);
 
     // Check protected data validity through subgraph
     const isValidProtectedData = await checkProtectedDataValidity(
@@ -128,9 +136,13 @@ export const sendEmail = async ({
     // Push requester secrets
     const emailSubjectId = generateSecureUniqueId(16);
     const emailContentId = generateSecureUniqueId(16);
+    const optionsId = generateSecureUniqueId(16);
     await iexec.secrets.pushRequesterSecret(emailSubjectId, vEmailSubject);
     await iexec.secrets.pushRequesterSecret(emailContentId, vEmailContent);
-
+    await iexec.secrets.pushRequesterSecret(
+      optionsId,
+      JSON.stringify({ contentType: vContentType })
+    );
     // Create and sign request order
     const requestorderToSign = await iexec.order.createRequestorder({
       app: WEB3_MAIL_DAPP_ADDRESS,
@@ -145,6 +157,7 @@ export const sendEmail = async ({
         iexec_secrets: {
           1: emailSubjectId,
           2: emailContentId,
+          3: optionsId,
         },
       },
     });
