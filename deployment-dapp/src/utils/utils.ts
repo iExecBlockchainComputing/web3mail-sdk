@@ -4,9 +4,14 @@ import { HOST } from '../config/config.js';
 
 export const getIExec = (privateKey: string): IExec => {
   const ethProvider = utils.getSignerFromPrivateKey(HOST, privateKey);
-  const iexec = new IExec({
-    ethProvider,
-  });
+  const iexec = new IExec(
+    {
+      ethProvider,
+    },
+    {
+      smsURL: 'https://sms.scone-prod.stagingv8.iex.ec',
+    }
+  );
   return iexec;
 };
 
