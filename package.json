@@ -57,7 +57,7 @@
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/random": "^5.7.0",
     "graphql-request": "^6.1.0",
-    "iexec": "8.1.5-nightly-310b14bfef41af80479bb85753f2543b24834c3c",
+    "iexec": "^8.2.1",
     "yup": "^1.1.1"
   }
 }
