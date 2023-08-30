@@ -1,6 +1,6 @@
-import crypto from 'crypto';
+import { randomBytes } from '@ethersproject/random';
+import { hexlify } from '@ethersproject/bytes';
 
-export function generateSecureUniqueId(length: number): string {
-  const buffer = crypto.randomBytes(length);
-  return buffer.toString('hex');
+export function generateSecureUniqueId(length) {
+  return hexlify(randomBytes(length));
 }
