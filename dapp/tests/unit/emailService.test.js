@@ -23,7 +23,7 @@ describe('sendEmail', () => {
       emailSubject,
       emailContent,
       mailJetSender,
-      senderTag
+      senderTag,
     });
 
     expect(Mailjet.apiConnect).toHaveBeenCalledWith(
@@ -62,7 +62,7 @@ describe('sendEmail', () => {
     const emailSubject = 'Test email';
     const emailContent = 'This is a test email.';
     const mailJetSender = 'sender@example.com';
-    const senderTag = 'Product Team'
+    const senderTag = 'Product Team';
     const mockMailjet = {
       post: jest.fn().mockReturnThis(),
       request: jest.fn().mockResolvedValue(),
@@ -76,7 +76,7 @@ describe('sendEmail', () => {
       emailSubject,
       emailContent,
       mailJetSender,
-      senderTag
+      senderTag,
     });
 
     expect(Mailjet.apiConnect).toHaveBeenCalledWith(

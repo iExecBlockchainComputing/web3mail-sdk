@@ -14,7 +14,7 @@ describe('validateInputs function', () => {
       mailJetSender: 'sender@example.com',
       emailSubject: 'Test email',
       emailContent: 'This is a it email',
-      senderTag : undefined
+      senderTag: undefined,
     };
   });
 

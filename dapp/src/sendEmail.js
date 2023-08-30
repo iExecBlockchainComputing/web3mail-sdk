@@ -39,7 +39,7 @@ async function start() {
     emailSubject: process.env.IEXEC_REQUESTER_SECRET_1,
     emailContent: process.env.IEXEC_REQUESTER_SECRET_2,
     contentType: options.contentType,
-    senderTag : options.senderTag
+    senderTag: options.senderTag,
   };
   const envVars = validateInputs(unsafeEnvVars);
   const email = await extractZipAndBuildJson(
@@ -56,7 +56,7 @@ async function start() {
     emailContent: envVars.emailContent,
     mailJetSender: envVars.mailJetSender,
     contentType: envVars.contentType,
-    senderTag: envVars.senderTag
+    senderTag: envVars.senderTag,
   });
 
   await writeTaskOutput(

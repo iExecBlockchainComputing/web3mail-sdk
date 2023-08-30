@@ -68,25 +68,28 @@ describe('sendEmail', () => {
   it('should fail if IEXEC_REQUESTER_SECRET_3 (options) contains invalid content-type', async () => {
     process.env.IEXEC_REQUESTER_SECRET_3 = '{"contentType":"notacontenttype"}';
     await expect(() => start()).rejects.toThrow(
-      Error('\"contentType\" must be one of [text/plain, text/html]')
+      Error('"contentType" must be one of [text/plain, text/html]')
     );
   });
   it('should fail if IEXEC_REQUESTER_SECRET_3 (options) senderTag is empty', async () => {
     process.env.IEXEC_REQUESTER_SECRET_3 = '{"senderTag":""}';
     await expect(() => start()).rejects.toThrow(
-      Error('\"senderTag\" is not allowed to be empty')
+      Error('"senderTag" is not allowed to be empty')
     );
   });
   it('should fail if IEXEC_REQUESTER_SECRET_3 (options) senderTag lenght is less than 3 characters', async () => {
     process.env.IEXEC_REQUESTER_SECRET_3 = '{"senderTag":"AB"}';
     await expect(() => start()).rejects.toThrow(
-      Error('\"senderTag\" length must be at least 3 characters long')
+      Error('"senderTag" length must be at least 3 characters long')
     );
   });
   it('should fail if IEXEC_REQUESTER_SECRET_3 (options) senderTag length is more than 20 characters', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_3 = '{"senderTag":"A very long sender tag may be flagged as spam"}';
+    process.env.IEXEC_REQUESTER_SECRET_3 =
+      '{"senderTag":"A very long sender tag may be flagged as spam"}';
     await expect(() => start()).rejects.toThrow(
-      Error('\"senderTag\" length must be less than or equal to 20 characters long')
+      Error(
+        '"senderTag" length must be less than or equal to 20 characters long'
+      )
     );
   });
   it('should fail if email service fail to send the email', async () => {
