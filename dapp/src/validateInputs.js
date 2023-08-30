@@ -10,6 +10,7 @@ const schema = Joi.object({
   emailSubject: Joi.string().required(),
   emailContent: Joi.string().required(),
   contentType: Joi.string().valid('text/plain', 'text/html'),
+  senderTag: Joi.string().min(3).max(20)
 });
 
 function validateInputs(envVars) {

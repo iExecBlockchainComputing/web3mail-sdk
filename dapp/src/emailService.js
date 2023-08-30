@@ -8,11 +8,13 @@ async function sendEmail({
   emailContent,
   mailJetSender,
   contentType = 'text/plain',
+  senderTag,
 }) {
   const mailjet = Mailjet.apiConnect(mailJetApiKeyPublic, mailJetApiKeyPrivate);
 
   const TextPart = contentType === 'text/plain' ? emailContent : undefined;
   const HTMLPart = contentType === 'text/html' ? emailContent : undefined;
+  const emailFromName = senderTag?`${senderTag} via Web3mail Dapp`:'Web3mail Dapp Sender';
 
   await mailjet
     .post('send', { version: 'v3.1' })
@@ -21,7 +23,7 @@ async function sendEmail({
         {
           From: {
             Email: mailJetSender,
-            Name: 'Web3mail Dapp Sender',
+            Name: emailFromName,
           },
           To: [
             {

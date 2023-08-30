@@ -14,6 +14,7 @@ describe('validateInputs function', () => {
       mailJetSender: 'sender@example.com',
       emailSubject: 'Test email',
       emailContent: 'This is a it email',
+      senderTag : undefined
     };
   });
 
@@ -27,6 +28,22 @@ describe('validateInputs function', () => {
       contentType: 'text/html',
     });
     expect(res.contentType).toStrictEqual('text/html');
+  });
+
+  it('should accept valid senderTag', () => {
+    const res = validateInputs({
+      ...envVars,
+      senderTag: 'Product Team',
+    });
+    expect(res.senderTag).toStrictEqual('Product Team');
+  });
+
+  it('should accept an undefined senderTag', () => {
+    const res = validateInputs({
+      ...envVars,
+      senderTag: undefined,
+    });
+    expect(res.senderTag === undefined);
   });
 
   it('should throw an error if contentType is invalid', () => {
