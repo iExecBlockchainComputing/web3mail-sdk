@@ -9,7 +9,6 @@ describe('sendEmail', () => {
     const emailSubject = 'Test email';
     const emailContent = 'This is a test email.';
     const mailJetSender = 'sender@example.com';
-    const senderTag = undefined;
     const mockMailjet = {
       post: jest.fn().mockReturnThis(),
       request: jest.fn().mockResolvedValue(),
@@ -23,7 +22,6 @@ describe('sendEmail', () => {
       emailSubject,
       emailContent,
       mailJetSender,
-      senderTag,
     });
 
     expect(Mailjet.apiConnect).toHaveBeenCalledWith(
@@ -36,7 +34,7 @@ describe('sendEmail', () => {
         {
           From: {
             Email: mailJetSender,
-            Name: 'Web3mail Dapp Sender',
+            Name: 'Web3mail',
           },
           To: [
             {
@@ -62,7 +60,7 @@ describe('sendEmail', () => {
     const emailSubject = 'Test email';
     const emailContent = 'This is a test email.';
     const mailJetSender = 'sender@example.com';
-    const senderTag = 'Product Team';
+    const senderName = 'Product Team';
     const mockMailjet = {
       post: jest.fn().mockReturnThis(),
       request: jest.fn().mockResolvedValue(),
@@ -76,7 +74,7 @@ describe('sendEmail', () => {
       emailSubject,
       emailContent,
       mailJetSender,
-      senderTag,
+      senderName,
     });
 
     expect(Mailjet.apiConnect).toHaveBeenCalledWith(
@@ -89,7 +87,7 @@ describe('sendEmail', () => {
         {
           From: {
             Email: mailJetSender,
-            Name: 'Product Team via Web3mail Dapp',
+            Name: 'Product Team via Web3mail',
           },
           To: [
             {
@@ -141,7 +139,7 @@ describe('sendEmail', () => {
         {
           From: {
             Email: mailJetSender,
-            Name: 'Web3mail Dapp Sender',
+            Name: 'Web3mail',
           },
           To: [
             {
