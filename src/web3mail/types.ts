@@ -21,6 +21,7 @@ export type SendEmailParams = {
   emailContent: string;
   protectedData: Address;
   contentType?: string;
+  senderName?: string;
 };
 
 export type SendEmailResponse = {

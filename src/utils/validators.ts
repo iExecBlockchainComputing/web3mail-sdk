@@ -31,3 +31,6 @@ const validContentTypes = ['text/plain', 'text/html'];
 
 export const contentTypeSchema = () =>
   string().oneOf(validContentTypes, 'Invalid contentType').optional();
+
+// Minimum of 3 characters and max of 20 to avoid sender being flagged as spam
+export const senderNameSchema = () => string().min(3).max(20).optional();
