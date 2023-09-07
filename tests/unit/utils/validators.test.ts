@@ -147,6 +147,13 @@ describe('senderNameSchema()', () => {
         )
       ).toThrow('this must be at least 3 characters');
     });
+    it('blocks empty characters as senderName', () => {
+      expect(() =>
+      senderNameSchema().validateSync(
+          '   '
+        )
+      ).toThrow('this must be at least 3 characters');
+    });
     it('blocks too long senderName', () => {
       expect(() =>
       senderNameSchema().validateSync(

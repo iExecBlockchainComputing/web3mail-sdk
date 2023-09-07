@@ -145,7 +145,7 @@ export const sendEmail = async ({
     await iexec.secrets.pushRequesterSecret(emailContentId, vEmailContent);
     await iexec.secrets.pushRequesterSecret(
       optionsId,
-      JSON.stringify({ contentType: vContentType })
+      JSON.stringify({ contentType: vContentType, senderName: vSenderName })
     );
     // Create and sign request order
     const requestorderToSign = await iexec.order.createRequestorder({
