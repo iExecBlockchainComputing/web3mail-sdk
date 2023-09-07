@@ -4,6 +4,7 @@ import {
   addressOrEnsSchema,
   emailSubjectSchema,
   emailContentSchema,
+  senderNameSchema,
 } from '../../../dist/utils/validators';
 import { getRandomAddress, getRequiredFieldMessage } from '../../test-utils';
 
@@ -128,6 +129,37 @@ Even the all-powerful Pointing has no control about the blind texts it is an alm
       expect(() => emailContentSchema().validateSync(CONTENT + '.')).toThrow(
         'this must be at most 4096 characters'
       );
+    });
+  });
+});
+
+describe('senderNameSchema()', () => {
+  describe('validateSync()', () => {
+    it('pass with valid senderName', () => {
+      const senderName = 'Product Team';
+      const res = senderNameSchema().validateSync(senderName);
+      expect(res).toBe(senderName);
+    });
+    it('blocks too short senderName', () => {
+      expect(() =>
+      senderNameSchema().validateSync(
+          'AB'
+        )
+      ).toThrow('this must be at least 3 characters');
+    });
+    it('blocks empty characters as senderName', () => {
+      expect(() =>
+      senderNameSchema().validateSync(
+          '   '
+        )
+      ).toThrow('this must be at least 3 characters');
+    });
+    it('blocks too long senderName', () => {
+      expect(() =>
+      senderNameSchema().validateSync(
+          'A very long sender name'
+        )
+      ).toThrow('this must be at most 20 characters');
     });
   });
 });
