@@ -7,7 +7,7 @@
     "start": "node src/app.js",
     "start-local": "node -r dotenv/config src/app.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "ctest": "jest --setupFiles dotenv/config --silent=true --coverage",
+    "ctest": "node --experimental-vm-modules node_modules/jest/bin/jest.js --silent=true --coverage",
     "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\"",
     "check-format": "prettier --check \"src/**/*.js\" \"tests/**/*.js\""
   },
