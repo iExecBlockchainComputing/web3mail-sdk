@@ -8,7 +8,8 @@ const schema = Joi.object({
   mailJetApiKeyPrivate: Joi.string().required(),
   mailJetSender: Joi.string().email().required(),
   emailSubject: Joi.string().required(),
-  emailContent: Joi.string().required(),
+  emailContentOrMultiAddr: Joi.string().required(),
+  emailContentEncryptionKey: Joi.string().base64(),
   contentType: Joi.string().valid('text/plain', 'text/html'),
   senderName: Joi.string().min(3).max(20),
 });

@@ -2,6 +2,7 @@ const { promises: fs } = require('fs');
 const sendEmail = require('./emailService');
 const validateInputs = require('./validateInputs');
 const extractZipAndBuildJson = require('./extractEmailFromZipFile');
+const { downloadEncryptedContent, decryptContent } = require('./common/utils');
 
 async function writeTaskOutput(path, message) {
   try {
@@ -37,9 +38,9 @@ async function start() {
     mailJetApiKeyPrivate: developerSecret.MJ_APIKEY_PRIVATE,
     mailJetSender: developerSecret.MJ_SENDER,
     emailSubject: process.env.IEXEC_REQUESTER_SECRET_1,
-    emailContent: process.env.IEXEC_REQUESTER_SECRET_2,
+    emailContentOrMultiAddr: process.env.IEXEC_REQUESTER_SECRET_2,
     contentType: options.contentType,
-    senderName: options.senderName,
+    emailContentEncryptionKey: options.emailContentEncryptionKey,
   };
   const envVars = validateInputs(unsafeEnvVars);
   const email = await extractZipAndBuildJson(
@@ -48,12 +49,25 @@ async function start() {
   if (!email) {
     throw new Error('Missing email in protectedData');
   }
+
+  // Decrypt email content if the emailContentEncryptionKey exists in options
+  if (envVars.emailContentEncryptionKey) {
+    // Here envVars.emailContentOrMultiAddr is a Multiaddr
+    const encryptedEmailContent = await downloadEncryptedContent(
+      envVars.emailContentOrMultiAddr
+    );
+    // Here envVars.emailContentOrMultiAddr is a email content
+    envVars.emailContentOrMultiAddr = decryptContent(
+      encryptedEmailContent,
+      envVars.emailContentEncryptionKey
+    );
+  }
   const response = await sendEmail({
     email,
     mailJetApiKeyPublic: envVars.mailJetApiKeyPublic,
     mailJetApiKeyPrivate: envVars.mailJetApiKeyPrivate,
     emailSubject: envVars.emailSubject,
-    emailContent: envVars.emailContent,
+    emailContent: envVars.emailContentOrMultiAddr,
     mailJetSender: envVars.mailJetSender,
     contentType: envVars.contentType,
     senderName: envVars.senderName,
