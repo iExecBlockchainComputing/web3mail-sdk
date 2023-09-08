@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/app.js",
     "start-local": "node -r dotenv/config src/app.js",
-    "test": "jest --setupFiles dotenv/config --silent=false",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "ctest": "jest --setupFiles dotenv/config --silent=true --coverage",
     "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\"",
     "check-format": "prettier --check \"src/**/*.js\" \"tests/**/*.js\""
@@ -17,6 +17,7 @@
   "dependencies": {
     "joi": "^17.9.2",
     "jszip": "^3.10.1",
+    "node-forge": "^1.3.1",
     "node-mailjet": "^6.0.2"
   },
   "devDependencies": {
