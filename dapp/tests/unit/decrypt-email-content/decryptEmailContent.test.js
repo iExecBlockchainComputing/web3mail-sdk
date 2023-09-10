@@ -19,7 +19,7 @@ describe('decryptContent', () => {
     const encryptedFile = await iexec.dataset
       .encrypt(Buffer.from(emailContent, 'utf8'), encryptionKey)
       .catch((e) => {
-        throw new WorkflowError('Failed to encrypt API key', e);
+        throw new WorkflowError('Failed to encrypt email content', e);
       });
 
     const decryptedEmailContent = decryptContent(encryptedFile, encryptionKey);
