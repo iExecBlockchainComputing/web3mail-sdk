@@ -65,4 +65,4 @@ const removePadding = (buffer) => {
   return buffer.slice(0, buffer.length - paddingLength); // Remove padding bytes
 };
 
-module.exports = { downloadEncryptedContent, decryptContent };
+module.exports = { downloadEncryptedContent, decryptContent, removePadding };

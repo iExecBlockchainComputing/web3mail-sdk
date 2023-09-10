@@ -1,7 +1,7 @@
 const { Wallet } = require('ethers');
 const {
   decryptContent,
-} = require('../../src/decrypt-email-content/cryptoDataUtils');
+} = require('../../../src/decrypt-email-content/cryptoDataUtils');
 describe('decryptContent', () => {
   it('should decrypt content correctly', async () => {
     const { IExec, utils } = await import('iexec');
