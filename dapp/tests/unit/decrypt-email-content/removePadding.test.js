@@ -1,4 +1,3 @@
-const { expect } = require('chai');
 const { Buffer } = require('buffer');
 const {
   removePadding,
@@ -8,18 +7,18 @@ describe('removePadding function', () => {
   it('should remove padding from a buffer', () => {
     const bufferWithPadding = Buffer.from([74, 65, 73, 74, 3, 3, 3]); // Simulated buffer with padding
     const result = removePadding(bufferWithPadding);
-    expect(result).to.deep.equal(Buffer.from([74, 65, 73, 74]));
+    expect(result).toEqual(Buffer.from([74, 65, 73, 74]));
   });
 
   it('should not remove padding when padding length is 0', () => {
     const bufferWithoutPadding = Buffer.from([1, 2, 3]); // No padding
     const result = removePadding(bufferWithoutPadding);
-    expect(result).to.deep.equal(Buffer.from([1, 2, 3]));
+    expect(result).toEqual(Buffer.from([1, 2, 3]));
   });
 
   it('should not remove padding when padding length exceeds buffer length', () => {
     const bufferWithInvalidPadding = Buffer.from([1, 2, 3, 4, 5]); // Invalid padding
     const result = removePadding(bufferWithInvalidPadding);
-    expect(result).to.deep.equal(Buffer.from([1, 2, 3, 4, 5]));
+    expect(result).toEqual(Buffer.from([1, 2, 3, 4, 5]));
   });
 });
