@@ -1,16 +1,12 @@
-const { Wallet } = require('ethers');
 const {
   decryptContent,
 } = require('../../../src/decrypt-email-content/cryptoDataUtils');
 describe('decryptContent', () => {
   it('should decrypt content correctly', async () => {
     const { IExec, utils } = await import('iexec');
-    const ethProvider = utils.getSignerFromPrivateKey(
-      'https://bellecour.iex.ec',
-      Wallet.createRandom().privateKey
-    );
+
     const iexec = new IExec({
-      ethProvider,
+      ethProvider: 'bellecour',
     });
 
     const encryptionKey = iexec.dataset.generateEncryptionKey();
