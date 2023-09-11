@@ -3,7 +3,7 @@ const {
 } = require('../../../src/decrypt-email-content/cryptoDataUtils');
 describe('decryptContent', () => {
   it('should decrypt content correctly', async () => {
-    const { IExec, utils } = await import('iexec');
+    const { IExec } = await import('iexec');
 
     const iexec = new IExec({
       ethProvider: 'bellecour',
