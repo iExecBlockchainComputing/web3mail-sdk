@@ -1,5 +1,7 @@
 const { Buffer } = require('buffer');
 const { forgeAes, util } = require('./forge-aes');
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
 
