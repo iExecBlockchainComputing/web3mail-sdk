@@ -117,4 +117,49 @@ describe('web3mail.sendEmail()', () => {
     },
     3 * MAX_EXPECTED_BLOCKTIME
   );
+  it(
+    'should successfully send email with a valid senderName',
+    async () => {
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: validProtectedData.address,
+        senderName: 'Product Team'
+      };
+
+      const sendEmailResponse = await web3mail.sendEmail(params);
+      expect(sendEmailResponse.taskId).toBeDefined();
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it(
+    'should fail to send email with an invalid (too short) senderName',
+    async () => {
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: validProtectedData.address,
+        senderName: 'AB'
+      };
+      await expect(web3mail.sendEmail(params)).rejects.toThrow(
+        'senderName must be at least 3 characters'
+      );
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it(
+    'should fail to send email with an invalid (too long) senderName',
+    async () => {
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: validProtectedData.address,
+        senderName: 'A very long sender name'
+      };
+      await expect(web3mail.sendEmail(params)).rejects.toThrow(
+        'senderName must be at most 20 characters'
+      );
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
 });

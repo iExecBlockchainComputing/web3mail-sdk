@@ -13,6 +13,7 @@ import {
   contentTypeSchema,
   emailContentSchema,
   emailSubjectSchema,
+  senderNameSchema,
   throwIfMissing,
 } from '../utils/validators.js';
 import {
@@ -28,6 +29,7 @@ export const sendEmail = async ({
   emailSubject,
   emailContent,
   contentType = DEFAULT_CONTENT_TYPE,
+  senderName,
   protectedData,
 }: IExecConsumer &
   SubgraphConsumer &
@@ -45,11 +47,13 @@ export const sendEmail = async ({
       .required()
       .label('emailContent')
       .validateSync(emailContent);
-
     const vContentType = contentTypeSchema()
       .required()
       .label('contentType')
       .validateSync(contentType);
+    const vSenderName = senderNameSchema()
+      .label('senderName')
+      .validateSync(senderName);
 
     // Check protected data validity through subgraph
     const isValidProtectedData = await checkProtectedDataValidity(
@@ -159,8 +163,10 @@ export const sendEmail = async ({
     // set encryptionKey as a field of requester secret 3 (options)
     await iexec.secrets.pushRequesterSecret(
       optionsId,
+
       JSON.stringify({
         contentType: vContentType,
+        senderName: vSenderName,
         emailContentEncryptionKey,
       })
     );
