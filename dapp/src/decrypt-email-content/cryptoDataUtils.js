@@ -1,5 +1,5 @@
 const { Buffer } = require('buffer');
-const { forgeAes, util } = require('./forge-aes');
+const forge = require('node-forge');
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
@@ -22,10 +22,10 @@ const downloadEncryptedContent = async (
 const decryptContent = (encryptedContent, encryptionKey) => {
   const ivBytes = encryptedContent.slice(0, 16);
   let ciphertextBytes = encryptedContent.slice(16);
-  const key = util.createBuffer(Buffer.from(encryptionKey, 'base64'));
-  let decipher = forgeAes.cipher.createDecipher('AES-CBC', key);
+  const key = forge.util.createBuffer(Buffer.from(encryptionKey, 'base64'));
+  let decipher = forge.cipher.createDecipher('AES-CBC', key);
 
-  decipher.start({ iv: util.createBuffer(ivBytes) });
+  decipher.start({ iv: forge.util.createBuffer(ivBytes) });
 
   const CHUNK_SIZE = 10 * 1000 * 1000;
   let decryptedBuffer = Buffer.from([]);
@@ -38,7 +38,7 @@ const decryptContent = (encryptedContent, encryptionKey) => {
     ]);
     const chunk = ciphertextBytes.slice(0, CHUNK_SIZE);
     ciphertextBytes = ciphertextBytes.slice(CHUNK_SIZE);
-    decipher.update(util.createBuffer(chunk));
+    decipher.update(forge.util.createBuffer(chunk));
   }
 
   decipher.finish();
