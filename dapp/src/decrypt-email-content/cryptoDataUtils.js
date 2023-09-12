@@ -20,10 +20,8 @@ const downloadEncryptedContent = async (
 };
 
 const decryptContent = (encryptedContent, encryptionKey) => {
-  let [ivBytes, ciphertextBytes] = [
-    encryptedContent.slice(0, 16),
-    encryptedContent.slice(16),
-  ];
+  const ivBytes = encryptedContent.slice(0, 16);
+  let ciphertextBytes = encryptedContent.slice(16);
   const key = util.createBuffer(Buffer.from(encryptionKey, 'base64'));
   let decipher = forgeAes.cipher.createDecipher('AES-CBC', key);
 
