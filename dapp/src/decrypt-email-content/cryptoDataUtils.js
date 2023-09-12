@@ -31,13 +31,14 @@ const decryptContent = (encryptedContent, encryptionKey) => {
   let decryptedBuffer = Buffer.from([]);
 
   while (ciphertextBytes.length > 0) {
-    const chunk = ciphertextBytes.slice(0, CHUNK_SIZE);
-    ciphertextBytes = ciphertextBytes.slice(CHUNK_SIZE);
-    decipher.update(util.createBuffer(chunk));
+    // flush the decipher buffer
     decryptedBuffer = Buffer.concat([
       decryptedBuffer,
       Buffer.from(decipher.output.getBytes(), 'binary'),
     ]);
+    const chunk = ciphertextBytes.slice(0, CHUNK_SIZE);
+    ciphertextBytes = ciphertextBytes.slice(CHUNK_SIZE);
+    decipher.update(util.createBuffer(chunk));
   }
 
   decipher.finish();
@@ -47,22 +48,6 @@ const decryptContent = (encryptedContent, encryptionKey) => {
     Buffer.from(decipher.output.getBytes(), 'binary'),
   ]);
 
-  // ensure that 'removedPaddingBuffer' contains only the original and meaningful content after decryption.
-  const removedPaddingBuffer = removePadding(decryptedBuffer);
-
-  const decryptedContentStr = Buffer.from(
-    removedPaddingBuffer,
-    'utf-8'
-  ).toString();
-  return decryptedContentStr;
+  return decryptedBuffer.toString();
 };
-
-const removePadding = (buffer) => {
-  const paddingLength = buffer[buffer.length - 1]; // The last byte indicates the length of the padding
-  if (paddingLength >= buffer.length || paddingLength === 0) {
-    return buffer;
-  }
-  return buffer.slice(0, buffer.length - paddingLength); // Remove padding bytes
-};
-
-module.exports = { downloadEncryptedContent, decryptContent, removePadding };
+module.exports = { downloadEncryptedContent, decryptContent };
