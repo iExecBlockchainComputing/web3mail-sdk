@@ -2,14 +2,16 @@ const {
   downloadEncryptedContent,
 } = require('../../../src/decryptEmailContent');
 const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
+const IPFS_UPLOAD_URL = '/dns4/ipfs-upload.v8-bellecour.iex.ec/https';
 
 describe('downloadEncryptedContent', () => {
   it('should return the encrypted content', async () => {
-    const content = `{"JSONPath":"$['rates']['GBP']","body":"","dataType":"number","dataset":"0x0000000000000000000000000000000000000000","headers":{},"method":"GET","url":"https://api.exchangerate.host/latest?base=USD&symbols=GBP"}`;
-    const textEncoder = new TextEncoder();
-    const actualContent = await textEncoder.encode(content);
-
-    const multiaddr = '/ipfs/Qmb1JLTVp4zfRMPaori9htzzM9D3B1tG8pGbZYTRC1favA';
+    const { create } = await import('kubo-rpc-client');
+    const ipfsClient = create({ url: IPFS_UPLOAD_URL });
+    const content =
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sagittis, ipsum sed aliquet consequat, justo dolor venenatis metus, sit amet tempus ligula odio at libero. Suspendisse potenti. Praesent lacinia ex eu nibh scelerisque, vel pharetra elit ullamcorper. Vivamus vel tristique urna. Proin a semper lectus. ';
+    const { cid } = await ipfsClient.add(content);
+    const multiaddr = `/ipfs/${cid}`;
     const expectedContent = await downloadEncryptedContent(multiaddr);
 
     expect(actualContent).toEqual(expectedContent);
