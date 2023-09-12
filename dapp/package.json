@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node src/app.js",
     "start-local": "node -r dotenv/config src/app.js",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "ctest": "node --experimental-vm-modules node_modules/jest/bin/jest.js --silent=true --coverage",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "ctest": "NODE_OPTIONS=--experimental-vm-modules jest --silent=true --coverage",
     "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\"",
     "check-format": "prettier --check \"src/**/*.js\" \"tests/**/*.js\""
   },
