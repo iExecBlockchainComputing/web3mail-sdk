@@ -1,6 +1,6 @@
 const {
   downloadEncryptedContent,
-} = require('../../../src/decrypt-email-content/cryptoDataUtils');
+} = require('../../../src/decryptEmailContent');
 const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
 
 describe('downloadEncryptedContent', () => {

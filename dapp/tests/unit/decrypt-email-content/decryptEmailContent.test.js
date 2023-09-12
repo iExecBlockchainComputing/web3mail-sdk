@@ -1,6 +1,4 @@
-const {
-  decryptContent,
-} = require('../../../src/decrypt-email-content/cryptoDataUtils');
+const { decryptContent } = require('../../../src/decryptEmailContent');
 describe('decryptContent', () => {
   it('should decrypt content correctly', async () => {
     const { IExec } = await import('iexec');

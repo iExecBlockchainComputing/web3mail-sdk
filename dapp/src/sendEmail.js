@@ -5,7 +5,7 @@ const extractZipAndBuildJson = require('./extractEmailFromZipFile');
 const {
   downloadEncryptedContent,
   decryptContent,
-} = require('./decrypt-email-content/cryptoDataUtils');
+} = require('./decryptEmailContent');
 
 async function writeTaskOutput(path, message) {
   try {
