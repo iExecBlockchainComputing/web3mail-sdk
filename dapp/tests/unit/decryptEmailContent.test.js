@@ -1,6 +1,29 @@
 const {
+  decryptContent,
   downloadEncryptedContent,
-} = require('../../../src/decryptEmailContent');
+} = require('../../src/decryptEmailContent');
+describe('decryptContent', () => {
+  it('should decrypt content correctly', async () => {
+    const { IExec } = await import('iexec');
+
+    const iexec = new IExec({
+      ethProvider: 'bellecour',
+    });
+
+    const encryptionKey = iexec.dataset.generateEncryptionKey();
+    const emailContent = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur fringilla orci in neque laoreet, nec dictum justo cursus. Nulla facilisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas non bibendum leo. 
+`;
+    const encryptedFile = await iexec.dataset
+      .encrypt(Buffer.from(emailContent, 'utf8'), encryptionKey)
+      .catch((e) => {
+        throw new WorkflowError('Failed to encrypt email content', e);
+      });
+
+    const decryptedEmailContent = decryptContent(encryptedFile, encryptionKey);
+    expect(decryptedEmailContent.length).toEqual(emailContent.length);
+    expect(decryptedEmailContent).toEqual(emailContent);
+  });
+});
 const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
 const IPFS_UPLOAD_URL = '/dns4/ipfs-upload.v8-bellecour.iex.ec/https';
 
