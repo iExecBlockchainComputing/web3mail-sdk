@@ -1,8 +1,6 @@
 const { Buffer } = require('buffer');
 const forge = require('node-forge');
-const fetch = (...args) =>
-  import('node-fetch').then(({ default: fetch }) => fetch(...args));
-
+const fetch = require('node-fetch');
 const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
 
 const downloadEncryptedContent = async (
