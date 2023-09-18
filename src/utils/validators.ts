@@ -24,7 +24,9 @@ export const addressOrEnsSchema = () =>
 export const emailSubjectSchema = () => string().max(78).strict();
 
 // 4096 bytes is the current max length for iExec SMS secrets
-export const emailContentSchema = () => string().max(4096).strict();
+// TODO: Add validation based on the maximum allowed size by iExec upload node.
+//export const emailContentSchema = () => string().max(4096).strict();
+export const emailContentSchema = () => string();
 
 // Valid content types for the variable 'contentType'
 const validContentTypes = ['text/plain', 'text/html'];
