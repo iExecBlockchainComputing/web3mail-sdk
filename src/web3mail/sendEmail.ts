@@ -149,10 +149,10 @@ export const sendEmail = async ({
     const encryptedFile = await iexec.dataset
       .encrypt(Buffer.from(vEmailContent, 'utf8'), emailContentEncryptionKey)
       .catch((e) => {
-        throw new WorkflowError('Failed to encrypt e-mail content', e);
+        throw new WorkflowError('Failed to encrypt email content', e);
       });
     const cid = await ipfs.add(encryptedFile).catch((e) => {
-      throw new WorkflowError('Failed to upload encrypted e-mail content', e);
+      throw new WorkflowError('Failed to upload encrypted email content', e);
     });
     const multiaddr = `/ipfs/${cid}`;
 
