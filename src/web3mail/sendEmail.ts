@@ -145,11 +145,8 @@ export const sendEmail = async ({
     await iexec.secrets.pushRequesterSecret(emailSubjectId, vEmailSubject);
     // create AES encryptionKey & encrypt content
     const emailContentEncryptionKey = iexec.dataset.generateEncryptionKey();
-    const dataset = JSON.stringify({
-      vEmailContent,
-    });
     const encryptedFile = await iexec.dataset
-      .encrypt(Buffer.from(dataset, 'utf8'), emailContentEncryptionKey)
+      .encrypt(Buffer.from(vEmailContent, 'utf8'), emailContentEncryptionKey)
       .catch((e) => {
         throw new WorkflowError('Failed to encrypt e-mail content', e);
       });
