@@ -23,6 +23,7 @@ import {
   SubgraphConsumer,
 } from './types.js';
 import * as ipfs from './../utils/ipfs-service.js';
+
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
