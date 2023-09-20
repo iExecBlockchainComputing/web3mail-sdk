@@ -354,7 +354,7 @@ steps:
 
   - name: get scone fingerprint (prod)
     # /!\: maintain the version here
-    image: iexechub/web3mail-dapp:0.3.0-sconify-5.7.5-v12-production
+    image: iexechub/web3mail-dapp:0.4.0-sconify-5.7.5-v12-production
     commands:
       - SCONE_HASH=1 node > deployment-dapp/.scone-fingerprint
     when:

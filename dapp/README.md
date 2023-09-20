@@ -21,6 +21,7 @@ fill in the environment variables:
 - **IEXEC_REQUESTER_SECRET_2**: The content of the email to be sent to the email address retrieved from the data.zip file.
 - **IEXEC_REQUESTER_SECRET_3** _(optional)_: A JSON string with the following keys:
   - **contentType** _(optional)_: the email content type `"text/plain"` or `"text/html"`
+  - **senderName** _(optional)_: the email sender name, it must be between 3 and 20 characters long. It will be displayed as `"<senderName> via Web3mail"` in the `"From"` email header.
 
 ### Install dependencies
 

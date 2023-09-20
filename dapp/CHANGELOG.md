@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0]
+
+### Changed
+
+- Allow developer to specify the sender Name associated to the sender:
+- **senderName** _(optional)_: the email sender name, it must be between 3 and 20 characters long. It will be displayed as `"<senderName> via Web3mail"` in the `"From"` email header.
+
 ## [0.3.0]
 
 ### Changed

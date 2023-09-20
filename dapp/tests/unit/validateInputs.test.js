@@ -29,6 +29,22 @@ describe('validateInputs function', () => {
     expect(res.contentType).toStrictEqual('text/html');
   });
 
+  it('should accept valid senderName', () => {
+    const res = validateInputs({
+      ...envVars,
+      senderName: 'Product Team',
+    });
+    expect(res.senderName).toStrictEqual('Product Team');
+  });
+
+  it('should accept an undefined senderName', () => {
+    const res = validateInputs({
+      ...envVars,
+      senderName: undefined,
+    });
+    expect(res.senderName === undefined);
+  });
+
   it('should throw an error if contentType is invalid', () => {
     expect(() => validateInputs({ ...envVars, contentType: 'foo' })).toThrow(
       Error('"contentType" must be one of [text/plain, text/html]')
