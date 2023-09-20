@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [0.3.0]
 
+### Added
+
+- Allow developer to specify the sender Name associated to the sender:
+  add optional `senderName: string` to `sendEmail` method
+
 ### Changed
 
 - Migrate from sconify 5.7.5-v9 to sconify 5.7.5-v12
