@@ -22,6 +22,7 @@ import {
   SendEmailResponse,
   SubgraphConsumer,
 } from './types.js';
+import * as ipfs from './../utils/ipfs-service.js';
 
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
@@ -141,13 +142,30 @@ export const sendEmail = async ({
     const emailSubjectId = generateSecureUniqueId(16);
     const emailContentId = generateSecureUniqueId(16);
     const optionsId = generateSecureUniqueId(16);
+
     await iexec.secrets.pushRequesterSecret(emailSubjectId, vEmailSubject);
-    await iexec.secrets.pushRequesterSecret(emailContentId, vEmailContent);
+
+    const emailContentEncryptionKey = iexec.dataset.generateEncryptionKey();
+    const encryptedFile = await iexec.dataset
+      .encrypt(Buffer.from(vEmailContent, 'utf8'), emailContentEncryptionKey)
+      .catch((e) => {
+        throw new WorkflowError('Failed to encrypt email content', e);
+      });
+    const cid = await ipfs.add(encryptedFile).catch((e) => {
+      throw new WorkflowError('Failed to upload encrypted email content', e);
+    });
+    const multiaddr = `/ipfs/${cid}`;
+
+    await iexec.secrets.pushRequesterSecret(emailContentId, multiaddr);
     await iexec.secrets.pushRequesterSecret(
       optionsId,
-      JSON.stringify({ contentType: vContentType, senderName: vSenderName })
+      JSON.stringify({
+        contentType: vContentType,
+        senderName: vSenderName,
+        emailContentEncryptionKey,
+      })
     );
-    // Create and sign request order
+
     const requestorderToSign = await iexec.order.createRequestorder({
       app: WEB3_MAIL_DAPP_ADDRESS,
       category: desiredPriceWorkerpoolOrder.category,
