@@ -5,3 +5,5 @@ export const DATAPROTECTOR_SUBGRAPH_ENDPOINT =
 export const MAX_DESIRED_APP_ORDER_PRICE = 0;
 export const MAX_DESIRED_WORKERPOOL_ORDER_PRICE = 0;
 export const DEFAULT_CONTENT_TYPE = 'text/plain';
+export const IPFS_UPLOAD_URL = '/dns4/ipfs-upload.v8-bellecour.iex.ec/https';
+export const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';

@@ -23,8 +23,8 @@ export const addressOrEnsSchema = () =>
 // 78 char length for email subject (rfc2822)
 export const emailSubjectSchema = () => string().max(78).strict();
 
-// 4096 bytes is the current max length for iExec SMS secrets
-export const emailContentSchema = () => string().max(4096).strict();
+// Limit of 512,000 bytes (512 kilo-bytes)
+export const emailContentSchema = () => string().max(512000);
 
 // Valid content types for the variable 'contentType'
 const validContentTypes = ['text/plain', 'text/html'];

@@ -124,11 +124,49 @@ describe('web3mail.sendEmail()', () => {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
         protectedData: validProtectedData.address,
-        senderName: 'Product Team'
+        senderName: 'Product Team',
       };
 
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it(
+    'should successfully send email with email content size < 512 kilo-bytes',
+    async () => {
+      const desiredSizeInBytes = 500000; // 500 kilo-bytes
+      const characterToRepeat = 'A';
+      const LARGE_CONTENT = characterToRepeat.repeat(desiredSizeInBytes);
+
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: LARGE_CONTENT,
+        protectedData: validProtectedData.address,
+        senderName: 'Product Team',
+      };
+
+      const sendEmailResponse = await web3mail.sendEmail(params);
+      expect(sendEmailResponse.taskId).toBeDefined();
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it(
+    'should fail to send email with email content size > 512 kilo-bytes',
+    async () => {
+      const desiredSizeInBytes = 520000; // 520 kilo-bytes
+      const characterToRepeat = 'A';
+      const OVERSIZED_CONTENT = characterToRepeat.repeat(desiredSizeInBytes);
+
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: OVERSIZED_CONTENT,
+        protectedData: validProtectedData.address,
+        senderName: 'Product Team',
+      };
+      await expect(web3mail.sendEmail(params)).rejects.toThrow(
+        'emailContent must be at most 512000 characters'
+      );
     },
     3 * MAX_EXPECTED_BLOCKTIME
   );
@@ -139,7 +177,7 @@ describe('web3mail.sendEmail()', () => {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
         protectedData: validProtectedData.address,
-        senderName: 'AB'
+        senderName: 'AB',
       };
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
         'senderName must be at least 3 characters'
@@ -154,7 +192,7 @@ describe('web3mail.sendEmail()', () => {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
         protectedData: validProtectedData.address,
-        senderName: 'A very long sender name'
+        senderName: 'A very long sender name',
       };
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
         'senderName must be at most 20 characters'

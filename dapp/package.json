@@ -1,13 +1,13 @@
 {
   "name": "dapp",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
     "start-local": "node -r dotenv/config src/app.js",
-    "test": "jest --setupFiles dotenv/config --silent=false",
-    "ctest": "jest --setupFiles dotenv/config --silent=true --coverage",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "ctest": "NODE_OPTIONS=--experimental-vm-modules jest --silent=true --coverage",
     "format": "prettier --write \"src/**/*.js\" \"tests/**/*.js\"",
     "check-format": "prettier --check \"src/**/*.js\" \"tests/**/*.js\""
   },
@@ -17,11 +17,15 @@
   "dependencies": {
     "joi": "^17.9.2",
     "jszip": "^3.10.1",
+    "node-fetch": "^2.7.0",
+    "node-forge": "^1.3.1",
     "node-mailjet": "^6.0.2"
   },
   "devDependencies": {
     "dotenv": "^16.0.3",
-    "jest": "^29.5.0",
+    "iexec": "^8.2.1",
+    "jest": "^29.7.0",
+    "kubo-rpc-client": "^3.0.1",
     "prettier": "^2.8.8"
   }
 }
