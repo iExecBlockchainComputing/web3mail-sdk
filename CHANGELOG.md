@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0]
+
+### Changed
+
+- Enabled sending emails with a maximum size of 512 KB, an enhancement from the previous limit of 4,096 bytes.
+- Encryption of the email content and uploaded it to IPFS.
+
 ## [0.3.0]
 
 ### Added
