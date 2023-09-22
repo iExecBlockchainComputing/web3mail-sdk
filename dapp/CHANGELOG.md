@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0]
+
+### Changed
+
+- Fetch the encrypted email from IPFS and decrypt the content using the provided encryption key when the key matches.
+
 ## [0.4.0]
 
 ### Changed
