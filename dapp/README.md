@@ -17,11 +17,12 @@ fill in the environment variables:
   - **MJ_APIKEY_PUBLIC**: Your [Mailjet public API key](https://app.mailjet.com/account/apikeys), which can be retrieved from your Mailjet account.
   - **MJ_APIKEY_PRIVATE**: Your [Mailjet private API key](https://app.mailjet.com/account/apikeys).
   - **MJ_SENDER**: The email address that will be used to send the emails.
-- **IEXEC_REQUESTER_SECRET_1**: The subject of the email to be sent to the email address retrieved from the data.zip file.
-- **IEXEC_REQUESTER_SECRET_2**: The content of the email to be sent to the email address retrieved from the data.zip file.
-- **IEXEC_REQUESTER_SECRET_3** _(optional)_: A JSON string with the following keys:
-  - **contentType** _(optional)_: the email content type `"text/plain"` or `"text/html"`
-  - **senderName** _(optional)_: the email sender name, it must be between 3 and 20 characters long. It will be displayed as `"<senderName> via Web3mail"` in the `"From"` email header.
+- **IEXEC_APP_DEVELOPER_SECRET_1**: A JSON string with the following keys:
+  - **emailSubject**: The subject of the email to be sent to the email address retrieved from the data.zip file.
+  - **emailContentOrMultiAddr**: The content of the email to be sent to the email address retrieved from the data.zip file or from a Multiaddr.
+  - **emailContentEncryptionKey**: The encryption key used to encrypt the content.
+  - **senderName**: The email sender name, it must be between 3 and 20 characters long. It will be displayed as "<senderName> via Web3mail" in the "From" email header.
+  - **contentType (optional)**: the email content type "text/plain" or "text/html"
 
 ### Install dependencies
 
@@ -61,7 +62,7 @@ The Dapp will send an email using the object and content specified in .env, and 
    - `<email_object>`: The subject of the email you want to send.
    - `<email_content>`: The content of the email you want to send.
 
-6. **Run the Docker container**: Execute the following command to run the 
+5. **Run the Docker container**: Execute the following command to run the 
 Docker container and execute the Dapp:
 
     ```sh
@@ -72,8 +73,7 @@ Docker container and execute the Dapp:
         -e IEXEC_OUT=/iexec_out \
         -e IEXEC_DATASET_FILENAME=data.zip \
         -e IEXEC_APP_DEVELOPER_SECRET='{"MJ_APIKEY_PUBLIC":"<your_mailjet_public_api_key>","MJ_APIKEY_PRIVATE":"<your_mailjet_private_api_key>","MJ_SENDER":"<your_sender_email_address>"}' \
-        -e IEXEC_REQUESTER_SECRET_1="<email_object>" \
-        -e IEXEC_REQUESTER_SECRET_2="<email_content>" \
+        IEXEC_REQUESTER_SECRET_1='{"emailSubject":"the_mail_object_to_send","emailContentOrMultiAddr":"the_mail_content_to_send","senderName":"the_sender_name","contentType":"text/plain"}' \
         web3mail-dapp
     ```
 

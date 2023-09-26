@@ -9,9 +9,8 @@ describe('sendEmail', () => {
     process.env.IEXEC_DATASET_FILENAME = 'data.zip';
     process.env.IEXEC_APP_DEVELOPER_SECRET =
       '{"MJ_APIKEY_PUBLIC":"xxx","MJ_APIKEY_PRIVATE":"xxx","MJ_SENDER":"foo@bar.com"}';
-    process.env.IEXEC_REQUESTER_SECRET_1 = 'web3mail test email';
-    process.env.IEXEC_REQUESTER_SECRET_2 = 'web3mail email content';
-    process.env.IEXEC_REQUESTER_SECRET_3 = ''; // options
+    process.env.IEXEC_REQUESTER_SECRET_1 =
+      '{"emailContentOrMultiAddr":"email_content","emailSubject":"email_subject"}';
   });
 
   it('should fail if developer secret is missing', async () => {
@@ -41,51 +40,56 @@ describe('sendEmail', () => {
       Error('"mailJetSender" is required')
     );
   });
-  it('should fail if IEXEC_REQUESTER_SECRET_1 (emailSubject) is missing', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_1 = '';
+  it('should fail if emailSubject is missing', async () => {
+    process.env.IEXEC_REQUESTER_SECRET_1 =
+      '{"emailSubject":"","emailContentOrMultiAddr":"mail_content_or_multiAddr"}';
     await expect(() => start()).rejects.toThrow(
       Error('"emailSubject" is not allowed to be empty')
     );
   });
-  it('should fail if IEXEC_REQUESTER_SECRET_2 (emailContent) is missing', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_1 = '';
+  it('should fail if emailContent is missing', async () => {
+    process.env.IEXEC_REQUESTER_SECRET_1 =
+      '{"emailContentOrMultiAddr":"","emailSubject":"email_subject"}';
     await expect(() => start()).rejects.toThrow(
-      Error('"emailSubject" is not allowed to be empty')
+      Error('"emailContentOrMultiAddr" is not allowed to be empty')
     );
   });
-  it('should fail if IEXEC_REQUESTER_SECRET_3 (options) is not a JSON', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_3 = '_';
+  it('should fail if IEXEC_REQUESTER_SECRET_1 is not a JSON', async () => {
+    process.env.IEXEC_REQUESTER_SECRET_1 = '_';
     await expect(() => start()).rejects.toThrow(
-      Error('Failed to parse options from requester secret')
+      Error('Failed to parse requester secret')
     );
   });
-  it('should fail if IEXEC_REQUESTER_SECRET_3 (options) contains invalid value', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_3 = '{"foo"}';
+  it('should fail if IEXEC_REQUESTER_SECRET_1 contains invalid value', async () => {
+    process.env.IEXEC_REQUESTER_SECRET_1 = '{"foo"}';
     await expect(() => start()).rejects.toThrow(
-      Error('Failed to parse options from requester secret')
+      Error('Failed to parse requester secret')
     );
   });
-  it('should fail if IEXEC_REQUESTER_SECRET_3 (options) contains invalid content-type', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_3 = '{"contentType":"notacontenttype"}';
+  it('should fail if contentType contains invalid content-type', async () => {
+    process.env.IEXEC_REQUESTER_SECRET_1 =
+      '{"contentType":"notacontenttype", "emailContentOrMultiAddr":"email_content","emailSubject":"email_subject"}';
     await expect(() => start()).rejects.toThrow(
       Error('"contentType" must be one of [text/plain, text/html]')
     );
   });
-  it('should fail if IEXEC_REQUESTER_SECRET_3 (options) senderName is empty', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_3 = '{"senderName":""}';
+  it('should fail if senderName is empty', async () => {
+    process.env.IEXEC_REQUESTER_SECRET_1 =
+      '{"senderName":"", "emailContentOrMultiAddr":"email_content","emailSubject":"email_subject"}';
     await expect(() => start()).rejects.toThrow(
       Error('"senderName" is not allowed to be empty')
     );
   });
-  it('should fail if IEXEC_REQUESTER_SECRET_3 (options) senderName length is less than 3 characters', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_3 = '{"senderName":"AB"}';
+  it('should fail if senderName length is less than 3 characters', async () => {
+    process.env.IEXEC_REQUESTER_SECRET_1 =
+      '{"senderName":"AB", "emailContentOrMultiAddr":"email_content","emailSubject":"email_subject"}';
     await expect(() => start()).rejects.toThrow(
       Error('"senderName" length must be at least 3 characters long')
     );
   });
-  it('should fail if IEXEC_REQUESTER_SECRET_3 (options) senderName length is more than 20 characters', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_3 =
-      '{"senderName":"A very long sender tag may be flagged as spam"}';
+  it('should fail if senderName length is more than 20 characters', async () => {
+    process.env.IEXEC_REQUESTER_SECRET_1 =
+      '{"senderName":"A very long sender tag may be flagged as spam", "emailContentOrMultiAddr":"email_content","emailSubject":"email_subject"}';
     await expect(() => start()).rejects.toThrow(
       Error(
         '"senderName" length must be less than or equal to 20 characters long'
@@ -120,11 +124,12 @@ describe('sendEmail', () => {
       });
 
       // requester secret setup
-      process.env.IEXEC_REQUESTER_SECRET_1 = `web3mail test ${process.env.DRONE_COMMIT}`;
-      process.env.IEXEC_REQUESTER_SECRET_2 = `Hey!<br/>tests are running on <a href="${process.env.DRONE_REPO_LINK}/commit/${process.env.DRONE_COMMIT}">${process.env.DRONE_REPO}</a>`;
-      process.env.IEXEC_REQUESTER_SECRET_3 = JSON.stringify({
-        contentType: 'text/html',
-      });
+      IEXEC_REQUESTER_SECRET_1 = `{
+        "emailSubject":web3mail test ${process.env.DRONE_COMMIT}", 
+        "emailContentOrMultiAddr":Hey!<br/>tests are running on <a href="${process.env.DRONE_REPO_LINK}/commit/${process.env.DRONE_COMMIT}">${process.env.DRONE_REPO}</a>",
+        "senderName":"e2e test",
+        "contentType":"text/plain"
+      }`;
 
       await expect(start()).resolves.toBeUndefined();
       const { IEXEC_OUT } = process.env;
