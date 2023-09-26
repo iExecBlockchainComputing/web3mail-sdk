@@ -139,12 +139,7 @@ export const sendEmail = async ({
     }
 
     // Push requester secrets
-    const emailSubjectId = generateSecureUniqueId(16);
-    const emailContentId = generateSecureUniqueId(16);
-    const optionsId = generateSecureUniqueId(16);
-
-    await iexec.secrets.pushRequesterSecret(emailSubjectId, vEmailSubject);
-
+    const requesterSecretId = generateSecureUniqueId(16);
     const emailContentEncryptionKey = iexec.dataset.generateEncryptionKey();
     const encryptedFile = await iexec.dataset
       .encrypt(Buffer.from(vEmailContent, 'utf8'), emailContentEncryptionKey)
@@ -156,10 +151,11 @@ export const sendEmail = async ({
     });
     const multiaddr = `/ipfs/${cid}`;
 
-    await iexec.secrets.pushRequesterSecret(emailContentId, multiaddr);
     await iexec.secrets.pushRequesterSecret(
-      optionsId,
+      requesterSecretId,
       JSON.stringify({
+        emailSubject: vEmailSubject,
+        emailContentOrMultiAddr: multiaddr,
         contentType: vContentType,
         senderName: vSenderName,
         emailContentEncryptionKey,
@@ -177,9 +173,7 @@ export const sendEmail = async ({
       params: {
         iexec_developer_logger: true,
         iexec_secrets: {
-          1: emailSubjectId,
-          2: emailContentId,
-          3: optionsId,
+          1: requesterSecretId,
         },
       },
     });
