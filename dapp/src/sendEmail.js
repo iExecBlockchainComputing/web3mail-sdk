@@ -41,7 +41,7 @@ async function start() {
     mailJetApiKeyPrivate: developerSecret.MJ_APIKEY_PRIVATE,
     mailJetSender: developerSecret.MJ_SENDER,
     emailSubject: requesterSecret.emailSubject,
-    emailContentOrMultiAddr: requesterSecret.emailContentOrMultiAddr,
+    emailContentMultiAddr: requesterSecret.emailContentMultiAddr,
     contentType: requesterSecret.contentType,
     senderName: requesterSecret.senderName,
     emailContentEncryptionKey: requesterSecret.emailContentEncryptionKey,
@@ -53,20 +53,14 @@ async function start() {
   if (!email) {
     throw new Error('Missing email in protectedData');
   }
-  let emailContent;
-  // Decrypt email content if the emailContentEncryptionKey exists in options
-  if (envVars.emailContentEncryptionKey) {
-    // Here envVars.emailContentOrMultiAddr is a Multiaddr
-    const encryptedEmailContent = await downloadEncryptedContent(
-      envVars.emailContentOrMultiAddr
-    );
-    emailContent = decryptContent(
-      encryptedEmailContent,
-      envVars.emailContentEncryptionKey
-    );
-  } else {
-    emailContent = envVars.emailContentOrMultiAddr;
-  }
+  const encryptedEmailContent = await downloadEncryptedContent(
+    envVars.emailContentMultiAddr
+  );
+  const emailContent = decryptContent(
+    encryptedEmailContent,
+    envVars.emailContentEncryptionKey
+  );
+
   const response = await sendEmail({
     email,
     mailJetApiKeyPublic: envVars.mailJetApiKeyPublic,

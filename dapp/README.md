@@ -19,7 +19,7 @@ fill in the environment variables:
   - **MJ_SENDER**: The email address that will be used to send the emails.
 - **IEXEC_APP_DEVELOPER_SECRET_1**: A JSON string with the following keys:
   - **emailSubject**: The subject of the email to be sent to the email address retrieved from the data.zip file.
-  - **emailContentOrMultiAddr**: The content of the email to be sent to the email address retrieved from the data.zip file or from a Multiaddr.
+  - **emailContentMultiAddr**: Multiaddress pointing to the encrypted email content to send.
   - **emailContentEncryptionKey**: The encryption key used to encrypt the content.
   - **senderName**: The email sender name, it must be between 3 and 20 characters long. It will be displayed as "<senderName> via Web3mail" in the "From" email header.
   - **contentType (optional)**: the email content type "text/plain" or "text/html"
@@ -73,7 +73,7 @@ Docker container and execute the Dapp:
         -e IEXEC_OUT=/iexec_out \
         -e IEXEC_DATASET_FILENAME=data.zip \
         -e IEXEC_APP_DEVELOPER_SECRET='{"MJ_APIKEY_PUBLIC":"<your_mailjet_public_api_key>","MJ_APIKEY_PRIVATE":"<your_mailjet_private_api_key>","MJ_SENDER":"<your_sender_email_address>"}' \
-        IEXEC_REQUESTER_SECRET_1='{"emailSubject":"the_mail_object_to_send","emailContentOrMultiAddr":"the_mail_content_to_send","senderName":"the_sender_name","contentType":"text/plain"}' \
+        IEXEC_REQUESTER_SECRET_1='{"emailSubject":"the_mail_object_to_send","emailContentMultiAddr":"the_mail_content_to_send","senderName":"the_sender_name","contentType":"text/plain"}' \
         web3mail-dapp
     ```
 

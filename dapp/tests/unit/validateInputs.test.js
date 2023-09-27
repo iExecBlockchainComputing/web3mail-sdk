@@ -13,9 +13,9 @@ describe('validateInputs function', () => {
       mailJetApiKeyPrivate: 'api_private_key',
       mailJetSender: 'sender@example.com',
       emailSubject: 'Test email',
-      emailContentOrMultiAddr:
-        '/ipfs/iqEsUnNxTPwR08MTFRgK+/tG6ErTUCs3Sx/tNuMIg2I=',
-      emailContentEncryptionKey: 'iqEsUnNxTPwR08MTFRgK+/tG6ErTUCs3Sx/tNuMIg2I=',
+      emailContentMultiAddr:
+        '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
+      emailContentEncryptionKey: 'rjUmm5KQTwZ5oraBKMnmpgh6QM/qRR33kVF+Ct0/K6c=',
       contentType: 'text/plain',
       senderName: 'sender test name',
     };
@@ -77,22 +77,22 @@ describe('validateInputs function', () => {
   it('should include all validation errors in the thrown error message', () => {
     delete envVars.iexecOut;
     envVars.mailJetApiKeyPublic = 12345;
-    envVars.emailContentOrMultiAddr = '';
+    envVars.emailContentMultiAddr = '';
     expect(() => validateInputs(envVars)).toThrow(
-      /"iexecOut" is required; "mailJetApiKeyPublic" must be a string; "emailContentOrMultiAddr\" is not allowed to be empty/i
+      /"iexecOut" is required; "mailJetApiKeyPublic" must be a string; "emailContentMultiAddr\" is not allowed to be empty/i
     );
   });
 
-  it('should throw an error if the emailContentOrMultiAddr value is not a valid multiAddr', () => {
-    envVars.emailContentOrMultiAddr = 'not a multiAddr';
+  it('should throw an error if the emailContentMultiAddr value is not a valid multiAddr', () => {
+    envVars.emailContentMultiAddr = 'not a multiAddr';
     expect(() => validateInputs(envVars)).toThrow(
-      /"emailContentOrMultiAddr" must be a multiAddr when "emailContentEncryptionKey" is provided/i
+      /"emailContentMultiAddr" must be a multiAddr/i
     );
   });
-
-  it('should not throw an error if the emailContentEncryptionKey is not provided and emailContentOrMultiAddr value is not a valid multiAddr', () => {
-    delete envVars.emailContentEncryptionKey;
-    envVars.emailContentOrMultiAddr = 'email content';
-    expect(() => validateInputs(envVars)).not.toThrow();
+  it('should throw an error if the emailContentEncryptionKey value is not a valid base64 string', () => {
+    envVars.emailContentEncryptionKey = 'email content';
+    expect(() => validateInputs(envVars)).toThrow(
+      /"emailContentEncryptionKey" must be a valid base64 string/i
+    );
   });
 });

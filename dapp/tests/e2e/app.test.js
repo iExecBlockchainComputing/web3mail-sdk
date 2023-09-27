@@ -10,7 +10,7 @@ describe('sendEmail', () => {
     process.env.IEXEC_APP_DEVELOPER_SECRET =
       '{"MJ_APIKEY_PUBLIC":"xxx","MJ_APIKEY_PRIVATE":"xxx","MJ_SENDER":"foo@bar.com"}';
     process.env.IEXEC_REQUESTER_SECRET_1 =
-      '{"emailContentOrMultiAddr":"email_content","emailSubject":"email_subject"}';
+      '{"emailContentMultiAddr":"/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu","emailContentEncryptionKey":"rjUmm5KQTwZ5oraBKMnmpgh6QM/qRR33kVF+Ct0/K6c=","emailSubject":"email_subject"}';
   });
 
   it('should fail if developer secret is missing', async () => {
@@ -47,11 +47,11 @@ describe('sendEmail', () => {
       Error('"emailSubject" is not allowed to be empty')
     );
   });
-  it('should fail if emailContent is missing', async () => {
+  it('should fail if emailContentMultiAddr is missing', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 =
-      '{"emailContentOrMultiAddr":"","emailSubject":"email_subject"}';
+      '{"emailContentMultiAddr":"","emailSubject":"email_subject" }';
     await expect(() => start()).rejects.toThrow(
-      Error('"emailContentOrMultiAddr" is not allowed to be empty')
+      Error('"emailContentMultiAddr" is not allowed to be empty')
     );
   });
   it('should fail if IEXEC_REQUESTER_SECRET_1 is not a JSON', async () => {
@@ -75,7 +75,7 @@ describe('sendEmail', () => {
   });
   it('should fail if senderName is empty', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 =
-      '{"senderName":"", "emailContentOrMultiAddr":"email_content","emailSubject":"email_subject"}';
+      '{"senderName":"","emailContentMultiAddr":"/ipfs/QmYhXeg4p4D729m432t8b9877b35e756a82749723456789","emailSubject":"email_subject"}';
     await expect(() => start()).rejects.toThrow(
       Error('"senderName" is not allowed to be empty')
     );
@@ -126,7 +126,8 @@ describe('sendEmail', () => {
       // requester secret setup
       IEXEC_REQUESTER_SECRET_1 = `{
         "emailSubject":web3mail test ${process.env.DRONE_COMMIT}", 
-        "emailContentOrMultiAddr":Hey!<br/>tests are running on <a href="${process.env.DRONE_REPO_LINK}/commit/${process.env.DRONE_COMMIT}">${process.env.DRONE_REPO}</a>",
+        "emailContentMultiAddr":"/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu",
+        "emailContentEncryptionKey":"rjUmm5KQTwZ5oraBKMnmpgh6QM/qRR33kVF+Ct0/K6c=",
         "senderName":"e2e test",
         "contentType":"text/plain"
       }`;
