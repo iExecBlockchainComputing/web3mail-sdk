@@ -31,7 +31,7 @@ EMAIL_CONTENT_ENCRYPTION_KEY="the_encryption _key"
 SENDER_NAME="the_sender_name"
 CONTENT_TYPE="text/plain"
 
-IEXEC_REQUESTER_SECRET_1='{"emailSubject":"'${MAIL_OBJECT}'","emailContentMultiAddr":"'${MAIL_CONTENT_MULTIADDR}'","senderName":"'${SENDER_NAME}'","contentType":"'${CONTENT_TYPE}'"}'
+IEXEC_REQUESTER_SECRET_1='{"emailSubject":"'${EMAIL_SUBJECT}'","emailContentEncryptionKey":"${EMAIL_CONTENT_ENCRYPTION_KEY}""emailContentMultiAddr":"'${EMAIL_CONTENT_MULTIADDR}'","senderName":"'${SENDER_NAME}'","contentType":"'${CONTENT_TYPE}'"}'
 IEXEC_APP_DEVELOPER_SECRET='{"MJ_APIKEY_PUBLIC":"'$MJ_APIKEY_PUBLIC'","MJ_APIKEY_PRIVATE":"'$MJ_APIKEY_PRIVATE'","MJ_SENDER":"'$MJ_SENDER'"}'
 
 docker run -it --rm \
