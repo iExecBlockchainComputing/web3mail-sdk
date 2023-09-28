@@ -21,13 +21,13 @@ DATA_FILENAME="your_file_name.zip"
 # Replace the values of the variables MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE, and MJ_SENDER with your own Mailjet API key and sender email address
 MJ_APIKEY_PUBLIC="your_mail_jet_api_key_public"
 MJ_APIKEY_PRIVATE="your_mail_jet_api_private"
-MJ_SENDER="your_mail_jet_sender
+MJ_SENDER="your_mail_jet_sender"
 
 
 # Replace the following variables with your own values:
 EMAIL_SUBJECT="the_email_subject_to_send"
 EMAIL_CONTENT_MULTIADDR="the_encrypted_email_multiAddr"
-EMAIL_CONTENT_ENCRYPTION_KEY="the_encryption _key"
+EMAIL_CONTENT_ENCRYPTION_KEY="the_encryption_key"
 SENDER_NAME="the_sender_name"
 CONTENT_TYPE="text/plain"
 
