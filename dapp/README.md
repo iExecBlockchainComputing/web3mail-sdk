@@ -17,7 +17,7 @@ fill in the environment variables:
   - **MJ_APIKEY_PUBLIC**: Your [Mailjet public API key](https://app.mailjet.com/account/apikeys), which can be retrieved from your Mailjet account.
   - **MJ_APIKEY_PRIVATE**: Your [Mailjet private API key](https://app.mailjet.com/account/apikeys).
   - **MJ_SENDER**: The email address that will be used to send the emails.
-- **IEXEC_APP_DEVELOPER_SECRET_1**: A JSON string with the following keys:
+- **IEXEC_REQUESTER_SECRET_1**: A JSON string with the following keys:
   - **emailSubject**: The subject of the email to be sent to the email address retrieved from the data.zip file.
   - **emailContentMultiAddr**: Multiaddress pointing to the encrypted email content to send.
   - **emailContentEncryptionKey**: The encryption key used to encrypt the content.
