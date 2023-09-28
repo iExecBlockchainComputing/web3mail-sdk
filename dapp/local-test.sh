@@ -25,7 +25,7 @@ MJ_SENDER="ab@gmail.com"
 
 
 # Replace the following variables with your own values:
-MAIL_OBJECT="the_mail_object_to_send"
+EMAIL_SUBJECT="the_email_subject_to_send"
 EMAIL_CONTENT_MULTIADDR="the_encrypted_email_multiAddr"
 EMAIL_CONTENT_ENCRYPTION_KEY="the_encryption _key"
 SENDER_NAME="the_sender_name"
