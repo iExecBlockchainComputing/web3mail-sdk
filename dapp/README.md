@@ -73,7 +73,7 @@ Docker container and execute the Dapp:
         -e IEXEC_OUT=/iexec_out \
         -e IEXEC_DATASET_FILENAME=data.zip \
         -e IEXEC_APP_DEVELOPER_SECRET='{"MJ_APIKEY_PUBLIC":"<your_mailjet_public_api_key>","MJ_APIKEY_PRIVATE":"<your_mailjet_private_api_key>","MJ_SENDER":"<your_sender_email_address>"}' \
-        IEXEC_REQUESTER_SECRET_1='{"emailSubject":"the_mail_object_to_send","emailContentMultiAddr":"the_mail_content_to_send","senderName":"the_sender_name","contentType":"text/plain"}' \
+        IEXEC_REQUESTER_SECRET_1='{"emailSubject":"email_subject","emailContentEncryptionKey":"email_content_encryption_key","emailContentMultiAddr":"encrypted_email_content_multiaddress","senderName":"sender_name","contentType":"text/plain"}' \
         web3mail-dapp
     ```
 
