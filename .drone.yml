@@ -557,6 +557,10 @@ kind: pipeline
 type: docker
 name: add-ressource-to-whitelist
 
+# Skip the default clone step
+clone:
+  skip: true
+
 trigger:
   event:
     - promote
@@ -639,6 +643,11 @@ steps:
 kind: pipeline
 type: docker
 name: remove-ressource-from-whitelist
+
+# Skip the default clone step
+clone:
+  skip: true
+  
 
 trigger:
   event:
@@ -723,6 +732,10 @@ kind: pipeline
 type: docker
 name: transfer-ownership-whitelist-smart-contract
 
+# Skip the default clone step
+clone:
+  skip: true
+  
 trigger:
   event:
     - promote
