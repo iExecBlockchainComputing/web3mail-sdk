@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0]
+
+### Changed
+
+- Gather requester secrets sent to the SMS (Secret Management Service) into one secret object
+
 ## [0.4.0]
 
 ### Changed
