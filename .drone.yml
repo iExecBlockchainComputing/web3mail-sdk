@@ -551,3 +551,250 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run push-dapp-secret
+
+# pipeline to add ressource to whitelist smart contract
+kind: pipeline
+type: docker
+name: add-ressource-to-whitelist
+
+trigger:
+  event:
+    - promote
+  target:
+    - add-ressource-to-whitelist-dev
+    - add-ressource-to-whitelist-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: clone-repo
+    image: alpine/git
+    #TODO: remove branch once it's merged to main
+    commands:
+      - git clone -b feature/init-project-and-smart-contract https://github.com/iExecBlockchainComputing/whitelist-smart-contract.git
+
+  - name: install deps
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: check format
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    commands:
+      - npm run check-format
+
+  - name: compile smart contracts
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    commands:
+      - npm run compile
+
+  - name: test smart contracts
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    commands:
+      - npm run test
+
+  - name: add ressource to whitelist dev
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    params:
+      - CONTRACT_ADDRESS
+      - ADDRESS_TO_ADD
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-dev-privatekey
+    commands:
+      - npm run addRessourceToWhitelist
+    when:
+      target:
+        - add-ressource-to-whitelist-dev
+      branch:
+        - develop
+
+  - name: add ressource to whitelist prod
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    params:
+      - CONTRACT_ADDRESS
+      - ADDRESS_TO_ADD
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-prod-privatekey
+    commands:
+      - npm run addRessourceToWhitelist
+    when:
+      target:
+        - add-ressource-to-whitelist-prod
+      branch:
+        - main
+---
+# pipeline to remove ressource from whitelist smart contract
+kind: pipeline
+type: docker
+name: remove-ressource-from-whitelist
+
+trigger:
+  event:
+    - promote
+  target:
+    - remove-ressource-from-whitelist-dev
+    - remove-ressource-from-whitelist-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: clone-repo
+    image: alpine/git
+    #TODO: remove branch once it's merged to main
+    commands:
+      - git clone -b feature/init-project-and-smart-contract https://github.com/iExecBlockchainComputing/whitelist-smart-contract.git
+
+  - name: install deps
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: check format
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    commands:
+      - npm run check-format
+
+  - name: compile smart contracts
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    commands:
+      - npm run compile
+
+  - name: test smart contracts
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    commands:
+      - npm run test
+
+  - name: remove ressource from whitelist dev
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    params:
+      - CONTRACT_ADDRESS
+      - ADDRESS_TO_REMOVE
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-dev-privatekey
+    commands:
+      - npm run removeRessourceFromWhitelist
+    when:
+      target:
+        - remove-ressource-from-whitelist-dev
+      branch:
+        - develop
+
+  - name: remove ressource from whitelist prod
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    params:
+      - CONTRACT_ADDRESS
+      - ADDRESS_TO_REMOVE
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-prod-privatekey
+    commands:
+      - npm run removeRessourceFromWhitelist
+    when:
+      target:
+        - remove-ressource-from-whitelist-prod
+      branch:
+        - main
+---
+# pipeline to transfer ownership of whitelist smart contract
+kind: pipeline
+type: docker
+name: transfer-ownership-whitelist-smart-contract
+
+trigger:
+  event:
+    - promote
+  target:
+    - transfer-ownership-whitelist-smart-contract-dev
+    - transfer-ownership-whitelist-smart-contract-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: clone-repo
+    image: alpine/git
+    #TODO: remove branch once it's merged to main
+    commands:
+      - git clone -b feature/init-project-and-smart-contract https://github.com/iExecBlockchainComputing/whitelist-smart-contract.git
+
+  - name: install deps
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: check format
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    commands:
+      - npm run check-format
+
+  - name: compile smart contracts
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    commands:
+      - npm run compile
+
+  - name: test smart contracts
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    commands:
+      - npm run test
+
+  - name: transfer ownsership dev
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    params:
+      - NEW_OWNER_ADDRESS
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-dev-privatekey
+    commands:
+      - npm run transferOwnership
+    when:
+      target:
+        - transfer-ownership-whitelist-smart-contract-dev
+      branch:
+        - develop
+
+  - name: transfer ownsership prod
+    image: node:18.12.1
+    working_dir: /drone/src/whitelist-smart-contract
+    params:
+      - NEW_OWNER_ADDRESS
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-prod-privatekey
+    commands:
+      - npm run transferOwnership
+    when:
+      target:
+        - transfer-ownership-whitelist-smart-contract-prod
+      branch:
+        - main
