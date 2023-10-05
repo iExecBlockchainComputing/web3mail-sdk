@@ -5,6 +5,7 @@ import { fetchMyContacts } from './fetchMyContacts.js';
 import { sendEmail } from './sendEmail.js';
 import {
   Contact,
+  FetchContactsParams,
   SendEmailParams,
   SendEmailResponse,
   Web3SignerProvider,
@@ -13,7 +14,7 @@ import { GraphQLClient } from 'graphql-request';
 import { DATAPROTECTOR_SUBGRAPH_ENDPOINT } from '../config/config.js';
 
 export class IExecWeb3mail {
-  fetchMyContacts: () => Promise<Contact[]>;
+  fetchMyContacts: (args?: FetchContactsParams) => Promise<Contact[]>;
   sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
 
   constructor(
@@ -36,7 +37,8 @@ export class IExecWeb3mail {
       throw Error('Impossible to create GraphQLClient');
     }
 
-    this.fetchMyContacts = () => fetchMyContacts({ iexec, graphQLClient });
+    this.fetchMyContacts = (args?: FetchContactsParams) =>
+      fetchMyContacts({ ...args, iexec, graphQLClient });
     this.sendEmail = (args: SendEmailParams) =>
       sendEmail({
         ...args,
