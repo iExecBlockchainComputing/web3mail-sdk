@@ -8,19 +8,9 @@ const schema = Joi.object({
   mailJetApiKeyPrivate: Joi.string().required(),
   mailJetSender: Joi.string().email().required(),
   emailSubject: Joi.string().required(),
-  emailContentOrMultiAddr: Joi.alternatives().conditional(
-    'emailContentEncryptionKey',
-    {
-      is: Joi.string().required(),
-      then: Joi.string()
-        .pattern(/^\/(ipfs|p2p)\//)
-        .message(
-          '"emailContentOrMultiAddr" must be a multiAddr when "emailContentEncryptionKey" is provided'
-        )
-        .required(),
-      otherwise: Joi.string().required(),
-    }
-  ),
+  emailContentMultiAddr: Joi.string()
+    .pattern(/^\/(ipfs|p2p)\//)
+    .message('"emailContentMultiAddr" must be a multiAddr'),
   emailContentEncryptionKey: Joi.string().base64(),
   contentType: Joi.string().valid('text/plain', 'text/html'),
   senderName: Joi.string().min(3).max(20),

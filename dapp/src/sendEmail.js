@@ -25,13 +25,13 @@ async function start() {
   } catch {
     throw Error('Failed to parse the developer secret');
   }
-  let options;
+  let requesterSecret;
   try {
-    options = process.env.IEXEC_REQUESTER_SECRET_3
-      ? JSON.parse(process.env.IEXEC_REQUESTER_SECRET_3)
+    requesterSecret = process.env.IEXEC_REQUESTER_SECRET_1
+      ? JSON.parse(process.env.IEXEC_REQUESTER_SECRET_1)
       : {};
   } catch {
-    throw Error('Failed to parse options from requester secret');
+    throw Error('Failed to parse requester secret');
   }
   const unsafeEnvVars = {
     iexecIn: process.env.IEXEC_IN,
@@ -40,11 +40,11 @@ async function start() {
     mailJetApiKeyPublic: developerSecret.MJ_APIKEY_PUBLIC,
     mailJetApiKeyPrivate: developerSecret.MJ_APIKEY_PRIVATE,
     mailJetSender: developerSecret.MJ_SENDER,
-    emailSubject: process.env.IEXEC_REQUESTER_SECRET_1,
-    emailContentOrMultiAddr: process.env.IEXEC_REQUESTER_SECRET_2,
-    contentType: options.contentType,
-    senderName: options.senderName,
-    emailContentEncryptionKey: options.emailContentEncryptionKey,
+    emailSubject: requesterSecret.emailSubject,
+    emailContentMultiAddr: requesterSecret.emailContentMultiAddr,
+    contentType: requesterSecret.contentType,
+    senderName: requesterSecret.senderName,
+    emailContentEncryptionKey: requesterSecret.emailContentEncryptionKey,
   };
   const envVars = validateInputs(unsafeEnvVars);
   const email = await extractZipAndBuildJson(
@@ -53,20 +53,14 @@ async function start() {
   if (!email) {
     throw new Error('Missing email in protectedData');
   }
-  let emailContent;
-  // Decrypt email content if the emailContentEncryptionKey exists in options
-  if (envVars.emailContentEncryptionKey) {
-    // Here envVars.emailContentOrMultiAddr is a Multiaddr
-    const encryptedEmailContent = await downloadEncryptedContent(
-      envVars.emailContentOrMultiAddr
-    );
-    emailContent = decryptContent(
-      encryptedEmailContent,
-      envVars.emailContentEncryptionKey
-    );
-  } else {
-    emailContent = envVars.emailContentOrMultiAddr;
-  }
+  const encryptedEmailContent = await downloadEncryptedContent(
+    envVars.emailContentMultiAddr
+  );
+  const emailContent = decryptContent(
+    encryptedEmailContent,
+    envVars.emailContentEncryptionKey
+  );
+
   const response = await sendEmail({
     email,
     mailJetApiKeyPublic: envVars.mailJetApiKeyPublic,

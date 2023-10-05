@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0]
+
+### Changed
+
+- [BREAKING] Updated internal implementation to work with web3mail dapp v0.6.0 (merged requester secrets into one secret object)
+
 ## [0.4.0]
 
 ### Changed
