@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1]
+
+### Changed
+
+- fixed bug that prevented web3mail to work with web3mail dap 0.6.0
+
+## [0.5.0]
+
+### Changed
+
+- [BREAKING] Updated internal implementation to work with web3mail dapp v0.6.0 (merged requester secrets into one secret object)
+
 ## [0.4.0]
 
 ### Changed
