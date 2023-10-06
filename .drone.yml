@@ -579,13 +579,13 @@ steps:
   - name: compile smart contracts
     image: node:18.12.1
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run compile
 
   - name: test smart contracts
     image: node:18.12.1
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run test
 
   - name: add ressource to whitelist dev
@@ -597,7 +597,7 @@ steps:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-dev-privatekey
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run addRessourceToWhitelist
     when:
       target:
@@ -614,7 +614,7 @@ steps:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-prod-privatekey
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run addRessourceToWhitelist
     when:
       target:
@@ -649,13 +649,13 @@ steps:
   - name: compile smart contracts
     image: node:18.12.1
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run compile
 
   - name: test smart contracts
     image: node:18.12.1
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run test
 
   - name: remove ressource from whitelist dev
@@ -667,7 +667,7 @@ steps:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-dev-privatekey
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run removeRessourceFromWhitelist
     when:
       target:
@@ -684,7 +684,7 @@ steps:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-prod-privatekey
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run removeRessourceFromWhitelist
     when:
       target:
@@ -715,17 +715,17 @@ steps:
       - node -v
       - npm -v
       - npm ci
-      
+
   - name: compile smart contracts
     image: node:18.12.1
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run compile
 
   - name: test smart contracts
     image: node:18.12.1
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run test
 
   - name: transfer ownsership dev
@@ -752,7 +752,7 @@ steps:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-prod-privatekey
     commands:
-      - cd node_modules/whitelist-contract
+      - cd node_modules/whitelist-smart-contract
       - npm run transferOwnership
     when:
       target:
