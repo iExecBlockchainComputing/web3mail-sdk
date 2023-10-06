@@ -647,6 +647,8 @@ steps:
       - node -v
       - npm -v
       - npm ci
+      - cd node_modules/whitelist-smart-contract
+      - npm install --save-dev ts-node
 
   - name: compile smart contracts
     image: node:18.12.1
@@ -717,6 +719,8 @@ steps:
       - node -v
       - npm -v
       - npm ci
+      - cd node_modules/whitelist-smart-contract
+      - npm install --save-dev ts-node
 
   - name: compile smart contracts
     image: node:18.12.1
