@@ -568,42 +568,21 @@ trigger:
     - main
 
 steps:
-  - name: clone-repo
-    image: alpine/git
-    #TODO: remove branch once it's merged to main
-    commands:
-      - git clone -b feature/init-project-and-smart-contract https://github.com/iExecBlockchainComputing/whitelist-smart-contract.git
-
-  - name: install deps
-    image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
-    pull: always
-    commands:
-      - node -v
-      - npm -v
-      - npm ci
-
-  - name: check format
-    image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
-    commands:
-      - npm run check-format
-
   - name: compile smart contracts
     image: node:18.12.1
     working_dir: /drone/src/whitelist-smart-contract
     commands:
+      - cd node_modules/whitelist-contract
       - npm run compile
 
   - name: test smart contracts
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     commands:
+      - cd node_modules/whitelist-contract
       - npm run test
 
   - name: add ressource to whitelist dev
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     params:
       - CONTRACT_ADDRESS
       - ADDRESS_TO_ADD
@@ -611,6 +590,7 @@ steps:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-dev-privatekey
     commands:
+      - cd node_modules/whitelist-contract
       - npm run addRessourceToWhitelist
     when:
       target:
@@ -620,7 +600,6 @@ steps:
 
   - name: add ressource to whitelist prod
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     params:
       - CONTRACT_ADDRESS
       - ADDRESS_TO_ADD
@@ -628,6 +607,7 @@ steps:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-prod-privatekey
     commands:
+      - cd node_modules/whitelist-contract
       - npm run addRessourceToWhitelist
     when:
       target:
@@ -651,42 +631,20 @@ trigger:
     - main
 
 steps:
-  - name: clone-repo
-    image: alpine/git
-    #TODO: remove branch once it's merged to main
-    commands:
-      - git clone -b feature/init-project-and-smart-contract https://github.com/iExecBlockchainComputing/whitelist-smart-contract.git
-
-  - name: install deps
-    image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
-    pull: always
-    commands:
-      - node -v
-      - npm -v
-      - npm ci
-
-  - name: check format
-    image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
-    commands:
-      - npm run check-format
-
   - name: compile smart contracts
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     commands:
+      - cd node_modules/whitelist-contract
       - npm run compile
 
   - name: test smart contracts
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     commands:
+      - cd node_modules/whitelist-contract
       - npm run test
 
   - name: remove ressource from whitelist dev
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     params:
       - CONTRACT_ADDRESS
       - ADDRESS_TO_REMOVE
@@ -694,6 +652,7 @@ steps:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-dev-privatekey
     commands:
+      - cd node_modules/whitelist-contract
       - npm run removeRessourceFromWhitelist
     when:
       target:
@@ -703,7 +662,6 @@ steps:
 
   - name: remove ressource from whitelist prod
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     params:
       - CONTRACT_ADDRESS
       - ADDRESS_TO_REMOVE
@@ -711,6 +669,7 @@ steps:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-prod-privatekey
     commands:
+      - cd node_modules/whitelist-contract
       - npm run removeRessourceFromWhitelist
     when:
       target:
@@ -734,48 +693,27 @@ trigger:
     - main
 
 steps:
-  - name: clone-repo
-    image: alpine/git
-    #TODO: remove branch once it's merged to main
-    commands:
-      - git clone -b feature/init-project-and-smart-contract https://github.com/iExecBlockchainComputing/whitelist-smart-contract.git
-
-  - name: install deps
-    image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
-    pull: always
-    commands:
-      - node -v
-      - npm -v
-      - npm ci
-
-  - name: check format
-    image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
-    commands:
-      - npm run check-format
-
   - name: compile smart contracts
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     commands:
+      - cd node_modules/whitelist-contract
       - npm run compile
 
   - name: test smart contracts
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     commands:
+      - cd node_modules/whitelist-contract
       - npm run test
 
   - name: transfer ownsership dev
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     params:
       - NEW_OWNER_ADDRESS
     environment:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-dev-privatekey
     commands:
+      - cd node_modules/whitelist-contract
       - npm run transferOwnership
     when:
       target:
@@ -785,13 +723,13 @@ steps:
 
   - name: transfer ownsership prod
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     params:
       - NEW_OWNER_ADDRESS
     environment:
       WALLET_PRIVATE_KEY:
         from_secret: deployer-prod-privatekey
     commands:
+      - cd node_modules/whitelist-contract
       - npm run transferOwnership
     when:
       target:
