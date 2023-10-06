@@ -568,9 +568,16 @@ trigger:
     - main
 
 steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
   - name: compile smart contracts
     image: node:18.12.1
-    working_dir: /drone/src/whitelist-smart-contract
     commands:
       - cd node_modules/whitelist-contract
       - npm run compile
@@ -631,6 +638,14 @@ trigger:
     - main
 
 steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
   - name: compile smart contracts
     image: node:18.12.1
     commands:
@@ -693,6 +708,14 @@ trigger:
     - main
 
 steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+      
   - name: compile smart contracts
     image: node:18.12.1
     commands:
