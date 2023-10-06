@@ -56,7 +56,7 @@ describe('sendEmail', () => {
   it('should fail if emailSubject is missing', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
       emailSubject: '',
-      emailContentOrMultiAddr: 'mail_content_or_multiAddr',
+      emailContentMultiAddr: 'mail_content_or_multiAddr',
     });
     await expect(() => start()).rejects.toThrow(
       Error('"emailSubject" is not allowed to be empty')
@@ -80,7 +80,7 @@ describe('sendEmail', () => {
   it('should fail if contentType contains invalid content-type', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
       contentType: 'notacontenttype',
-      emailContentOrMultiAddr: 'email_content',
+      emailContentMultiAddr: 'email_content',
       emailSubject: 'email_subject',
     });
     await expect(() => start()).rejects.toThrow(
@@ -101,7 +101,7 @@ describe('sendEmail', () => {
   it('should fail if senderName length is less than 3 characters', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
       senderName: 'AB',
-      emailContentOrMultiAddr: 'email_content',
+      emailContentMultiAddr: 'email_content',
       emailSubject: 'email_subject',
     });
     await expect(() => start()).rejects.toThrow(
@@ -111,7 +111,7 @@ describe('sendEmail', () => {
   it('should fail if senderName length is more than 20 characters', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
       senderName: 'A very long sender tag may be flagged as spam',
-      emailContentOrMultiAddr: 'email_content',
+      emailContentMultiAddr: 'email_content',
       emailSubject: 'email_subject',
     });
     await expect(() => start()).rejects.toThrow(

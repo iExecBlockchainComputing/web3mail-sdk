@@ -155,7 +155,7 @@ export const sendEmail = async ({
       requesterSecretId,
       JSON.stringify({
         emailSubject: vEmailSubject,
-        emailContentOrMultiAddr: multiaddr,
+        emailContentMultiAddr: multiaddr,
         contentType: vContentType,
         senderName: vSenderName,
         emailContentEncryptionKey,
