@@ -551,3 +551,181 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run push-dapp-secret
+
+# pipeline to add ressource to whitelist smart contract
+kind: pipeline
+type: docker
+name: add-ressource-to-whitelist
+
+trigger:
+  event:
+    - promote
+  target:
+    - add-ressource-to-whitelist-dev
+    - add-ressource-to-whitelist-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+      - cd node_modules/whitelist-smart-contract
+      - npm install --save-dev ts-node
+
+  - name: add ressource to whitelist dev
+    image: node:18.12.1
+    params:
+      - CONTRACT_ADDRESS
+      - ADDRESS_TO_ADD
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-dev-privatekey
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - npm run addRessourceToWhitelist
+    when:
+      target:
+        - add-ressource-to-whitelist-dev
+      branch:
+        - develop
+
+  - name: add ressource to whitelist prod
+    image: node:18.12.1
+    params:
+      - CONTRACT_ADDRESS
+      - ADDRESS_TO_ADD
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-prod-privatekey
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - npm run addRessourceToWhitelist
+    when:
+      target:
+        - add-ressource-to-whitelist-prod
+      branch:
+        - main
+---
+# pipeline to remove ressource from whitelist smart contract
+kind: pipeline
+type: docker
+name: remove-ressource-from-whitelist
+
+trigger:
+  event:
+    - promote
+  target:
+    - remove-ressource-from-whitelist-dev
+    - remove-ressource-from-whitelist-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+      - cd node_modules/whitelist-smart-contract
+      - npm install --save-dev ts-node
+
+  - name: remove ressource from whitelist dev
+    image: node:18.12.1
+    params:
+      - CONTRACT_ADDRESS
+      - ADDRESS_TO_REMOVE
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-dev-privatekey
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - npm run removeRessourceFromWhitelist
+    when:
+      target:
+        - remove-ressource-from-whitelist-dev
+      branch:
+        - develop
+
+  - name: remove ressource from whitelist prod
+    image: node:18.12.1
+    params:
+      - CONTRACT_ADDRESS
+      - ADDRESS_TO_REMOVE
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-prod-privatekey
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - npm run removeRessourceFromWhitelist
+    when:
+      target:
+        - remove-ressource-from-whitelist-prod
+      branch:
+        - main
+---
+# pipeline to transfer ownership of whitelist smart contract
+kind: pipeline
+type: docker
+name: transfer-ownership-whitelist-smart-contract
+
+trigger:
+  event:
+    - promote
+  target:
+    - transfer-ownership-whitelist-smart-contract-dev
+    - transfer-ownership-whitelist-smart-contract-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+      - cd node_modules/whitelist-smart-contract
+      - npm install --save-dev ts-node
+
+  - name: transfer ownsership dev
+    image: node:18.12.1
+    params:
+      - NEW_OWNER_ADDRESS
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-dev-privatekey
+    commands:
+      - cd node_modules/whitelist-contract
+      - npm run transferOwnership
+    when:
+      target:
+        - transfer-ownership-whitelist-smart-contract-dev
+      branch:
+        - develop
+
+  - name: transfer ownsership prod
+    image: node:18.12.1
+    params:
+      - NEW_OWNER_ADDRESS
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: deployer-prod-privatekey
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - npm run transferOwnership
+    when:
+      target:
+        - transfer-ownership-whitelist-smart-contract-prod
+      branch:
+        - main
