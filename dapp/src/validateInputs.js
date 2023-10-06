@@ -10,7 +10,8 @@ const schema = Joi.object({
   emailSubject: Joi.string().required(),
   emailContentMultiAddr: Joi.string()
     .pattern(/^\/(ipfs|p2p)\//)
-    .message('"emailContentMultiAddr" must be a multiAddr'),
+    .message('"emailContentMultiAddr" must be a multiAddr')
+    .required(),
   emailContentEncryptionKey: Joi.string().base64(),
   contentType: Joi.string().valid('text/plain', 'text/html'),
   senderName: Joi.string().min(3).max(20),
