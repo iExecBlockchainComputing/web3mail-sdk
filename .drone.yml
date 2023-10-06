@@ -578,18 +578,6 @@ steps:
       - cd node_modules/whitelist-smart-contract
       - npm install --save-dev ts-node
 
-  - name: compile smart contracts
-    image: node:18.12.1
-    commands:
-      - cd node_modules/whitelist-smart-contract
-      - npm run compile
-
-  - name: test smart contracts
-    image: node:18.12.1
-    commands:
-      - cd node_modules/whitelist-smart-contract
-      - npm run test
-
   - name: add ressource to whitelist dev
     image: node:18.12.1
     params:
@@ -650,18 +638,6 @@ steps:
       - cd node_modules/whitelist-smart-contract
       - npm install --save-dev ts-node
 
-  - name: compile smart contracts
-    image: node:18.12.1
-    commands:
-      - cd node_modules/whitelist-smart-contract
-      - npm run compile
-
-  - name: test smart contracts
-    image: node:18.12.1
-    commands:
-      - cd node_modules/whitelist-smart-contract
-      - npm run test
-
   - name: remove ressource from whitelist dev
     image: node:18.12.1
     params:
@@ -721,18 +697,6 @@ steps:
       - npm ci
       - cd node_modules/whitelist-smart-contract
       - npm install --save-dev ts-node
-
-  - name: compile smart contracts
-    image: node:18.12.1
-    commands:
-      - cd node_modules/whitelist-smart-contract
-      - npm run compile
-
-  - name: test smart contracts
-    image: node:18.12.1
-    commands:
-      - cd node_modules/whitelist-smart-contract
-      - npm run test
 
   - name: transfer ownsership dev
     image: node:18.12.1
