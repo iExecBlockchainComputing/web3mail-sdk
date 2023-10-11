@@ -3,21 +3,30 @@ import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
 import { throwIfMissing } from '../utils/validators.js';
-import { Contact, IExecConsumer, SubgraphConsumer } from './types.js';
+import {
+  Contact,
+  FetchContactsParams,
+  IExecConsumer,
+  SubgraphConsumer,
+} from './types.js';
 
 export const fetchMyContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-}: IExecConsumer & SubgraphConsumer): Promise<Contact[]> => {
+  page,
+  pageSize,
+}: IExecConsumer & SubgraphConsumer & FetchContactsParams): Promise<
+  Contact[]
+> => {
   try {
     const userAddress = await iexec.wallet.getAddress();
-    const showDatasetOrderbookRequest = iexec.orderbook.fetchDatasetOrderbook(
-      'any',
-      {
+    const showDatasetOrderbookRequest =
+      await iexec.orderbook.fetchDatasetOrderbook('any', {
         app: WEB3_MAIL_DAPP_ADDRESS,
         requester: userAddress,
-      }
-    );
+        page,
+        pageSize,
+      });
     const { orders } = await autoPaginateRequest({
       request: showDatasetOrderbookRequest,
     });

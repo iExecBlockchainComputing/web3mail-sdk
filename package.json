@@ -51,13 +51,14 @@
     "prettier": "^2.8.4",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.2",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "whitelist-smart-contract": "github:iExecBlockchainComputing/whitelist-smart-contract#0.1.0"
   },
   "dependencies": {
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/random": "^5.7.0",
     "graphql-request": "^6.1.0",
-    "iexec": "^8.2.1",
+    "iexec": "^8.4.0",
     "kubo-rpc-client": "^3.0.1",
     "yup": "^1.1.1"
   }
