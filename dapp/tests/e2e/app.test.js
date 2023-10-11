@@ -56,7 +56,8 @@ describe('sendEmail', () => {
   it('should fail if emailSubject is missing', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
       emailSubject: '',
-      emailContentOrMultiAddr: 'mail_content_or_multiAddr',
+      emailContentMultiAddr:
+        '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
     });
     await expect(() => start()).rejects.toThrow(
       Error('"emailSubject" is not allowed to be empty')
@@ -71,6 +72,15 @@ describe('sendEmail', () => {
       Error('"emailContentMultiAddr" is not allowed to be empty')
     );
   });
+  it('should fail if emailContentMultiAddr is no an ipfs multiaddr', async () => {
+    process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
+      emailContentMultiAddr: 'foo',
+      emailSubject: 'email_subject',
+    });
+    await expect(() => start()).rejects.toThrow(
+      Error('"emailContentMultiAddr" must be a multiAddr')
+    );
+  });
   it('should fail if IEXEC_REQUESTER_SECRET_1 is not a JSON', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 = '_';
     await expect(() => start()).rejects.toThrow(
@@ -80,7 +90,8 @@ describe('sendEmail', () => {
   it('should fail if contentType contains invalid content-type', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
       contentType: 'notacontenttype',
-      emailContentOrMultiAddr: 'email_content',
+      emailContentMultiAddr:
+        '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
       emailSubject: 'email_subject',
     });
     await expect(() => start()).rejects.toThrow(
@@ -101,7 +112,8 @@ describe('sendEmail', () => {
   it('should fail if senderName length is less than 3 characters', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
       senderName: 'AB',
-      emailContentOrMultiAddr: 'email_content',
+      emailContentMultiAddr:
+        '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
       emailSubject: 'email_subject',
     });
     await expect(() => start()).rejects.toThrow(
@@ -111,7 +123,8 @@ describe('sendEmail', () => {
   it('should fail if senderName length is more than 20 characters', async () => {
     process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
       senderName: 'A very long sender tag may be flagged as spam',
-      emailContentOrMultiAddr: 'email_content',
+      emailContentMultiAddr:
+        '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
       emailSubject: 'email_subject',
     });
     await expect(() => start()).rejects.toThrow(
