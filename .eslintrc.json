@@ -20,7 +20,8 @@
         "devDependencies": true
       }
     ],
-    "@typescript-eslint/no-explicit-any": "off" //not sure about this
+    "sonarjs/cognitive-complexity": "warn",
+    "@typescript-eslint/no-explicit-any": "warn"
   },
   "overrides": [
     {
