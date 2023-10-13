@@ -1,0 +1,26 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "import", "sonarjs"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "project": "./tsconfig.eslint.json",
+    "sourceType": "module"
+  },
+  "extends": [
+    "airbnb-typescript/base",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:sonarjs/recommended"
+  ],
+  "rules": {
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ],
+    "sonarjs/cognitive-complexity": "warn",
+    "@typescript-eslint/no-explicit-any": "warn"
+  }
+}

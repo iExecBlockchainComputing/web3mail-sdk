@@ -1,0 +1,31 @@
+{
+  "root": true,
+  "parser": "@babel/eslint-parser",
+  "plugins": ["import", "sonarjs", "jest"],
+  "parserOptions": {
+    "requireConfigFile": false
+  },
+  "extends": [
+    "airbnb-base",
+    "prettier",
+    "plugin:sonarjs/recommended",
+    "plugin:jest/recommended"
+  ],
+  "rules": {
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ],
+    "sonarjs/cognitive-complexity": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["./tests/**/*.ts"],
+      "rules": {
+        "sonarjs/no-duplicate-string": "off"
+      }
+    }
+  ]
+}
