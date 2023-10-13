@@ -15,6 +15,7 @@ import { DATAPROTECTOR_SUBGRAPH_ENDPOINT } from '../config/config.js';
 
 export class IExecWeb3mail {
   fetchMyContacts: (args?: FetchContactsParams) => Promise<Contact[]>;
+
   sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
 
   constructor(

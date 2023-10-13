@@ -30,7 +30,7 @@ export const fetchMyContacts = async ({
     const { orders } = await autoPaginateRequest({
       request: showDatasetOrderbookRequest,
     });
-    let myContacts: Contact[] = [];
+    const myContacts: Contact[] = [];
     const web3DappResolvedAddress = await iexec.ens.resolveName(
       WEB3_MAIL_DAPP_ADDRESS
     );
@@ -49,9 +49,7 @@ export const fetchMyContacts = async ({
       }
     });
 
-    const validContacts = await getValidContact(graphQLClient, myContacts);
-
-    return validContacts;
+    return await getValidContact(graphQLClient, myContacts);
   } catch (error) {
     throw new WorkflowError(
       `Failed to fetch my contacts: ${error.message}`,

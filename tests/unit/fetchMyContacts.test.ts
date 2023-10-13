@@ -13,7 +13,7 @@ describe('fetchMyContacts', () => {
   it('should fetch contacts with the specified page and page size', async () => {
     const graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
     const ethProvider = getWeb3Provider(Wallet.createRandom().privateKey);
-    let iexec = new IExec({
+    const iexec = new IExec({
       ethProvider,
     });
     const MOCK_ORDER = {

@@ -152,21 +152,21 @@ describe('web3mail.fetchMyContacts()', () => {
   }, 40_000);
 
   it('should return only contacts that have a valid email', async () => {
-    const protectedData = await dataProtector.protectData({
+    const notValidProtectedData = await dataProtector.protectData({
       data: { notemail: 'not email' },
       name: 'test do not use',
     });
 
     await dataProtector.grantAccess({
       authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-      protectedData: protectedData.address,
+      protectedData: notValidProtectedData.address,
       authorizedUser: wallet.address,
     });
 
     const res = await web3mail.fetchMyContacts();
 
     expect(
-      res.filter((contact) => contact.address === protectedData.address)
+      res.filter((contact) => contact.address === notValidProtectedData.address)
     ).toStrictEqual([]);
   }, 40_000);
 });

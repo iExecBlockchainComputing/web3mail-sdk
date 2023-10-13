@@ -34,7 +34,7 @@ export const getValidContact = async (
     const contactsAddresses = contacts.map((contact) => contact.address);
 
     // Pagination
-    let protectedDataList: ProtectedDataQuery[] = [];
+    const protectedDataList: ProtectedDataQuery[] = [];
     let start = 0;
     const range = 1000;
     let continuePagination = true;
@@ -63,7 +63,7 @@ export const getValidContact = async (
     );
 
     // Convert protectedData[] into Contact[] using the map for constant time lookups
-    const validContacts = protectedDataList.map(({ id }) => {
+    return protectedDataList.map(({ id }) => {
       const contact = contactsMap.get(id);
       if (contact) {
         return {
@@ -73,8 +73,6 @@ export const getValidContact = async (
         };
       }
     });
-
-    return validContacts;
   } catch (error) {
     throw new WorkflowError(
       `Failed to fetch subgraph: ${error.message}`,
