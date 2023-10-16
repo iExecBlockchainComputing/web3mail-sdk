@@ -10,7 +10,7 @@
     "publish-sell-order": "ts-node --esm ./src/publishSellOrderScript.ts",
     "revoke-sell-order": "ts-node --esm ./src/revokeSellOrderScript.ts",
     "configure-ens": "ts-node --esm ./src/configureEnsNameScript.ts",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
