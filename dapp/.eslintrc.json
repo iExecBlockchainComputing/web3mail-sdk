@@ -1,16 +1,10 @@
 {
   "root": true,
-  "parser": "@babel/eslint-parser",
-  "plugins": ["import", "sonarjs", "jest"],
+  "plugins": ["import", "sonarjs"],
   "parserOptions": {
-    "requireConfigFile": false
+    "ecmaVersion": 2020
   },
-  "extends": [
-    "airbnb-base",
-    "prettier",
-    "plugin:sonarjs/recommended",
-    "plugin:jest/recommended"
-  ],
+  "extends": ["airbnb-base", "prettier", "plugin:sonarjs/recommended"],
   "rules": {
     "import/no-extraneous-dependencies": [
       "error",
@@ -19,6 +13,9 @@
       }
     ],
     "sonarjs/cognitive-complexity": "warn"
+  },
+  "env": {
+    "jest": true
   },
   "overrides": [
     {
