@@ -14,12 +14,6 @@
     "plugin:jest/recommended"
   ],
   "rules": {
-    "import/no-extraneous-dependencies": [
-      "error",
-      {
-        "devDependencies": true
-      }
-    ],
     "sonarjs/cognitive-complexity": "warn",
     "@typescript-eslint/no-explicit-any": "warn"
   },
@@ -27,6 +21,12 @@
     {
       "files": ["./tests/**/*.ts"],
       "rules": {
+        "import/no-extraneous-dependencies": [
+          "error",
+          {
+            "devDependencies": true
+          }
+        ],
         "@typescript-eslint/no-explicit-any": "off",
         "sonarjs/no-duplicate-string": "off"
       }
