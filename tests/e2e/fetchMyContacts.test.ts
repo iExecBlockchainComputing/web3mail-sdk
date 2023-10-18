@@ -46,15 +46,15 @@ describe('web3mail.fetchMyContacts()', () => {
 
     const res = await web3mail.fetchMyContacts();
     const foundContactForASpecificRequester = res.find((obj) => {
-      return obj['address'] === protectedData.address.toLocaleLowerCase();
+      return obj.address === protectedData.address.toLocaleLowerCase();
     });
     expect(
       foundContactForASpecificRequester &&
-        foundContactForASpecificRequester['address']
+        foundContactForASpecificRequester.address
     ).toBeDefined();
     expect(
       foundContactForASpecificRequester &&
-        foundContactForASpecificRequester['address']
+        foundContactForASpecificRequester.address
     ).toBe(protectedData.address.toLocaleLowerCase());
   }, 40_000);
 
@@ -68,13 +68,13 @@ describe('web3mail.fetchMyContacts()', () => {
     const res = await web3mail.fetchMyContacts();
 
     const foundContactForAnyRequester = res.find(
-      (obj) => obj['address'] === protectedData.address.toLowerCase()
+      (obj) => obj.address === protectedData.address.toLowerCase()
     );
     expect(
-      foundContactForAnyRequester && foundContactForAnyRequester['address']
+      foundContactForAnyRequester && foundContactForAnyRequester.address
     ).toBeDefined();
     expect(
-      foundContactForAnyRequester && foundContactForAnyRequester['address']
+      foundContactForAnyRequester && foundContactForAnyRequester.address
     ).toBe(protectedData.address.toLocaleLowerCase());
 
     //revoke access to not appear as contact for anyone
@@ -104,10 +104,10 @@ describe('web3mail.fetchMyContacts()', () => {
     const expectedErrorMessage =
       'Failed to fetch my contacts: wrong address is not a valid ethereum address';
 
-    await expect(web3mail.fetchMyContacts()).rejects.toThrowError(
+    await expect(web3mail.fetchMyContacts()).rejects.toThrow(
       WorkflowError
     );
-    await expect(web3mail.fetchMyContacts()).rejects.toThrowError(
+    await expect(web3mail.fetchMyContacts()).rejects.toThrow(
       expectedErrorMessage
     );
   });
@@ -117,10 +117,10 @@ describe('web3mail.fetchMyContacts()', () => {
       .spyOn(web3mail, 'fetchMyContacts')
       .mockRejectedValue(new ValidationError('Missing parameter'));
 
-    await expect(web3mail.fetchMyContacts()).rejects.toThrowError(
+    await expect(web3mail.fetchMyContacts()).rejects.toThrow(
       ValidationError
     );
-    await expect(web3mail.fetchMyContacts()).rejects.toThrowError(
+    await expect(web3mail.fetchMyContacts()).rejects.toThrow(
       'Missing parameter'
     );
   });
