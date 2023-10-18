@@ -2,6 +2,7 @@ const {
   decryptContent,
   downloadEncryptedContent,
 } = require('../../src/decryptEmailContent');
+
 describe('decryptContent', () => {
   it('should decrypt content correctly', async () => {
     const { IExec } = await import('iexec');
@@ -25,7 +26,6 @@ describe('decryptContent', () => {
   });
 });
 const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
-const IPFS_UPLOAD_URL = '/dns4/ipfs-upload.v8-bellecour.iex.ec/https';
 
 describe('downloadEncryptedContent', () => {
   it('should return the encrypted content', async () => {
