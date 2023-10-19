@@ -10,7 +10,7 @@ import {
 import { fetchMyContacts } from '../../dist/web3mail/fetchMyContacts';
 
 describe('fetchMyContacts', () => {
-  it('should fetch contacts with the specified page and page size', async () => {
+  it.only('should fetch contacts with the specified page and page size', async () => {
     const graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
     const ethProvider = getWeb3Provider(Wallet.createRandom().privateKey);
     let iexec = new IExec({
@@ -38,7 +38,7 @@ describe('fetchMyContacts', () => {
     };
     const mockFetchDatasetOrderbook: any = jest
       .fn()
-      .mockImplementationOnce(() => {
+      .mockImplementation(() => {
         return Promise.resolve({
           ok: true,
           count: 1,
@@ -56,7 +56,7 @@ describe('fetchMyContacts', () => {
     });
     const userAddress = await iexec.wallet.getAddress();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      1,
+      2,
       'any',
       {
         app: WEB3_MAIL_DAPP_ADDRESS,

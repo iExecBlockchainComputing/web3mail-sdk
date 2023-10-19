@@ -7,3 +7,5 @@ export const MAX_DESIRED_WORKERPOOL_ORDER_PRICE = 0;
 export const DEFAULT_CONTENT_TYPE = 'text/plain';
 export const IPFS_UPLOAD_URL = '/dns4/ipfs-upload.v8-bellecour.iex.ec/https';
 export const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
+export const WHITELIST_SMART_CONTRACT_ADDRESS =
+  '0xe34dA1Df166C53F96C3f6301043757a968682657';

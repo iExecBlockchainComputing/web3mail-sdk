@@ -1,4 +1,7 @@
-import { WEB3_MAIL_DAPP_ADDRESS } from '../config/config.js';
+import {
+  WEB3_MAIL_DAPP_ADDRESS,
+  WHITELIST_SMART_CONTRACT_ADDRESS,
+} from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
@@ -20,17 +23,30 @@ export const fetchMyContacts = async ({
 > => {
   try {
     const userAddress = await iexec.wallet.getAddress();
-    const showDatasetOrderbookRequest =
+    const showDatasetOrderbookRequestForSC =
+      await iexec.orderbook.fetchDatasetOrderbook('any', {
+        app: WHITELIST_SMART_CONTRACT_ADDRESS,
+        requester: userAddress,
+        page,
+        pageSize,
+      });
+    const showDatasetOrderbookRequestForENS =
       await iexec.orderbook.fetchDatasetOrderbook('any', {
         app: WEB3_MAIL_DAPP_ADDRESS,
         requester: userAddress,
         page,
         pageSize,
       });
-    const { orders } = await autoPaginateRequest({
-      request: showDatasetOrderbookRequest,
+      
+    const { orders: ensOrders } = await autoPaginateRequest({
+      request: showDatasetOrderbookRequestForENS,
     });
-    let myContacts: Contact[] = [];
+    const { orders: scOrders } = await autoPaginateRequest({
+      request: showDatasetOrderbookRequestForSC,
+    });
+
+    const orders = ensOrders.concat(scOrders);
+    const myContacts: Contact[] = [];
     const web3DappResolvedAddress = await iexec.ens.resolveName(
       WEB3_MAIL_DAPP_ADDRESS
     );
