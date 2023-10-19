@@ -38,7 +38,7 @@ describe('fetchMyContacts', () => {
     };
     const mockFetchDatasetOrderbook: any = jest
       .fn()
-      .mockImplementationOnce(() => {
+      .mockImplementation(() => {
         return Promise.resolve({
           ok: true,
           count: 1,
@@ -56,7 +56,7 @@ describe('fetchMyContacts', () => {
     });
     const userAddress = await iexec.wallet.getAddress();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      1,
+      2,
       'any',
       {
         app: WEB3_MAIL_DAPP_ADDRESS,
