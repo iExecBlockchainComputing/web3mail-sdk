@@ -23,14 +23,14 @@ export const fetchMyContacts = async ({
 > => {
   try {
     const userAddress = await iexec.wallet.getAddress();
-    const showDatasetOrderbookRequestForSC =
+    const datasetOrderbookAuthorizedBySC =
       await iexec.orderbook.fetchDatasetOrderbook('any', {
         app: WHITELIST_SMART_CONTRACT_ADDRESS,
         requester: userAddress,
         page,
         pageSize,
       });
-    const showDatasetOrderbookRequestForENS =
+    const datasetOrderbookAuthorizedByENS =
       await iexec.orderbook.fetchDatasetOrderbook('any', {
         app: WEB3_MAIL_DAPP_ADDRESS,
         requester: userAddress,
@@ -39,10 +39,10 @@ export const fetchMyContacts = async ({
       });
       
     const { orders: ensOrders } = await autoPaginateRequest({
-      request: showDatasetOrderbookRequestForENS,
+      request: datasetOrderbookAuthorizedByENS,
     });
     const { orders: scOrders } = await autoPaginateRequest({
-      request: showDatasetOrderbookRequestForSC,
+      request: datasetOrderbookAuthorizedBySC,
     });
 
     const orders = ensOrders.concat(scOrders);
