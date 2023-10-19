@@ -37,7 +37,7 @@ export const fetchMyContacts = async ({
         page,
         pageSize,
       });
-      
+
     const { orders: ensOrders } = await autoPaginateRequest({
       request: datasetOrderbookAuthorizedByENS,
     });
@@ -54,7 +54,9 @@ export const fetchMyContacts = async ({
     orders.forEach((order) => {
       if (
         order.order.apprestrict.toLowerCase() ===
-        web3DappResolvedAddress.toLowerCase()
+          web3DappResolvedAddress.toLowerCase() ||
+        order.order.apprestrict.toLowerCase() ===
+          WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase()
       ) {
         const contact = {
           address: order.order.dataset.toLowerCase(),
