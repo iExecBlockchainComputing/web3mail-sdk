@@ -585,7 +585,7 @@ steps:
       - ADDRESS_TO_ADD
     environment:
       WALLET_PRIVATE_KEY:
-        from_secret: deployer-dev-privatekey
+        from_secret: web3mail-dapp-owner-dev-privatekey
     commands:
       - cd node_modules/whitelist-smart-contract
       - npm run addRessourceToWhitelist
@@ -602,7 +602,7 @@ steps:
       - ADDRESS_TO_ADD
     environment:
       WALLET_PRIVATE_KEY:
-        from_secret: deployer-prod-privatekey
+        from_secret: web3mail-dapp-owner-prod-privatekey
     commands:
       - cd node_modules/whitelist-smart-contract
       - npm run addRessourceToWhitelist
@@ -645,7 +645,7 @@ steps:
       - ADDRESS_TO_REMOVE
     environment:
       WALLET_PRIVATE_KEY:
-        from_secret: deployer-dev-privatekey
+        from_secret: web3mail-dapp-owner-dev-privatekey
     commands:
       - cd node_modules/whitelist-smart-contract
       - npm run removeRessourceFromWhitelist
@@ -662,7 +662,7 @@ steps:
       - ADDRESS_TO_REMOVE
     environment:
       WALLET_PRIVATE_KEY:
-        from_secret: deployer-prod-privatekey
+        from_secret: web3mail-dapp-owner-prod-privatekey
     commands:
       - cd node_modules/whitelist-smart-contract
       - npm run removeRessourceFromWhitelist
@@ -704,7 +704,7 @@ steps:
       - NEW_OWNER_ADDRESS
     environment:
       WALLET_PRIVATE_KEY:
-        from_secret: deployer-dev-privatekey
+        from_secret: web3mail-dapp-owner-dev-privatekey
     commands:
       - cd node_modules/whitelist-contract
       - npm run transferOwnership
@@ -720,7 +720,7 @@ steps:
       - NEW_OWNER_ADDRESS
     environment:
       WALLET_PRIVATE_KEY:
-        from_secret: deployer-prod-privatekey
+        from_secret: web3mail-dapp-owner-prod-privatekey
     commands:
       - cd node_modules/whitelist-smart-contract
       - npm run transferOwnership
