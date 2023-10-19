@@ -561,8 +561,8 @@ trigger:
   event:
     - promote
   target:
-    - add-ressource-to-whitelist-dev
-    - add-ressource-to-whitelist-prod
+    - add-resource-to-whitelist-dev
+    - add-resource-to-whitelist-prod
   branch:
     - develop
     - main
@@ -589,14 +589,14 @@ steps:
         from_secret: web3mail-whitelist-dev-address
     commands:
       - cd node_modules/whitelist-smart-contract
-      - npm run addRessourceToWhitelist
+      - npm run addResourceToWhitelist
     when:
       target:
-        - add-ressource-to-whitelist-dev
+        - add-resource-to-whitelist-dev
       branch:
         - develop
 
-  - name: add ressource to whitelist prod
+  - name: add resource to whitelist prod
     image: node:18.12.1
     params:
       - ADDRESS_TO_ADD
@@ -607,24 +607,24 @@ steps:
         from_secret: web3mail-whitelist-prod-address
     commands:
       - cd node_modules/whitelist-smart-contract
-      - npm run addRessourceToWhitelist
+      - npm run addResourceToWhitelist
     when:
       target:
-        - add-ressource-to-whitelist-prod
+        - add-resource-to-whitelist-prod
       branch:
         - main
 ---
 # pipeline to remove ressource from whitelist smart contract
 kind: pipeline
 type: docker
-name: remove-ressource-from-whitelist
+name: remove-resource-from-whitelist
 
 trigger:
   event:
     - promote
   target:
-    - remove-ressource-from-whitelist-dev
-    - remove-ressource-from-whitelist-prod
+    - remove-resource-from-whitelist-dev
+    - remove-resource-from-whitelist-prod
   branch:
     - develop
     - main
@@ -651,14 +651,14 @@ steps:
         from_secret: web3mail-whitelist-dev-address
     commands:
       - cd node_modules/whitelist-smart-contract
-      - npm run removeRessourceFromWhitelist
+      - npm run removeResourceFromWhitelist
     when:
       target:
-        - remove-ressource-from-whitelist-dev
+        - remove-resource-from-whitelist-dev
       branch:
         - develop
 
-  - name: remove ressource from whitelist prod
+  - name: remove resource from whitelist prod
     image: node:18.12.1
     params:
       - ADDRESS_TO_REMOVE
@@ -669,10 +669,10 @@ steps:
         from_secret: web3mail-whitelist-prod-address
     commands:
       - cd node_modules/whitelist-smart-contract
-      - npm run removeRessourceFromWhitelist
+      - npm run removeResourceFromWhitelist
     when:
       target:
-        - remove-ressource-from-whitelist-prod
+        - remove-resource-from-whitelist-prod
       branch:
         - main
 ---
