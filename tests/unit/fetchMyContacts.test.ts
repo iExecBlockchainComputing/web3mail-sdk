@@ -10,7 +10,7 @@ import {
 import { fetchMyContacts } from '../../dist/web3mail/fetchMyContacts';
 
 describe('fetchMyContacts', () => {
-  it.only('should fetch contacts with the specified page and page size', async () => {
+  it('should fetch contacts with the specified page and page size', async () => {
     const graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
     const ethProvider = getWeb3Provider(Wallet.createRandom().privateKey);
     let iexec = new IExec({
