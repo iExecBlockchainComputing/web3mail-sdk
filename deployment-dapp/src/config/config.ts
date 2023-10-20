@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 export const HOST = 'https://bellecour.iex.ec';
 
 //deployment parameters
-export const APP_NAME = 'web3mail';
+export const APP_NAME = 'web3mail-test';
 export const APP_TYPE = 'DOCKER';
 export const FRAMEWORK = 'scone';
 
