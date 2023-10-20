@@ -367,7 +367,10 @@ steps:
     image: node:18
     pull: always
     commands:
-      - cd deployment-dapp
+      - npm ci
+      - cd node_modules/whitelist-smart-contract
+      - npm install --save-dev ts-node
+      - cd ../../deployment-dapp
       - npm ci
 
   - name: deploy dapp contract
@@ -416,6 +419,44 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run publish-sell-order
+      
+  - name: add resource to whitelist dev
+    image: node:18.12.1
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      CONTRACT_ADDRESS:
+        from_secret: web3mail-whitelist-dev-address
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - cat ../../deployment-dapp/.app-address
+      - ls ../../deployment-dapp
+      - ls ../../deployment-dapp/src
+      - export ADDRESS_TO_ADD=$(cat ../../deployment-dapp/.app-address) && npm run addResourceToWhitelist
+    when:
+      target:
+        - dapp-dev
+      branch:
+        - develop
+
+  - name: add resource to whitelist prod
+    image: node:18.12.1
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+      CONTRACT_ADDRESS:
+        from_secret: web3mail-whitelist-prod-address
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - cat ../../deployment-dapp/.app-address
+      - ls ../../deployment-dapp
+      - ls ../../deployment-dapp/src
+      - export ADDRESS_TO_ADD=$(cat ../../deployment-dapp/.app-address) && npm run addResourceToWhitelist
+    when:
+      target:
+        - dapp-prod
+      branch:
+        - main
 
   - name: configure ENS
     image: node:18
@@ -578,7 +619,7 @@ steps:
       - cd node_modules/whitelist-smart-contract
       - npm install --save-dev ts-node
 
-  - name: add ressource to whitelist dev
+  - name: add resource to whitelist dev
     image: node:18.12.1
     params:
       - ADDRESS_TO_ADD
