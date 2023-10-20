@@ -54,12 +54,12 @@
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",
-    "whitelist-smart-contract": "github:iExecBlockchainComputing/whitelist-smart-contract#0.1.0"
+    "whitelist-smart-contract": "github:iExecBlockchainComputing/whitelist-smart-contract#0.2.0"
   },
   "dependencies": {
-    "ethers": "^5.7.2",
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/random": "^5.7.0",
+    "ethers": "^5.7.2",
     "graphql-request": "^6.1.0",
     "iexec": "^8.4.0",
     "kubo-rpc-client": "^3.0.1",
