@@ -419,7 +419,7 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run publish-sell-order
-      
+
   - name: add resource to whitelist dev
     image: node:18.12.1
     environment:
@@ -586,7 +586,7 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run push-dapp-secret
-
+---
 # pipeline to add ressource to whitelist smart contract
 kind: pipeline
 type: docker
