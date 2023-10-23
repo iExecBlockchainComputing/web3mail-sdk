@@ -9,41 +9,75 @@ import {
   SendEmailParams,
   SendEmailResponse,
   Web3SignerProvider,
+  AddressOrENS,
+  Web3MailConfigOptions,
 } from './types.js';
 import { GraphQLClient } from 'graphql-request';
-import { DATAPROTECTOR_SUBGRAPH_ENDPOINT } from '../config/config.js';
+import {
+  WEB3_MAIL_DAPP_ADDRESS,
+  IPFS_UPLOAD_URL,
+  DEFAULT_IPFS_GATEWAY,
+  DATAPROTECTOR_SUBGRAPH_ENDPOINT,
+  WHITELIST_SMART_CONTRACT_ADDRESS,
+  WORKERPOOL_ADDRESS,
+} from '../config/config.js';
 
 export class IExecWeb3mail {
-  fetchMyContacts: (args?: FetchContactsParams) => Promise<Contact[]>;
-  sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
+  private iexec: IExec;
+  private ipfsNode: string;
+  private ipfsGateway: string;
+  private dataProtectorSubgraph: string;
+  private dappAddressOrEns: AddressOrENS;
+  private dappWhitelistAddress: AddressOrENS;
+  private workerpoolAddressOrEns: AddressOrENS;
+  private graphQLClient: GraphQLClient;
 
   constructor(
     ethProvider: providers.ExternalProvider | Web3SignerProvider,
-    options?: {
-      iexecOptions?: IExecConfigOptions;
-    }
+    options?: Web3MailConfigOptions
   ) {
-    let iexec: IExec;
-    let graphQLClient: GraphQLClient;
     try {
-      iexec = new IExec({ ethProvider }, options?.iexecOptions);
+      this.iexec = new IExec({ ethProvider }, options?.iexecOptions);
     } catch (e) {
       throw Error('Unsupported ethProvider');
     }
 
     try {
-      graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
+      this.graphQLClient = new GraphQLClient(
+        options?.dataProtectorSubgraph || DATAPROTECTOR_SUBGRAPH_ENDPOINT
+      );
     } catch (e) {
       throw Error('Impossible to create GraphQLClient');
     }
 
+    this.dappAddressOrEns = options?.dappAddressOrEns || WEB3_MAIL_DAPP_ADDRESS;
+    this.workerpoolAddressOrEns =
+      options?.workerpoolAddressOrEns || WORKERPOOL_ADDRESS;
+    this.ipfsNode = options?.ipfsNode || IPFS_UPLOAD_URL;
+    this.ipfsGateway = options?.ipfsGateway || DEFAULT_IPFS_GATEWAY;
+    this.dappWhitelistAddress =
+      options?.dappWhitelistAddress || WHITELIST_SMART_CONTRACT_ADDRESS;
+
     this.fetchMyContacts = (args?: FetchContactsParams) =>
-      fetchMyContacts({ ...args, iexec, graphQLClient });
+      fetchMyContacts({
+        ...args,
+        iexec: this.iexec,
+        graphQLClient: this.graphQLClient,
+        dappAddressOrEns: this.dappAddressOrEns,
+        dappWhitelistAddress: this.dappWhitelistAddress,
+      });
     this.sendEmail = (args: SendEmailParams) =>
       sendEmail({
         ...args,
-        iexec,
-        graphQLClient,
+        iexec: this.iexec,
+        ipfsNode: this.ipfsNode,
+        ipfsGateway: this.ipfsGateway,
+        graphQLClient: this.graphQLClient,
+        dappAddressOrENS: this.dappAddressOrEns,
+        workerpoolAddressOrEns: this.workerpoolAddressOrEns,
       });
   }
+
+  fetchMyContacts: (args?: FetchContactsParams) => Promise<Contact[]>;
+  sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
 }

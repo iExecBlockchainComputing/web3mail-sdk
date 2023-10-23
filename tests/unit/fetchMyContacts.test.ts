@@ -6,6 +6,7 @@ import { Wallet } from 'ethers';
 import {
   DATAPROTECTOR_SUBGRAPH_ENDPOINT,
   WEB3_MAIL_DAPP_ADDRESS,
+  WHITELIST_SMART_CONTRACT_ADDRESS
 } from '../../src/config/config';
 import { fetchMyContacts } from '../../dist/web3mail/fetchMyContacts';
 
@@ -50,6 +51,8 @@ describe('fetchMyContacts', () => {
 
     await fetchMyContacts({
       iexec: iexec,
+      dappAddressOrEns: WEB3_MAIL_DAPP_ADDRESS,
+      dappWhitelistAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
       graphQLClient,
       page: 1,
       pageSize: 10,
