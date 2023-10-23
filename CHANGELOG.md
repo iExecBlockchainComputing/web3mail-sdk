@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.2]
+
+### Added
+
+- add whitelist address as a filter for the restricted app address for fetchMyContacts function
+
 ## [0.5.1]
 
 ### Changed
