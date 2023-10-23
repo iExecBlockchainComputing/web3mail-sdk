@@ -1,18 +1,35 @@
 {
-  "plugins": [
-    "@typescript-eslint", // mandatory typescript plugin
-    "sonarjs" // sonar plugin for code analysis
-  ],
-  "extends": [
-    "airbnb-base", // use instead on eslint recommended as a stricter alternative
-    "airbnb-typescript/base", // airbnb rules overrides for typescript
-    "plugin:@typescript-eslint/recommended",
-    "plugin:sonarjs/recommended", // sonar
-    "prettier" // compatibility with prettier (disable conflicting rules) NB: this is the `eslint-config-prettier` it should not be duplicated
-  ],
   "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "import", "sonarjs", "jest"],
   "parserOptions": {
     "ecmaVersion": "latest",
+    "project": "./tsconfig.eslint.json",
     "sourceType": "module"
-  }
+  },
+  "extends": [
+    "airbnb-typescript/base",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:sonarjs/recommended",
+    "plugin:jest/recommended"
+  ],
+  "rules": {
+    "sonarjs/cognitive-complexity": "warn",
+    "@typescript-eslint/no-explicit-any": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["./tests/**/*.ts"],
+      "rules": {
+        "import/no-extraneous-dependencies": [
+          "error",
+          {
+            "devDependencies": true
+          }
+        ],
+        "@typescript-eslint/no-explicit-any": "off",
+        "sonarjs/no-duplicate-string": "off"
+      }
+    }
+  ]
 }

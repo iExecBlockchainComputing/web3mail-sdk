@@ -367,7 +367,10 @@ steps:
     image: node:18
     pull: always
     commands:
-      - cd deployment-dapp
+      - npm ci
+      - cd node_modules/whitelist-smart-contract
+      - npm install --save-dev ts-node
+      - cd ../../deployment-dapp
       - npm ci
 
   - name: deploy dapp contract
@@ -416,6 +419,38 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run publish-sell-order
+
+  - name: add resource to whitelist dev
+    image: node:18.12.1
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      CONTRACT_ADDRESS:
+        from_secret: web3mail-whitelist-dev-address
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - export ADDRESS_TO_ADD=$(cat ../../deployment-dapp/.app-address) && npm run addResourceToWhitelist
+    when:
+      target:
+        - dapp-dev
+      branch:
+        - develop
+
+  - name: add resource to whitelist prod
+    image: node:18.12.1
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+      CONTRACT_ADDRESS:
+        from_secret: web3mail-whitelist-prod-address
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - export ADDRESS_TO_ADD=$(cat ../../deployment-dapp/.app-address) && npm run addResourceToWhitelist
+    when:
+      target:
+        - dapp-prod
+      branch:
+        - main
 
   - name: configure ENS
     image: node:18
@@ -551,3 +586,189 @@ steps:
     commands:
       - cd deployment-dapp
       - npm run push-dapp-secret
+---
+# pipeline to add ressource to whitelist smart contract
+kind: pipeline
+type: docker
+name: add-ressource-to-whitelist
+
+trigger:
+  event:
+    - promote
+  target:
+    - add-resource-to-whitelist-dev
+    - add-resource-to-whitelist-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+      - cd node_modules/whitelist-smart-contract
+      - npm install --save-dev ts-node
+
+  - name: add resource to whitelist dev
+    image: node:18.12.1
+    params:
+      - ADDRESS_TO_ADD
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      CONTRACT_ADDRESS:
+        from_secret: web3mail-whitelist-dev-address
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - npm run addResourceToWhitelist
+    when:
+      target:
+        - add-resource-to-whitelist-dev
+      branch:
+        - develop
+
+  - name: add resource to whitelist prod
+    image: node:18.12.1
+    params:
+      - ADDRESS_TO_ADD
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+      CONTRACT_ADDRESS:
+        from_secret: web3mail-whitelist-prod-address
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - npm run addResourceToWhitelist
+    when:
+      target:
+        - add-resource-to-whitelist-prod
+      branch:
+        - main
+---
+# pipeline to remove ressource from whitelist smart contract
+kind: pipeline
+type: docker
+name: remove-resource-from-whitelist
+
+trigger:
+  event:
+    - promote
+  target:
+    - remove-resource-from-whitelist-dev
+    - remove-resource-from-whitelist-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+      - cd node_modules/whitelist-smart-contract
+      - npm install --save-dev ts-node
+
+  - name: remove ressource from whitelist dev
+    image: node:18.12.1
+    params:
+      - ADDRESS_TO_REMOVE
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      CONTRACT_ADDRESS:
+        from_secret: web3mail-whitelist-dev-address
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - npm run removeResourceFromWhitelist
+    when:
+      target:
+        - remove-resource-from-whitelist-dev
+      branch:
+        - develop
+
+  - name: remove resource from whitelist prod
+    image: node:18.12.1
+    params:
+      - ADDRESS_TO_REMOVE
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+      CONTRACT_ADDRESS:
+        from_secret: web3mail-whitelist-prod-address
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - npm run removeResourceFromWhitelist
+    when:
+      target:
+        - remove-resource-from-whitelist-prod
+      branch:
+        - main
+---
+# pipeline to transfer ownership of whitelist smart contract
+kind: pipeline
+type: docker
+name: transfer-ownership-whitelist-smart-contract
+
+trigger:
+  event:
+    - promote
+  target:
+    - transfer-ownership-whitelist-smart-contract-dev
+    - transfer-ownership-whitelist-smart-contract-prod
+  branch:
+    - develop
+    - main
+
+steps:
+  - name: install
+    image: node:18
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+      - cd node_modules/whitelist-smart-contract
+      - npm install --save-dev ts-node
+
+  - name: transfer ownsership dev
+    image: node:18.12.1
+    params:
+      - NEW_OWNER_ADDRESS
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: web3mail-dapp-owner-dev-privatekey
+      CONTRACT_ADDRESS:
+        from_secret: web3mail-whitelist-dev-address
+    commands:
+      - cd node_modules/whitelist-contract
+      - npm run transferOwnership
+    when:
+      target:
+        - transfer-ownership-whitelist-smart-contract-dev
+      branch:
+        - develop
+
+  - name: transfer ownsership prod
+    image: node:18.12.1
+    params:
+      - NEW_OWNER_ADDRESS
+    environment:
+      WALLET_PRIVATE_KEY:
+        from_secret: web3mail-dapp-owner-prod-privatekey
+      CONTRACT_ADDRESS:
+        from_secret: web3mail-whitelist-prod-address
+    commands:
+      - cd node_modules/whitelist-smart-contract
+      - npm run transferOwnership
+    when:
+      target:
+        - transfer-ownership-whitelist-smart-contract-prod
+      branch:
+        - main
