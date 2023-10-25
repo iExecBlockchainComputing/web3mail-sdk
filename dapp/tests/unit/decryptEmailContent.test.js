@@ -14,8 +14,10 @@ describe('decryptContent', () => {
     const encryptionKey = iexec.dataset.generateEncryptionKey();
     const emailContent = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur fringilla orci in neque laoreet, nec dictum justo cursus. Nulla facilisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas non bibendum leo. 
 `;
-    const encryptedFile = await iexec.dataset
-      .encrypt(Buffer.from(emailContent, 'utf8'), encryptionKey)
+    const encryptedFile = await iexec.dataset.encrypt(
+      Buffer.from(emailContent, 'utf8'),
+      encryptionKey
+    );
 
     const decryptedEmailContent = decryptContent(encryptedFile, encryptionKey);
     expect(decryptedEmailContent.length).toEqual(emailContent.length);
