@@ -32,6 +32,11 @@ steps:
     commands:
       - npm run build
 
+  - name: lint
+    image: node:18
+    commands:
+      - npm run lint
+
   - name: npm-publish-dry-run
     image: node:18
     commands:
@@ -74,6 +79,11 @@ steps:
     image: node:18
     commands:
       - npm run build
+
+  - name: lint
+    image: node:18
+    commands:
+      - npm run lint
 
   - name: set-version-nightly
     image: node:18
@@ -129,6 +139,11 @@ steps:
     commands:
       - npm run build
 
+  - name: lint
+    image: node:18
+    commands:
+      - npm run lint
+
   - name: publish
     image: plugins/npm
     pull: always
@@ -173,6 +188,12 @@ steps:
     commands:
       - cd dapp
       - npm run check-format
+
+  - name: lint
+    image: node:18
+    commands:
+      - cd dapp
+      - npm run lint
 
   - name: unit-test
     image: node:14-alpine3.11
@@ -226,6 +247,12 @@ steps:
     commands:
       - cd dapp
       - npm run check-format
+
+  - name: lint
+    image: node:18
+    commands:
+      - cd dapp
+      - npm run lint
 
   - name: test
     image: node:14-alpine3.11
@@ -288,6 +315,12 @@ steps:
     commands:
       - cd dapp
       - npm run check-format
+
+  - name: lint
+    image: node:18
+    commands:
+      - cd dapp
+      - npm run lint
 
   - name: test
     image: node:14-alpine3.11
@@ -362,6 +395,14 @@ steps:
         - dapp-prod
       branch:
         - main
+
+  # TODO : Add format script to the deploy-dapp monorepo
+
+  - name: lint
+    image: node:18
+    commands:
+      - cd dapp
+      - npm run lint
 
   - name: install deps
     image: node:18

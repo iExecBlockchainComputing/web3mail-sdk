@@ -67,9 +67,7 @@ export const fetchMyContacts = async ({
       }
     });
 
-    const validContacts = await getValidContact(graphQLClient, myContacts);
-
-    return validContacts;
+    return await getValidContact(graphQLClient, myContacts);
   } catch (error) {
     throw new WorkflowError(
       `Failed to fetch my contacts: ${error.message}`,
