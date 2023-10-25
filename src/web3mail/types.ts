@@ -26,11 +26,11 @@ export type SendEmailParams = {
 
 export type FetchContactsParams = {
   /**
-   * Index of the page to fetch
+   * Index of the page to fetch, starts at 1
    */
   page?: number;
   /**
-   * Size of the page to fetch
+   * Size of the page to fetch, greater than or equal to 10
    */
   pageSize?: number;
 };
