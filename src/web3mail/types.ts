@@ -34,14 +34,6 @@ export type FetchContactsParams = {
    */
   pageSize?: number;
 };
-
-export type FetchUserContactsParams = FetchContactsParams & {
-  /**
-   * Address of the user
-   */
-  user: Address;
-};
-
 export type SendEmailResponse = {
   taskId: Address;
 };

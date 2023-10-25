@@ -1,13 +1,11 @@
 import { providers } from 'ethers';
 import { IExec } from 'iexec';
 import { IExecConfigOptions } from 'iexec/IExecConfig';
-import { fetchUserContacts } from './fetchUserContacts.js';
 import { fetchMyContacts } from './fetchMyContacts.js';
 import { sendEmail } from './sendEmail.js';
 import {
   Contact,
   FetchContactsParams,
-  FetchUserContactsParams,
   SendEmailParams,
   SendEmailResponse,
   Web3SignerProvider,
@@ -16,9 +14,9 @@ import { GraphQLClient } from 'graphql-request';
 import { DATAPROTECTOR_SUBGRAPH_ENDPOINT } from '../config/config.js';
 
 export class IExecWeb3mail {
-  private iexec: IExec;
+  fetchMyContacts: (args?: FetchContactsParams) => Promise<Contact[]>;
 
-  private graphQLClient: GraphQLClient;
+  sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
 
   constructor(
     ethProvider: providers.ExternalProvider | Web3SignerProvider,
@@ -26,40 +24,27 @@ export class IExecWeb3mail {
       iexecOptions?: IExecConfigOptions;
     }
   ) {
+    let iexec: IExec;
+    let graphQLClient: GraphQLClient;
     try {
-      this.iexec = new IExec({ ethProvider }, options?.iexecOptions);
+      iexec = new IExec({ ethProvider }, options?.iexecOptions);
     } catch (e) {
       throw Error('Unsupported ethProvider');
     }
 
     try {
-      this.graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
+      graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
     } catch (e) {
       throw Error('Impossible to create GraphQLClient');
     }
-  }
 
-  fetchMyContacts(args?: FetchContactsParams): Promise<Contact[]> {
-    return fetchMyContacts({
-      ...args,
-      iexec: this.iexec,
-      graphQLClient: this.graphQLClient,
-    });
-  }
-
-  fetchUserContacts(args?: FetchUserContactsParams): Promise<Contact[]> {
-    return fetchUserContacts({
-      ...args,
-      iexec: this.iexec,
-      graphQLClient: this.graphQLClient,
-    });
-  }
-
-  sendEmail(args: SendEmailParams): Promise<SendEmailResponse> {
-    return sendEmail({
-      ...args,
-      iexec: this.iexec,
-      graphQLClient: this.graphQLClient,
-    });
+    this.fetchMyContacts = (args?: FetchContactsParams) =>
+      fetchMyContacts({ ...args, iexec, graphQLClient });
+    this.sendEmail = (args: SendEmailParams) =>
+      sendEmail({
+        ...args,
+        iexec,
+        graphQLClient,
+      });
   }
 }
