@@ -31,7 +31,7 @@ describe('IExecWeb3mail()', () => {
         ipfsNode: "https://example.com/node",
         ipfsGateway: "https://example.com/ipfs_gateway",
         dataProtectorSubgraph: "https://example.com/custom-subgraph",
-        dappAddressOrEns: "web3mailstg.apps.iexec.eth",
+        dappAddressOrENS: "web3mailstg.apps.iexec.eth",
         dappWhitelistAddress: "0x781482C39CcE25546583EaC4957Fb7Bf04C277BB"
       }
     );

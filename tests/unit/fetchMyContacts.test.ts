@@ -51,7 +51,7 @@ describe('fetchMyContacts', () => {
 
     await fetchMyContacts({
       iexec: iexec,
-      dappAddressOrEns: WEB3_MAIL_DAPP_ADDRESS,
+      dappAddressOrENS: WEB3_MAIL_DAPP_ADDRESS,
       dappWhitelistAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
       graphQLClient,
       page: 1,

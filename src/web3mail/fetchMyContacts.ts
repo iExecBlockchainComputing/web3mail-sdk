@@ -7,18 +7,22 @@ import {
   FetchContactsParams,
   IExecConsumer,
   SubgraphConsumer,
+  DappAddressConsumer,
+  DppWhitelistAddressConsumer,
 } from './types.js';
 
 export const fetchMyContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  dappAddressOrEns = throwIfMissing(),
+  dappAddressOrENS = throwIfMissing(),
   dappWhitelistAddress = throwIfMissing(),
   page,
   pageSize,
-}: IExecConsumer & SubgraphConsumer & FetchContactsParams): Promise<
-  Contact[]
-> => {
+}: IExecConsumer &
+  SubgraphConsumer &
+  DappAddressConsumer &
+  DppWhitelistAddressConsumer &
+  FetchContactsParams): Promise<Contact[]> => {
   try {
     const userAddress = await iexec.wallet.getAddress();
     const datasetOrderbookAuthorizedBySC =
@@ -30,7 +34,7 @@ export const fetchMyContacts = async ({
       });
     const datasetOrderbookAuthorizedByENS =
       await iexec.orderbook.fetchDatasetOrderbook('any', {
-        app: dappAddressOrEns,
+        app: dappAddressOrENS,
         requester: userAddress,
         page,
         pageSize,
@@ -46,7 +50,7 @@ export const fetchMyContacts = async ({
     const orders = ensOrders.concat(scOrders);
     const myContacts: Contact[] = [];
     const web3DappResolvedAddress = await iexec.ens.resolveName(
-      dappAddressOrEns
+      dappAddressOrENS
     );
 
     orders.forEach((order) => {
@@ -65,9 +69,7 @@ export const fetchMyContacts = async ({
       }
     });
 
-    const validContacts = await getValidContact(graphQLClient, myContacts);
-
-    return validContacts;
+    return await getValidContact(graphQLClient, myContacts);
   } catch (error) {
     throw new WorkflowError(
       `Failed to fetch my contacts: ${error.message}`,

@@ -21,16 +21,19 @@ import {
   SendEmailParams,
   SendEmailResponse,
   SubgraphConsumer,
+  DappAddressConsumer,
+  IpfsNodeConfigConsumer,
+  IpfsGatewayConfigConsumer,
 } from './types.js';
 import * as ipfs from './../utils/ipfs-service.js';
 
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  workerpoolAddressOrEns = throwIfMissing(),
-  dappAddressOrENS = throwIfMissing(),
-  ipfsNode = throwIfMissing(),
-  ipfsGateway = throwIfMissing(),
+  workerpoolAddressOrEns,
+  dappAddressOrENS,
+  ipfsNode,
+  ipfsGateway,
   emailSubject,
   emailContent,
   contentType = DEFAULT_CONTENT_TYPE,
@@ -42,6 +45,9 @@ export const sendEmail = async ({
   protectedData,
 }: IExecConsumer &
   SubgraphConsumer &
+  DappAddressConsumer &
+  IpfsNodeConfigConsumer &
+  IpfsGatewayConfigConsumer &
   SendEmailParams): Promise<SendEmailResponse> => {
   try {
     const vDatasetAddress = addressOrEnsSchema()
