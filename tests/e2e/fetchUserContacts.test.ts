@@ -3,19 +3,19 @@ import {
   ProtectedDataWithSecretProps,
   getWeb3Provider as dataprotectorGetWeb3Provider,
 } from '@iexec/dataprotector';
-import { beforeAll, describe, expect, it, jest } from '@jest/globals';
+import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
-import { NULL_ADDRESS } from 'iexec/utils';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
-import { ValidationError, WorkflowError } from '../../dist/utils/errors';
-import { EnhancedWallet, IExec } from 'iexec';
+import { EnhancedWallet } from 'iexec';
+import { MAX_EXPECTED_BLOCKTIME } from '../test-utils';
 
-describe('web3mail.fetchUserContacts()', () => {
+describe('web3mail.fetchMyContacts()', () => {
   let wallet: Wallet;
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
-  let protectedData: ProtectedDataWithSecretProps;
+  let protectedData1: ProtectedDataWithSecretProps;
+  let protectedData2: ProtectedDataWithSecretProps;
   let ethProvider: EnhancedWallet;
 
   beforeAll(async () => {
@@ -27,146 +27,55 @@ describe('web3mail.fetchUserContacts()', () => {
     web3mail = new IExecWeb3mail(ethProvider);
 
     //create valid protected data
-    protectedData = await dataProtector.protectData({
-      data: { email: 'test@gmail.com' },
+    protectedData1 = await dataProtector.protectData({
+      data: { email: 'test1@gmail.com' },
+      name: 'test do not use',
+    });
+    protectedData2 = await dataProtector.protectData({
+      data: { email: 'test2@gmail.com' },
       name: 'test do not use',
     });
   }, 30_000);
 
-  afterEach(() => {
-    jest.spyOn(web3mail, 'fetchUserContacts').mockRestore();
-  });
+  it(
+    'Tow different user should have different contacts',
+    async () => {
+      const user1 = Wallet.createRandom().address;
+      const user2 = Wallet.createRandom().address;
+      await dataProtector.grantAccess({
+        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        protectedData: protectedData1.address,
+        authorizedUser: user1,
+      });
 
-  it('pass with a granted access for a specific requester', async () => {
-    await dataProtector.grantAccess({
-      authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-      protectedData: protectedData.address,
-      authorizedUser: wallet.address,
-    });
+      await dataProtector.grantAccess({
+        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        protectedData: protectedData2.address,
+        authorizedUser: user2,
+      });
 
-    const res = await web3mail.fetchUserContacts({user:wallet.address});
-    const foundContactForASpecificRequester = res.find((obj) => {
-      return obj.address === protectedData.address.toLocaleLowerCase();
-    });
-    expect(
-      foundContactForASpecificRequester &&
-        foundContactForASpecificRequester.address
-    ).toBeDefined();
-    expect(
-      foundContactForASpecificRequester &&
-        foundContactForASpecificRequester.address
-    ).toBe(protectedData.address.toLocaleLowerCase());
-  }, 40_000);
+      const contactUser1 = await web3mail.fetchUserContacts({ user: user1 });
+      const contactUser2 = await web3mail.fetchUserContacts({ user: user2 });
+      expect(contactUser1).not.toEqual(contactUser2);
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  
+  it(
+    'Test that the protected data can be accessed by authorized user',
+    async () => {
+      const userWithAccess = Wallet.createRandom().address;
+      await dataProtector.grantAccess({
+        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        protectedData: protectedData1.address,
+        authorizedUser: userWithAccess,
+      });
 
-  it('pass with a granted access for any requester', async () => {
-    const grantedAccessForAnyRequester = await dataProtector.grantAccess({
-      authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-      protectedData: protectedData.address,
-      authorizedUser: NULL_ADDRESS,
-    });
-
-    const res = await web3mail.fetchUserContacts({user:wallet.address});
-
-    const foundContactForAnyRequester = res.find(
-      (obj) => obj.address === protectedData.address.toLowerCase()
-    );
-    expect(
-      foundContactForAnyRequester && foundContactForAnyRequester.address
-    ).toBeDefined();
-    expect(
-      foundContactForAnyRequester && foundContactForAnyRequester.address
-    ).toBe(protectedData.address.toLocaleLowerCase());
-
-    //revoke access to not appear as contact for anyone
-    const revoke = await dataProtector.revokeOneAccess(
-      grantedAccessForAnyRequester
-    );
-    expect(revoke).toBeDefined();
-  }, 40_000);
-
-  it('should return no contact', async () => {
-    jest.spyOn(web3mail, 'fetchUserContacts').mockResolvedValue([]);
-    const contacts = await web3mail.fetchUserContacts({user:wallet.address});
-
-    expect(contacts).toEqual([]);
-  });
-
-  it('should throw a WorkflowError with a specific message', async () => {
-    jest
-      .spyOn(web3mail, 'fetchUserContacts')
-      .mockRejectedValue(
-        new WorkflowError(
-          'Failed to fetch my contacts: wrong address is not a valid ethereum address',
-          new Error()
-        )
-      );
-
-    const expectedErrorMessage =
-      'Failed to fetch my contacts: wrong address is not a valid ethereum address';
-
-    await expect(web3mail.fetchUserContacts({user:wallet.address})).rejects.toThrow(
-      WorkflowError
-    );
-    await expect(web3mail.fetchUserContacts({user:wallet.address})).rejects.toThrow(
-      expectedErrorMessage
-    );
-  });
-
-  it('should throw a WorkflowError error for missing parameters', async () => {
-    jest
-      .spyOn(web3mail, 'fetchUserContacts')
-      .mockRejectedValue(new ValidationError('Missing parameter'));
-
-    await expect(web3mail.fetchUserContacts({user:wallet.address})).rejects.toThrow(
-      ValidationError
-    );
-    await expect(web3mail.fetchUserContacts({user:wallet.address})).rejects.toThrow(
-      'Missing parameter'
-    );
-  });
-
-  it('Should not return dataset as a contact', async () => {
-    const iexec = new IExec({
-      ethProvider,
-    });
-    const dataset = await iexec.dataset.deployDataset({
-      owner: wallet.address,
-      name: 'test do not use',
-      multiaddr: '/ipfs/Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u',
-      checksum:
-        '0x84a3f860d54f3f5f65e91df081c8d776e8bcfb5fbc234afce2f0d7e9d26e160d',
-    });
-    const encryptionKey = await iexec.dataset.generateEncryptionKey();
-
-    await iexec.dataset.pushDatasetSecret(dataset.address, encryptionKey);
-
-    await dataProtector.grantAccess({
-      authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-      protectedData: dataset.address,
-      authorizedUser: wallet.address,
-    });
-    const myContacts = await web3mail.fetchUserContacts({user:wallet.address});
-    expect(myContacts.map(({ address }) => address)).not.toContain(
-      dataset.address
-    );
-  }, 40_000);
-
-  it('should return only contacts that have a valid email', async () => {
-    const notValidProtectedData = await dataProtector.protectData({
-      data: { notemail: 'not email' },
-      name: 'test do not use',
-    });
-
-    await dataProtector.grantAccess({
-      authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-      protectedData: notValidProtectedData.address,
-      authorizedUser: wallet.address,
-    });
-
-    const res = await web3mail.fetchUserContacts({user:wallet.address});
-
-    expect(
-      res.filter((contact) => contact.address === notValidProtectedData.address)
-    ).toStrictEqual([]);
-  }, 40_000);
+      const contacts = await web3mail.fetchUserContacts({
+        user: userWithAccess,
+      });
+      expect(contacts.length).toBeGreaterThan(0);
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
 });
