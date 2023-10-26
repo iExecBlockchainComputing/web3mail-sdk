@@ -46,10 +46,9 @@ export class IExecWeb3mail {
     }
 
     try {
-      this.graphQLClient = new GraphQLClient(
-        (this.dataProtectorSubgraph =
-          options?.dataProtectorSubgraph || DATAPROTECTOR_SUBGRAPH_ENDPOINT)
-      );
+      this.dataProtectorSubgraph =
+        options?.dataProtectorSubgraph || DATAPROTECTOR_SUBGRAPH_ENDPOINT;
+      this.graphQLClient = new GraphQLClient(this.dataProtectorSubgraph);
     } catch (e) {
       throw Error('Impossible to create GraphQLClient');
     }

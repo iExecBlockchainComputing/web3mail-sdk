@@ -1,6 +1,7 @@
 const { Buffer } = require('buffer');
 const forge = require('node-forge');
 const fetch = require('node-fetch');
+
 const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
 
 const downloadEncryptedContent = async (
@@ -21,7 +22,7 @@ const decryptContent = (encryptedContent, encryptionKey) => {
   const ivBytes = encryptedContent.slice(0, 16);
   let ciphertextBytes = encryptedContent.slice(16);
   const key = forge.util.createBuffer(Buffer.from(encryptionKey, 'base64'));
-  let decipher = forge.cipher.createDecipher('AES-CBC', key);
+  const decipher = forge.cipher.createDecipher('AES-CBC', key);
 
   decipher.start({ iv: forge.util.createBuffer(ivBytes) });
 

@@ -1,8 +1,7 @@
-const extractEmailFromZipFile = require('../../src/extractEmailFromZipFile');
 const path = require('path');
-
 const fs = require('fs').promises;
 const JSZip = require('jszip');
+const extractEmailFromZipFile = require('../../src/extractEmailFromZipFile');
 
 describe('extractEmailFromZipFile', () => {
   it('returns a valid email address for a valid .zip file', async () => {
