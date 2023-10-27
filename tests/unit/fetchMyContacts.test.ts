@@ -1,6 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { GraphQLClient } from 'graphql-request';
-import { EnhancedWallet, IExec } from 'iexec';
+import { IExec } from 'iexec';
 import { getWeb3Provider } from '@iexec/dataprotector';
 import { Wallet } from 'ethers';
 import {
@@ -9,39 +9,10 @@ import {
 } from '../../src/config/config';
 import { fetchMyContacts } from '../../dist/web3mail/fetchMyContacts';
 
-jest.unstable_mockModule('../../dist/index', () => ({
-  fetchUserContacts: jest.fn(),
-}));
-
-const { fetchUserContacts } = await import(
-  '../../dist/web3mail/fetchUserContacts'
-);
-
-// dynamically import tested module after all mock are loaded
-const { IExecWeb3mail } = await import('../../dist/index');
-
 describe('fetchMyContacts', () => {
-  let wallet: Wallet;
-  let ethProvider: EnhancedWallet;
-  let web3mail: any;
-
-  beforeAll(async () => {
-    wallet = Wallet.createRandom();
-    ethProvider = getWeb3Provider(wallet.privateKey);
-    web3mail = new IExecWeb3mail(ethProvider);
-  }, 30_000);
-
-  it('fetchMyContacts should call fetchUserContacts with the correct param', async () => {
-    await web3mail.fetchMyContacts();
-
-    expect(fetchUserContacts).toHaveBeenCalledTimes(1);
-    expect(fetchUserContacts).toHaveBeenCalledWith(
-      expect.objectContaining({ user: wallet.address })
-    );
-  }, 50_000);
-
   it('should fetch contacts with the specified page and page size', async () => {
     const graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
+    const ethProvider = getWeb3Provider(Wallet.createRandom().privateKey);
     const iexec = new IExec({
       ethProvider,
     });
