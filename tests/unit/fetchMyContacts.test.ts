@@ -9,18 +9,16 @@ import {
 } from '../../src/config/config';
 import { fetchMyContacts } from '../../dist/web3mail/fetchMyContacts';
 
-jest.unstable_mockModule('../../dist/web3mail/fetchUserContacts', () => ({
-  default: {
-    fetchUserContacts: jest.fn(),
-  },
+jest.unstable_mockModule('../../dist/index', () => ({
+  fetchUserContacts: jest.fn(),
 }));
-
-// dynamically import tested module after all mock are loaded
-const { IExecWeb3mail } = await import('../../dist/index');
 
 const { fetchUserContacts } = await import(
   '../../dist/web3mail/fetchUserContacts'
 );
+
+// dynamically import tested module after all mock are loaded
+const { IExecWeb3mail } = await import('../../dist/index');
 
 describe('fetchMyContacts', () => {
   let wallet: Wallet;
