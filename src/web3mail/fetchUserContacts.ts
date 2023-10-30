@@ -23,7 +23,6 @@ export const fetchUserContacts = async ({
   Contact[]
 > => {
   try {
-    const userAddress = user;
     const datasetOrderbookAuthorizedBySC =
       await iexec.orderbook.fetchDatasetOrderbook('any', {
         app: WHITELIST_SMART_CONTRACT_ADDRESS,
