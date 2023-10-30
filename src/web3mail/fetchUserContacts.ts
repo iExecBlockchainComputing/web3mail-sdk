@@ -24,12 +24,13 @@ export const fetchUserContacts = async ({
   Contact[]
 > => {
   try {
- const datasetOrderbookAuthorizedBySC = await iexec.orderbook.fetchDatasetOrderbook(ANY_DATASET_ADDRESS, {
-      app: WHITELIST_SMART_CONTRACT_ADDRESS,
-      requester: userAddress,
-      page,
-      pageSize,
-    });
+    const datasetOrderbookAuthorizedBySC =
+      await iexec.orderbook.fetchDatasetOrderbook(ANY_DATASET_ADDRESS, {
+        app: WHITELIST_SMART_CONTRACT_ADDRESS,
+        requester: userAddress,
+        page,
+        pageSize,
+      });
     const datasetOrderbookAuthorizedByENS =
       await iexec.orderbook.fetchDatasetOrderbook('any', {
         app: WEB3_MAIL_DAPP_ADDRESS,
