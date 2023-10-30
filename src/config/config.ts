@@ -10,3 +10,4 @@ export const IPFS_UPLOAD_URL = '/dns4/ipfs-upload.v8-bellecour.iex.ec/https';
 export const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
 export const WHITELIST_SMART_CONTRACT_ADDRESS =
   '0x781482C39CcE25546583EaC4957Fb7Bf04C277D2';
+export const ANY_DATASET_ADDRESS = 'any';

@@ -1,11 +1,12 @@
 import { providers } from 'ethers';
 import { IExec } from 'iexec';
+import { fetchUserContacts } from './fetchUserContacts.js';
 import { fetchMyContacts } from './fetchMyContacts.js';
 import { sendEmail } from './sendEmail.js';
 import {
   Contact,
+  FetchUserContactsParams,
   SendEmailParams,
-  SendEmailResponse,
   Web3SignerProvider,
   AddressOrENS,
   Web3MailConfigOptions,
@@ -20,10 +21,6 @@ import {
 } from '../config/config.js';
 
 export class IExecWeb3mail {
-  fetchMyContacts: () => Promise<Contact[]>;
-
-  sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
-
   private iexec: IExec;
 
   private ipfsNode: string;
@@ -61,23 +58,33 @@ export class IExecWeb3mail {
     this.ipfsGateway = options?.ipfsGateway || DEFAULT_IPFS_GATEWAY;
     this.dappWhitelistAddress =
       options?.dappWhitelistAddress || WHITELIST_SMART_CONTRACT_ADDRESS;
-
-    this.fetchMyContacts = () =>
-      fetchMyContacts({
-        iexec: this.iexec,
-        graphQLClient: this.graphQLClient,
-        dappAddressOrENS: this.dappAddressOrENS,
-        dappWhitelistAddress: this.dappWhitelistAddress,
-      });
-
-    this.sendEmail = (args: SendEmailParams) =>
-      sendEmail({
-        ...args,
-        iexec: this.iexec,
-        ipfsNode: this.ipfsNode,
-        ipfsGateway: this.ipfsGateway,
-        dappAddressOrENS: this.dappAddressOrENS,
-        graphQLClient: this.graphQLClient,
-      });
   }
+
+  fetchMyContacts = () =>
+    fetchMyContacts({
+      iexec: this.iexec,
+      graphQLClient: this.graphQLClient,
+      dappAddressOrENS: this.dappAddressOrENS,
+      dappWhitelistAddress: this.dappWhitelistAddress,
+    });
+
+  fetchUserContacts(args?: FetchUserContactsParams): Promise<Contact[]> {
+    return fetchUserContacts({
+      ...args,
+      iexec: this.iexec,
+      graphQLClient: this.graphQLClient,
+      dappAddressOrENS: this.dappAddressOrENS,
+      dappWhitelistAddress: this.dappWhitelistAddress,
+    });
+  }
+
+  sendEmail = (args: SendEmailParams) =>
+    sendEmail({
+      ...args,
+      iexec: this.iexec,
+      ipfsNode: this.ipfsNode,
+      ipfsGateway: this.ipfsGateway,
+      dappAddressOrENS: this.dappAddressOrENS,
+      graphQLClient: this.graphQLClient,
+    });
 }
