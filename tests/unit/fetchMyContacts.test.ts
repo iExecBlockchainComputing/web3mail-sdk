@@ -6,8 +6,14 @@ import { Wallet } from 'ethers';
 import {
   DATAPROTECTOR_SUBGRAPH_ENDPOINT,
   WEB3_MAIL_DAPP_ADDRESS,
+  WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../../src/config/config';
 import { fetchMyContacts } from '../../dist/web3mail/fetchMyContacts';
+
+/**
+ * Run this test file:
+ * NODE_OPTIONS=--experimental-vm-modules npx jest tests/unit/fetchMyContacts.test.ts --silent=false
+ */
 
 describe('fetchMyContacts', () => {
   it('should fetch contacts with the specified page and page size', async () => {
@@ -52,11 +58,21 @@ describe('fetchMyContacts', () => {
     });
     const userAddress = await iexec.wallet.getAddress();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      2,
+      1,
       'any',
       {
         app: WEB3_MAIL_DAPP_ADDRESS,
         requester: userAddress,
+        pageSize: 1000,
+      }
+    );
+    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
+      2,
+      'any',
+      {
+        app: WHITELIST_SMART_CONTRACT_ADDRESS,
+        requester: userAddress,
+        pageSize: 1000,
       }
     );
   }, 40_000);
