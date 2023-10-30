@@ -19,30 +19,32 @@ import {
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  userAddress,
+  dappAddressOrENS = throwIfMissing(),
+  dappWhitelistAddress = throwIfMissing(),
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
-  DppWhitelistAddressConsumer &
-  FetchUserContactsParams): Promise<Contact[]> => {
+  DppWhitelistAddressConsumer): Promise<Contact[]> => {
   try {
+    const userAddress = await iexec.wallet.getAddress();
+
     const [ensOrders, scOrders] = await Promise.all([
       fetchAllOrdersByApp({
         iexec,
         userAddress,
-        appAddress: WEB3_MAIL_DAPP_ADDRESS,
+        appAddress: dappAddressOrENS,
       }),
       fetchAllOrdersByApp({
         iexec,
         userAddress,
-        appAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
+        appAddress: dappWhitelistAddress,
       }),
     ]);
 
     const orders = ensOrders.concat(scOrders);
     const myContacts: Contact[] = [];
     const web3DappResolvedAddress = await iexec.ens.resolveName(
-      WEB3_MAIL_DAPP_ADDRESS
+      dappAddressOrENS
     );
 
     orders.forEach((order) => {
@@ -50,7 +52,7 @@ export const fetchUserContacts = async ({
         order.order.apprestrict.toLowerCase() ===
           web3DappResolvedAddress.toLowerCase() ||
         order.order.apprestrict.toLowerCase() ===
-          WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase()
+          dappWhitelistAddress.toLowerCase()
       ) {
         const contact = {
           address: order.order.dataset.toLowerCase(),
@@ -71,15 +73,12 @@ export const fetchUserContacts = async ({
 };
 
 async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
-  const ordersFirstPage = await iexec.orderbook.fetchDatasetOrderbook(
-    ANY_DATASET_ADDRESS,
-    {
-      app: appAddress,
-      requester: userAddress,
-      // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
-      pageSize: 1000,
-    }
-  );
+  const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook('any', {
+    app: appAddress,
+    requester: userAddress,
+    // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
+    pageSize: 1000,
+  });
   const { orders: allOrders } = await autoPaginateRequest({
     request: ordersFirstPage,
   });
