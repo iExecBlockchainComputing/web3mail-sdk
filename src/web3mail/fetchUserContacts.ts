@@ -31,13 +31,13 @@ export const fetchUserContacts = async ({
         page,
         pageSize,
       });
-    const datasetOrderbookAuthorizedByENS =
-      await iexec.orderbook.fetchDatasetOrderbook('any', {
-        app: WEB3_MAIL_DAPP_ADDRESS,
-        requester: userAddress,
-        page,
-        pageSize,
-      });
+ const datasetOrderbookAuthorizedByENS = await iexec.orderbook.fetchDatasetOrderbook(ANY_DATASET_ADDRESS, {
+      app: WEB3_MAIL_DAPP_ADDRESS,
+      requester: userAddress,
+      page,
+      pageSize,
+    });
+
 
     const { orders: ensOrders } = await autoPaginateRequest({
       request: datasetOrderbookAuthorizedByENS,
