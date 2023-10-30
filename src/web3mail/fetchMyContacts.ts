@@ -59,7 +59,7 @@ export const fetchMyContacts = async ({
   }
 };
 
-const fetchAllOrdersByApp = async ({ iexec, userAddress, appAddress }) => {
+async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
   const ordersFirstPage = await iexec.orderbook.fetchDatasetOrderbook('any', {
     app: appAddress,
     requester: userAddress,
@@ -70,4 +70,4 @@ const fetchAllOrdersByApp = async ({ iexec, userAddress, appAddress }) => {
     request: ordersFirstPage,
   });
   return allOrders;
-};
+}
