@@ -1,11 +1,7 @@
 import { WorkflowError } from '../utils/errors.js';
 import { throwIfMissing } from '../utils/validators.js';
 import { fetchUserContacts } from './fetchUserContacts.js';
-import {
-  Contact,
-  IExecConsumer,
-  SubgraphConsumer,
-} from './types.js';
+import { Contact, IExecConsumer, SubgraphConsumer } from './types.js';
 
 export const fetchMyContacts = async ({
   graphQLClient = throwIfMissing(),
