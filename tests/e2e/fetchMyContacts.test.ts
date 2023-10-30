@@ -11,6 +11,11 @@ import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { ValidationError, WorkflowError } from '../../dist/utils/errors';
 import { EnhancedWallet, IExec } from 'iexec';
 
+/**
+ * Run this test file:
+ * NODE_OPTIONS=--experimental-vm-modules npx jest tests/e2e/fetchMyContacts.test.ts --silent=false
+ */
+
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: Wallet;
   let web3mail: IExecWeb3mail;
@@ -104,9 +109,7 @@ describe('web3mail.fetchMyContacts()', () => {
     const expectedErrorMessage =
       'Failed to fetch my contacts: wrong address is not a valid ethereum address';
 
-    await expect(web3mail.fetchMyContacts()).rejects.toThrow(
-      WorkflowError
-    );
+    await expect(web3mail.fetchMyContacts()).rejects.toThrow(WorkflowError);
     await expect(web3mail.fetchMyContacts()).rejects.toThrow(
       expectedErrorMessage
     );
@@ -117,9 +120,7 @@ describe('web3mail.fetchMyContacts()', () => {
       .spyOn(web3mail, 'fetchMyContacts')
       .mockRejectedValue(new ValidationError('Missing parameter'));
 
-    await expect(web3mail.fetchMyContacts()).rejects.toThrow(
-      ValidationError
-    );
+    await expect(web3mail.fetchMyContacts()).rejects.toThrow(ValidationError);
     await expect(web3mail.fetchMyContacts()).rejects.toThrow(
       'Missing parameter'
     );

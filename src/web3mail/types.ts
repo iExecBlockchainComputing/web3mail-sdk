@@ -34,17 +34,6 @@ export type SendEmailParams = {
   workerpoolMaxPrice?: number;
 };
 
-export type FetchContactsParams = {
-  /**
-   * Index of the page to fetch
-   */
-  page?: number;
-  /**
-   * Size of the page to fetch
-   */
-  pageSize?: number;
-};
-
 export type SendEmailResponse = {
   taskId: Address;
 };

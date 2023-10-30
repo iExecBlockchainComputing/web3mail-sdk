@@ -6,7 +6,7 @@ import { Wallet } from 'ethers';
 import {
   DATAPROTECTOR_SUBGRAPH_ENDPOINT,
   WEB3_MAIL_DAPP_ADDRESS,
-  WHITELIST_SMART_CONTRACT_ADDRESS
+  WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../../src/config/config';
 import { fetchMyContacts } from '../../dist/web3mail/fetchMyContacts';
 
@@ -37,16 +37,14 @@ describe('fetchMyContacts', () => {
       status: 'open',
       remaining: 10,
     };
-    const mockFetchDatasetOrderbook: any = jest
-      .fn()
-      .mockImplementation(() => {
-        return Promise.resolve({
-          ok: true,
-          count: 1,
-          nextPage: 1,
-          orders: [MOCK_ORDER],
-        });
+    const mockFetchDatasetOrderbook: any = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        ok: true,
+        count: 1,
+        nextPage: 1,
+        orders: [MOCK_ORDER],
       });
+    });
     iexec.orderbook.fetchDatasetOrderbook = mockFetchDatasetOrderbook;
 
     await fetchMyContacts({
@@ -54,18 +52,24 @@ describe('fetchMyContacts', () => {
       dappAddressOrENS: WEB3_MAIL_DAPP_ADDRESS,
       dappWhitelistAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
       graphQLClient,
-      page: 1,
-      pageSize: 10,
     });
     const userAddress = await iexec.wallet.getAddress();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      2,
+      1,
       'any',
       {
         app: WEB3_MAIL_DAPP_ADDRESS,
         requester: userAddress,
-        page: 1,
-        pageSize: 10,
+        pageSize: 1000,
+      }
+    );
+    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
+      2,
+      'any',
+      {
+        app: WHITELIST_SMART_CONTRACT_ADDRESS,
+        requester: userAddress,
+        pageSize: 1000,
       }
     );
   }, 40_000);

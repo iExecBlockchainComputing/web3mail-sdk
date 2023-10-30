@@ -4,7 +4,6 @@ import { fetchMyContacts } from './fetchMyContacts.js';
 import { sendEmail } from './sendEmail.js';
 import {
   Contact,
-  FetchContactsParams,
   SendEmailParams,
   SendEmailResponse,
   Web3SignerProvider,
@@ -21,6 +20,10 @@ import {
 } from '../config/config.js';
 
 export class IExecWeb3mail {
+  fetchMyContacts: () => Promise<Contact[]>;
+
+  sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
+
   private iexec: IExec;
 
   private ipfsNode: string;
@@ -59,14 +62,14 @@ export class IExecWeb3mail {
     this.dappWhitelistAddress =
       options?.dappWhitelistAddress || WHITELIST_SMART_CONTRACT_ADDRESS;
 
-    this.fetchMyContacts = (args?: FetchContactsParams) =>
+    this.fetchMyContacts = () =>
       fetchMyContacts({
-        ...args,
         iexec: this.iexec,
         graphQLClient: this.graphQLClient,
         dappAddressOrENS: this.dappAddressOrENS,
         dappWhitelistAddress: this.dappWhitelistAddress,
       });
+
     this.sendEmail = (args: SendEmailParams) =>
       sendEmail({
         ...args,
@@ -77,8 +80,4 @@ export class IExecWeb3mail {
         graphQLClient: this.graphQLClient,
       });
   }
-
-  fetchMyContacts: (args?: FetchContactsParams) => Promise<Contact[]>;
-
-  sendEmail: (args: SendEmailParams) => Promise<SendEmailResponse>;
 }

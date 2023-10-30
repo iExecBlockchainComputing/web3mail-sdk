@@ -4,7 +4,6 @@ import { getValidContact } from '../utils/subgraphQuery.js';
 import { throwIfMissing } from '../utils/validators.js';
 import {
   Contact,
-  FetchContactsParams,
   IExecConsumer,
   SubgraphConsumer,
   DappAddressConsumer,
@@ -16,36 +15,25 @@ export const fetchMyContacts = async ({
   iexec = throwIfMissing(),
   dappAddressOrENS = throwIfMissing(),
   dappWhitelistAddress = throwIfMissing(),
-  page,
-  pageSize,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
-  DppWhitelistAddressConsumer &
-  FetchContactsParams): Promise<Contact[]> => {
+  DppWhitelistAddressConsumer): Promise<Contact[]> => {
   try {
     const userAddress = await iexec.wallet.getAddress();
-    const datasetOrderbookAuthorizedBySC =
-      await iexec.orderbook.fetchDatasetOrderbook('any', {
-        app: dappWhitelistAddress,
-        requester: userAddress,
-        page,
-        pageSize,
-      });
-    const datasetOrderbookAuthorizedByENS =
-      await iexec.orderbook.fetchDatasetOrderbook('any', {
-        app: dappAddressOrENS,
-        requester: userAddress,
-        page,
-        pageSize,
-      });
 
-    const { orders: ensOrders } = await autoPaginateRequest({
-      request: datasetOrderbookAuthorizedByENS,
-    });
-    const { orders: scOrders } = await autoPaginateRequest({
-      request: datasetOrderbookAuthorizedBySC,
-    });
+    const [ensOrders, scOrders] = await Promise.all([
+      fetchAllOrdersByApp({
+        iexec,
+        userAddress,
+        appAddress: dappAddressOrENS,
+      }),
+      fetchAllOrdersByApp({
+        iexec,
+        userAddress,
+        appAddress: dappWhitelistAddress,
+      }),
+    ]);
 
     const orders = ensOrders.concat(scOrders);
     const myContacts: Contact[] = [];
@@ -77,3 +65,16 @@ export const fetchMyContacts = async ({
     );
   }
 };
+
+async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
+  const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook('any', {
+    app: appAddress,
+    requester: userAddress,
+    // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
+    pageSize: 1000,
+  });
+  const { orders: allOrders } = await autoPaginateRequest({
+    request: ordersFirstPage,
+  });
+  return allOrders;
+}
