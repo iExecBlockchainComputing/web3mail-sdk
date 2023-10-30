@@ -21,7 +21,7 @@ export const fetchMyContacts = async ({
     return await fetchUserContacts({
       iexec,
       graphQLClient,
-      user,
+userAddress,
       page,
       pageSize,
     });
