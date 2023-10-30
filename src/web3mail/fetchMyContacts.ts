@@ -14,28 +14,19 @@ export const fetchMyContacts = async ({
 }: IExecConsumer & SubgraphConsumer): Promise<Contact[]> => {
   try {
     const userAddress = await iexec.wallet.getAddress();
-    const [datasetOrderbookAuthorizedBySC, datasetOrderbookAuthorizedByENS] =
-      await Promise.all([
-        iexec.orderbook.fetchDatasetOrderbook('any', {
-          app: WHITELIST_SMART_CONTRACT_ADDRESS,
-          requester: userAddress,
-          // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
-          pageSize: 1000,
-        }),
-        iexec.orderbook.fetchDatasetOrderbook('any', {
-          app: WEB3_MAIL_DAPP_ADDRESS,
-          requester: userAddress,
-          // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
-          pageSize: 1000,
-        }),
-      ]);
 
-    const { orders: ensOrders } = await autoPaginateRequest({
-      request: datasetOrderbookAuthorizedByENS,
-    });
-    const { orders: scOrders } = await autoPaginateRequest({
-      request: datasetOrderbookAuthorizedBySC,
-    });
+    const [ensOrders, scOrders] = await Promise.all([
+      fetchAllOrdersByApp({
+        iexec,
+        userAddress,
+        appAddress: WEB3_MAIL_DAPP_ADDRESS,
+      }),
+      fetchAllOrdersByApp({
+        iexec,
+        userAddress,
+        appAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
+      }),
+    ]);
 
     const orders = ensOrders.concat(scOrders);
     const myContacts: Contact[] = [];
@@ -66,4 +57,17 @@ export const fetchMyContacts = async ({
       error
     );
   }
+};
+
+const fetchAllOrdersByApp = async ({ iexec, userAddress, appAddress }) => {
+  const ordersFirstPage = await iexec.orderbook.fetchDatasetOrderbook('any', {
+    app: appAddress,
+    requester: userAddress,
+    // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
+    pageSize: 1000,
+  });
+  const { orders: allOrders } = await autoPaginateRequest({
+    request: ordersFirstPage,
+  });
+  return allOrders;
 };
