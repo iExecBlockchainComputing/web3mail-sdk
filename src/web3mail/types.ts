@@ -24,18 +24,7 @@ export type SendEmailParams = {
   senderName?: string;
 };
 
-export type FetchContactsParams = {
-  /**
-   * Index of the page to fetch
-   */
-  page?: number;
-  /**
-   * Size of the page to fetch
-   */
-  pageSize?: number;
-};
-
-export type FetchUserContactsParams = FetchContactsParams & {
+export type FetchUserContactsParams = {
   /**
    * Address of the user
    */

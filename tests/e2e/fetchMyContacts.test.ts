@@ -11,6 +11,11 @@ import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { ValidationError, WorkflowError } from '../../dist/utils/errors';
 import { EnhancedWallet, IExec } from 'iexec';
 
+/**
+ * Run this test file:
+ * NODE_OPTIONS=--experimental-vm-modules npx jest tests/e2e/fetchMyContacts.test.ts --silent=false
+ */
+
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: Wallet;
   let web3mail: IExecWeb3mail;

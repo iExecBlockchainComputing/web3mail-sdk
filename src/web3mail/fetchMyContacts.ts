@@ -3,7 +3,6 @@ import { throwIfMissing } from '../utils/validators.js';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import {
   Contact,
-  FetchContactsParams,
   IExecConsumer,
   SubgraphConsumer,
 } from './types.js';
@@ -11,19 +10,13 @@ import {
 export const fetchMyContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  page,
-  pageSize,
-}: IExecConsumer & SubgraphConsumer & FetchContactsParams): Promise<
-  Contact[]
-> => {
+}: IExecConsumer & SubgraphConsumer): Promise<Contact[]> => {
   try {
     const userAddress = await iexec.wallet.getAddress();
     return await fetchUserContacts({
       iexec,
       graphQLClient,
       userAddress,
-      page,
-      pageSize,
     });
   } catch (error) {
     throw new WorkflowError(

@@ -6,7 +6,6 @@ import { fetchMyContacts } from './fetchMyContacts.js';
 import { sendEmail } from './sendEmail.js';
 import {
   Contact,
-  FetchContactsParams,
   FetchUserContactsParams,
   SendEmailParams,
   SendEmailResponse,
@@ -39,9 +38,8 @@ export class IExecWeb3mail {
     }
   }
 
-  fetchMyContacts(args?: FetchContactsParams): Promise<Contact[]> {
+  fetchMyContacts(): Promise<Contact[]> {
     return fetchMyContacts({
-      ...args,
       iexec: this.iexec,
       graphQLClient: this.graphQLClient,
     });

@@ -18,33 +18,22 @@ export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
   userAddress,
-  page,
-  pageSize,
 }: IExecConsumer & SubgraphConsumer & FetchUserContactsParams): Promise<
   Contact[]
 > => {
   try {
-    const datasetOrderbookAuthorizedBySC =
-      await iexec.orderbook.fetchDatasetOrderbook(ANY_DATASET_ADDRESS, {
-        app: WHITELIST_SMART_CONTRACT_ADDRESS,
-        requester: userAddress,
-        page,
-        pageSize,
-      });
-    const datasetOrderbookAuthorizedByENS =
-      await iexec.orderbook.fetchDatasetOrderbook(ANY_DATASET_ADDRESS, {
-        app: WEB3_MAIL_DAPP_ADDRESS,
-        requester: userAddress,
-        page,
-        pageSize,
-      });
-
-    const { orders: ensOrders } = await autoPaginateRequest({
-      request: datasetOrderbookAuthorizedByENS,
-    });
-    const { orders: scOrders } = await autoPaginateRequest({
-      request: datasetOrderbookAuthorizedBySC,
-    });
+    const [ensOrders, scOrders] = await Promise.all([
+      fetchAllOrdersByApp({
+        iexec,
+        userAddress,
+        appAddress: WEB3_MAIL_DAPP_ADDRESS,
+      }),
+      fetchAllOrdersByApp({
+        iexec,
+        userAddress,
+        appAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
+      }),
+    ]);
 
     const orders = ensOrders.concat(scOrders);
     const myContacts: Contact[] = [];
@@ -71,8 +60,24 @@ export const fetchUserContacts = async ({
     return await getValidContact(graphQLClient, myContacts);
   } catch (error) {
     throw new WorkflowError(
-      `Failed to fetch user contacts: ${error.message}`,
+      `Failed to fetch my contacts: ${error.message}`,
       error
     );
   }
 };
+
+async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
+  const ordersFirstPage = await iexec.orderbook.fetchDatasetOrderbook(
+    ANY_DATASET_ADDRESS,
+    {
+      app: appAddress,
+      requester: userAddress,
+      // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
+      pageSize: 1000,
+    }
+  );
+  const { orders: allOrders } = await autoPaginateRequest({
+    request: ordersFirstPage,
+  });
+  return allOrders;
+}
