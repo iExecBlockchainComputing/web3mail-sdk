@@ -35,7 +35,7 @@ describe('web3mail.fetchMyContacts()', () => {
       data: { email: 'test2@gmail.com' },
       name: 'test do not use',
     });
-  }, 30_000);
+  }, 3 * MAX_EXPECTED_BLOCKTIME);
 
   it(
     'Tow different user should have different contacts',
@@ -54,13 +54,17 @@ describe('web3mail.fetchMyContacts()', () => {
         authorizedUser: user2,
       });
 
-      const contactUser1 = await web3mail.fetchUserContacts({ user: user1 });
-      const contactUser2 = await web3mail.fetchUserContacts({ user: user2 });
+      const contactUser1 = await web3mail.fetchUserContacts({
+        userAddress: user1,
+      });
+      const contactUser2 = await web3mail.fetchUserContacts({
+        userAddress: user2,
+      });
       expect(contactUser1).not.toEqual(contactUser2);
     },
     3 * MAX_EXPECTED_BLOCKTIME
   );
-  
+
   it(
     'Test that the protected data can be accessed by authorized user',
     async () => {
@@ -72,7 +76,7 @@ describe('web3mail.fetchMyContacts()', () => {
       });
 
       const contacts = await web3mail.fetchUserContacts({
-        user: userWithAccess,
+        userAddress: userWithAccess,
       });
       expect(contacts.length).toBeGreaterThan(0);
     },
