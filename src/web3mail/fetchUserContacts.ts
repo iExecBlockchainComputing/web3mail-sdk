@@ -16,7 +16,7 @@ import {
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  user,
+  userAddress,
   page,
   pageSize,
 }: IExecConsumer & SubgraphConsumer & FetchUserContactsParams): Promise<
