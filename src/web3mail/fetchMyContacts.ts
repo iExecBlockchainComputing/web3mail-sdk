@@ -17,7 +17,7 @@ export const fetchMyContacts = async ({
   Contact[]
 > => {
   try {
-    const user = await iexec.wallet.getAddress();
+    const userAddress = await iexec.wallet.getAddress();
     return await fetchUserContacts({
       iexec,
       graphQLClient,
