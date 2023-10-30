@@ -1,6 +1,5 @@
 import { providers } from 'ethers';
 import { IExec } from 'iexec';
-import { IExecConfigOptions } from 'iexec/IExecConfig';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import { fetchMyContacts } from './fetchMyContacts.js';
 import { sendEmail } from './sendEmail.js';
@@ -8,7 +7,6 @@ import {
   Contact,
   FetchUserContactsParams,
   SendEmailParams,
-  SendEmailResponse,
   Web3SignerProvider,
   AddressOrENS,
   Web3MailConfigOptions,
