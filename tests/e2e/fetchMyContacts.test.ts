@@ -96,15 +96,17 @@ describe('web3mail.fetchMyContacts()', () => {
       .spyOn(web3mail, 'fetchMyContacts')
       .mockRejectedValue(
         new WorkflowError(
-          'Failed to fetch user contacts: wrong address is not a valid ethereum address',
+          'Failed to fetch my contacts: wrong address is not a valid ethereum address',
           new Error()
         )
       );
 
     const expectedErrorMessage =
-      'Failed to fetch user contacts: wrong address is not a valid ethereum address';
+      'Failed to fetch my contacts: wrong address is not a valid ethereum address';
 
-    await expect(web3mail.fetchMyContacts()).rejects.toThrow(WorkflowError);
+    await expect(web3mail.fetchMyContacts()).rejects.toThrow(
+      WorkflowError
+    );
     await expect(web3mail.fetchMyContacts()).rejects.toThrow(
       expectedErrorMessage
     );
@@ -115,7 +117,9 @@ describe('web3mail.fetchMyContacts()', () => {
       .spyOn(web3mail, 'fetchMyContacts')
       .mockRejectedValue(new ValidationError('Missing parameter'));
 
-    await expect(web3mail.fetchMyContacts()).rejects.toThrow(ValidationError);
+    await expect(web3mail.fetchMyContacts()).rejects.toThrow(
+      ValidationError
+    );
     await expect(web3mail.fetchMyContacts()).rejects.toThrow(
       'Missing parameter'
     );
