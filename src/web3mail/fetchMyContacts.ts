@@ -6,37 +6,29 @@ import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
 import { throwIfMissing } from '../utils/validators.js';
-import {
-  Contact,
-  FetchContactsParams,
-  IExecConsumer,
-  SubgraphConsumer,
-} from './types.js';
+import { Contact, IExecConsumer, SubgraphConsumer } from './types.js';
 
 export const fetchMyContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  page,
-  pageSize,
-}: IExecConsumer & SubgraphConsumer & FetchContactsParams): Promise<
-  Contact[]
-> => {
+}: IExecConsumer & SubgraphConsumer): Promise<Contact[]> => {
   try {
     const userAddress = await iexec.wallet.getAddress();
-    const datasetOrderbookAuthorizedBySC =
-      await iexec.orderbook.fetchDatasetOrderbook('any', {
-        app: WHITELIST_SMART_CONTRACT_ADDRESS,
-        requester: userAddress,
-        page,
-        pageSize,
-      });
-    const datasetOrderbookAuthorizedByENS =
-      await iexec.orderbook.fetchDatasetOrderbook('any', {
-        app: WEB3_MAIL_DAPP_ADDRESS,
-        requester: userAddress,
-        page,
-        pageSize,
-      });
+    const [datasetOrderbookAuthorizedBySC, datasetOrderbookAuthorizedByENS] =
+      await Promise.all([
+        iexec.orderbook.fetchDatasetOrderbook('any', {
+          app: WHITELIST_SMART_CONTRACT_ADDRESS,
+          requester: userAddress,
+          // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
+          pageSize: 1000,
+        }),
+        iexec.orderbook.fetchDatasetOrderbook('any', {
+          app: WEB3_MAIL_DAPP_ADDRESS,
+          requester: userAddress,
+          // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
+          pageSize: 1000,
+        }),
+      ]);
 
     const { orders: ensOrders } = await autoPaginateRequest({
       request: datasetOrderbookAuthorizedByENS,
