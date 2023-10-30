@@ -39,7 +39,7 @@ export type FetchUserContactsParams = FetchContactsParams & {
   /**
    * Address of the user
    */
-  user: Address;
+  userAddress: Address;
 };
 
 export type SendEmailResponse = {
