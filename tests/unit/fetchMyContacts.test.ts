@@ -36,23 +36,19 @@ describe('fetchMyContacts', () => {
       status: 'open',
       remaining: 10,
     };
-    const mockFetchDatasetOrderbook: any = jest
-      .fn()
-      .mockImplementation(() => {
-        return Promise.resolve({
-          ok: true,
-          count: 1,
-          nextPage: 1,
-          orders: [MOCK_ORDER],
-        });
+    const mockFetchDatasetOrderbook: any = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        ok: true,
+        count: 1,
+        nextPage: 1,
+        orders: [MOCK_ORDER],
       });
+    });
     iexec.orderbook.fetchDatasetOrderbook = mockFetchDatasetOrderbook;
 
     await fetchMyContacts({
       iexec: iexec,
       graphQLClient,
-      page: 1,
-      pageSize: 10,
     });
     const userAddress = await iexec.wallet.getAddress();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
@@ -61,8 +57,6 @@ describe('fetchMyContacts', () => {
       {
         app: WEB3_MAIL_DAPP_ADDRESS,
         requester: userAddress,
-        page: 1,
-        pageSize: 10,
       }
     );
   }, 40_000);
