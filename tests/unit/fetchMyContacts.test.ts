@@ -62,7 +62,7 @@ describe('fetchMyContacts', () => {
       }
     );
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      1,
+      2,
       'any',
       {
         app: WHITELIST_SMART_CONTRACT_ADDRESS,
