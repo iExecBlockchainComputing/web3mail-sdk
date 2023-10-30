@@ -24,6 +24,13 @@ export type SendEmailParams = {
   senderName?: string;
 };
 
+export type FetchUserContactsParams = {
+  /**
+   * Address of the user
+   */
+  userAddress: Address;
+};
+
 export type SendEmailResponse = {
   taskId: Address;
 };
