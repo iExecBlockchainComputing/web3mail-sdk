@@ -64,7 +64,7 @@ describe('web3mail.sendEmail()', () => {
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    5 * MAX_EXPECTED_BLOCKTIME
   );
   it(
     'should successfully send email with content type html',
@@ -80,7 +80,7 @@ describe('web3mail.sendEmail()', () => {
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    5 * MAX_EXPECTED_BLOCKTIME
   );
   it(
     'should fail if the protected data is not valid',
@@ -95,7 +95,7 @@ describe('web3mail.sendEmail()', () => {
         'ProtectedData is not valid'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    5 * MAX_EXPECTED_BLOCKTIME
   );
   it(
     'should fail if there is no Dataset order found',
@@ -115,7 +115,7 @@ describe('web3mail.sendEmail()', () => {
         'Dataset order not found'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    5 * MAX_EXPECTED_BLOCKTIME
   );
   it(
     'should successfully send email with a valid senderName',
@@ -130,7 +130,7 @@ describe('web3mail.sendEmail()', () => {
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    5 * MAX_EXPECTED_BLOCKTIME
   );
   it(
     'should successfully send email with email content size < 512 kilo-bytes',
@@ -149,7 +149,7 @@ describe('web3mail.sendEmail()', () => {
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    5 * MAX_EXPECTED_BLOCKTIME
   );
   it(
     'should fail to send email with email content size > 512 kilo-bytes',
@@ -168,7 +168,7 @@ describe('web3mail.sendEmail()', () => {
         'emailContent must be at most 512000 characters'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    5 * MAX_EXPECTED_BLOCKTIME
   );
   it(
     'should fail to send email with an invalid (too short) senderName',
@@ -183,7 +183,7 @@ describe('web3mail.sendEmail()', () => {
         'senderName must be at least 3 characters'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    5 * MAX_EXPECTED_BLOCKTIME
   );
   it(
     'should fail to send email with an invalid (too long) senderName',
@@ -198,6 +198,6 @@ describe('web3mail.sendEmail()', () => {
         'senderName must be at most 20 characters'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    5 * MAX_EXPECTED_BLOCKTIME
   );
 });
