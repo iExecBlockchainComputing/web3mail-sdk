@@ -34,3 +34,6 @@ export const contentTypeSchema = () =>
 
 // Minimum of 3 characters and max of 20 to avoid sender being flagged as spam
 export const senderNameSchema = () => string().trim().min(3).max(20).optional();
+
+// Used to identify the email campaign, minimum of 3 characters and max of 10
+export const labelSchema = () => string().trim().min(3).max(10).optional();

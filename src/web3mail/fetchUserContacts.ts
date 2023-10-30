@@ -9,6 +9,8 @@ import { getValidContact } from '../utils/subgraphQuery.js';
 import { throwIfMissing } from '../utils/validators.js';
 import {
   Contact,
+  DappAddressConsumer,
+  DppWhitelistAddressConsumer,
   FetchUserContactsParams,
   IExecConsumer,
   SubgraphConsumer,
@@ -18,9 +20,11 @@ export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
   userAddress,
-}: IExecConsumer & SubgraphConsumer & FetchUserContactsParams): Promise<
-  Contact[]
-> => {
+}: IExecConsumer &
+  SubgraphConsumer &
+  DappAddressConsumer &
+  DppWhitelistAddressConsumer &
+  FetchUserContactsParams): Promise<Contact[]> => {
   try {
     const [ensOrders, scOrders] = await Promise.all([
       fetchAllOrdersByApp({

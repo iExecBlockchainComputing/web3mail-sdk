@@ -2,8 +2,7 @@ import {
   DEFAULT_CONTENT_TYPE,
   MAX_DESIRED_APP_ORDER_PRICE,
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
-  WEB3_MAIL_DAPP_ADDRESS,
-  WORKERPOOL_ADDRESS,
+  MAX_DESIRED_DATA_ORDER_PRICE,
 } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
@@ -14,6 +13,7 @@ import {
   emailContentSchema,
   emailSubjectSchema,
   senderNameSchema,
+  labelSchema,
   throwIfMissing,
 } from '../utils/validators.js';
 import {
@@ -21,19 +21,33 @@ import {
   SendEmailParams,
   SendEmailResponse,
   SubgraphConsumer,
+  DappAddressConsumer,
+  IpfsNodeConfigConsumer,
+  IpfsGatewayConfigConsumer,
 } from './types.js';
 import * as ipfs from './../utils/ipfs-service.js';
 
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
+  workerpoolAddressOrEns,
+  dappAddressOrENS,
+  ipfsNode,
+  ipfsGateway,
   emailSubject,
   emailContent,
   contentType = DEFAULT_CONTENT_TYPE,
+  label,
+  dataMaxPrice = MAX_DESIRED_DATA_ORDER_PRICE,
+  appMaxPrice = MAX_DESIRED_APP_ORDER_PRICE,
+  workerpoolMaxPrice = MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   senderName,
   protectedData,
 }: IExecConsumer &
   SubgraphConsumer &
+  DappAddressConsumer &
+  IpfsNodeConfigConsumer &
+  IpfsGatewayConfigConsumer &
   SendEmailParams): Promise<SendEmailResponse> => {
   try {
     const vDatasetAddress = addressOrEnsSchema()
@@ -55,6 +69,7 @@ export const sendEmail = async ({
     const vSenderName = senderNameSchema()
       .label('senderName')
       .validateSync(senderName);
+    const vLabel = labelSchema().label('label').validateSync(label);
 
     // Check protected data validity through subgraph
     const isValidProtectedData = await checkProtectedDataValidity(
@@ -79,7 +94,7 @@ export const sendEmail = async ({
     const datasetOrderbook = await iexec.orderbook.fetchDatasetOrderbook(
       vDatasetAddress,
       {
-        app: WEB3_MAIL_DAPP_ADDRESS,
+        app: dappAddressOrENS,
         requester: requesterAddress,
       }
     );
@@ -87,14 +102,21 @@ export const sendEmail = async ({
     if (!datasetorder) {
       throw new Error('Dataset order not found');
     }
+    const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
+      (order) => order.order.datasetprice <= dataMaxPrice
+    );
+    const desiredPriceDataOrder = desiredPriceDataOrderbook[0]?.order;
+    if (!desiredPriceDataOrder) {
+      throw new Error('No Dataset order found for the desired price');
+    }
 
     // Fetch app order
     const appOrderbook = await iexec.orderbook.fetchAppOrderbook(
-      WEB3_MAIL_DAPP_ADDRESS,
+      dappAddressOrENS,
       {
         minTag: ['tee', 'scone'],
         maxTag: ['tee', 'scone'],
-        workerpool: WORKERPOOL_ADDRESS,
+        workerpool: workerpoolAddressOrEns,
       }
     );
     const appOrder = appOrderbook?.orders[0]?.order;
@@ -103,7 +125,7 @@ export const sendEmail = async ({
     }
 
     const desiredPriceAppOrderbook = appOrderbook.orders.filter(
-      (order) => order.order.appprice <= MAX_DESIRED_APP_ORDER_PRICE
+      (order) => order.order.appprice <= appMaxPrice
     );
     const desiredPriceAppOrder = desiredPriceAppOrderbook[0]?.order;
     if (!desiredPriceAppOrder) {
@@ -112,8 +134,8 @@ export const sendEmail = async ({
 
     // Fetch workerpool order
     const workerpoolOrderbook = await iexec.orderbook.fetchWorkerpoolOrderbook({
-      workerpool: WORKERPOOL_ADDRESS,
-      app: WEB3_MAIL_DAPP_ADDRESS,
+      workerpool: workerpoolAddressOrEns,
+      app: dappAddressOrENS,
       dataset: vDatasetAddress,
       minTag: ['tee', 'scone'],
       maxTag: ['tee', 'scone'],
@@ -126,8 +148,7 @@ export const sendEmail = async ({
     }
 
     const desiredPriceWorkerpoolOrderbook = workerpoolOrderbook.orders.filter(
-      (order) =>
-        order.order.workerpoolprice <= MAX_DESIRED_WORKERPOOL_ORDER_PRICE
+      (order) => order.order.workerpoolprice <= workerpoolMaxPrice
     );
     const randomIndex = Math.floor(
       Math.random() * desiredPriceWorkerpoolOrderbook.length
@@ -146,9 +167,14 @@ export const sendEmail = async ({
       .catch((e) => {
         throw new WorkflowError('Failed to encrypt email content', e);
       });
-    const cid = await ipfs.add(encryptedFile).catch((e) => {
-      throw new WorkflowError('Failed to upload encrypted email content', e);
-    });
+    const cid = await ipfs
+      .add(encryptedFile, {
+        ipfsNode: ipfsNode,
+        ipfsGateway: ipfsGateway,
+      })
+      .catch((e) => {
+        throw new WorkflowError('Failed to upload encrypted email content', e);
+      });
     const multiaddr = `/ipfs/${cid}`;
 
     await iexec.secrets.pushRequesterSecret(
@@ -163,18 +189,19 @@ export const sendEmail = async ({
     );
 
     const requestorderToSign = await iexec.order.createRequestorder({
-      app: WEB3_MAIL_DAPP_ADDRESS,
+      app: dappAddressOrENS,
       category: desiredPriceWorkerpoolOrder.category,
       dataset: vDatasetAddress,
       appmaxprice: desiredPriceAppOrder.appprice,
       workerpoolmaxprice: desiredPriceWorkerpoolOrder.workerpoolprice,
       tag: ['tee', 'scone'],
-      workerpool: WORKERPOOL_ADDRESS,
+      workerpool: workerpoolAddressOrEns,
       params: {
         iexec_developer_logger: true,
         iexec_secrets: {
           1: requesterSecretId,
         },
+        iexec_args: vLabel,
       },
     });
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
