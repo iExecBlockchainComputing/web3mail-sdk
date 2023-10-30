@@ -1,8 +1,4 @@
-import {
-  ANY_DATASET_ADDRESS,
-  WEB3_MAIL_DAPP_ADDRESS,
-  WHITELIST_SMART_CONTRACT_ADDRESS,
-} from '../config/config.js';
+import { ANY_DATASET_ADDRESS } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
@@ -21,13 +17,13 @@ export const fetchUserContacts = async ({
   iexec = throwIfMissing(),
   dappAddressOrENS = throwIfMissing(),
   dappWhitelistAddress = throwIfMissing(),
+  userAddress,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
-  DppWhitelistAddressConsumer): Promise<Contact[]> => {
+  DppWhitelistAddressConsumer &
+  FetchUserContactsParams): Promise<Contact[]> => {
   try {
-    const userAddress = await iexec.wallet.getAddress();
-
     const [ensOrders, scOrders] = await Promise.all([
       fetchAllOrdersByApp({
         iexec,
@@ -73,12 +69,15 @@ export const fetchUserContacts = async ({
 };
 
 async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
-  const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook('any', {
-    app: appAddress,
-    requester: userAddress,
-    // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
-    pageSize: 1000,
-  });
+  const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook(
+    ANY_DATASET_ADDRESS,
+    {
+      app: appAddress,
+      requester: userAddress,
+      // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
+      pageSize: 1000,
+    }
+  );
   const { orders: allOrders } = await autoPaginateRequest({
     request: ordersFirstPage,
   });
