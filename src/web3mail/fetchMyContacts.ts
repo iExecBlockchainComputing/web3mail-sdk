@@ -1,17 +1,24 @@
-import {
-  WEB3_MAIL_DAPP_ADDRESS,
-  WHITELIST_SMART_CONTRACT_ADDRESS,
-} from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
 import { throwIfMissing } from '../utils/validators.js';
-import { Contact, IExecConsumer, SubgraphConsumer } from './types.js';
+import {
+  Contact,
+  IExecConsumer,
+  SubgraphConsumer,
+  DappAddressConsumer,
+  DppWhitelistAddressConsumer,
+} from './types.js';
 
 export const fetchMyContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-}: IExecConsumer & SubgraphConsumer): Promise<Contact[]> => {
+  dappAddressOrENS = throwIfMissing(),
+  dappWhitelistAddress = throwIfMissing(),
+}: IExecConsumer &
+  SubgraphConsumer &
+  DappAddressConsumer &
+  DppWhitelistAddressConsumer): Promise<Contact[]> => {
   try {
     const userAddress = await iexec.wallet.getAddress();
 
@@ -19,19 +26,19 @@ export const fetchMyContacts = async ({
       fetchAllOrdersByApp({
         iexec,
         userAddress,
-        appAddress: WEB3_MAIL_DAPP_ADDRESS,
+        appAddress: dappAddressOrENS,
       }),
       fetchAllOrdersByApp({
         iexec,
         userAddress,
-        appAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
+        appAddress: dappWhitelistAddress,
       }),
     ]);
 
     const orders = ensOrders.concat(scOrders);
     const myContacts: Contact[] = [];
     const web3DappResolvedAddress = await iexec.ens.resolveName(
-      WEB3_MAIL_DAPP_ADDRESS
+      dappAddressOrENS
     );
 
     orders.forEach((order) => {
@@ -39,7 +46,7 @@ export const fetchMyContacts = async ({
         order.order.apprestrict.toLowerCase() ===
           web3DappResolvedAddress.toLowerCase() ||
         order.order.apprestrict.toLowerCase() ===
-          WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase()
+          dappWhitelistAddress.toLowerCase()
       ) {
         const contact = {
           address: order.order.dataset.toLowerCase(),
@@ -60,7 +67,7 @@ export const fetchMyContacts = async ({
 };
 
 async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
-  const ordersFirstPage = await iexec.orderbook.fetchDatasetOrderbook('any', {
+  const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook('any', {
     app: appAddress,
     requester: userAddress,
     // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
