@@ -10,7 +10,10 @@ import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { ValidationError, WorkflowError } from '../../dist/utils/errors';
 import { EnhancedWallet, IExec } from 'iexec';
-import { MAX_EXPECTED_BLOCKTIME } from '../test-utils';
+import {
+  MAX_EXPECTED_BLOCKTIME,
+  MAX_EXPECTED_WEB2_SERVICES_TIME,
+} from '../test-utils';
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: Wallet;
@@ -32,7 +35,7 @@ describe('web3mail.fetchMyContacts()', () => {
       data: { email: 'test@gmail.com' },
       name: 'test do not use',
     });
-  }, 5 * MAX_EXPECTED_BLOCKTIME);
+  }, 2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
 
   afterEach(() => {
     jest.spyOn(web3mail, 'fetchMyContacts').mockRestore();
@@ -60,7 +63,7 @@ describe('web3mail.fetchMyContacts()', () => {
           foundContactForASpecificRequester.address
       ).toBe(protectedData.address.toLocaleLowerCase());
     },
-    5 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 
   it(
@@ -90,7 +93,7 @@ describe('web3mail.fetchMyContacts()', () => {
       );
       expect(revoke).toBeDefined();
     },
-    5 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 
   it(
@@ -101,7 +104,7 @@ describe('web3mail.fetchMyContacts()', () => {
 
       expect(contacts).toEqual([]);
     },
-    5 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 
   it(
@@ -124,7 +127,7 @@ describe('web3mail.fetchMyContacts()', () => {
         expectedErrorMessage
       );
     },
-    5 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 
   it(
@@ -139,7 +142,7 @@ describe('web3mail.fetchMyContacts()', () => {
         'Missing parameter'
       );
     },
-    5 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 
   it(
@@ -169,7 +172,7 @@ describe('web3mail.fetchMyContacts()', () => {
         dataset.address
       );
     },
-    5 * MAX_EXPECTED_BLOCKTIME
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 
   it(
@@ -194,6 +197,6 @@ describe('web3mail.fetchMyContacts()', () => {
         )
       ).toStrictEqual([]);
     },
-    5 * MAX_EXPECTED_BLOCKTIME
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 });
