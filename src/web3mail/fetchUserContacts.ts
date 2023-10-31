@@ -1,14 +1,12 @@
-import {
-  ANY_DATASET_ADDRESS,
-  WEB3_MAIL_DAPP_ADDRESS,
-  WHITELIST_SMART_CONTRACT_ADDRESS,
-} from '../config/config.js';
+import { ANY_DATASET_ADDRESS } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
 import { throwIfMissing } from '../utils/validators.js';
 import {
   Contact,
+  DappAddressConsumer,
+  DppWhitelistAddressConsumer,
   FetchUserContactsParams,
   IExecConsumer,
   SubgraphConsumer,
@@ -17,28 +15,32 @@ import {
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
+  dappAddressOrENS = throwIfMissing(),
+  dappWhitelistAddress = throwIfMissing(),
   userAddress,
-}: IExecConsumer & SubgraphConsumer & FetchUserContactsParams): Promise<
-  Contact[]
-> => {
+}: IExecConsumer &
+  SubgraphConsumer &
+  DappAddressConsumer &
+  DppWhitelistAddressConsumer &
+  FetchUserContactsParams): Promise<Contact[]> => {
   try {
     const [ensOrders, scOrders] = await Promise.all([
       fetchAllOrdersByApp({
         iexec,
         userAddress,
-        appAddress: WEB3_MAIL_DAPP_ADDRESS,
+        appAddress: dappAddressOrENS,
       }),
       fetchAllOrdersByApp({
         iexec,
         userAddress,
-        appAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
+        appAddress: dappWhitelistAddress,
       }),
     ]);
 
     const orders = ensOrders.concat(scOrders);
     const myContacts: Contact[] = [];
     const web3DappResolvedAddress = await iexec.ens.resolveName(
-      WEB3_MAIL_DAPP_ADDRESS
+      dappAddressOrENS
     );
 
     orders.forEach((order) => {
@@ -46,7 +48,7 @@ export const fetchUserContacts = async ({
         order.order.apprestrict.toLowerCase() ===
           web3DappResolvedAddress.toLowerCase() ||
         order.order.apprestrict.toLowerCase() ===
-          WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase()
+          dappWhitelistAddress.toLowerCase()
       ) {
         const contact = {
           address: order.order.dataset.toLowerCase(),
@@ -67,7 +69,7 @@ export const fetchUserContacts = async ({
 };
 
 async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
-  const ordersFirstPage = await iexec.orderbook.fetchDatasetOrderbook(
+  const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook(
     ANY_DATASET_ADDRESS,
     {
       app: appAddress,

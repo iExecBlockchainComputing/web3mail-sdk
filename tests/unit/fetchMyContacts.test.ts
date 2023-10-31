@@ -54,6 +54,8 @@ describe('fetchMyContacts', () => {
 
       await fetchMyContacts({
         iexec: iexec,
+        dappAddressOrENS: WEB3_MAIL_DAPP_ADDRESS,
+        dappWhitelistAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
         graphQLClient,
       });
       const userAddress = await iexec.wallet.getAddress();

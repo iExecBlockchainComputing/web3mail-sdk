@@ -200,4 +200,47 @@ describe('web3mail.sendEmail()', () => {
     },
     5 * MAX_EXPECTED_BLOCKTIME
   );
+  it(
+    'should successfully send email with a valid label',
+    async () => {
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: validProtectedData.address,
+        label: 'ID1234678',
+      };
+      const sendEmailResponse = await web3mail.sendEmail(params);
+      expect(sendEmailResponse.taskId).toBeDefined();
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it('should fail to send email with an invalid (too long) label',
+    async () => {
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: validProtectedData.address,
+        label: 'ID123456789',
+      };
+      await expect(web3mail.sendEmail(params)).rejects.toThrow(
+        'label must be at most 10 characters'
+      );
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
+  it(
+    'should fail to send email with an invalid (too short) label',
+    async () => {
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: validProtectedData.address,
+        label: 'ID',
+      };
+      await expect(web3mail.sendEmail(params)).rejects.toThrow(
+        'label must be at least 3 characters'
+      );
+    },
+    3 * MAX_EXPECTED_BLOCKTIME
+  );
 });
