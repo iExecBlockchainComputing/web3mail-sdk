@@ -10,7 +10,7 @@ import {
   FetchUserContactsParams,
   IExecConsumer,
   SubgraphConsumer,
-} from './types.js';
+} from './types';
 
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),

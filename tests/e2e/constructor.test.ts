@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { getSignerFromPrivateKey } from 'iexec/utils';
-import { IExecWeb3mail } from '../../dist/index';
+import { IExecWeb3mail } from '../../src';
 
 describe('IExecWeb3mail()', () => {
   it('throw when instantiated with an invalid ethProvider', async () => {
@@ -25,17 +25,16 @@ describe('IExecWeb3mail()', () => {
       getSignerFromPrivateKey('https://bellecour.iex.ec', wallet.privateKey),
       {
         iexecOptions: {
-          smsURL: "https://sms.scone-debug.stagingv8.iex.ec",
-          iexecGatewayURL: "https://api.market.stagingv8.iex.ec"
+          smsURL: 'https://sms.scone-debug.stagingv8.iex.ec',
+          iexecGatewayURL: 'https://api.market.stagingv8.iex.ec',
         },
-        ipfsNode: "https://example.com/node",
-        ipfsGateway: "https://example.com/ipfs_gateway",
-        dataProtectorSubgraph: "https://example.com/custom-subgraph",
-        dappAddressOrENS: "web3mailstg.apps.iexec.eth",
-        dappWhitelistAddress: "0x781482C39CcE25546583EaC4957Fb7Bf04C277BB"
+        ipfsNode: 'https://example.com/node',
+        ipfsGateway: 'https://example.com/ipfs_gateway',
+        dataProtectorSubgraph: 'https://example.com/custom-subgraph',
+        dappAddressOrENS: 'web3mailstg.apps.iexec.eth',
+        dappWhitelistAddress: '0x781482C39CcE25546583EaC4957Fb7Bf04C277BB',
       }
     );
     expect(web3mail).toBeInstanceOf(IExecWeb3mail);
   });
-
 });

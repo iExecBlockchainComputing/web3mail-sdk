@@ -1,5 +1,5 @@
 import { create } from 'kubo-rpc-client';
-import { IPFS_UPLOAD_URL, DEFAULT_IPFS_GATEWAY } from '../config/config.js';
+import { IPFS_UPLOAD_URL, DEFAULT_IPFS_GATEWAY } from '../config/config';
 
 interface GetOptions {
   ipfsGateway?: string;
@@ -29,7 +29,7 @@ const add = async (
     ipfsGateway = DEFAULT_IPFS_GATEWAY,
   }: AddOptions = {}
 ) => {
-  const ipfsClient = create(ipfsNode);
+  const ipfsClient = create({ url: ipfsNode });
   const { cid } = await ipfsClient.add(content);
   await get(cid.toString(), { ipfsGateway });
   return cid.toString();

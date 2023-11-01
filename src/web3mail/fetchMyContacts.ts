@@ -7,7 +7,7 @@ import {
   DppWhitelistAddressConsumer,
   IExecConsumer,
   SubgraphConsumer,
-} from './types.js';
+} from './types';
 
 export const fetchMyContacts = async ({
   graphQLClient = throwIfMissing(),

@@ -1,8 +1,8 @@
 import { providers } from 'ethers';
 import { IExec } from 'iexec';
-import { fetchUserContacts } from './fetchUserContacts.js';
-import { fetchMyContacts } from './fetchMyContacts.js';
-import { sendEmail } from './sendEmail.js';
+import { fetchUserContacts } from './fetchUserContacts';
+import { fetchMyContacts } from './fetchMyContacts';
+import { sendEmail } from './sendEmail';
 import {
   Contact,
   FetchUserContactsParams,
@@ -10,7 +10,7 @@ import {
   Web3SignerProvider,
   AddressOrENS,
   Web3MailConfigOptions,
-} from './types.js';
+} from './types';
 import { GraphQLClient } from 'graphql-request';
 import {
   WEB3_MAIL_DAPP_ADDRESS,
@@ -18,7 +18,7 @@ import {
   DEFAULT_IPFS_GATEWAY,
   DATAPROTECTOR_SUBGRAPH_ENDPOINT,
   WHITELIST_SMART_CONTRACT_ADDRESS,
-} from '../config/config.js';
+} from '../config/config';
 
 export class IExecWeb3mail {
   private iexec: IExec;

@@ -5,8 +5,8 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
-import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
+import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config';
+import { IExecWeb3mail, getWeb3Provider } from '../../src';
 import { EnhancedWallet } from 'iexec';
 import { MAX_EXPECTED_BLOCKTIME } from '../test-utils';
 

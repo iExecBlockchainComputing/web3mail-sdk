@@ -3,10 +3,10 @@ import {
   MAX_DESIRED_APP_ORDER_PRICE,
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   MAX_DESIRED_DATA_ORDER_PRICE,
-} from '../config/config.js';
-import { WorkflowError } from '../utils/errors.js';
-import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
-import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
+} from '../config/config';
+import { WorkflowError } from '../utils/errors';
+import { generateSecureUniqueId } from '../utils/generateUniqueId';
+import { checkProtectedDataValidity } from '../utils/subgraphQuery';
 import {
   addressOrEnsSchema,
   contentTypeSchema,
@@ -15,7 +15,7 @@ import {
   senderNameSchema,
   labelSchema,
   throwIfMissing,
-} from '../utils/validators.js';
+} from '../utils/validators';
 import {
   IExecConsumer,
   SendEmailParams,
@@ -24,8 +24,8 @@ import {
   DappAddressConsumer,
   IpfsNodeConfigConsumer,
   IpfsGatewayConfigConsumer,
-} from './types.js';
-import * as ipfs from './../utils/ipfs-service.js';
+} from './types';
+import * as ipfs from './../utils/ipfs-service';
 
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),

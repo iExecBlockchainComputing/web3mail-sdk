@@ -5,8 +5,8 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
-import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
+import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config';
+import { IExecWeb3mail, getWeb3Provider } from '../../src';
 import { MAX_EXPECTED_BLOCKTIME, getRandomWallet, sleep } from '../test-utils';
 
 describe('web3mail.sendEmail()', () => {
@@ -214,7 +214,8 @@ describe('web3mail.sendEmail()', () => {
     },
     3 * MAX_EXPECTED_BLOCKTIME
   );
-  it('should fail to send email with an invalid (too long) label',
+  it(
+    'should fail to send email with an invalid (too long) label',
     async () => {
       const params = {
         emailSubject: 'e2e mail object for test',
