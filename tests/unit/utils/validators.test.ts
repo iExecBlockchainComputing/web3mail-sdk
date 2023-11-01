@@ -1,12 +1,12 @@
 import { describe, it, expect } from '@jest/globals';
-import { ValidationError } from '../../../dist/utils/errors';
+import { ValidationError } from '../../../src/utils/errors';
 import {
   addressOrEnsSchema,
   emailSubjectSchema,
   emailContentSchema,
   senderNameSchema,
   labelSchema,
-} from '../../../dist/utils/validators';
+} from '../../../src/utils/validators';
 import { getRandomAddress, getRequiredFieldMessage } from '../../test-utils';
 
 const CANNOT_BE_NULL_ERROR = new ValidationError('this cannot be null');
@@ -149,9 +149,9 @@ describe('labelSchema()', () => {
       );
     });
     it('blocks too long label', () => {
-      expect(() =>
-      labelSchema().validateSync('CAMPAIGN2023')
-      ).toThrow('this must be at most 10 characters');
+      expect(() => labelSchema().validateSync('CAMPAIGN2023')).toThrow(
+        'this must be at most 10 characters'
+      );
     });
   });
 });

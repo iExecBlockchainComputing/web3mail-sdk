@@ -1,6 +1,6 @@
-import { WorkflowError } from '../utils/errors.js';
-import { throwIfMissing } from '../utils/validators.js';
-import { fetchUserContacts } from './fetchUserContacts.js';
+import { WorkflowError } from '../utils/errors';
+import { throwIfMissing } from '../utils/validators';
+import { fetchUserContacts } from './fetchUserContacts';
 import {
   Contact,
   DappAddressConsumer,

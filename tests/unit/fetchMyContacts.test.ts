@@ -8,7 +8,7 @@ import {
   WEB3_MAIL_DAPP_ADDRESS,
   WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../../src/config/config';
-import { fetchMyContacts } from '../../dist/web3mail/fetchMyContacts';
+import { fetchMyContacts } from '../../src/web3mail/fetchMyContacts';
 
 describe('fetchMyContacts', () => {
   it('should fetch contacts with the specified page and page size', async () => {
@@ -72,5 +72,5 @@ describe('fetchMyContacts', () => {
         pageSize: 1000,
       }
     );
-  }, 40_000);
+  });
 });
