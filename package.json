@@ -19,9 +19,7 @@
   ],
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "test": "npm run test:unit && npm run test:e2e",
-    "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --testPathPattern=unit",
-    "test:e2e": "NODE_OPTIONS=--experimental-vm-modules jest --testPathPattern=e2e",
+    "test": "rm -rf dist && tsc && NODE_OPTIONS=--experimental-vm-modules npx jest --coverage",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.ts\"",
     "check-format": "prettier --check \"src/**/*.ts\""
