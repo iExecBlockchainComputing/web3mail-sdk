@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "ES2020",
+    "module": "nodenext",
     "target": "es6",
     "declaration": true,
     "sourceMap": true,
