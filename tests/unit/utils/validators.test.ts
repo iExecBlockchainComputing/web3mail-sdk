@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import { ValidationError } from '../../../src/utils/errors';
+import { ValidationError } from 'yup';
 import {
   addressOrEnsSchema,
   emailSubjectSchema,
