@@ -9,4 +9,5 @@ class WorkflowError extends Error {
     this.originalError = originalError;
   }
 }
+
 export { WorkflowError, ValidationError };
