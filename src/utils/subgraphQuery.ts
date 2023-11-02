@@ -1,6 +1,6 @@
 import { GraphQLClient, gql } from 'graphql-request';
-import { Contact, GraphQLResponse, ProtectedDataQuery } from '../index';
-import { WorkflowError } from './errors';
+import { Contact, GraphQLResponse, ProtectedDataQuery } from '../index.js';
+import { WorkflowError } from './errors.js';
 
 const checkProtectedDataQuery = gql`
   query GetValidContacts(

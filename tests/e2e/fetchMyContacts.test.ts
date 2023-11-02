@@ -6,9 +6,9 @@ import {
 import { beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { NULL_ADDRESS } from 'iexec/utils';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config';
-import { IExecWeb3mail, getWeb3Provider } from '../../src';
-import { ValidationError, WorkflowError } from '../../src/utils/errors';
+import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
+import { IExecWeb3mail, getWeb3Provider } from '../../src/index.js';
+import { ValidationError, WorkflowError } from '../../src/utils/errors.js';
 import { EnhancedWallet, IExec } from 'iexec';
 
 describe('web3mail.fetchMyContacts()', () => {

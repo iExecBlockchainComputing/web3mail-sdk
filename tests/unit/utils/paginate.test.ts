@@ -1,5 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
-import { autoPaginateRequest } from '../../../src/utils/paginate';
+import { autoPaginateRequest } from '../../../src/utils/paginate.js';
 
 describe('autoPaginateRequest', () => {
   it('should return an object with orders and total count when no more requests are present', async () => {

@@ -6,7 +6,7 @@
     "sourceMap": true,
     "outDir": "dist",
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "nodenext",
     "skipLibCheck": true
   },
   "include": ["src/**/*"],

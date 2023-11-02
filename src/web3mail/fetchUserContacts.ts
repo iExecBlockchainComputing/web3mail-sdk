@@ -1,8 +1,8 @@
-import { ANY_DATASET_ADDRESS } from '../config/config';
-import { WorkflowError } from '../utils/errors';
-import { autoPaginateRequest } from '../utils/paginate';
-import { getValidContact } from '../utils/subgraphQuery';
-import { throwIfMissing } from '../utils/validators';
+import { ANY_DATASET_ADDRESS } from '../config/config.js';
+import { WorkflowError } from '../utils/errors.js';
+import { autoPaginateRequest } from '../utils/paginate.js';
+import { getValidContact } from '../utils/subgraphQuery.js';
+import { throwIfMissing } from '../utils/validators.js';
 import {
   Contact,
   DappAddressConsumer,
@@ -10,7 +10,7 @@ import {
   FetchUserContactsParams,
   IExecConsumer,
   SubgraphConsumer,
-} from './types';
+} from './types.js';
 
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),

@@ -6,8 +6,8 @@ import {
   emailContentSchema,
   senderNameSchema,
   labelSchema,
-} from '../../../src/utils/validators';
-import { getRandomAddress, getRequiredFieldMessage } from '../../test-utils';
+} from '../../../src/utils/validators.js';
+import { getRandomAddress, getRequiredFieldMessage } from '../../test-utils.js';
 
 const CANNOT_BE_NULL_ERROR = new ValidationError('this cannot be null');
 const IS_REQUIRED_ERROR = new ValidationError(getRequiredFieldMessage());

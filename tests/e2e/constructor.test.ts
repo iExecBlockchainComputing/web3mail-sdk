@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { getSignerFromPrivateKey } from 'iexec/utils';
-import { IExecWeb3mail } from '../../src';
+import { IExecWeb3mail } from '../../src/index.js';
 
 describe('IExecWeb3mail()', () => {
   it('throw when instantiated with an invalid ethProvider', async () => {

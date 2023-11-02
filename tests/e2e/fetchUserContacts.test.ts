@@ -5,10 +5,10 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config';
-import { IExecWeb3mail, getWeb3Provider } from '../../src';
+import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
+import { IExecWeb3mail, getWeb3Provider } from '../../src/index.js';
 import { EnhancedWallet } from 'iexec';
-import { MAX_EXPECTED_BLOCKTIME } from '../test-utils';
+import { MAX_EXPECTED_BLOCKTIME } from '../test-utils.js';
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: Wallet;

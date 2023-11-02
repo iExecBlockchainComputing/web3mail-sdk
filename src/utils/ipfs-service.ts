@@ -1,5 +1,5 @@
 import { create } from 'kubo-rpc-client';
-import { IPFS_UPLOAD_URL, DEFAULT_IPFS_GATEWAY } from '../config/config';
+import { IPFS_UPLOAD_URL, DEFAULT_IPFS_GATEWAY } from '../config/config.js';
 
 interface GetOptions {
   ipfsGateway?: string;
