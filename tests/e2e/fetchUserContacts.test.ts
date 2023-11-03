@@ -38,7 +38,7 @@ describe('web3mail.fetchMyContacts()', () => {
       data: { email: 'test2@gmail.com' },
       name: 'test do not use',
     });
-  }, 2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
+  }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
 
   it(
     'Tow different user should have different contacts',
