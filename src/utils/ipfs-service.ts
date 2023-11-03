@@ -29,7 +29,7 @@ const add = async (
     ipfsGateway = DEFAULT_IPFS_GATEWAY,
   }: AddOptions = {}
 ) => {
-  const ipfsClient = create({ url: ipfsNode });
+  const ipfsClient = create(ipfsNode);
   const { cid } = await ipfsClient.add(content);
   await get(cid.toString(), { ipfsGateway });
   return cid.toString();
