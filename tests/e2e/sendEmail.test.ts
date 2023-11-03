@@ -49,7 +49,7 @@ describe('web3mail.sendEmail()', () => {
     });
     // avoid race condition with subgraph indexation
     await sleep(5_000);
-  }, 2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000);
+  }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000);
 
   afterAll(() => {
     dataProtector.revokeAllAccessObservable({
