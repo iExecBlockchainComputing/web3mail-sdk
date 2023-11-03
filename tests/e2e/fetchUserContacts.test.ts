@@ -8,7 +8,10 @@ import { Wallet } from 'ethers';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import { EnhancedWallet } from 'iexec';
-import { MAX_EXPECTED_BLOCKTIME } from '../test-utils';
+import {
+  MAX_EXPECTED_BLOCKTIME,
+  MAX_EXPECTED_WEB2_SERVICES_TIME,
+} from '../test-utils';
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: Wallet;
@@ -35,7 +38,7 @@ describe('web3mail.fetchMyContacts()', () => {
       data: { email: 'test2@gmail.com' },
       name: 'test do not use',
     });
-  }, 3 * MAX_EXPECTED_BLOCKTIME);
+  }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
 
   it(
     'Tow different user should have different contacts',
@@ -62,7 +65,7 @@ describe('web3mail.fetchMyContacts()', () => {
       });
       expect(contactUser1).not.toEqual(contactUser2);
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 
   it(
@@ -80,6 +83,6 @@ describe('web3mail.fetchMyContacts()', () => {
       });
       expect(contacts.length).toBeGreaterThan(0);
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 });

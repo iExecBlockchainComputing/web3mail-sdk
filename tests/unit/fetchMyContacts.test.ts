@@ -72,5 +72,5 @@ describe('fetchMyContacts', () => {
         pageSize: 1000,
       }
     );
-  }, 40_000);
+  });
 });

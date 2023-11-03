@@ -7,7 +7,12 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
-import { MAX_EXPECTED_BLOCKTIME, getRandomWallet, sleep } from '../test-utils';
+import {
+  MAX_EXPECTED_BLOCKTIME,
+  MAX_EXPECTED_WEB2_SERVICES_TIME,
+  getRandomWallet,
+  sleep,
+} from '../test-utils';
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: Wallet;
@@ -44,13 +49,7 @@ describe('web3mail.sendEmail()', () => {
     });
     // avoid race condition with subgraph indexation
     await sleep(5_000);
-  }, 3 * MAX_EXPECTED_BLOCKTIME + 5_000);
-
-  afterAll(async () => {
-    await dataProtector.revokeAllAccessObservable({
-      protectedData: validProtectedData.address,
-    });
-  }, 3 * MAX_EXPECTED_BLOCKTIME);
+  }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000);
 
   it(
     'should successfully send email',
@@ -64,7 +63,7 @@ describe('web3mail.sendEmail()', () => {
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
   it(
     'should successfully send email with content type html',
@@ -80,7 +79,7 @@ describe('web3mail.sendEmail()', () => {
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
   it(
     'should fail if the protected data is not valid',
@@ -95,7 +94,7 @@ describe('web3mail.sendEmail()', () => {
         'ProtectedData is not valid'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
   it(
     'should fail if there is no Dataset order found',
@@ -115,7 +114,7 @@ describe('web3mail.sendEmail()', () => {
         'Dataset order not found'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000
   );
   it(
     'should successfully send email with a valid senderName',
@@ -130,7 +129,7 @@ describe('web3mail.sendEmail()', () => {
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
   it(
     'should successfully send email with email content size < 512 kilo-bytes',
@@ -149,7 +148,7 @@ describe('web3mail.sendEmail()', () => {
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
   it(
     'should fail to send email with email content size > 512 kilo-bytes',
@@ -168,7 +167,7 @@ describe('web3mail.sendEmail()', () => {
         'emailContent must be at most 512000 characters'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
   it(
     'should fail to send email with an invalid (too short) senderName',
@@ -183,7 +182,7 @@ describe('web3mail.sendEmail()', () => {
         'senderName must be at least 3 characters'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
   it(
     'should fail to send email with an invalid (too long) senderName',
@@ -198,7 +197,7 @@ describe('web3mail.sendEmail()', () => {
         'senderName must be at most 20 characters'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
   it(
     'should successfully send email with a valid label',
@@ -212,9 +211,10 @@ describe('web3mail.sendEmail()', () => {
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
-  it('should fail to send email with an invalid (too long) label',
+  it(
+    'should fail to send email with an invalid (too long) label',
     async () => {
       const params = {
         emailSubject: 'e2e mail object for test',
@@ -226,7 +226,7 @@ describe('web3mail.sendEmail()', () => {
         'label must be at most 10 characters'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
   it(
     'should fail to send email with an invalid (too short) label',
@@ -241,6 +241,6 @@ describe('web3mail.sendEmail()', () => {
         'label must be at least 3 characters'
       );
     },
-    3 * MAX_EXPECTED_BLOCKTIME
+    MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 });
