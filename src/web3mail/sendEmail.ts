@@ -90,74 +90,66 @@ export const sendEmail = async ({
       await iexec.storage.pushStorageToken(token);
     }
 
-    // Fetch dataset order
-    const datasetOrderbook = await iexec.orderbook.fetchDatasetOrderbook(
-      vDatasetAddress,
-      {
-        app: dappAddressOrENS,
-        requester: requesterAddress,
-      }
-    );
-    const datasetorder = datasetOrderbook?.orders[0]?.order;
-    if (!datasetorder) {
-      throw new Error('Dataset order not found');
-    }
-    const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
-      (order) => order.order.datasetprice <= dataMaxPrice
-    );
-    const desiredPriceDataOrder = desiredPriceDataOrderbook[0]?.order;
-    if (!desiredPriceDataOrder) {
-      throw new Error('No Dataset order found for the desired price');
-    }
-
-    // Fetch app order
-    const appOrderbook = await iexec.orderbook.fetchAppOrderbook(
-      dappAddressOrENS,
-      {
-        minTag: ['tee', 'scone'],
-        maxTag: ['tee', 'scone'],
-        workerpool: workerpoolAddressOrEns,
-      }
-    );
-    const appOrder = appOrderbook?.orders[0]?.order;
-    if (!appOrder) {
-      throw new Error('App order not found');
-    }
-
-    const desiredPriceAppOrderbook = appOrderbook.orders.filter(
-      (order) => order.order.appprice <= appMaxPrice
-    );
-    const desiredPriceAppOrder = desiredPriceAppOrderbook[0]?.order;
-    if (!desiredPriceAppOrder) {
-      throw new Error('No App order found for the desired price');
-    }
-
-    // Fetch workerpool order
-    const workerpoolOrderbook = await iexec.orderbook.fetchWorkerpoolOrderbook({
-      workerpool: workerpoolAddressOrEns,
-      app: dappAddressOrENS,
-      dataset: vDatasetAddress,
-      minTag: ['tee', 'scone'],
-      maxTag: ['tee', 'scone'],
-      category: 0,
-    });
-
-    const workerpoolorder = workerpoolOrderbook?.orders[0]?.order;
-    if (!workerpoolorder) {
-      throw new Error('Workerpool order not found');
-    }
-
-    const desiredPriceWorkerpoolOrderbook = workerpoolOrderbook.orders.filter(
-      (order) => order.order.workerpoolprice <= workerpoolMaxPrice
-    );
-    const randomIndex = Math.floor(
-      Math.random() * desiredPriceWorkerpoolOrderbook.length
-    );
-    const desiredPriceWorkerpoolOrder =
-      desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
-    if (!desiredPriceWorkerpoolOrder) {
-      throw new Error('No Workerpool order found for the desired price');
-    }
+    const [datasetorder, apporder, workerpoolorder] = await Promise.all([
+      // Fetch dataset order
+      iexec.orderbook
+        .fetchDatasetOrderbook(vDatasetAddress, {
+          app: dappAddressOrENS,
+          requester: requesterAddress,
+        })
+        .then((datasetOrderbook) => {
+          const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
+            (order) => order.order.datasetprice <= dataMaxPrice
+          );
+          const desiredPriceDataOrder = desiredPriceDataOrderbook[0]?.order;
+          if (!desiredPriceDataOrder) {
+            throw new Error('No Dataset order found for the desired price');
+          }
+          return desiredPriceDataOrder;
+        }),
+      // Fetch app order
+      iexec.orderbook
+        .fetchAppOrderbook(dappAddressOrENS, {
+          minTag: ['tee', 'scone'],
+          maxTag: ['tee', 'scone'],
+          workerpool: workerpoolAddressOrEns,
+        })
+        .then((appOrderbook) => {
+          const desiredPriceAppOrderbook = appOrderbook.orders.filter(
+            (order) => order.order.appprice <= appMaxPrice
+          );
+          const desiredPriceAppOrder = desiredPriceAppOrderbook[0]?.order;
+          if (!desiredPriceAppOrder) {
+            throw new Error('No App order found for the desired price');
+          }
+          return desiredPriceAppOrder;
+        }),
+      // Fetch workerpool order
+      iexec.orderbook
+        .fetchWorkerpoolOrderbook({
+          workerpool: workerpoolAddressOrEns,
+          app: dappAddressOrENS,
+          dataset: vDatasetAddress,
+          minTag: ['tee', 'scone'],
+          maxTag: ['tee', 'scone'],
+          category: 0,
+        })
+        .then((workerpoolOrderbook) => {
+          const desiredPriceWorkerpoolOrderbook =
+            workerpoolOrderbook.orders.filter(
+              (order) => order.order.workerpoolprice <= workerpoolMaxPrice
+            );
+          const randomIndex = Math.floor(
+            Math.random() * desiredPriceWorkerpoolOrderbook.length
+          );
+          const desiredPriceWorkerpoolOrder =
+            desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
+          if (!desiredPriceWorkerpoolOrder) {
+            throw new Error('No Workerpool order found for the desired price');
+          }
+          return desiredPriceWorkerpoolOrder;
+        }),
+    ]);
 
     // Push requester secrets
     const requesterSecretId = generateSecureUniqueId(16);
@@ -190,10 +182,10 @@ export const sendEmail = async ({
 
     const requestorderToSign = await iexec.order.createRequestorder({
       app: dappAddressOrENS,
-      category: desiredPriceWorkerpoolOrder.category,
+      category: workerpoolorder.category,
       dataset: vDatasetAddress,
-      appmaxprice: desiredPriceAppOrder.appprice,
-      workerpoolmaxprice: desiredPriceWorkerpoolOrder.workerpoolprice,
+      appmaxprice: apporder.appprice,
+      workerpoolmaxprice: workerpoolorder.workerpoolprice,
       tag: ['tee', 'scone'],
       workerpool: workerpoolAddressOrEns,
       params: {
@@ -208,9 +200,9 @@ export const sendEmail = async ({
 
     // Match orders and compute task ID
     const { dealid } = await iexec.order.matchOrders({
-      apporder: desiredPriceAppOrder,
+      apporder: apporder,
       datasetorder: datasetorder,
-      workerpoolorder: desiredPriceWorkerpoolOrder,
+      workerpoolorder: workerpoolorder,
       requestorder: requestorder,
     });
     const taskId = await iexec.deal.computeTaskId(dealid, 0);
