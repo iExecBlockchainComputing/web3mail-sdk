@@ -1,5 +1,3 @@
-import { ValidationError } from 'yup';
-
 class WorkflowError extends Error {
   originalError: Error;
 
@@ -10,4 +8,4 @@ class WorkflowError extends Error {
   }
 }
 
-export { WorkflowError, ValidationError };
+export { WorkflowError };
