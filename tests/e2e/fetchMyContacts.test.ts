@@ -3,12 +3,11 @@ import {
   ProtectedDataWithSecretProps,
   getWeb3Provider as dataprotectorGetWeb3Provider,
 } from '@iexec/dataprotector';
-import { beforeAll, describe, expect, it, jest } from '@jest/globals';
+import { beforeAll, describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { NULL_ADDRESS } from 'iexec/utils';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
-import { ValidationError, WorkflowError } from '../../dist/utils/errors';
 import { EnhancedWallet, IExec } from 'iexec';
 import {
   MAX_EXPECTED_BLOCKTIME,
@@ -36,10 +35,6 @@ describe('web3mail.fetchMyContacts()', () => {
       name: 'test do not use',
     });
   }, 2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
-
-  afterEach(() => {
-    jest.spyOn(web3mail, 'fetchMyContacts').mockRestore();
-  });
 
   it(
     'pass with a granted access for a specific requester',
@@ -92,55 +87,6 @@ describe('web3mail.fetchMyContacts()', () => {
         grantedAccessForAnyRequester
       );
       expect(revoke).toBeDefined();
-    },
-    MAX_EXPECTED_WEB2_SERVICES_TIME
-  );
-
-  it(
-    'should return no contact',
-    async () => {
-      jest.spyOn(web3mail, 'fetchMyContacts').mockResolvedValue([]);
-      const contacts = await web3mail.fetchMyContacts();
-
-      expect(contacts).toEqual([]);
-    },
-    MAX_EXPECTED_WEB2_SERVICES_TIME
-  );
-
-  it(
-    'should throw a WorkflowError with a specific message',
-    async () => {
-      jest
-        .spyOn(web3mail, 'fetchMyContacts')
-        .mockRejectedValue(
-          new WorkflowError(
-            'Failed to fetch my contacts: wrong address is not a valid ethereum address',
-            new Error()
-          )
-        );
-
-      const expectedErrorMessage =
-        'Failed to fetch my contacts: wrong address is not a valid ethereum address';
-
-      await expect(web3mail.fetchMyContacts()).rejects.toThrow(WorkflowError);
-      await expect(web3mail.fetchMyContacts()).rejects.toThrow(
-        expectedErrorMessage
-      );
-    },
-    MAX_EXPECTED_WEB2_SERVICES_TIME
-  );
-
-  it(
-    'should throw a WorkflowError error for missing parameters',
-    async () => {
-      jest
-        .spyOn(web3mail, 'fetchMyContacts')
-        .mockRejectedValue(new ValidationError('Missing parameter'));
-
-      await expect(web3mail.fetchMyContacts()).rejects.toThrow(ValidationError);
-      await expect(web3mail.fetchMyContacts()).rejects.toThrow(
-        'Missing parameter'
-      );
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
   );
