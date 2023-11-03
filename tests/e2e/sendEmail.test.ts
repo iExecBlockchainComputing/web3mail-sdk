@@ -120,7 +120,7 @@ describe('web3mail.sendEmail()', () => {
         'Dataset order not found'
       );
     },
-    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000
   );
   it(
     'should successfully send email with a valid senderName',
