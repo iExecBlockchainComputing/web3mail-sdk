@@ -29,6 +29,7 @@ const add = async (
     ipfsGateway = DEFAULT_IPFS_GATEWAY,
   }: AddOptions = {}
 ) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   const ipfsClient = create(ipfsNode);
   const { cid } = await ipfsClient.add(content);
