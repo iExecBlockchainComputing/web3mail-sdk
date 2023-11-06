@@ -6,12 +6,8 @@ module.exports = {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   transform: {
-    '^.+\\.ts$': [
-      'ts-jest',
-      {
-        useESM: true,
-      },
-    ],
+    // https://swc.rs/docs/usage/jest
+    '^.+\\.(t|j)sx?$': '@swc/jest',
   },
   testPathIgnorePatterns: ['/dapp/'],
 };
