@@ -4,7 +4,7 @@ import {
   getWeb3Provider as dataprotectorGetWeb3Provider,
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
-import { Wallet } from 'ethers';
+import { HDNodeWallet } from 'ethers';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
 import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
 import {
@@ -15,8 +15,8 @@ import {
 } from '../test-utils';
 
 describe('web3mail.sendEmail()', () => {
-  let consumerWallet: Wallet;
-  let providerWallet: Wallet;
+  let consumerWallet: HDNodeWallet;
+  let providerWallet: HDNodeWallet;
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
   let validProtectedData: ProtectedDataWithSecretProps;

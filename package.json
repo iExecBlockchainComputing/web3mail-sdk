@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/iExecBlockchainComputing/web3mail-sdk#readme",
   "devDependencies": {
-    "@iexec/dataprotector": "^0.2.0",
+    "@iexec/dataprotector": "^0.3.0-nightly-966264bdba4a6988c7b76589041bb30839547fb1",
     "@jest/globals": "^29.7.0",
     "@types/jest": "^29.5.4",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
@@ -59,9 +59,9 @@
   "dependencies": {
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/random": "^5.7.0",
-    "ethers": "^5.7.2",
+    "ethers": "^6.8.1",
     "graphql-request": "^6.1.0",
-    "iexec": "^8.4.0",
+    "iexec": "^8.5.0",
     "kubo-rpc-client": "^3.0.1",
     "yup": "^1.1.1"
   }
