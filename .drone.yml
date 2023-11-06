@@ -5,8 +5,8 @@ name: sdk-default
 
 trigger:
   event:
-    exclude:
-      - promote
+    include:
+      - push
 
 steps:
   - name: install
