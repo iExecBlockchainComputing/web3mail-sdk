@@ -3,8 +3,8 @@ import { GraphQLClient } from 'graphql-request';
 import {
   getValidContact,
   checkProtectedDataValidity,
-} from '../../../dist/utils/subgraphQuery';
-import { Contact } from '../../../dist/web3mail/types';
+} from '../../../src/utils/subgraphQuery.js';
+import type { Contact } from '../../../src/web3mail/types.js';
 
 describe('getValidContact', () => {
   // Define the variables in the outermost scope
