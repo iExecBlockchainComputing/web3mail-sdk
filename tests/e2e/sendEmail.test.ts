@@ -5,14 +5,14 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet } from 'ethers';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../dist/config/config';
-import { IExecWeb3mail, getWeb3Provider } from '../../dist/index';
+import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
+import { IExecWeb3mail, getWeb3Provider } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
   getRandomWallet,
   sleep,
-} from '../test-utils';
+} from '../test-utils.js';
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: HDNodeWallet;
