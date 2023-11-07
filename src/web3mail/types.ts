@@ -21,6 +21,7 @@ export type Contact = {
   owner: Address;
   accessGrantTimestamp: TimeStamp;
 };
+
 export type SendEmailParams = {
   emailSubject: string;
   emailContent: string;

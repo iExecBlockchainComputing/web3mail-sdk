@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
+    "module": "nodenext",
     "target": "es6",
     "declaration": true,
     "sourceMap": true,
     "outDir": "dist",
     "esModuleInterop": true,
-    "moduleResolution": "NodeNext",
+    "moduleResolution": "nodenext",
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules"]
 }
