@@ -1,13 +1,11 @@
-import { utils } from 'ethers';
+import { isAddress } from 'ethers';
 import { ValidationError, string } from 'yup';
-
-const { isAddress } = utils;
 
 export const throwIfMissing = (): never => {
   throw new ValidationError('Missing parameter');
 };
 
-const isUndefined = (value: any) => value === undefined;
+const isUndefined = (value: unknown) => value === undefined;
 const isAddressTest = (value: string) => isAddress(value);
 const isEnsTest = (value: string) => value.endsWith('.eth') && value.length > 6;
 
