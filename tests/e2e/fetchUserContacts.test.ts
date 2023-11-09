@@ -5,9 +5,9 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet, Wallet } from 'ethers';
+import { EnhancedWallet } from 'iexec';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
 import { IExecWeb3mail, getWeb3Provider } from '../../src/index.js';
-import { EnhancedWallet } from 'iexec';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
@@ -82,6 +82,32 @@ describe('web3mail.fetchMyContacts()', () => {
         userAddress: userWithAccess,
       });
       expect(contacts.length).toBeGreaterThan(0);
+    },
+    MAX_EXPECTED_WEB2_SERVICES_TIME
+  );
+  it(
+    'If granted access to both ens and whitelist should return only one contact',
+    async () => {
+      const whitelistAddress = '0x781482C39CcE25546583EaC4957Fb7Bf04C277D2';
+
+      const user1 = Wallet.createRandom().address;
+      //Grant access to ens
+      await dataProtector.grantAccess({
+        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        protectedData: protectedData1.address,
+        authorizedUser: user1,
+      });
+      //Grant access to whitelist
+      await dataProtector.grantAccess({
+        authorizedApp: whitelistAddress,
+        protectedData: protectedData2.address,
+        authorizedUser: user1,
+      });
+
+      const contactsUser1 = await web3mail.fetchUserContacts({
+        userAddress: user1,
+      });
+      expect(contactsUser1.length).toEqual(1);
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
   );
