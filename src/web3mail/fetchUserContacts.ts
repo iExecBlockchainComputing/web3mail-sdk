@@ -1,4 +1,5 @@
 import { ANY_DATASET_ADDRESS } from '../config/config.js';
+import { isDuplicate } from '../utils/contactUtils.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
@@ -55,7 +56,10 @@ export const fetchUserContacts = async ({
           owner: order.signer.toLowerCase(),
           accessGrantTimestamp: order.publicationTimestamp,
         };
-        myContacts.push(contact);
+
+        if (!isDuplicate(contact, myContacts)) {
+          myContacts.push(contact);
+        }
       }
     });
 
