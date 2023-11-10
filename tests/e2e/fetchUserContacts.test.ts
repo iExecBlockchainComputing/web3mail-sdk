@@ -100,7 +100,7 @@ describe('web3mail.fetchMyContacts()', () => {
       //Grant access to whitelist
       await dataProtector.grantAccess({
         authorizedApp: whitelistAddress,
-        protectedData: protectedData2.address,
+        protectedData: protectedData1.address,
         authorizedUser: user1,
       });
 
