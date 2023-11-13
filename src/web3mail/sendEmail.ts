@@ -17,7 +17,7 @@ import {
   senderNameSchema,
   throwIfMissing,
 } from '../utils/validators.js';
-import * as ipfs from './../utils/ipfs-service.js';
+import * as ipfs from '../utils/ipfs-service.js';
 import {
   DappAddressConsumer,
   IExecConsumer,
@@ -105,19 +105,19 @@ export const sendEmail = async ({
         app: WHITELIST_SMART_CONTRACT_ADDRESS,
         requester: requesterAddress,
       });
-    const datasetWhitelistorder = datasetWhitelistOrderbook?.orders[0]?.order;
     const datasetorder = datasetOrderbook?.orders[0]?.order;
+    const datasetWhitelistorder = datasetWhitelistOrderbook?.orders[0]?.order;
     if (!datasetorder && !datasetWhitelistorder) {
       throw new Error('Dataset order not found');
     }
     const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
       (order) => order.order.datasetprice <= dataMaxPrice
     );
+    const desiredPriceDataOrder = desiredPriceDataOrderbook[0]?.order;
     const desiredPriceDataWhitelistOrderbook =
       datasetWhitelistOrderbook.orders.filter(
         (order) => order.order.datasetprice <= dataMaxPrice
       );
-    const desiredPriceDataOrder = desiredPriceDataOrderbook[0]?.order;
     if (!desiredPriceDataOrder && !desiredPriceDataWhitelistOrderbook) {
       throw new Error('No Dataset order found for the desired price');
     }
