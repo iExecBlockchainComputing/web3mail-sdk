@@ -41,7 +41,7 @@ describe('web3mail.fetchMyContacts()', () => {
   }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
 
   it(
-    'Tow different user should have different contacts',
+    'Two different users should have different contacts',
     async () => {
       const user1 = Wallet.createRandom().address;
       const user2 = Wallet.createRandom().address;
