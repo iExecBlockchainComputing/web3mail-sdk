@@ -1,8 +1,9 @@
 import {
   DEFAULT_CONTENT_TYPE,
   MAX_DESIRED_APP_ORDER_PRICE,
-  MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   MAX_DESIRED_DATA_ORDER_PRICE,
+  MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
+  WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
@@ -12,20 +13,20 @@ import {
   contentTypeSchema,
   emailContentSchema,
   emailSubjectSchema,
-  senderNameSchema,
   labelSchema,
+  senderNameSchema,
   throwIfMissing,
 } from '../utils/validators.js';
+import * as ipfs from '../utils/ipfs-service.js';
 import {
+  DappAddressConsumer,
   IExecConsumer,
+  IpfsGatewayConfigConsumer,
+  IpfsNodeConfigConsumer,
   SendEmailParams,
   SendEmailResponse,
   SubgraphConsumer,
-  DappAddressConsumer,
-  IpfsNodeConfigConsumer,
-  IpfsGatewayConfigConsumer,
 } from './types.js';
-import * as ipfs from './../utils/ipfs-service.js';
 
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
@@ -98,15 +99,26 @@ export const sendEmail = async ({
         requester: requesterAddress,
       }
     );
+    // Fetch dataset order for whitelist address
+    const datasetWhitelistOrderbook =
+      await iexec.orderbook.fetchDatasetOrderbook(vDatasetAddress, {
+        app: WHITELIST_SMART_CONTRACT_ADDRESS,
+        requester: requesterAddress,
+      });
     const datasetorder = datasetOrderbook?.orders[0]?.order;
-    if (!datasetorder) {
+    const datasetWhitelistorder = datasetWhitelistOrderbook?.orders[0]?.order;
+    if (!datasetorder && !datasetWhitelistorder) {
       throw new Error('Dataset order not found');
     }
     const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
       (order) => order.order.datasetprice <= dataMaxPrice
     );
     const desiredPriceDataOrder = desiredPriceDataOrderbook[0]?.order;
-    if (!desiredPriceDataOrder) {
+    const desiredPriceDataWhitelistOrderbook =
+      datasetWhitelistOrderbook.orders.filter(
+        (order) => order.order.datasetprice <= dataMaxPrice
+      );
+    if (!desiredPriceDataOrder && !desiredPriceDataWhitelistOrderbook) {
       throw new Error('No Dataset order found for the desired price');
     }
 
@@ -209,7 +221,7 @@ export const sendEmail = async ({
     // Match orders and compute task ID
     const { dealid } = await iexec.order.matchOrders({
       apporder: desiredPriceAppOrder,
-      datasetorder: datasetorder,
+      datasetorder: datasetorder ? datasetorder : datasetWhitelistorder,
       workerpoolorder: desiredPriceWorkerpoolOrder,
       requestorder: requestorder,
     });
