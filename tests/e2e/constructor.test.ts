@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
+// needed to access and assert IExecDataProtector's private properties
 import { describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { getSignerFromPrivateKey } from 'iexec/utils';
@@ -23,6 +24,7 @@ describe('IExecWeb3mail()', () => {
     );
     expect(web3mail).toBeInstanceOf(IExecWeb3mail);
   });
+
   it('should use default ipfs gateway url when ipfsGateway is not provided', async () => {
     const wallet = Wallet.createRandom();
     const web3mail = new IExecWeb3mail(
@@ -31,7 +33,8 @@ describe('IExecWeb3mail()', () => {
     const ipfsGateway = web3mail['ipfsGateway'];
     expect(ipfsGateway).toStrictEqual(DEFAULT_IPFS_GATEWAY);
   });
-  it('should use default ipfs gateway url when ipfsGateway is provided', async () => {
+
+  it('should use provided ipfs gateway url when ipfsGateway is provided', async () => {
     const customIpfsGateway = 'https://example.com/ipfs_gateway';
     const wallet = Wallet.createRandom();
     const web3mail = new IExecWeb3mail(
@@ -43,6 +46,7 @@ describe('IExecWeb3mail()', () => {
     const ipfsGateway = web3mail['ipfsGateway'];
     expect(ipfsGateway).toStrictEqual(customIpfsGateway);
   });
+
   it('should use default data Protector Subgraph URL when subgraphUrl is not provided', async () => {
     const wallet = Wallet.createRandom();
     const web3mail = new IExecWeb3mail(
@@ -51,6 +55,7 @@ describe('IExecWeb3mail()', () => {
     const graphQLClientUrl = web3mail['graphQLClient'];
     expect(graphQLClientUrl['url']).toBe(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
   });
+
   it('should use provided data Protector Subgraph URL when subgraphUrl is provided', async () => {
     const customSubgraphUrl = 'https://example.com/custom-subgraph';
     const wallet = Wallet.createRandom();
@@ -72,19 +77,20 @@ describe('IExecWeb3mail()', () => {
     const customIpfsNode = 'https://example.com/node';
     const smsURL = 'https://custom-sms-url.com';
     const iexecGatewayURL = 'https://custom-market-api-url.com';
-    const dappWhitelistAddress = '0x781482C39CcE25546583EaC4957Fb7Bf04C277BB';
+    const customDappWhitelistAddress =
+      '0x781482C39CcE25546583EaC4957Fb7Bf04C277BB';
     const web3mail = new IExecWeb3mail(
       getSignerFromPrivateKey('https://bellecour.iex.ec', wallet.privateKey),
       {
         iexecOptions: {
-          smsURL: smsURL,
-          iexecGatewayURL: iexecGatewayURL,
+          smsURL,
+          iexecGatewayURL,
         },
         ipfsNode: customIpfsNode,
         ipfsGateway: customIpfsGateway,
         dataProtectorSubgraph: customSubgraphUrl,
         dappAddressOrENS: customDapp,
-        dappWhitelistAddress: dappWhitelistAddress,
+        dappWhitelistAddress: customDappWhitelistAddress,
       }
     );
     const graphQLClient = web3mail['graphQLClient'];
@@ -98,7 +104,7 @@ describe('IExecWeb3mail()', () => {
     expect(ipfsNode).toStrictEqual(customIpfsNode);
     expect(ipfsGateway).toStrictEqual(customIpfsGateway);
     expect(dappAddressOrENS).toStrictEqual(customDapp);
-    expect(whitelistAddress).toStrictEqual(dappWhitelistAddress);
+    expect(whitelistAddress).toStrictEqual(customDappWhitelistAddress);
     expect(await iexec.config.resolveSmsURL()).toBe(smsURL);
     expect(await iexec.config.resolveIexecGatewayURL()).toBe(iexecGatewayURL);
   });
