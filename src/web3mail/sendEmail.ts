@@ -7,6 +7,7 @@ import {
 } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
+import * as ipfs from '../utils/ipfs-service.js';
 import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
@@ -17,7 +18,6 @@ import {
   senderNameSchema,
   throwIfMissing,
 } from '../utils/validators.js';
-import * as ipfs from '../utils/ipfs-service.js';
 import {
   DappAddressConsumer,
   IExecConsumer,
@@ -204,6 +204,9 @@ export const sendEmail = async ({
       app: dappAddressOrENS,
       category: desiredPriceWorkerpoolOrder.category,
       dataset: vDatasetAddress,
+      datasetmaxprice: datasetorder
+        ? datasetorder.datasetprice
+        : datasetWhitelistorder.datasetprice,
       appmaxprice: desiredPriceAppOrder.appprice,
       workerpoolmaxprice: desiredPriceWorkerpoolOrder.workerpoolprice,
       tag: ['tee', 'scone'],
