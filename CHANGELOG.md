@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.3]
+
+### Changed
+
+- fixed the send email method when it is used by a granted access to the web3mail dapp whitelist.
+
 ## [0.5.2]
 
 ### Added
