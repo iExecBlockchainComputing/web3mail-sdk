@@ -53,6 +53,7 @@
     "prettier": "^2.8.4",
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.2",
+    "tsx": "^4.6.2",
     "typescript": "^4.9.5",
     "whitelist-smart-contract": "github:iExecBlockchainComputing/whitelist-smart-contract#0.2.0"
   },

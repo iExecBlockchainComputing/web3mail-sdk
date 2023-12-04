@@ -5,11 +5,11 @@
   "type": "module",
   "main": "deploy.js",
   "scripts": {
-    "deploy-dapp": "ts-node --esm ./src/deployScript.ts",
-    "push-dapp-secret": "ts-node --esm ./src/pushSecretScript.ts",
-    "publish-sell-order": "ts-node --esm ./src/publishSellOrderScript.ts",
-    "revoke-sell-order": "ts-node --esm ./src/revokeSellOrderScript.ts",
-    "configure-ens": "ts-node --esm ./src/configureEnsNameScript.ts",
+    "deploy-dapp": "tsx ./src/deployScript.ts",
+    "push-dapp-secret": "tsx ./src/pushSecretScript.ts",
+    "publish-sell-order": "tsx ./src/publishSellOrderScript.ts",
+    "revoke-sell-order": "tsx ./src/revokeSellOrderScript.ts",
+    "configure-ens": "tsx ./src/configureEnsNameScript.ts",
     "lint": "eslint ."
   },
   "keywords": [],
