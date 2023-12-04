@@ -5,11 +5,11 @@
   "type": "module",
   "main": "deploy.js",
   "scripts": {
-    "deploy-dapp": "ts-node --esm ./src/deployScript.ts",
-    "push-dapp-secret": "ts-node --esm ./src/pushSecretScript.ts",
-    "publish-sell-order": "ts-node --esm ./src/publishSellOrderScript.ts",
-    "revoke-sell-order": "ts-node --esm ./src/revokeSellOrderScript.ts",
-    "configure-ens": "ts-node --esm ./src/configureEnsNameScript.ts",
+    "deploy-dapp": "tsx ./src/deployScript.ts",
+    "push-dapp-secret": "tsx ./src/pushSecretScript.ts",
+    "publish-sell-order": "tsx ./src/publishSellOrderScript.ts",
+    "revoke-sell-order": "tsx ./src/revokeSellOrderScript.ts",
+    "configure-ens": "tsx ./src/configureEnsNameScript.ts",
     "lint": "eslint ."
   },
   "keywords": [],
@@ -28,6 +28,7 @@
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-sonarjs": "^0.21.0"
+    "eslint-plugin-sonarjs": "^0.21.0",
+    "tsx": "^4.6.2"
   }
 }
