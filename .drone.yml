@@ -818,3 +818,55 @@ steps:
         - transfer-ownership-whitelist-smart-contract-prod
       branch:
         - main
+---
+kind: pipeline
+type: docker
+name: deprecate-version
+
+trigger:
+  event:
+    - promote
+  target:
+    - npm-deprecate-package
+
+steps:
+  - name: authenticate
+    image: robertstettner/drone-npm-auth
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+
+  - name: deprecate package
+    image: node:18
+    params:
+      - PACKAGE_VERSION
+    commands:
+      - if [ -n "$PACKAGE_VERSION" ]; then npm deprecate @iexec/web3mail@$PACKAGE_VERSION "deprecate $PACKAGE_VERSION"; else echo "PACKAGE_VERSION is not set"; fi
+---
+kind: pipeline
+type: docker
+name: undeprecate version
+
+trigger:
+  event:
+    - promote
+  target:
+    - npm-undeprecate-package
+
+steps:
+  - name: authenticate
+    image: robertstettner/drone-npm-auth
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+
+  - name: undeprecate package
+    image: node:18
+    params:
+      - PACKAGE_VERSION
+    commands:
+      - if [ -n "$PACKAGE_VERSION" ]; then npm deprecate @iexec/web3mail@$PACKAGE_VERSION ""; else echo "PACKAGE_VERSION is not set"; fi
