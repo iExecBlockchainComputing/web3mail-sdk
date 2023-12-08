@@ -4,6 +4,7 @@ import {
   MAX_DESIRED_DATA_ORDER_PRICE,
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   WHITELIST_SMART_CONTRACT_ADDRESS,
+  PROD_WORKERPOOL_ADDRESS,
 } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
@@ -31,7 +32,7 @@ import {
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  workerpoolAddressOrEns,
+  workerpoolAddressOrEns = PROD_WORKERPOOL_ADDRESS,
   dappAddressOrENS,
   ipfsNode,
   ipfsGateway,
