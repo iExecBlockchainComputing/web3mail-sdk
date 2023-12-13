@@ -1,10 +1,13 @@
 import {
   DEFAULT_CONTENT_TYPE,
+  DEFAULT_IPFS_GATEWAY,
+  IPFS_UPLOAD_URL,
   MAX_DESIRED_APP_ORDER_PRICE,
   MAX_DESIRED_DATA_ORDER_PRICE,
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
-  WHITELIST_SMART_CONTRACT_ADDRESS,
   PROD_WORKERPOOL_ADDRESS,
+  WEB3_MAIL_DAPP_ADDRESS,
+  WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
@@ -33,9 +36,9 @@ export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
   workerpoolAddressOrEns = PROD_WORKERPOOL_ADDRESS,
-  dappAddressOrENS,
-  ipfsNode,
-  ipfsGateway,
+  dappAddressOrENS = WEB3_MAIL_DAPP_ADDRESS,
+  ipfsNode = IPFS_UPLOAD_URL,
+  ipfsGateway = DEFAULT_IPFS_GATEWAY,
   emailSubject,
   emailContent,
   contentType = DEFAULT_CONTENT_TYPE,
@@ -72,6 +75,7 @@ export const sendEmail = async ({
       .label('senderName')
       .validateSync(senderName);
     const vLabel = labelSchema().label('label').validateSync(label);
+    //TODO: Validate these inputs:  workerpoolAddressOrEns, dappAddressOrENS, ipfsNode, ipfsGateway, dataMaxPrice, appMaxPrice, workerpoolMaxPrice.
 
     // Check protected data validity through subgraph
     const isValidProtectedData = await checkProtectedDataValidity(
