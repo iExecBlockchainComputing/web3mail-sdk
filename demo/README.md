@@ -16,7 +16,7 @@ pick a demo
 
 ```sh
 # node typescript demo for example
-cd ts-node
+cd node-ts
 ```
 
 install deps
