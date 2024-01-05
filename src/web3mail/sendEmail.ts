@@ -3,6 +3,7 @@ import {
   MAX_DESIRED_APP_ORDER_PRICE,
   MAX_DESIRED_DATA_ORDER_PRICE,
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
+  PROD_WORKERPOOL_ADDRESS,
   WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
@@ -15,6 +16,7 @@ import {
   emailContentSchema,
   emailSubjectSchema,
   labelSchema,
+  positiveNumberSchema,
   senderNameSchema,
   throwIfMissing,
 } from '../utils/validators.js';
@@ -31,7 +33,7 @@ import {
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  workerpoolAddressOrEns,
+  workerpoolAddressOrEns = PROD_WORKERPOOL_ADDRESS,
   dappAddressOrENS,
   ipfsNode,
   ipfsGateway,
@@ -71,6 +73,23 @@ export const sendEmail = async ({
       .label('senderName')
       .validateSync(senderName);
     const vLabel = labelSchema().label('label').validateSync(label);
+    const vWorkerpoolAddressOrEns = addressOrEnsSchema()
+      .required()
+      .label('WorkerpoolAddressOrEns')
+      .validateSync(workerpoolAddressOrEns);
+    const vDappAddressOrENS = addressOrEnsSchema()
+      .required()
+      .label('dappAddressOrENS')
+      .validateSync(dappAddressOrENS);
+    const vDataMaxPrice = positiveNumberSchema()
+      .label('dataMaxPrice')
+      .validateSync(dataMaxPrice);
+    const vAppMaxPrice = positiveNumberSchema()
+      .label('appMaxPrice')
+      .validateSync(appMaxPrice);
+    const vWorkerpoolMaxPrice = positiveNumberSchema()
+      .label('workerpoolMaxPrice')
+      .validateSync(workerpoolMaxPrice);
 
     // Check protected data validity through subgraph
     const isValidProtectedData = await checkProtectedDataValidity(
@@ -95,7 +114,7 @@ export const sendEmail = async ({
     const datasetOrderbook = await iexec.orderbook.fetchDatasetOrderbook(
       vDatasetAddress,
       {
-        app: dappAddressOrENS,
+        app: vDappAddressOrENS,
         requester: requesterAddress,
       }
     );
@@ -111,12 +130,12 @@ export const sendEmail = async ({
       throw new Error('Dataset order not found');
     }
     const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
-      (order) => order.order.datasetprice <= dataMaxPrice
+      (order) => order.order.datasetprice <= vDataMaxPrice
     );
     const desiredPriceDataOrder = desiredPriceDataOrderbook[0]?.order;
     const desiredPriceDataWhitelistOrderbook =
       datasetWhitelistOrderbook.orders.filter(
-        (order) => order.order.datasetprice <= dataMaxPrice
+        (order) => order.order.datasetprice <= vDataMaxPrice
       );
     if (!desiredPriceDataOrder && !desiredPriceDataWhitelistOrderbook) {
       throw new Error('No Dataset order found for the desired price');
@@ -124,11 +143,11 @@ export const sendEmail = async ({
 
     // Fetch app order
     const appOrderbook = await iexec.orderbook.fetchAppOrderbook(
-      dappAddressOrENS,
+      vDappAddressOrENS,
       {
         minTag: ['tee', 'scone'],
         maxTag: ['tee', 'scone'],
-        workerpool: workerpoolAddressOrEns,
+        workerpool: vWorkerpoolAddressOrEns,
       }
     );
     const appOrder = appOrderbook?.orders[0]?.order;
@@ -137,7 +156,7 @@ export const sendEmail = async ({
     }
 
     const desiredPriceAppOrderbook = appOrderbook.orders.filter(
-      (order) => order.order.appprice <= appMaxPrice
+      (order) => order.order.appprice <= vAppMaxPrice
     );
     const desiredPriceAppOrder = desiredPriceAppOrderbook[0]?.order;
     if (!desiredPriceAppOrder) {
@@ -146,8 +165,8 @@ export const sendEmail = async ({
 
     // Fetch workerpool order
     const workerpoolOrderbook = await iexec.orderbook.fetchWorkerpoolOrderbook({
-      workerpool: workerpoolAddressOrEns,
-      app: dappAddressOrENS,
+      workerpool: vWorkerpoolAddressOrEns,
+      app: vDappAddressOrENS,
       dataset: vDatasetAddress,
       minTag: ['tee', 'scone'],
       maxTag: ['tee', 'scone'],
@@ -160,7 +179,7 @@ export const sendEmail = async ({
     }
 
     const desiredPriceWorkerpoolOrderbook = workerpoolOrderbook.orders.filter(
-      (order) => order.order.workerpoolprice <= workerpoolMaxPrice
+      (order) => order.order.workerpoolprice <= vWorkerpoolMaxPrice
     );
     const randomIndex = Math.floor(
       Math.random() * desiredPriceWorkerpoolOrderbook.length
@@ -201,7 +220,7 @@ export const sendEmail = async ({
     );
 
     const requestorderToSign = await iexec.order.createRequestorder({
-      app: dappAddressOrENS,
+      app: vDappAddressOrENS,
       category: desiredPriceWorkerpoolOrder.category,
       dataset: vDatasetAddress,
       datasetmaxprice: datasetorder
@@ -210,7 +229,7 @@ export const sendEmail = async ({
       appmaxprice: desiredPriceAppOrder.appprice,
       workerpoolmaxprice: desiredPriceWorkerpoolOrder.workerpoolprice,
       tag: ['tee', 'scone'],
-      workerpool: workerpoolAddressOrEns,
+      workerpool: vWorkerpoolAddressOrEns,
       params: {
         iexec_developer_logger: true,
         iexec_secrets: {

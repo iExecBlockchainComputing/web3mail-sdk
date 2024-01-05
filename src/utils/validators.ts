@@ -1,5 +1,5 @@
 import { isAddress } from 'ethers';
-import { ValidationError, string } from 'yup';
+import { ValidationError, number, string } from 'yup';
 
 export const throwIfMissing = (): never => {
   throw new ValidationError('Missing parameter');
@@ -35,3 +35,6 @@ export const senderNameSchema = () => string().trim().min(3).max(20).optional();
 
 // Used to identify the email campaign, minimum of 3 characters and max of 10
 export const labelSchema = () => string().trim().min(3).max(10).optional();
+
+export const positiveNumberSchema = () =>
+  number().integer().min(0).typeError('${path} must be a non-negative number');
