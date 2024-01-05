@@ -1,12 +1,9 @@
 import {
   DEFAULT_CONTENT_TYPE,
-  DEFAULT_IPFS_GATEWAY,
-  IPFS_UPLOAD_URL,
   MAX_DESIRED_APP_ORDER_PRICE,
   MAX_DESIRED_DATA_ORDER_PRICE,
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   PROD_WORKERPOOL_ADDRESS,
-  WEB3_MAIL_DAPP_ADDRESS,
   WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
@@ -37,9 +34,9 @@ export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
   workerpoolAddressOrEns = PROD_WORKERPOOL_ADDRESS,
-  dappAddressOrENS = WEB3_MAIL_DAPP_ADDRESS,
-  ipfsNode = IPFS_UPLOAD_URL,
-  ipfsGateway = DEFAULT_IPFS_GATEWAY,
+  dappAddressOrENS,
+  ipfsNode,
+  ipfsGateway,
   emailSubject,
   emailContent,
   contentType = DEFAULT_CONTENT_TYPE,
