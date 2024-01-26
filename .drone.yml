@@ -10,7 +10,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18
+    image: node:18.19
     pull: always
     commands:
       - node -v
@@ -18,32 +18,32 @@ steps:
       - npm ci
 
   - name: format
-    image: node:18
+    image: node:18.19
     commands:
       - npm run check-format
 
   - name: lint
-    image: node:18
+    image: node:18.19
     commands:
       - npm run lint
 
   - name: check-types
-    image: node:18
+    image: node:18.19
     commands:
       - npm run check-types
 
   - name: test
-    image: node:18
+    image: node:18.19
     commands:
       - npm run test
 
   - name: build
-    image: node:18
+    image: node:18.19
     commands:
       - npm run build
 
   - name: npm-publish-dry-run
-    image: node:18
+    image: node:18.19
     commands:
       - npm publish --dry-run
 
@@ -63,7 +63,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18
+    image: node:18.19
     pull: always
     commands:
       - node -v
@@ -71,27 +71,44 @@ steps:
       - npm ci
 
   - name: format
-    image: node:18
+    image: node:18.19
     commands:
       - npm run check-format
 
   - name: lint
-    image: node:18
+    image: node:18.19
     commands:
       - npm run lint
 
   - name: test
-    image: node:18
+    image: node:18.19
     commands:
       - npm run test
 
   - name: build
-    image: node:18
+    image: node:18.19
     commands:
       - npm run build
 
+  - name: authenticate
+    image: robertstettner/drone-npm-auth
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+
+  - name: deprecate-old-nightly-version
+    image: node:18.19
+    pull: always
+    commands:
+      - apt-get update && apt-get install -y jq
+      # fetches the latest nightly version of the @iexec/web3mail package from npm registry
+      - PREVIOUS_NIGHTLY_VERSION=$(npm show @iexec/web3mail versions --json | jq -r 'map(select(test("nightly"))) | .[-1]')
+      - if [ -n "$PREVIOUS_NIGHTLY_VERSION" ]; then npm deprecate @iexec/web3mail@$PREVIOUS_NIGHTLY_VERSION "Deprecate $PREVIOUS_NIGHTLY_VERSION"; fi
+
   - name: set-version-nightly
-    image: node:18
+    image: node:18.19
     commands:
       - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
 
@@ -122,7 +139,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18
+    image: node:18.19
     pull: always
     commands:
       - node -v
@@ -130,22 +147,22 @@ steps:
       - npm ci
 
   - name: format
-    image: node:18
+    image: node:18.19
     commands:
       - npm run check-format
 
   - name: lint
-    image: node:18
+    image: node:18.19
     commands:
       - npm run lint
 
   - name: test
-    image: node:18
+    image: node:18.19
     commands:
       - npm run test
 
   - name: build
-    image: node:18
+    image: node:18.19
     commands:
       - npm run build
 
@@ -183,7 +200,7 @@ steps:
       - npm ci
 
   - name: check version match [get scone fingerprint (prod)]
-    image: node:18
+    image: node:18.19
     commands:
       - cd dapp
       - cat ../.drone.yml | grep "iexechub/web3mail-dapp:$(npm pkg get version | sed 's/"//g')-sconify-"
@@ -195,7 +212,7 @@ steps:
       - npm run check-format
 
   - name: lint
-    image: node:18
+    image: node:18.19
     commands:
       - cd dapp
       - npm run lint
@@ -254,7 +271,7 @@ steps:
       - npm run check-format
 
   - name: lint
-    image: node:18
+    image: node:18.19
     commands:
       - cd dapp
       - npm run lint
@@ -322,7 +339,7 @@ steps:
       - npm run check-format
 
   - name: lint
-    image: node:18
+    image: node:18.19
     commands:
       - cd dapp
       - npm run lint
@@ -341,7 +358,7 @@ steps:
       - npm run ctest
 
   - name: extract-version-from-package
-    image: node:18
+    image: node:18.19
     # generates the .tags file for the docker plugin
     commands:
       - cd dapp
@@ -404,13 +421,13 @@ steps:
   # TODO : Add format script to the deploy-dapp monorepo
 
   - name: lint
-    image: node:18
+    image: node:18.19
     commands:
       - cd dapp
       - npm run lint
 
   - name: install deps
-    image: node:18
+    image: node:18.19
     pull: always
     commands:
       - npm ci
@@ -420,7 +437,7 @@ steps:
       - npm ci
 
   - name: deploy dapp contract
-    image: node:18
+    image: node:18.19
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -433,7 +450,7 @@ steps:
       - npm run deploy-dapp
 
   - name: push dapp secret
-    image: node:18
+    image: node:18.19
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -452,7 +469,7 @@ steps:
       - npm run push-dapp-secret
 
   - name: publish free sell order
-    image: node:18
+    image: node:18.19
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -499,7 +516,7 @@ steps:
         - main
 
   - name: configure ENS
-    image: node:18
+    image: node:18.19
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -529,14 +546,14 @@ trigger:
 
 steps:
   - name: install deps
-    image: node:18
+    image: node:18.19
     pull: always
     commands:
       - cd deployment-dapp
       - npm ci
 
   - name: publish sell order
-    image: node:18
+    image: node:18.19
     pull: always
     params:
       - PRICE
@@ -569,14 +586,14 @@ trigger:
 
 steps:
   - name: install deps
-    image: node:18
+    image: node:18.19
     pull: always
     commands:
       - cd deployment-dapp
       - npm ci
 
   - name: revoke sell order
-    image: node:18
+    image: node:18.19
     pull: always
     params:
       - ORDER_HASH
@@ -608,14 +625,14 @@ trigger:
 
 steps:
   - name: install deps
-    image: node:18
+    image: node:18.19
     pull: always
     commands:
       - cd deployment-dapp
       - npm ci
 
   - name: push dapp secret
-    image: node:18
+    image: node:18.19
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -650,7 +667,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18
+    image: node:18.19
     pull: always
     commands:
       - node -v
@@ -712,7 +729,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18
+    image: node:18.19
     pull: always
     commands:
       - node -v
@@ -774,7 +791,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18
+    image: node:18.19
     pull: always
     commands:
       - node -v
@@ -818,3 +835,55 @@ steps:
         - transfer-ownership-whitelist-smart-contract-prod
       branch:
         - main
+---
+kind: pipeline
+type: docker
+name: deprecate-version
+
+trigger:
+  event:
+    - promote
+  target:
+    - npm-deprecate-package
+
+steps:
+  - name: authenticate
+    image: robertstettner/drone-npm-auth
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+
+  - name: deprecate package
+    image: node:18.19
+    params:
+      - PACKAGE_VERSION
+    commands:
+      - if [ -n "$PACKAGE_VERSION" ]; then npm deprecate @iexec/web3mail@$PACKAGE_VERSION "deprecate $PACKAGE_VERSION"; else echo "PACKAGE_VERSION is not set"; fi
+---
+kind: pipeline
+type: docker
+name: undeprecate version
+
+trigger:
+  event:
+    - promote
+  target:
+    - npm-undeprecate-package
+
+steps:
+  - name: authenticate
+    image: robertstettner/drone-npm-auth
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+
+  - name: undeprecate package
+    image: node:18.19
+    params:
+      - PACKAGE_VERSION
+    commands:
+      - if [ -n "$PACKAGE_VERSION" ]; then npm deprecate @iexec/web3mail@$PACKAGE_VERSION ""; else echo "PACKAGE_VERSION is not set"; fi

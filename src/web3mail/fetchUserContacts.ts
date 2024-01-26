@@ -59,6 +59,8 @@ export const fetchUserContacts = async ({
       }
     });
 
+    //getValidContact function remove duplicated contacts for the same protectedData address,
+    //keeping the most recent one
     return await getValidContact(graphQLClient, myContacts);
   } catch (error) {
     throw new WorkflowError(

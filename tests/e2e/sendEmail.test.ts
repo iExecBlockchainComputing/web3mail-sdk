@@ -5,7 +5,10 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet } from 'ethers';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
+import {
+  WEB3_MAIL_DAPP_ADDRESS,
+  WHITELIST_SMART_CONTRACT_ADDRESS,
+} from '../../src/config/config.js';
 import { IExecWeb3mail, getWeb3Provider } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
@@ -58,6 +61,33 @@ describe('web3mail.sendEmail()', () => {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
         protectedData: validProtectedData.address,
+      };
+
+      const sendEmailResponse = await web3mail.sendEmail(params);
+      expect(sendEmailResponse.taskId).toBeDefined();
+    },
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+  );
+  it(
+    'should successfully send email with granted access to whitelist address',
+    async () => {
+      //create valid protected data
+      const protectedDataForWhitelist = await dataProtector.protectData({
+        data: { email: 'example@test.com' },
+        name: 'test do not use',
+      });
+      //grant access to whitelist
+      await dataProtector.grantAccess({
+        authorizedApp: WHITELIST_SMART_CONTRACT_ADDRESS, //whitelist address
+        protectedData: protectedDataForWhitelist.address,
+        authorizedUser: consumerWallet.address, // consumer wallet
+        numberOfAccess: 1000,
+      });
+
+      const params = {
+        emailSubject: 'e2e mail object for test',
+        emailContent: 'e2e mail content for test',
+        protectedData: protectedDataForWhitelist.address,
       };
 
       const sendEmailResponse = await web3mail.sendEmail(params);
