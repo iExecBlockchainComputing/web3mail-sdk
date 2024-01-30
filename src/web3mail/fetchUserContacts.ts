@@ -42,7 +42,7 @@ export const fetchUserContacts = async ({
       .label('userAddress')
       .validateSync(userAddress);
 
-    const [ensOrders, scOrders] = await Promise.all([
+    const [dappOrders, whitelistOrders] = await Promise.all([
       fetchAllOrdersByApp({
         iexec,
         userAddress: vUserAddress,
@@ -55,7 +55,7 @@ export const fetchUserContacts = async ({
       }),
     ]);
 
-    const orders = ensOrders.concat(scOrders);
+    const orders = dappOrders.concat(whitelistOrders);
     const myContacts: Contact[] = [];
     let web3DappResolvedAddress = vDappAddressOrENS;
     if (isEnsTest(vDappAddressOrENS)) {
