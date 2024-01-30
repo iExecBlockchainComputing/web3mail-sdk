@@ -4,6 +4,7 @@ import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
+  addressSchema,
   isEnsTest,
   throwIfMissing,
 } from '../utils/validators.js';

@@ -12,6 +12,7 @@ import * as ipfs from '../utils/ipfs-service.js';
 import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
+  addressSchema,
   contentTypeSchema,
   emailContentSchema,
   emailSubjectSchema,
@@ -117,84 +118,83 @@ export const sendEmail = async ({
       await iexec.storage.pushStorageToken(token);
     }
 
-    // Fetch dataset order
-    const datasetOrderbook = await iexec.orderbook.fetchDatasetOrderbook(
-      vDatasetAddress,
-      {
-        app: vDappAddressOrENS,
-        requester: requesterAddress,
-      }
-    );
-    // Fetch dataset order for whitelist address
-    const datasetWhitelistOrderbook =
-      await iexec.orderbook.fetchDatasetOrderbook(vDatasetAddress, {
-        app: vDappWhitelistAddress,
-        requester: requesterAddress,
-      });
-    const datasetorder = datasetOrderbook?.orders[0]?.order;
-    const datasetWhitelistorder = datasetWhitelistOrderbook?.orders[0]?.order;
-    if (!datasetorder && !datasetWhitelistorder) {
-      throw new Error('Dataset order not found');
-    }
-    const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
-      (order) => order.order.datasetprice <= vDataMaxPrice
-    );
-    const desiredPriceDataOrder = desiredPriceDataOrderbook[0]?.order;
-    const desiredPriceDataWhitelistOrderbook =
-      datasetWhitelistOrderbook.orders.filter(
-        (order) => order.order.datasetprice <= vDataMaxPrice
-      );
-    if (!desiredPriceDataOrder && !desiredPriceDataWhitelistOrderbook) {
+    const [
+      datasetorderForApp,
+      datasetorderForWhitelist,
+      apporder,
+      workerpoolorder,
+    ] = await Promise.all([
+      // Fetch dataset order for web3mail app
+      iexec.orderbook
+        .fetchDatasetOrderbook(vDatasetAddress, {
+          app: dappAddressOrENS,
+          requester: requesterAddress,
+        })
+        .then((datasetOrderbook) => {
+          const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
+            (order) => order.order.datasetprice <= vDataMaxPrice
+          );
+          return desiredPriceDataOrderbook[0]?.order; // may be undefined
+        }),
+      // Fetch dataset order for web3mail whitelist
+      iexec.orderbook
+        .fetchDatasetOrderbook(vDatasetAddress, {
+          app: vDappWhitelistAddress,
+          requester: requesterAddress,
+        })
+        .then((datasetOrderbook) => {
+          const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
+            (order) => order.order.datasetprice <= vDataMaxPrice
+          );
+          return desiredPriceDataOrderbook[0]?.order; // may be undefined
+        }),
+      // Fetch app order
+      iexec.orderbook
+        .fetchAppOrderbook(dappAddressOrENS, {
+          minTag: ['tee', 'scone'],
+          maxTag: ['tee', 'scone'],
+          workerpool: workerpoolAddressOrEns,
+        })
+        .then((appOrderbook) => {
+          const desiredPriceAppOrderbook = appOrderbook.orders.filter(
+            (order) => order.order.appprice <= vAppMaxPrice
+          );
+          const desiredPriceAppOrder = desiredPriceAppOrderbook[0]?.order;
+          if (!desiredPriceAppOrder) {
+            throw new Error('No App order found for the desired price');
+          }
+          return desiredPriceAppOrder;
+        }),
+      // Fetch workerpool order
+      iexec.orderbook
+        .fetchWorkerpoolOrderbook({
+          workerpool: workerpoolAddressOrEns,
+          app: dappAddressOrENS,
+          dataset: vDatasetAddress,
+          minTag: ['tee', 'scone'],
+          maxTag: ['tee', 'scone'],
+          category: 0,
+        })
+        .then((workerpoolOrderbook) => {
+          const desiredPriceWorkerpoolOrderbook =
+            workerpoolOrderbook.orders.filter(
+              (order) => order.order.workerpoolprice <= vWorkerpoolMaxPrice
+            );
+          const randomIndex = Math.floor(
+            Math.random() * desiredPriceWorkerpoolOrderbook.length
+          );
+          const desiredPriceWorkerpoolOrder =
+            desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
+          if (!desiredPriceWorkerpoolOrder) {
+            throw new Error('No Workerpool order found for the desired price');
+          }
+          return desiredPriceWorkerpoolOrder;
+        }),
+    ]);
+
+    const datasetorder = datasetorderForApp || datasetorderForWhitelist;
+    if (!datasetorder) {
       throw new Error('No Dataset order found for the desired price');
-    }
-
-    // Fetch app order
-    const appOrderbook = await iexec.orderbook.fetchAppOrderbook(
-      vDappAddressOrENS,
-      {
-        minTag: ['tee', 'scone'],
-        maxTag: ['tee', 'scone'],
-        workerpool: vWorkerpoolAddressOrEns,
-      }
-    );
-    const appOrder = appOrderbook?.orders[0]?.order;
-    if (!appOrder) {
-      throw new Error('App order not found');
-    }
-
-    const desiredPriceAppOrderbook = appOrderbook.orders.filter(
-      (order) => order.order.appprice <= vAppMaxPrice
-    );
-    const desiredPriceAppOrder = desiredPriceAppOrderbook[0]?.order;
-    if (!desiredPriceAppOrder) {
-      throw new Error('No App order found for the desired price');
-    }
-
-    // Fetch workerpool order
-    const workerpoolOrderbook = await iexec.orderbook.fetchWorkerpoolOrderbook({
-      workerpool: vWorkerpoolAddressOrEns,
-      app: vDappAddressOrENS,
-      dataset: vDatasetAddress,
-      minTag: ['tee', 'scone'],
-      maxTag: ['tee', 'scone'],
-      category: 0,
-    });
-
-    const workerpoolorder = workerpoolOrderbook?.orders[0]?.order;
-    if (!workerpoolorder) {
-      throw new Error('Workerpool order not found');
-    }
-
-    const desiredPriceWorkerpoolOrderbook = workerpoolOrderbook.orders.filter(
-      (order) => order.order.workerpoolprice <= vWorkerpoolMaxPrice
-    );
-    const randomIndex = Math.floor(
-      Math.random() * desiredPriceWorkerpoolOrderbook.length
-    );
-    const desiredPriceWorkerpoolOrder =
-      desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
-    if (!desiredPriceWorkerpoolOrder) {
-      throw new Error('No Workerpool order found for the desired price');
     }
 
     // Push requester secrets
@@ -228,13 +228,11 @@ export const sendEmail = async ({
 
     const requestorderToSign = await iexec.order.createRequestorder({
       app: vDappAddressOrENS,
-      category: desiredPriceWorkerpoolOrder.category,
+      category: workerpoolorder.category,
       dataset: vDatasetAddress,
-      datasetmaxprice: datasetorder
-        ? datasetorder.datasetprice
-        : datasetWhitelistorder.datasetprice,
-      appmaxprice: desiredPriceAppOrder.appprice,
-      workerpoolmaxprice: desiredPriceWorkerpoolOrder.workerpoolprice,
+      datasetmaxprice: datasetorder.datasetprice,
+      appmaxprice: apporder.appprice,
+      workerpoolmaxprice: workerpoolorder.workerpoolprice,
       tag: ['tee', 'scone'],
       workerpool: vWorkerpoolAddressOrEns,
       params: {
@@ -249,9 +247,9 @@ export const sendEmail = async ({
 
     // Match orders and compute task ID
     const { dealid } = await iexec.order.matchOrders({
-      apporder: desiredPriceAppOrder,
-      datasetorder: datasetorder || datasetWhitelistorder,
-      workerpoolorder: desiredPriceWorkerpoolOrder,
+      apporder: apporder,
+      datasetorder: datasetorder,
+      workerpoolorder: workerpoolorder,
       requestorder: requestorder,
     });
     const taskId = await iexec.deal.computeTaskId(dealid, 0);
@@ -263,3 +261,4 @@ export const sendEmail = async ({
     throw new WorkflowError(`${error.message}`, error);
   }
 };
+

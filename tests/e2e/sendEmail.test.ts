@@ -141,7 +141,7 @@ describe('web3mail.sendEmail()', () => {
       };
       await sleep(5_000);
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
-        'Dataset order not found'
+        'No Dataset order found for the desired price'
       );
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000
