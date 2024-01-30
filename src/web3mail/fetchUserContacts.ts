@@ -2,7 +2,11 @@ import { ANY_DATASET_ADDRESS } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
-import { addressOrEnsSchema, isEnsTest, throwIfMissing } from '../utils/validators.js';
+import {
+  addressOrEnsSchema,
+  isEnsTest,
+  throwIfMissing,
+} from '../utils/validators.js';
 import {
   Contact,
   DappAddressConsumer,
