@@ -53,7 +53,7 @@ describe('fetchMyContacts', () => {
       dappWhitelistAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
       graphQLClient,
     });
-    const userAddress = await iexec.wallet.getAddress();
+    const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
       1,
       'any',
