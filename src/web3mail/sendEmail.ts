@@ -4,7 +4,6 @@ import {
   MAX_DESIRED_DATA_ORDER_PRICE,
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   PROD_WORKERPOOL_ADDRESS,
-  WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
@@ -12,6 +11,7 @@ import * as ipfs from '../utils/ipfs-service.js';
 import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
+  addressSchema,
   contentTypeSchema,
   emailContentSchema,
   emailSubjectSchema,
@@ -22,6 +22,7 @@ import {
 } from '../utils/validators.js';
 import {
   DappAddressConsumer,
+  DappWhitelistAddressConsumer,
   IExecConsumer,
   IpfsGatewayConfigConsumer,
   IpfsNodeConfigConsumer,
@@ -35,6 +36,7 @@ export const sendEmail = async ({
   iexec = throwIfMissing(),
   workerpoolAddressOrEns = PROD_WORKERPOOL_ADDRESS,
   dappAddressOrENS,
+  dappWhitelistAddress,
   ipfsNode,
   ipfsGateway,
   emailSubject,
@@ -49,6 +51,7 @@ export const sendEmail = async ({
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
+  DappWhitelistAddressConsumer &
   IpfsNodeConfigConsumer &
   IpfsGatewayConfigConsumer &
   SendEmailParams): Promise<SendEmailResponse> => {
@@ -81,6 +84,10 @@ export const sendEmail = async ({
       .required()
       .label('dappAddressOrENS')
       .validateSync(dappAddressOrENS);
+    const vDappWhitelistAddress = addressSchema()
+      .required()
+      .label('dappWhitelistAddress')
+      .validateSync(dappWhitelistAddress);
     const vDataMaxPrice = positiveNumberSchema()
       .label('dataMaxPrice')
       .validateSync(dataMaxPrice);
@@ -131,7 +138,7 @@ export const sendEmail = async ({
       // Fetch dataset order for web3mail whitelist
       iexec.orderbook
         .fetchDatasetOrderbook(vDatasetAddress, {
-          app: WHITELIST_SMART_CONTRACT_ADDRESS,
+          app: vDappWhitelistAddress,
           requester: requesterAddress,
         })
         .then((datasetOrderbook) => {

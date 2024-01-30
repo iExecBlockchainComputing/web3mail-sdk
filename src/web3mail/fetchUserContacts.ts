@@ -2,11 +2,16 @@ import { ANY_DATASET_ADDRESS } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
-import { throwIfMissing } from '../utils/validators.js';
+import {
+  addressOrEnsSchema,
+  addressSchema,
+  isEnsTest,
+  throwIfMissing,
+} from '../utils/validators.js';
 import {
   Contact,
   DappAddressConsumer,
-  DppWhitelistAddressConsumer,
+  DappWhitelistAddressConsumer,
   FetchUserContactsParams,
   IExecConsumer,
   SubgraphConsumer,
@@ -21,34 +26,47 @@ export const fetchUserContacts = async ({
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
-  DppWhitelistAddressConsumer &
+  DappWhitelistAddressConsumer &
   FetchUserContactsParams): Promise<Contact[]> => {
   try {
-    const [ensOrders, scOrders] = await Promise.all([
+    const vDappAddressOrENS = addressOrEnsSchema()
+      .required()
+      .label('dappAddressOrENS')
+      .validateSync(dappAddressOrENS);
+    const vDappWhitelistAddress = addressSchema()
+      .required()
+      .label('dappWhitelistAddress')
+      .validateSync(dappWhitelistAddress);
+    const vUserAddress = addressOrEnsSchema()
+      .required()
+      .label('userAddress')
+      .validateSync(userAddress);
+
+    const [dappOrders, whitelistOrders] = await Promise.all([
       fetchAllOrdersByApp({
         iexec,
-        userAddress,
-        appAddress: dappAddressOrENS,
+        userAddress: vUserAddress,
+        appAddress: vDappAddressOrENS,
       }),
       fetchAllOrdersByApp({
         iexec,
-        userAddress,
-        appAddress: dappWhitelistAddress,
+        userAddress: vUserAddress,
+        appAddress: vDappWhitelistAddress,
       }),
     ]);
 
-    const orders = ensOrders.concat(scOrders);
+    const orders = dappOrders.concat(whitelistOrders);
     const myContacts: Contact[] = [];
-    const web3DappResolvedAddress = await iexec.ens.resolveName(
-      dappAddressOrENS
-    );
-
+    let web3DappResolvedAddress = vDappAddressOrENS;
+    if (isEnsTest(vDappAddressOrENS)) {
+      web3DappResolvedAddress = await iexec.ens.resolveName(vDappAddressOrENS);
+    }
     orders.forEach((order) => {
       if (
         order.order.apprestrict.toLowerCase() ===
           web3DappResolvedAddress.toLowerCase() ||
         order.order.apprestrict.toLowerCase() ===
-          dappWhitelistAddress.toLowerCase()
+          vDappWhitelistAddress.toLowerCase()
       ) {
         const contact = {
           address: order.order.dataset.toLowerCase(),
