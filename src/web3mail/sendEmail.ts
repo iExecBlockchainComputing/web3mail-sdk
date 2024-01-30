@@ -84,7 +84,7 @@ export const sendEmail = async ({
       .required()
       .label('dappAddressOrENS')
       .validateSync(dappAddressOrENS);
-    const vDappWhitelistAddress = addressOrEnsSchema()
+    const vDappWhitelistAddress = addressSchema()
       .required()
       .label('dappWhitelistAddress')
       .validateSync(dappWhitelistAddress);
