@@ -22,6 +22,7 @@ import {
 } from '../utils/validators.js';
 import {
   DappAddressConsumer,
+  DappWhitelistAddressConsumer,
   IExecConsumer,
   IpfsGatewayConfigConsumer,
   IpfsNodeConfigConsumer,
@@ -35,6 +36,7 @@ export const sendEmail = async ({
   iexec = throwIfMissing(),
   workerpoolAddressOrEns = PROD_WORKERPOOL_ADDRESS,
   dappAddressOrENS,
+  dappWhitelistAddress = WHITELIST_SMART_CONTRACT_ADDRESS,
   ipfsNode,
   ipfsGateway,
   emailSubject,
@@ -49,6 +51,7 @@ export const sendEmail = async ({
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
+  DappWhitelistAddressConsumer &
   IpfsNodeConfigConsumer &
   IpfsGatewayConfigConsumer &
   SendEmailParams): Promise<SendEmailResponse> => {
@@ -81,6 +84,10 @@ export const sendEmail = async ({
       .required()
       .label('dappAddressOrENS')
       .validateSync(dappAddressOrENS);
+    const vDappWhitelistAddress = addressOrEnsSchema()
+      .required()
+      .label('dappWhitelistAddress')
+      .validateSync(dappWhitelistAddress);
     const vDataMaxPrice = positiveNumberSchema()
       .label('dataMaxPrice')
       .validateSync(dataMaxPrice);
@@ -121,7 +128,7 @@ export const sendEmail = async ({
     // Fetch dataset order for whitelist address
     const datasetWhitelistOrderbook =
       await iexec.orderbook.fetchDatasetOrderbook(vDatasetAddress, {
-        app: WHITELIST_SMART_CONTRACT_ADDRESS,
+        app: vDappWhitelistAddress,
         requester: requesterAddress,
       });
     const datasetorder = datasetOrderbook?.orders[0]?.order;
@@ -243,7 +250,7 @@ export const sendEmail = async ({
     // Match orders and compute task ID
     const { dealid } = await iexec.order.matchOrders({
       apporder: desiredPriceAppOrder,
-      datasetorder: datasetorder ? datasetorder : datasetWhitelistorder,
+      datasetorder: datasetorder || datasetWhitelistorder,
       workerpoolorder: desiredPriceWorkerpoolOrder,
       requestorder: requestorder,
     });

@@ -4,7 +4,7 @@ import { fetchUserContacts } from './fetchUserContacts.js';
 import {
   Contact,
   DappAddressConsumer,
-  DppWhitelistAddressConsumer,
+  DappWhitelistAddressConsumer,
   IExecConsumer,
   SubgraphConsumer,
 } from './types.js';
@@ -17,7 +17,7 @@ export const fetchMyContacts = async ({
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
-  DppWhitelistAddressConsumer): Promise<Contact[]> => {
+  DappWhitelistAddressConsumer): Promise<Contact[]> => {
   try {
     const userAddress = await iexec.wallet.getAddress();
     return await fetchUserContacts({

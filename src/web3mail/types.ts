@@ -114,6 +114,6 @@ export type IpfsGatewayConfigConsumer = {
   ipfsGateway: string;
 };
 
-export type DppWhitelistAddressConsumer = {
+export type DappWhitelistAddressConsumer = {
   dappWhitelistAddress: string;
 };

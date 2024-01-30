@@ -7,7 +7,8 @@ export const throwIfMissing = (): never => {
 
 const isUndefined = (value: unknown) => value === undefined;
 const isAddressTest = (value: string) => isAddress(value);
-const isEnsTest = (value: string) => value.endsWith('.eth') && value.length > 6;
+export const isEnsTest = (value: string) =>
+  value.endsWith('.eth') && value.length > 6;
 
 export const addressOrEnsSchema = () =>
   string()

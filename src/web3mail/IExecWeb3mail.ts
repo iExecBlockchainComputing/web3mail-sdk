@@ -85,6 +85,7 @@ export class IExecWeb3mail {
       ipfsNode: this.ipfsNode,
       ipfsGateway: this.ipfsGateway,
       dappAddressOrENS: this.dappAddressOrENS,
+      dappWhitelistAddress: this.dappWhitelistAddress,
       graphQLClient: this.graphQLClient,
     });
 }

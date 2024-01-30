@@ -2,11 +2,11 @@ import { ANY_DATASET_ADDRESS } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
-import { throwIfMissing } from '../utils/validators.js';
+import { addressOrEnsSchema, isEnsTest, throwIfMissing } from '../utils/validators.js';
 import {
   Contact,
   DappAddressConsumer,
-  DppWhitelistAddressConsumer,
+  DappWhitelistAddressConsumer,
   FetchUserContactsParams,
   IExecConsumer,
   SubgraphConsumer,
@@ -21,34 +21,47 @@ export const fetchUserContacts = async ({
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
-  DppWhitelistAddressConsumer &
+  DappWhitelistAddressConsumer &
   FetchUserContactsParams): Promise<Contact[]> => {
   try {
+    const vDappAddressOrENS = addressOrEnsSchema()
+      .required()
+      .label('dappAddressOrENS')
+      .validateSync(dappAddressOrENS);
+    const vDappWhitelistAddress = addressOrEnsSchema()
+      .required()
+      .label('dappWhitelistAddress')
+      .validateSync(dappWhitelistAddress);
+    const vUserAddress = addressOrEnsSchema()
+      .required()
+      .label('userAddress')
+      .validateSync(userAddress);
+
     const [ensOrders, scOrders] = await Promise.all([
       fetchAllOrdersByApp({
         iexec,
-        userAddress,
+        vUserAddress,
         appAddress: dappAddressOrENS,
       }),
       fetchAllOrdersByApp({
         iexec,
-        userAddress,
-        appAddress: dappWhitelistAddress,
+        vUserAddress,
+        appAddress: vDappWhitelistAddress,
       }),
     ]);
 
     const orders = ensOrders.concat(scOrders);
     const myContacts: Contact[] = [];
-    const web3DappResolvedAddress = await iexec.ens.resolveName(
-      dappAddressOrENS
-    );
-
+    let web3DappResolvedAddress = vDappAddressOrENS;
+    if (isEnsTest(vDappAddressOrENS)) {
+      web3DappResolvedAddress = await iexec.ens.resolveName(vDappAddressOrENS);
+    }
     orders.forEach((order) => {
       if (
         order.order.apprestrict.toLowerCase() ===
           web3DappResolvedAddress.toLowerCase() ||
         order.order.apprestrict.toLowerCase() ===
-          dappWhitelistAddress.toLowerCase()
+          vDappWhitelistAddress.toLowerCase()
       ) {
         const contact = {
           address: order.order.dataset.toLowerCase(),
@@ -70,12 +83,12 @@ export const fetchUserContacts = async ({
   }
 };
 
-async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
+async function fetchAllOrdersByApp({ iexec, vUserAddress, appAddress }) {
   const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook(
     ANY_DATASET_ADDRESS,
     {
       app: appAddress,
-      requester: userAddress,
+      requester: vUserAddress,
       // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
       pageSize: 1000,
     }
