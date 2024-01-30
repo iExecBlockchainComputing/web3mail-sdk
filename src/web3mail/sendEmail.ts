@@ -4,7 +4,6 @@ import {
   MAX_DESIRED_DATA_ORDER_PRICE,
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   PROD_WORKERPOOL_ADDRESS,
-  WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../config/config.js';
 import { WorkflowError } from '../utils/errors.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
@@ -37,7 +36,7 @@ export const sendEmail = async ({
   iexec = throwIfMissing(),
   workerpoolAddressOrEns = PROD_WORKERPOOL_ADDRESS,
   dappAddressOrENS,
-  dappWhitelistAddress = WHITELIST_SMART_CONTRACT_ADDRESS,
+  dappWhitelistAddress,
   ipfsNode,
   ipfsGateway,
   emailSubject,
@@ -261,4 +260,3 @@ export const sendEmail = async ({
     throw new WorkflowError(`${error.message}`, error);
   }
 };
-

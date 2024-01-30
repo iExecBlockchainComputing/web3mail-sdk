@@ -46,12 +46,12 @@ export const fetchUserContacts = async ({
       fetchAllOrdersByApp({
         iexec,
         vUserAddress,
-        appAddress: dappAddressOrENS,
+        vAppAddress: dappAddressOrENS,
       }),
       fetchAllOrdersByApp({
         iexec,
         vUserAddress,
-        appAddress: vDappWhitelistAddress,
+        vAppAddress: vDappWhitelistAddress,
       }),
     ]);
 
@@ -88,11 +88,11 @@ export const fetchUserContacts = async ({
   }
 };
 
-async function fetchAllOrdersByApp({ iexec, vUserAddress, appAddress }) {
+async function fetchAllOrdersByApp({ iexec, vUserAddress, vAppAddress }) {
   const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook(
     ANY_DATASET_ADDRESS,
     {
-      app: appAddress,
+      app: vAppAddress,
       requester: vUserAddress,
       // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
       pageSize: 1000,
