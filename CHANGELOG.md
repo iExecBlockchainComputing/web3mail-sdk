@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - added `fetchUserContacts` method allowing to fetch contacts of a given user
-- added `workerpoolAddressOrEns` options to `sendEmail` to specify the workerpool to use (defaults to iExec production workerpool)
+- added `workerpoolAddressOrEns` options to `sendEmail` to specify the workerpool to use (defaults to iExec's production workerpool)
 - added `dataMaxPrice`, `appMaxPrice` and `workerpoolMaxPrice` options to `sendEmail` to specify the maximum price in nRLC to pay to each provider
 - added `label` option to `sendEmail` to tag the web3mail task onchain via iexec_args
 - added `dappAddressOrENS`, `dappWhitelistAddress`, `dataProtectorSubgraph`, `ipfsNode`, `ipfsGateway` configuration options to the constructor
