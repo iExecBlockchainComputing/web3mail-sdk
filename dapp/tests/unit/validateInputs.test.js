@@ -1,5 +1,4 @@
 const validateInputs = require('../../src/validateInputs');
-const Joi = require('joi');
 
 describe('validateInputs function', () => {
   let envVars;
@@ -79,7 +78,7 @@ describe('validateInputs function', () => {
     envVars.mailJetApiKeyPublic = 12345;
     envVars.emailContentMultiAddr = '';
     expect(() => validateInputs(envVars)).toThrow(
-      /"iexecOut" is required; "mailJetApiKeyPublic" must be a string; "emailContentMultiAddr\" is not allowed to be empty/i
+      /"iexecOut" is required; "mailJetApiKeyPublic" must be a string; "emailContentMultiAddr" is not allowed to be empty/i
     );
   });
 

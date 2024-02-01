@@ -15,7 +15,8 @@
   ],
   "rules": {
     "sonarjs/cognitive-complexity": "warn",
-    "@typescript-eslint/no-explicit-any": "warn"
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-use-before-define": ["error", { "functions": false }]
   },
   "overrides": [
     {

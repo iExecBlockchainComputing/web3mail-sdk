@@ -1,12 +1,13 @@
 import { describe, it, expect } from '@jest/globals';
-import { ValidationError } from '../../../dist/utils/errors';
+import { ValidationError } from 'yup';
 import {
   addressOrEnsSchema,
   emailSubjectSchema,
   emailContentSchema,
   senderNameSchema,
-} from '../../../dist/utils/validators';
-import { getRandomAddress, getRequiredFieldMessage } from '../../test-utils';
+  labelSchema,
+} from '../../../src/utils/validators.js';
+import { getRandomAddress, getRequiredFieldMessage } from '../../test-utils.js';
 
 const CANNOT_BE_NULL_ERROR = new ValidationError('this cannot be null');
 const IS_REQUIRED_ERROR = new ValidationError(getRequiredFieldMessage());
@@ -126,6 +127,31 @@ describe('senderNameSchema()', () => {
       expect(() =>
         senderNameSchema().validateSync('A very long sender name')
       ).toThrow('this must be at most 20 characters');
+    });
+  });
+});
+
+describe('labelSchema()', () => {
+  describe('validateSync()', () => {
+    it('pass with valid label', () => {
+      const label = 'ID12345678';
+      const res = labelSchema().validateSync(label);
+      expect(res).toBe(label);
+    });
+    it('blocks too short label', () => {
+      expect(() => labelSchema().validateSync('ID')).toThrow(
+        'this must be at least 3 characters'
+      );
+    });
+    it('blocks empty characters as label', () => {
+      expect(() => labelSchema().validateSync('   ')).toThrow(
+        'this must be at least 3 characters'
+      );
+    });
+    it('blocks too long label', () => {
+      expect(() => labelSchema().validateSync('CAMPAIGN2023')).toThrow(
+        'this must be at most 10 characters'
+      );
     });
   });
 });

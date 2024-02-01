@@ -1,17 +1,20 @@
 {
-  "name": "datadeployer",
+  "name": "demo",
   "version": "1.0.0",
   "description": "",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "tsx index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@iexec/dataprotector": "^0.0.0-nightly-8395225223034e4980135f6bf58f0a370721b496",
-    "dotenv": "^16.0.3"
+    "@iexec/web3mail": "file:../..",
+    "tsx": "^4.7.0"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  }
 }
