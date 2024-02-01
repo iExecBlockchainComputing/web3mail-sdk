@@ -6,25 +6,25 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- added `fetchUserContacts(userAddress)` method allowing to fetch contacts of a given user
-- added `workerpoolAddressOrEns` options to `sendEmail()` to specify the workerpool to use (defaults to iExec production workerpool)
-- added `dataMaxPrice`, `appMaxPrice` and `workerpoolMaxPrice` options to `sendEmail()` to specify the maximum price in nRLC to pay to each provider
-- added `label` option to `sendEmail()` to tag the web3mail task onchain via iexec_args
+- added `fetchUserContacts` method allowing to fetch contacts of a given user
+- added `workerpoolAddressOrEns` options to `sendEmail` to specify the workerpool to use (defaults to iExec production workerpool)
+- added `dataMaxPrice`, `appMaxPrice` and `workerpoolMaxPrice` options to `sendEmail` to specify the maximum price in nRLC to pay to each provider
+- added `label` option to `sendEmail` to tag the web3mail task onchain via iexec_args
 - added `dappAddressOrENS`, `dappWhitelistAddress`, `dataProtectorSubgraph`, `ipfsNode`, `ipfsGateway` configuration options to the constructor
 
 ### Changed
 
-- optimized market api requests in `fetchMyContact()` and `sendEmail()`
+- optimized market api requests in `fetchMyContact` and `sendEmail`
 - fixed bug that prevented ethereum address to be used as `dappAddressOrENS`
-- use iExec production workerpool for `sendEmail()` if none is specified
-- support for access granted to web3mail dapps whitelist in `sendEmail()`
+- use iExec production workerpool for `sendEmail` if none is specified
+- support for access granted to web3mail dapps whitelist in `sendEmail`
 - migrated from ethers v5 to ethers v6
 
 ## [0.5.2]
 
 ### Added
 
-- support for access granted to web3mail dapps whitelist in `fetchMyContacts()`
+- support for access granted to web3mail dapps whitelist in `fetchMyContacts`
 - add linter
 
 ## [0.5.1]
