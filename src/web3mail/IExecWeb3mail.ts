@@ -10,6 +10,7 @@ import {
   Web3SignerProvider,
   AddressOrENS,
   Web3MailConfigOptions,
+  SendEmailResponse,
 } from './types.js';
 import { GraphQLClient } from 'graphql-request';
 import {
@@ -60,7 +61,7 @@ export class IExecWeb3mail {
       options?.dappWhitelistAddress || WHITELIST_SMART_CONTRACT_ADDRESS;
   }
 
-  fetchMyContacts = () =>
+  fetchMyContacts = (): Promise<Contact[]> =>
     fetchMyContacts({
       iexec: this.iexec,
       graphQLClient: this.graphQLClient,
@@ -78,7 +79,7 @@ export class IExecWeb3mail {
     });
   }
 
-  sendEmail = (args: SendEmailParams) =>
+  sendEmail = (args: SendEmailParams): Promise<SendEmailResponse> =>
     sendEmail({
       ...args,
       iexec: this.iexec,
