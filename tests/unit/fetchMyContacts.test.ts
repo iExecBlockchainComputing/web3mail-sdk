@@ -60,6 +60,8 @@ describe('fetchMyContacts', () => {
       {
         app: WEB3_MAIL_DAPP_ADDRESS,
         requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: true,
         pageSize: 1000,
       }
     );
@@ -69,6 +71,8 @@ describe('fetchMyContacts', () => {
       {
         app: WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
         requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: true,
         pageSize: 1000,
       }
     );

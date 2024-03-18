@@ -94,6 +94,8 @@ async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
     {
       app: appAddress,
       requester: userAddress,
+      isAppStrict: true,
+      isRequesterStrict: true,
       // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
       pageSize: 1000,
     }
