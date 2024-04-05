@@ -1,7 +1,9 @@
 const { promises: fs } = require('fs');
+const {
+  IExecDataProtectorDeserializer,
+} = require('@iexec/dataprotector-deserializer');
 const sendEmail = require('./emailService');
 const validateInputs = require('./validateInputs');
-const extractZipAndBuildJson = require('./extractEmailFromZipFile');
 const {
   downloadEncryptedContent,
   decryptContent,
@@ -33,10 +35,12 @@ async function start() {
   } catch {
     throw Error('Failed to parse requester secret');
   }
+
+  const deserializer = new IExecDataProtectorDeserializer();
+  const email = await deserializer.getValue('email', 'string');
+
   const unsafeEnvVars = {
-    iexecIn: process.env.IEXEC_IN,
     iexecOut: process.env.IEXEC_OUT,
-    dataFileName: process.env.IEXEC_DATASET_FILENAME,
     mailJetApiKeyPublic: developerSecret.MJ_APIKEY_PUBLIC,
     mailJetApiKeyPrivate: developerSecret.MJ_APIKEY_PRIVATE,
     mailJetSender: developerSecret.MJ_SENDER,
@@ -47,12 +51,6 @@ async function start() {
     emailContentEncryptionKey: requesterSecret.emailContentEncryptionKey,
   };
   const envVars = validateInputs(unsafeEnvVars);
-  const email = await extractZipAndBuildJson(
-    `${envVars.iexecIn}/${envVars.dataFileName}`
-  );
-  if (!email) {
-    throw new Error('Missing email in protectedData');
-  }
   const encryptedEmailContent = await downloadEncryptedContent(
     envVars.emailContentMultiAddr
   );
