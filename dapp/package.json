@@ -20,7 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@iexec/dataprotector-deserializer": "0.0.0",
+    "@iexec/dataprotector-deserializer": "0.0.0-nightly-b07405f56e83bee65fae71a8b177cda056d8088c",
     "joi": "^17.9.2",
     "jszip": "^3.10.1",
     "node-fetch": "^2.7.0",
