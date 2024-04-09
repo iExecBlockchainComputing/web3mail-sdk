@@ -409,6 +409,12 @@ steps:
       - cd deployment-dapp
       - npm run lint
 
+  - name: format
+    image: node:18.19
+    commands:
+      - cd deployment-dapp
+      - npm run check-format
+
 ---
 #pipeline to publish dapp contract on iexec
 kind: pipeline

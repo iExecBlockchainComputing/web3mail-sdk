@@ -10,7 +10,9 @@
     "publish-sell-order": "tsx ./src/publishSellOrderScript.ts",
     "revoke-sell-order": "tsx ./src/revokeSellOrderScript.ts",
     "configure-ens": "tsx ./src/configureEnsNameScript.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "check-format": "prettier --check \"src/**/*.ts\""
   },
   "keywords": [],
   "author": "",
