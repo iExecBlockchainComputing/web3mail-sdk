@@ -383,6 +383,33 @@ steps:
         from_secret: nexus-password
 
 ---
+# dapp-deployment default pipeline
+# /!\ every step must run in dapp-deployment/
+kind: pipeline
+type: docker
+name: dapp-deployment-default
+
+trigger:
+  event:
+    include:
+      - push
+      - pull_request
+
+steps:
+  - name: install deps
+    image: node:18.19
+    pull: always
+    commands:
+      - cd deployment-dapp
+      - npm ci
+
+  - name: lint
+    image: node:18.19
+    commands:
+      - cd deployment-dapp
+      - npm run lint
+
+---
 #pipeline to publish dapp contract on iexec
 kind: pipeline
 type: docker
@@ -419,14 +446,6 @@ steps:
         - dapp-prod
       branch:
         - main
-
-  # TODO : Add format script to the deploy-dapp monorepo
-
-  - name: lint
-    image: node:18.19
-    commands:
-      - cd dapp
-      - npm run lint
 
   - name: install deps
     image: node:18.19
