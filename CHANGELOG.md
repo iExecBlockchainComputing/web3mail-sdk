@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Next
+
+### Changed
+
+- Upgraded the iexec dependency to ^8.6.0
+
 ## [0.6.0]
 
 ### Added
