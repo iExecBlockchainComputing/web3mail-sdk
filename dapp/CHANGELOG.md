@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0]
+
+### Changed
+
+- use `@iexec/dataprotector-deserializer` for handling dataprotector v2 protected data
+
 ## [0.6.0]
 
 ### Changed

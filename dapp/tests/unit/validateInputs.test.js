@@ -5,9 +5,7 @@ describe('validateInputs function', () => {
 
   beforeEach(() => {
     envVars = {
-      iexecIn: '/path/to/iexec/in',
       iexecOut: '/path/to/iexec/out',
-      dataFileName: 'data.txt',
       mailJetApiKeyPublic: 'api_public_key',
       mailJetApiKeyPrivate: 'api_private_key',
       mailJetSender: 'sender@example.com',
@@ -55,14 +53,14 @@ describe('validateInputs function', () => {
   });
 
   it('should throw an error if any required input is missing', () => {
-    delete envVars.iexecIn;
-    expect(() => validateInputs(envVars)).toThrow(/"iexecIn" is required/i);
+    delete envVars.iexecOut;
+    expect(() => validateInputs(envVars)).toThrow(/"iexecOut" is required/i);
   });
 
   it('should throw an error if any input value is of an invalid type', () => {
-    envVars.iexecIn = 12345;
+    envVars.iexecOut = 12345;
     expect(() => validateInputs(envVars)).toThrow(
-      /"iexecIn" must be a string/i
+      /"iexecOut" must be a string/i
     );
   });
 
