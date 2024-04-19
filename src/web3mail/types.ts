@@ -43,7 +43,7 @@ export type FetchUserContactsParams = {
 };
 
 export type SendEmailResponse = {
-  taskId: Address;
+  taskId: string;
 };
 
 /**
