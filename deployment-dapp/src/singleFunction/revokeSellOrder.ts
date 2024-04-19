@@ -4,9 +4,7 @@ export const revokeSellOrder = async (
   iexec: IExec,
   orderHash: string
 ): Promise<string> => {
-  console.log(
-    `Revoking apporder with the orderHash: ${orderHash}`
-  );
+  console.log(`Revoking apporder with the orderHash: ${orderHash}`);
   let txHash = null;
   try {
     txHash = await iexec.order.unpublishApporder(orderHash);
