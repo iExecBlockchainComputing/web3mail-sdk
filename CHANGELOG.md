@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Upgraded the iexec dependency to ^8.6.0
+- Upgraded the iexec dependency to ^8.7.0
 
 ## [0.6.0]
 
