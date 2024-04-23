@@ -204,9 +204,7 @@ steps:
       - result-proxy-healthy
       - market-api-healthy
       - ipfs-healthy
-      - graphnode-healthy
-      - subgraph-deploy
-  ### START LOCAL STACK END ###
+  # ### START LOCAL STACK END ###
 
   - name: install
     image: node:18.19
