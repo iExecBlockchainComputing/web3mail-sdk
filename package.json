@@ -24,7 +24,9 @@
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.ts\"",
     "check-format": "prettier --check \"src/**/*.ts\"",
-    "prepare-test-env": "cd tests && node prepare-test-env.js"
+    "prepare-test-env": "cd tests && node prepare-test-env.js",
+    "stop-test-stack": "cd tests && docker compose down --volumes --remove-orphans",
+    "start-test-stack": "cd tests && npm run stop-test-stack && npm run prepare-test-env && docker compose build && docker compose up -d"
   },
   "repository": {
     "type": "git",
