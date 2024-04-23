@@ -23,7 +23,8 @@
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.ts\"",
-    "check-format": "prettier --check \"src/**/*.ts\""
+    "check-format": "prettier --check \"src/**/*.ts\"",
+    "prepare-test-env": "cd tests && node prepare-test-env.js"
   },
   "repository": {
     "type": "git",
