@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## NEXT
+
+### Changed
+
+- fixed `Buffer` polyfill issue
+
 ## [0.6.0]
 
 ### Added
