@@ -201,7 +201,7 @@ services:
     image: dataprotector-subgraph-deployer
     restart: 'on-failure'
     build:
-      context: subgraph
+      context: dataprotector-subgraph
       dockerfile: deployer.Dockerfile
     depends_on:
       graphnode:

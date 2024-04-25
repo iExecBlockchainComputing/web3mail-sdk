@@ -1,0 +1,51 @@
+specVersion: 0.0.5
+description: Subgraph for dataProtector smart contract
+schema:
+  file: ./schema.graphql
+dataSources:
+  # ============================= Data protector ==============================
+  - name: DataProtector
+    kind: ethereum/contract
+    network: bellecour
+    source:
+      address: "0x3a4Ab33F3D605e75b6D00A32A0Fa55C3628F6A59"
+      abi: DataProtector
+      #START_BLOCK_PLACEHOLDER#
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ProtectedData
+        - SchemaEntry
+      abis:
+        - name: DataProtector
+          file: ./abis/DataProtector.json
+      eventHandlers:
+        - event: DatasetSchema(indexed address,string)
+          handler: handleDatasetSchema
+      file: ./src/dataProtector.ts
+
+  # ============================= Dataset registry ==============================
+  - name: DatasetRegistry
+    kind: ethereum/contract
+    network: bellecour
+    source:
+      address: "0x799DAa22654128d0C64d5b79eac9283008158730"
+      abi: DatasetRegistry
+      #START_BLOCK_PLACEHOLDER#
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ProtectedData
+      abis:
+        - name: Dataset
+          file: node_modules/@iexec/poco/build/contracts/Dataset.json
+        - name: DatasetRegistry
+          file: node_modules/@iexec/poco/build/contracts/DatasetRegistry.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransferDataset
+      file: ./src/datasetRegistry.ts
