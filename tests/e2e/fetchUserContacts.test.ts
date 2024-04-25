@@ -1,16 +1,15 @@
 import {
   IExecDataProtector,
   ProtectedDataWithSecretProps,
-  getWeb3Provider as dataprotectorGetWeb3Provider,
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet, Wallet } from 'ethers';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
-import { IExecWeb3mail, getWeb3Provider } from '../../src/index.js';
-import { EnhancedWallet } from 'iexec';
+import { IExecWeb3mail } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
+  getTestConfig,
 } from '../test-utils.js';
 
 describe('web3mail.fetchMyContacts()', () => {
@@ -19,15 +18,11 @@ describe('web3mail.fetchMyContacts()', () => {
   let dataProtector: IExecDataProtector;
   let protectedData1: ProtectedDataWithSecretProps;
   let protectedData2: ProtectedDataWithSecretProps;
-  let ethProvider: EnhancedWallet;
 
   beforeAll(async () => {
     wallet = Wallet.createRandom();
-    ethProvider = getWeb3Provider(wallet.privateKey);
-    dataProtector = new IExecDataProtector(
-      dataprotectorGetWeb3Provider(wallet.privateKey)
-    );
-    web3mail = new IExecWeb3mail(ethProvider);
+    dataProtector = new IExecDataProtector(...getTestConfig(wallet.privateKey));
+    web3mail = new IExecWeb3mail(...getTestConfig(wallet.privateKey));
 
     //create valid protected data
     protectedData1 = await dataProtector.protectData({
