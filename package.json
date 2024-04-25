@@ -43,7 +43,7 @@
     "@ethersproject/random": "^5.7.0",
     "ethers": "^6.8.1",
     "graphql-request": "^6.1.0",
-    "iexec": "^8.6.0",
+    "iexec": "^8.7.0",
     "kubo-rpc-client": "^3.0.1",
     "yup": "^1.1.1"
   },
