@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import {
   DEFAULT_CONTENT_TYPE,
   MAX_DESIRED_APP_ORDER_PRICE,
