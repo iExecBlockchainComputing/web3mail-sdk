@@ -247,7 +247,7 @@ steps:
   - name: subgraph-install-deps
     image: node:18.19
     commands:
-      - cd tests/subgraph
+      - cd dataprotector-subgraph
       - npm ci
 
   - name: subgraph-deploy
@@ -256,7 +256,7 @@ steps:
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
     commands:
-      - cd tests/subgraph
+      - cd dataprotector-subgraph
       - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
       - npm run all
     depends_on:
