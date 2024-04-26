@@ -272,8 +272,7 @@ steps:
       - ipfs-healthy
       - graphnode-healthy
       - subgraph-deploy
-
-  ### START LOCAL STACK END ###
+##### START LOCAL STACK END #####
 
   - name: install
     image: node:18.19
@@ -287,31 +286,48 @@ steps:
     image: node:18.19
     commands:
       - npm run check-format
-
+    depends_on:
+      - install
+  
   - name: lint
     image: node:18.19
     commands:
       - npm run lint
+    depends_on:
+      - install
 
   - name: check-types
     image: node:18.19
     commands:
       - npm run check-types
+    depends_on:
+      - install
 
   - name: test
     image: node:18.19
     commands:
       - npm run test
+    depends_on:
+      - install
+      - stack-ready
 
   - name: build
     image: node:18.19
     commands:
       - npm run build
+    depends_on:
+      - install
 
   - name: npm-publish-dry-run
     image: node:18.19
     commands:
       - npm publish --dry-run
+    depends_on:
+      - format
+      - lint
+      - check-types
+      - test
+      - build
 
 ---
 # sdk @iexec/web3mail publish npm nightly pipeline
