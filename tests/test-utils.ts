@@ -1,11 +1,10 @@
-import { Wallet } from 'ethers';
+import { Contract, JsonRpcProvider, JsonRpcSigner, Wallet } from 'ethers';
 import {
   Web3MailConfigOptions,
   Web3SignerProvider,
 } from '../src/web3mail/types.js';
 import { IExec, utils } from 'iexec';
 import { randomInt } from 'crypto';
-import { AppDeploymentArgs } from 'iexec/IExecAppModule';
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -20,13 +19,14 @@ export const MAX_EXPECTED_BLOCKTIME = 5_000;
 
 export const MAX_EXPECTED_WEB2_SERVICES_TIME = 80_000;
 
+const TEST_RPC_URL = process.env.DRONE
+  ? 'http://bellecour-fork:8545'
+  : 'http://127.0.0.1:8545';
+
 export const getTestWeb3SignerProvider = (
   privateKey: string
 ): Web3SignerProvider =>
-  utils.getSignerFromPrivateKey(
-    process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545',
-    privateKey
-  );
+  utils.getSignerFromPrivateKey(TEST_RPC_URL, privateKey);
 
 export const getTestIExecOption = () => ({
   smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
@@ -66,74 +66,154 @@ export const deployRandomDataset = async (iexec: IExec, owner?: string) =>
       '0x0000000000000000000000000000000000000000000000000000000000000000',
   });
 
-const WEB3MAIL_APP_DEPLOYMENT_ARGS: AppDeploymentArgs = {
-  owner: undefined,
-  name: 'local-web3mail-dapp',
-  type: 'DOCKER',
-  multiaddr: 'iexechub/web3mail-dapp:0.6.0-sconify-5.7.5-v12-production',
-  mrenclave: {
-    framework: 'SCONE',
-    entrypoint: 'node /app/app.js',
-    heapSize: 1073741824,
-    version: 'v5',
-    fingerprint:
-      'da3f671e5e0fd0d8ac9d1ab781640685e5ae221bc97bd214d7b9fe1b832269b9',
-  },
-  checksum:
-    '0xedfc15db004eeed1d0a952bc302c1106892a69535f7c196748621cb89ae9baae',
-};
-
-export const deployTestApp = async (
-  iexec: IExec,
-  appArgs: AppDeploymentArgs = WEB3MAIL_APP_DEPLOYMENT_ARGS
-) => {
-  const { name, type, multiaddr, mrenclave, checksum } = appArgs;
-  const dappOwner = await iexec.wallet.getAddress();
-  const { address } = await iexec.app.deployApp({
-    owner: dappOwner,
-    name,
-    type,
-    multiaddr,
-    mrenclave,
-    checksum,
-  });
-  return address;
-};
-
-export const deployTestWorkerpool = async (iexec: IExec) => {
-  const workerpoolOwner = await iexec.wallet.getAddress();
-  const { address } = await iexec.workerpool.deployWorkerpool({
-    owner: workerpoolOwner,
-    description: 'test workerpool',
-  });
-  return address;
-};
-
 export const createAndPublishTestOrders = async (
   resourceProvider,
   appAddress,
   workerpoolAddress
 ) => {
-  // create & publish app order
   await resourceProvider.order
     .createApporder({
       app: appAddress,
       tag: ['tee', 'scone'],
-      volume: 5,
+      volume: 100,
       appprice: 0,
     })
     .then(resourceProvider.order.signApporder)
     .then(resourceProvider.order.publishApporder);
 
-  // create & publish workerpool order
   await resourceProvider.order
     .createWorkerpoolorder({
       workerpool: workerpoolAddress,
       category: 0,
       tag: ['tee', 'scone'],
-      volume: 5,
+      volume: 100,
       workerpoolprice: 0,
     })
     .then(resourceProvider.order.signWorkerpoolorder)
     .then(resourceProvider.order.publishWorkerpoolorder);
+};
+
+const impersonateAccount = async (rpcURL, address) => {
+  const response = await fetch(rpcURL, {
+    method: 'POST',
+    body: JSON.stringify({
+      method: 'anvil_impersonateAccount',
+      params: [address],
+      id: 1,
+      jsonrpc: '2.0',
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to impersonate account ${address}`);
+  }
+
+  console.log(`Impersonating ${address}`);
+};
+
+const stopImpersonatingAccount = async (rpcURL, address) => {
+  const response = await fetch(rpcURL, {
+    method: 'POST',
+    body: JSON.stringify({
+      method: 'anvil_stopImpersonatingAccount',
+      params: [address],
+      id: 1,
+      jsonrpc: '2.0',
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to stop impersonating account ${address}`);
+  }
+
+  console.log(`Stop impersonating ${address}`);
+};
+
+export const getIExecResourceOwnership = async (
+  resourceAddress,
+  targetOwner
+) => {
+  const provider = new JsonRpcProvider(TEST_RPC_URL);
+
+  const RESOURCE_ABI = [
+    {
+      inputs: [],
+      name: 'owner',
+      outputs: [{ internalType: 'address', name: '', type: 'address' }],
+      stateMutability: 'view',
+      type: 'function',
+      constant: true,
+    },
+    {
+      inputs: [],
+      name: 'registry',
+      outputs: [
+        {
+          internalType: 'contract IRegistry',
+          name: '',
+          type: 'address',
+        },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+    },
+  ];
+  const RESOURCE_REGISTRY_ABI = [
+    {
+      inputs: [
+        {
+          internalType: 'address',
+          name: 'from',
+          type: 'address',
+        },
+        {
+          internalType: 'address',
+          name: 'to',
+          type: 'address',
+        },
+        {
+          internalType: 'uint256',
+          name: 'tokenId',
+          type: 'uint256',
+        },
+      ],
+      name: 'safeTransferFrom',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+  ];
+
+  const resourceContract = new Contract(
+    resourceAddress,
+    RESOURCE_ABI,
+    provider
+  ) as any;
+
+  const resourceOwner = await resourceContract.owner();
+  const resourceRegistryAddress = await resourceContract.registry();
+
+  const resourceRegistryContract = new Contract(
+    resourceRegistryAddress,
+    RESOURCE_REGISTRY_ABI,
+    provider
+  ) as any;
+
+  await impersonateAccount(TEST_RPC_URL, resourceOwner);
+  const tx = await resourceRegistryContract
+    .connect(new JsonRpcSigner(provider, resourceOwner))
+    .safeTransferFrom(resourceOwner, targetOwner, resourceAddress, {
+      gasPrice: 0,
+    });
+  await tx.wait();
+  await stopImpersonatingAccount(TEST_RPC_URL, resourceOwner);
+
+  const newOwner = await resourceContract.owner();
+  console.log(`Contract at ${resourceAddress} is now owned by ${newOwner}`);
 };

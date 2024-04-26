@@ -4,14 +4,17 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet } from 'ethers';
-import { WHITELIST_SMART_CONTRACT_ADDRESS } from '../../src/config/config.js';
+import {
+  WEB3_MAIL_DAPP_ADDRESS,
+  WHITELIST_SMART_CONTRACT_ADDRESS,
+  PROD_WORKERPOOL_ADDRESS,
+} from '../../src/config/config.js';
 import { IExecWeb3mail } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
   createAndPublishTestOrders,
-  deployTestApp,
-  deployTestWorkerpool,
+  getIExecResourceOwnership,
   getRandomWallet,
   getTestConfig,
   getTestIExecOption,
@@ -36,8 +39,25 @@ describe('web3mail.sendEmail()', () => {
     const iexecOptions = getTestIExecOption();
     const resourceProvider = new IExec({ ethProvider }, iexecOptions);
 
-    const appAddress = await deployTestApp(resourceProvider);
-    workerpoolAddress = await deployTestWorkerpool(resourceProvider);
+    // impersonate app owner and get app ownership
+    // const appAddress = await deployTestApp(resourceProvider);
+    const appAddress = await resourceProvider.ens.resolveName(
+      WEB3_MAIL_DAPP_ADDRESS
+    );
+    await getIExecResourceOwnership(
+      appAddress,
+      await resourceProvider.wallet.getAddress()
+    );
+
+    // impersonate workerpool owner and get app ownership
+    // workerpoolAddress = await deployTestWorkerpool(resourceProvider);
+    workerpoolAddress = await resourceProvider.ens.resolveName(
+      PROD_WORKERPOOL_ADDRESS
+    );
+    await getIExecResourceOwnership(
+      workerpoolAddress,
+      await resourceProvider.wallet.getAddress()
+    );
 
     await createAndPublishTestOrders(
       resourceProvider,
@@ -66,13 +86,7 @@ describe('web3mail.sendEmail()', () => {
       name: 'test do not use',
     });
 
-    const [web3mailProvider, options] = getTestConfig(
-      consumerWallet.privateKey
-    );
-    web3mail = new IExecWeb3mail(web3mailProvider, {
-      ...options,
-      dappAddressOrENS: appAddress,
-    });
+    web3mail = new IExecWeb3mail(...getTestConfig(consumerWallet.privateKey));
     // avoid race condition with subgraph indexation
     await sleep(5_000);
   }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000);
@@ -92,7 +106,7 @@ describe('web3mail.sendEmail()', () => {
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
-  it.skip(
+  it(
     'should successfully send email with granted access to whitelist address',
     async () => {
       //create valid protected data
@@ -270,7 +284,6 @@ describe('web3mail.sendEmail()', () => {
         emailContent: 'e2e mail content for test',
         protectedData: validProtectedData.address,
         label: 'ID1234678',
-        workerpoolAddressOrEns: workerpoolAddress,
       };
       const sendEmailResponse = await web3mail.sendEmail(params);
       expect(sendEmailResponse.taskId).toBeDefined();
