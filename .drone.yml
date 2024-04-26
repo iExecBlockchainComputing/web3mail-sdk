@@ -244,24 +244,19 @@ steps:
       - market-api
       - market-watcher
 
-  - name: subgraph-install-deps
-    image: node:18.19
-    commands:
-      - cd dataprotector-subgraph
-      - npm ci
-
   - name: subgraph-deploy
     image: node:18.19
     environment:
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
     commands:
-      - cd dataprotector-subgraph
-      - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
+      - git clone --single-branch -b main https://github.com/iExecBlockchainComputing/dataprotector-sdk.git dataprotector-subgraph
+      - cd dataprotector-subgraph/packages/subgraph
+      - npm ci
       - npm run all
+      - export START_BLOCK=$(cat ../../../local-stack-env/BELLECOUR_FORK_BLOCK)
     depends_on:
       - prepare-local-stack-env
-      - subgraph-install-deps
       - ipfs-healthy
       - graphnode-healthy
 

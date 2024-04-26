@@ -201,7 +201,7 @@ services:
     image: dataprotector-subgraph-deployer
     restart: 'on-failure'
     build:
-      context: dataprotector-subgraph
+      context: https://github.com/iExecBlockchainComputing/dataprotector-sdk.git#main:packages/subgraph
       dockerfile: deployer.Dockerfile
     depends_on:
       graphnode:

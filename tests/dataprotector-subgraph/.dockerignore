@@ -1,5 +1,0 @@
-build
-generated
-node_modules
-.drone.yml
-subgraph.yaml
