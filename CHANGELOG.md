@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.1]
+
+### Changed
+
+- upgraded the `iexec` dependency to ^8.7.0
+- fixed `Buffer` polyfill issue
+
 ## [0.6.0]
 
 ### Added
