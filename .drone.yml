@@ -15,7 +15,7 @@ steps:
     image: node
     commands:
       - node tests/prepare-test-env.js
-
+  
   - name: bellecour-fork
     detach: true
     image: ghcr.io/foundry-rs/foundry:latest
@@ -255,7 +255,7 @@ steps:
       - rm -rf dataprotector-sdk && cd dataprotector-subgraph
       - npm ci
       - npm run all
-      - export START_BLOCK=$(cat ../tests/local-stack-env/BELLECOUR_FORK_BLOCK)
+      - export START_BLOCK=$(cat ../local-stack-env/BELLECOUR_FORK_BLOCK)
     depends_on:
       - prepare-local-stack-env
       - ipfs-healthy
