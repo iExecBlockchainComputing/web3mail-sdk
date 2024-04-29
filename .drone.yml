@@ -250,8 +250,9 @@ steps:
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
     commands:
-      - git clone --single-branch -b main https://github.com/iExecBlockchainComputing/dataprotector-sdk.git dataprotector-subgraph
-      - cd dataprotector-subgraph/packages/subgraph
+      - git clone --single-branch -b main https://github.com/iExecBlockchainComputing/dataprotector-sdk.git
+      - cp -r dataprotector-sdk/packages/subgraph dataprotector-subgraph
+      - rm -rf dataprotector-sdk && cd dataprotector-subgraph
       - npm ci
       - npm run all
       - export START_BLOCK=$(cat ../../../local-stack-env/BELLECOUR_FORK_BLOCK)
