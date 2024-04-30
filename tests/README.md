@@ -39,6 +39,7 @@ The local test stack includes the following services:
 - **market-redis:** redis instance for the iExec market watcher
 - **market-watcher:** market watcher service for monitoring iExec market activities
 - **market-api:** market API service for interacting with the iExec market
+- **subgraph-deploy:** service for deploying the dataprotector-subgraph
 
 ### Note
 
