@@ -40,7 +40,6 @@ describe('web3mail.sendEmail()', () => {
     const resourceProvider = new IExec({ ethProvider }, iexecOptions);
 
     // impersonate app owner and get app ownership
-    // const appAddress = await deployTestApp(resourceProvider);
     const appAddress = await resourceProvider.ens.resolveName(
       WEB3_MAIL_DAPP_ADDRESS
     );
@@ -50,7 +49,6 @@ describe('web3mail.sendEmail()', () => {
     );
 
     // impersonate workerpool owner and get app ownership
-    // workerpoolAddress = await deployTestWorkerpool(resourceProvider);
     workerpoolAddress = await resourceProvider.ens.resolveName(
       PROD_WORKERPOOL_ADDRESS
     );
