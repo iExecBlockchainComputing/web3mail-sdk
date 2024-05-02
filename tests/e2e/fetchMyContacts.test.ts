@@ -1,35 +1,32 @@
 import {
   IExecDataProtector,
   ProtectedDataWithSecretProps,
-  getWeb3Provider as dataprotectorGetWeb3Provider,
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet, Wallet } from 'ethers';
 import { NULL_ADDRESS } from 'iexec/utils';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
-import { IExecWeb3mail, getWeb3Provider } from '../../src/index.js';
-import { EnhancedWallet, IExec } from 'iexec';
+import { IExecWeb3mail } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
+  deployRandomDataset,
+  getTestConfig,
+  getTestWeb3SignerProvider,
+  getTestIExecOption,
 } from '../test-utils.js';
+import IExec from 'iexec/IExec';
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: HDNodeWallet;
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
   let protectedData: ProtectedDataWithSecretProps;
-  let ethProvider: EnhancedWallet;
 
   beforeAll(async () => {
     wallet = Wallet.createRandom();
-    ethProvider = getWeb3Provider(wallet.privateKey);
-    dataProtector = new IExecDataProtector(
-      dataprotectorGetWeb3Provider(wallet.privateKey)
-    );
-    web3mail = new IExecWeb3mail(ethProvider);
-
-    //create valid protected data
+    dataProtector = new IExecDataProtector(...getTestConfig(wallet.privateKey));
+    web3mail = new IExecWeb3mail(...getTestConfig(wallet.privateKey));
     protectedData = await dataProtector.protectData({
       data: { email: 'test@gmail.com' },
       name: 'test do not use',
@@ -44,7 +41,6 @@ describe('web3mail.fetchMyContacts()', () => {
         protectedData: protectedData.address,
         authorizedUser: wallet.address,
       });
-
       const res = await web3mail.fetchMyContacts();
       const foundContactForASpecificRequester = res.find((obj) => {
         return obj.address === protectedData.address.toLocaleLowerCase();
@@ -94,20 +90,15 @@ describe('web3mail.fetchMyContacts()', () => {
   it(
     'Should not return dataset as a contact',
     async () => {
-      const iexec = new IExec({
-        ethProvider,
-      });
-      const dataset = await iexec.dataset.deployDataset({
-        owner: wallet.address,
-        name: 'test do not use',
-        multiaddr: '/ipfs/Qmd286K6pohQcTKYqnS1YhWrCiS4gz7Xi34sdwMe9USZ7u',
-        checksum:
-          '0x84a3f860d54f3f5f65e91df081c8d776e8bcfb5fbc234afce2f0d7e9d26e160d',
-      });
+      const iexecOptions = getTestIExecOption();
+
+      const iexec = new IExec(
+        { ethProvider: getTestWeb3SignerProvider(wallet.privateKey) },
+        iexecOptions
+      );
+      const dataset = await deployRandomDataset(iexec);
       const encryptionKey = await iexec.dataset.generateEncryptionKey();
-
       await iexec.dataset.pushDatasetSecret(dataset.address, encryptionKey);
-
       await dataProtector.grantAccess({
         authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
         protectedData: dataset.address,

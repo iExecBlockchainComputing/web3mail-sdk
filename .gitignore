@@ -12,7 +12,7 @@
 /.DS_Store
 /.env
 /*.log
-/*.env
+*.env
 
 # TypeScript specific
 *.tsbuildinfo
