@@ -14,8 +14,8 @@ steps:
   - name: prepare-local-stack-env
     image: node
     commands:
-      - node tests/prepare-test-env.js
-  
+      - node tests/scripts/prepare-test-env.js
+
   - name: bellecour-fork
     detach: true
     image: ghcr.io/foundry-rs/foundry:latest
@@ -262,6 +262,24 @@ steps:
       - ipfs-healthy
       - graphnode-healthy
 
+  - name: bellecour-fork-voucher-deployment
+    #  https://github.com/iExecBlockchainComputing/voucher-deployer
+    image: pierreiexec/voucher-deployer
+    pull: always
+    environment:
+      RPC_URL: http://bellecour-fork:8545
+      GRAPHNODE_URL: http://graphnode:8020
+      IPFS_URL: http://ipfs:5001
+    commands:
+      - sh /app/entrypoint.sh
+      # update the voucher-config for test scripts (js & ts)
+      - echo "export const VOUCHER_HUB_ADDRESS = '$(cat /app/out/VoucherHub.address)';" > ./tests/bellecour-fork/voucher-config.js
+      - cp ./tests/bellecour-fork/voucher-config.js ./tests/bellecour-fork/voucher-config.ts
+    depends_on:
+      - bellecour-fork-healthy
+      - ipfs-healthy
+      - graphnode-healthy
+
   - name: stack-ready
     image: bash
     commands:
@@ -274,7 +292,9 @@ steps:
       - ipfs-healthy
       - graphnode-healthy
       - subgraph-deploy
-##### START LOCAL STACK END #####
+      - bellecour-fork-voucher-deployment
+
+  ##### START LOCAL STACK END #####
 
   - name: install
     image: node:18.19
@@ -290,7 +310,7 @@ steps:
       - npm run check-format
     depends_on:
       - install
-  
+
   - name: lint
     image: node:18.19
     commands:

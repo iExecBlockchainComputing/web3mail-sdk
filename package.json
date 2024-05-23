@@ -20,13 +20,13 @@
   "scripts": {
     "build": "rm -rf dist && tsc --project tsconfig.build.json",
     "check-types": "tsc --noEmit",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test": "npm run test:prepare && NODE_OPTIONS=--experimental-vm-modules jest",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.ts\"",
     "check-format": "prettier --check \"src/**/*.ts\"",
-    "prepare-test-env": "cd tests && node prepare-test-env.js",
     "stop-test-stack": "cd tests && docker compose down --volumes --remove-orphans",
-    "start-test-stack": "cd tests && npm run stop-test-stack && npm run prepare-test-env && docker compose build && docker compose up -d"
+    "start-test-stack": "cd tests && npm run stop-test-stack && node scripts/prepare-test-env.js && docker compose build  &&  docker compose up -d",
+    "test:prepare": "cd tests && node scripts/prepare-bellecour-fork-for-tests.js"
   },
   "repository": {
     "type": "git",
