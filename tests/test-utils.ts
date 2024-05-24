@@ -71,15 +71,13 @@ const TEST_RPC_URL = process.env.DRONE
   ): Web3SignerProvider =>
     utils.getSignerFromPrivateKey(TEST_CHAIN.rpcURL, privateKey);
 
-export const getTestIExecOption = () => ({
-  smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
-  resultProxyURL: process.env.DRONE
-    ? 'http://result-proxy:13200'
-    : 'http://127.0.0.1:13200',
-  iexecGatewayURL: process.env.DRONE
-    ? 'http://market-api:3000'
-    : 'http://127.0.0.1:3000',
-});
+  export const getTestIExecOption = () => ({
+    smsURL: TEST_CHAIN.smsURL,
+     resultProxyURL: TEST_CHAIN.resultProxyURL,
+     iexecGatewayURL: TEST_CHAIN.iexecGatewayURL,
+     voucherHubAddress: TEST_CHAIN.voucherHubAddress,
+     voucherSubgraphURL: TEST_CHAIN.voucherSubgraphURL,
+    });
 
 export const getTestConfig = (
   privateKey: string
@@ -87,11 +85,11 @@ export const getTestConfig = (
   const ethProvider = getTestWeb3SignerProvider(privateKey);
   const options = {
     iexecOptions: getTestIExecOption(),
-    ipfsGateway: process.env.DRONE
+    ipfsGateway: DRONE
       ? 'http://ipfs:8080'
       : 'http://127.0.0.1:8080',
-    ipfsNode: process.env.DRONE ? 'http://ipfs:5001' : 'http://127.0.0.1:5001',
-    dataProtectorSubgraph: process.env.DRONE
+    ipfsNode: DRONE ? 'http://ipfs:5001' : 'http://127.0.0.1:5001',
+    dataProtectorSubgraph: DRONE
       ? 'http://graphnode:8000/subgraphs/name/DataProtector'
       : 'http://127.0.0.1:8000/subgraphs/name/DataProtector',
   };

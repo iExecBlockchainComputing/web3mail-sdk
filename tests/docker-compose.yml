@@ -40,6 +40,7 @@ services:
     image: bash
     restart: 'no'
     command: -c "echo \"export const VOUCHER_HUB_ADDRESS = '$$(cat /app/voucher-deployer/out/VoucherHub.address)';\" > /app/bellecour-fork/voucher-config.js && cp /app/bellecour-fork/voucher-config.js /app/bellecour-fork/voucher-config.ts"
+    volumes:
       - ./voucher-deployer/out:/app/voucher-deployer/out
       - ./bellecour-fork:/app/bellecour-fork
     depends_on:
