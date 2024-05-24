@@ -45,7 +45,7 @@
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/random": "^5.7.0",
     "buffer": "^6.0.3",
-    "ethers": "^6.8.1",
+    "ethers": "^6.12.0",
     "graphql-request": "^6.1.0",
     "iexec": "^8.7.0",
     "kubo-rpc-client": "^3.0.1",
