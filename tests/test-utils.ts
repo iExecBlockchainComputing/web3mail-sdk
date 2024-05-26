@@ -14,18 +14,18 @@ import { VOUCHER_HUB_ADDRESS } from './bellecour-fork/voucher-config.js';
 const { DRONE } = process.env;
 
 const TEST_CHAIN = {
-  rpcURL: DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545',
+  rpcURL: process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545',
   chainId: '134',
-  smsURL: DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
-  resultProxyURL: DRONE
+  smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
+  resultProxyURL: process.env.DRONE
     ? 'http://result-proxy:13200'
     : 'http://127.0.0.1:13200',
-  iexecGatewayURL: DRONE ? 'http://market-api:3000' : 'http://127.0.0.1:3000',
+  iexecGatewayURL: process.env.DRONE ? 'http://market-api:3000' : 'http://127.0.0.1:3000',
   voucherHubAddress: VOUCHER_HUB_ADDRESS, // TODO: change with deployment address once voucher is deployed on bellecour
   voucherManagerWallet: new Wallet(
     '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
   ),
-  voucherSubgraphURL: DRONE
+  voucherSubgraphURL: process.env.DRONE
     ? 'http://gaphnode:8000/subgraphs/name/bellecour/iexec-voucher'
     : 'http://localhost:8000/subgraphs/name/bellecour/iexec-voucher',
   debugWorkerpool: 'debug-v8-bellecour.main.pools.iexec.eth',
@@ -37,8 +37,9 @@ const TEST_CHAIN = {
     '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
   ),
   provider: new JsonRpcProvider(
-    DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545'
+    process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545'
   ),
+  hubAddress: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f',
 };
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -69,14 +70,18 @@ const TEST_RPC_URL = process.env.DRONE
   export const getTestWeb3SignerProvider = (
     privateKey: string = Wallet.createRandom().privateKey
   ): Web3SignerProvider =>
-    utils.getSignerFromPrivateKey(TEST_CHAIN.rpcURL, privateKey);
+    utils.getSignerFromPrivateKey(TEST_RPC_URL, privateKey);
 
-  export const getTestIExecOption = () => ({
-    smsURL: TEST_CHAIN.smsURL,
-     resultProxyURL: TEST_CHAIN.resultProxyURL,
-     iexecGatewayURL: TEST_CHAIN.iexecGatewayURL,
-     voucherHubAddress: TEST_CHAIN.voucherHubAddress,
-     voucherSubgraphURL: TEST_CHAIN.voucherSubgraphURL,
+    export const getTestIExecOption = () => ({
+      smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
+      resultProxyURL: process.env.DRONE
+        ? 'http://result-proxy:13200'
+        : 'http://127.0.0.1:13200',
+      iexecGatewayURL: process.env.DRONE
+        ? 'http://market-api:3000'
+        : 'http://127.0.0.1:3000',
+        voucherHubAddress: TEST_CHAIN.voucherHubAddress,
+        voucherSubgraphURL: TEST_CHAIN.voucherSubgraphURL,
     });
 
 export const getTestConfig = (
@@ -367,7 +372,7 @@ const createAndPublishWorkerpoolOrder = async (
   voucherOwnerAddress: string
 ) => {
   const ethProvider = utils.getSignerFromPrivateKey(
-    TEST_CHAIN.rpcURL,
+    TEST_RPC_URL,
     workerpoolOwnerWallet.privateKey
   );
   const iexec = new IExec({ ethProvider }, getTestIExecOption());
