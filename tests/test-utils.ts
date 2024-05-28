@@ -20,22 +20,18 @@ import { VOUCHER_HUB_ADDRESS } from './bellecour-fork/voucher-config.js';
 const { DRONE } = process.env;
 
 const TEST_CHAIN = {
-  rpcURL: process.env.DRONE
-    ? 'http://bellecour-fork:8545'
-    : 'http://localhost:8545',
+  rpcURL: DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545',
   chainId: '134',
-  smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
-  resultProxyURL: process.env.DRONE
+  smsURL: DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
+  resultProxyURL: DRONE
     ? 'http://result-proxy:13200'
     : 'http://127.0.0.1:13200',
-  iexecGatewayURL: process.env.DRONE
-    ? 'http://market-api:3000'
-    : 'http://127.0.0.1:3000',
+  iexecGatewayURL: DRONE ? 'http://market-api:3000' : 'http://127.0.0.1:3000',
   voucherHubAddress: VOUCHER_HUB_ADDRESS, // TODO: change with deployment address once voucher is deployed on bellecour
   voucherManagerWallet: new Wallet(
     '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
   ),
-  voucherSubgraphURL: process.env.DRONE
+  voucherSubgraphURL: DRONE
     ? 'http://gaphnode:8000/subgraphs/name/bellecour/iexec-voucher'
     : 'http://localhost:8000/subgraphs/name/bellecour/iexec-voucher',
   debugWorkerpool: 'debug-v8-bellecour.main.pools.iexec.eth',
@@ -47,7 +43,7 @@ const TEST_CHAIN = {
     '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
   ),
   provider: new JsonRpcProvider(
-    process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545'
+    DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545'
   ),
   hubAddress: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f',
 };
@@ -72,10 +68,6 @@ export const timeouts = {
   createVoucherType: MAX_EXPECTED_BLOCKTIME * 2,
   createVoucher: MAX_EXPECTED_BLOCKTIME * 4 + MARKET_API_CALL_TIMEOUT * 2,
 };
-
-const TEST_RPC_URL = process.env.DRONE
-  ? 'http://bellecour-fork:8545'
-  : 'http://127.0.0.1:8545';
 
 export const getTestWeb3SignerProvider = (
   privateKey: string = Wallet.createRandom().privateKey
@@ -198,7 +190,7 @@ export const getIExecResourceOwnership = async (
   resourceAddress,
   targetOwner
 ) => {
-  const provider = new JsonRpcProvider(TEST_RPC_URL);
+  const provider = new JsonRpcProvider(TEST_CHAIN.rpcURL);
 
   const RESOURCE_ABI = [
     {
@@ -264,14 +256,14 @@ export const getIExecResourceOwnership = async (
     provider
   ) as any;
 
-  await impersonateAccount(TEST_RPC_URL, resourceOwner);
+  await impersonateAccount(TEST_CHAIN.rpcURL, resourceOwner);
   const tx = await resourceRegistryContract
     .connect(new JsonRpcSigner(provider, resourceOwner))
     .safeTransferFrom(resourceOwner, targetOwner, resourceAddress, {
       gasPrice: 0,
     });
   await tx.wait();
-  await stopImpersonatingAccount(TEST_RPC_URL, resourceOwner);
+  await stopImpersonatingAccount(TEST_CHAIN.rpcURL, resourceOwner);
 
   const newOwner = await resourceContract.owner();
   console.log(`Contract at ${resourceAddress} is now owned by ${newOwner}`);
@@ -376,7 +368,7 @@ const createAndPublishWorkerpoolOrder = async (
   voucherOwnerAddress: string
 ) => {
   const ethProvider = utils.getSignerFromPrivateKey(
-    TEST_RPC_URL,
+    TEST_CHAIN.rpcURL,
     workerpoolOwnerWallet.privateKey
   );
   const iexec = new IExec({ ethProvider }, getTestIExecOption());
