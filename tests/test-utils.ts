@@ -1,6 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { Wallet, JsonRpcProvider, ethers, JsonRpcSigner, Contract } from 'ethers';
+import {
+  Wallet,
+  JsonRpcProvider,
+  ethers,
+  JsonRpcSigner,
+  Contract,
+} from 'ethers';
 import {
   Web3MailConfigOptions,
   Web3SignerProvider,
@@ -14,13 +20,17 @@ import { VOUCHER_HUB_ADDRESS } from './bellecour-fork/voucher-config.js';
 const { DRONE } = process.env;
 
 const TEST_CHAIN = {
-  rpcURL: process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545',
+  rpcURL: process.env.DRONE
+    ? 'http://bellecour-fork:8545'
+    : 'http://localhost:8545',
   chainId: '134',
   smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
   resultProxyURL: process.env.DRONE
     ? 'http://result-proxy:13200'
     : 'http://127.0.0.1:13200',
-  iexecGatewayURL: process.env.DRONE ? 'http://market-api:3000' : 'http://127.0.0.1:3000',
+  iexecGatewayURL: process.env.DRONE
+    ? 'http://market-api:3000'
+    : 'http://127.0.0.1:3000',
   voucherHubAddress: VOUCHER_HUB_ADDRESS, // TODO: change with deployment address once voucher is deployed on bellecour
   voucherManagerWallet: new Wallet(
     '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
@@ -57,7 +67,7 @@ export const MAX_EXPECTED_WEB2_SERVICES_TIME = 80_000;
 
 export const MARKET_API_CALL_TIMEOUT = 2_000;
 
-export const timeouts= {
+export const timeouts = {
   // utils
   createVoucherType: MAX_EXPECTED_BLOCKTIME * 2,
   createVoucher: MAX_EXPECTED_BLOCKTIME * 4 + MARKET_API_CALL_TIMEOUT * 2,
@@ -67,22 +77,18 @@ const TEST_RPC_URL = process.env.DRONE
   ? 'http://bellecour-fork:8545'
   : 'http://127.0.0.1:8545';
 
-  export const getTestWeb3SignerProvider = (
-    privateKey: string = Wallet.createRandom().privateKey
-  ): Web3SignerProvider =>
-    utils.getSignerFromPrivateKey(TEST_RPC_URL, privateKey);
+export const getTestWeb3SignerProvider = (
+  privateKey: string = Wallet.createRandom().privateKey
+): Web3SignerProvider =>
+  utils.getSignerFromPrivateKey(TEST_CHAIN.rpcURL, privateKey);
 
-    export const getTestIExecOption = () => ({
-      smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
-      resultProxyURL: process.env.DRONE
-        ? 'http://result-proxy:13200'
-        : 'http://127.0.0.1:13200',
-      iexecGatewayURL: process.env.DRONE
-        ? 'http://market-api:3000'
-        : 'http://127.0.0.1:3000',
-        voucherHubAddress: TEST_CHAIN.voucherHubAddress,
-        voucherSubgraphURL: TEST_CHAIN.voucherSubgraphURL,
-    });
+export const getTestIExecOption = () => ({
+  smsURL: TEST_CHAIN.smsURL,
+  resultProxyURL: TEST_CHAIN.resultProxyURL,
+  iexecGatewayURL: TEST_CHAIN.iexecGatewayURL,
+  voucherHubAddress: TEST_CHAIN.voucherHubAddress,
+  voucherSubgraphURL: TEST_CHAIN.voucherSubgraphURL,
+});
 
 export const getTestConfig = (
   privateKey: string
@@ -90,9 +96,7 @@ export const getTestConfig = (
   const ethProvider = getTestWeb3SignerProvider(privateKey);
   const options = {
     iexecOptions: getTestIExecOption(),
-    ipfsGateway: DRONE
-      ? 'http://ipfs:8080'
-      : 'http://127.0.0.1:8080',
+    ipfsGateway: DRONE ? 'http://ipfs:8080' : 'http://127.0.0.1:8080',
     ipfsNode: DRONE ? 'http://ipfs:5001' : 'http://127.0.0.1:5001',
     dataProtectorSubgraph: DRONE
       ? 'http://graphnode:8000/subgraphs/name/DataProtector'
