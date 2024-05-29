@@ -13,8 +13,9 @@ import { IExecWeb3mail } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
-  createAndPublishTestOrders,
-  getIExecResourceOwnership,
+  TEST_CHAIN,
+  createAndPublishAppOrders,
+  createAndPublishWorkerpoolOrder,
   getRandomWallet,
   getTestConfig,
   getTestIExecOption,
@@ -35,32 +36,17 @@ describe('web3mail.sendEmail()', () => {
   beforeAll(async () => {
     providerWallet = getRandomWallet();
     consumerWallet = getRandomWallet();
-    const ethProvider = getTestWeb3SignerProvider(getRandomWallet().privateKey);
+    const ethProvider = getTestWeb3SignerProvider(
+      TEST_CHAIN.appOwnerWallet.privateKey
+    );
     const iexecOptions = getTestIExecOption();
     const resourceProvider = new IExec({ ethProvider }, iexecOptions);
 
-    // impersonate app owner and get app ownership
-    const appAddress = await resourceProvider.ens.resolveName(
-      WEB3_MAIL_DAPP_ADDRESS
-    );
-    await getIExecResourceOwnership(
-      appAddress,
-      await resourceProvider.wallet.getAddress()
-    );
+    await createAndPublishAppOrders(resourceProvider, WEB3_MAIL_DAPP_ADDRESS);
 
-    // impersonate workerpool owner and get app ownership
-    workerpoolAddress = await resourceProvider.ens.resolveName(
-      PROD_WORKERPOOL_ADDRESS
-    );
-    await getIExecResourceOwnership(
-      workerpoolAddress,
-      await resourceProvider.wallet.getAddress()
-    );
-
-    await createAndPublishTestOrders(
-      resourceProvider,
-      appAddress,
-      workerpoolAddress
+    await createAndPublishWorkerpoolOrder(
+      PROD_WORKERPOOL_ADDRESS,
+      TEST_CHAIN.prodWorkerpoolOwnerWallet
     );
 
     //create valid protected data
@@ -72,7 +58,7 @@ describe('web3mail.sendEmail()', () => {
       name: 'test do not use',
     });
     await dataProtector.grantAccess({
-      authorizedApp: appAddress,
+      authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
       protectedData: validProtectedData.address,
       authorizedUser: consumerWallet.address, // consumer wallet
       numberOfAccess: 1000,

@@ -1,12 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import {
-  Wallet,
-  JsonRpcProvider,
-  ethers,
-  JsonRpcSigner,
-  Contract,
-} from 'ethers';
+import { Wallet, JsonRpcProvider, ethers, Contract } from 'ethers';
 import {
   Web3MailConfigOptions,
   Web3SignerProvider,
@@ -19,7 +13,7 @@ import { VOUCHER_HUB_ADDRESS } from './bellecour-fork/voucher-config.js';
 
 const { DRONE } = process.env;
 
-const TEST_CHAIN = {
+export const TEST_CHAIN = {
   rpcURL: process.env.DRONE
     ? 'http://bellecour-fork:8545'
     : 'http://localhost:8545',
@@ -45,6 +39,9 @@ const TEST_CHAIN = {
   prodWorkerpool: 'prod-v8-bellecour.main.pools.iexec.eth',
   prodWorkerpoolOwnerWallet: new Wallet(
     '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
+  ),
+  appOwnerWallet: new Wallet(
+    '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
   ),
   provider: new JsonRpcProvider(
     process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545'
@@ -125,10 +122,9 @@ export const deployRandomDataset = async (iexec: IExec, owner?: string) =>
       '0x0000000000000000000000000000000000000000000000000000000000000000',
   });
 
-export const createAndPublishTestOrders = async (
+export const createAndPublishAppOrders = async (
   resourceProvider,
-  appAddress,
-  workerpoolAddress
+  appAddress
 ) => {
   await resourceProvider.order
     .createApporder({
@@ -139,142 +135,6 @@ export const createAndPublishTestOrders = async (
     })
     .then(resourceProvider.order.signApporder)
     .then(resourceProvider.order.publishApporder);
-
-  await resourceProvider.order
-    .createWorkerpoolorder({
-      workerpool: workerpoolAddress,
-      category: 0,
-      tag: ['tee', 'scone'],
-      volume: 100,
-      workerpoolprice: 0,
-    })
-    .then(resourceProvider.order.signWorkerpoolorder)
-    .then(resourceProvider.order.publishWorkerpoolorder);
-};
-
-const impersonateAccount = async (rpcURL, address) => {
-  const response = await fetch(rpcURL, {
-    method: 'POST',
-    body: JSON.stringify({
-      method: 'anvil_impersonateAccount',
-      params: [address],
-      id: 1,
-      jsonrpc: '2.0',
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to impersonate account ${address}`);
-  }
-
-  console.log(`Impersonating ${address}`);
-};
-
-const stopImpersonatingAccount = async (rpcURL, address) => {
-  const response = await fetch(rpcURL, {
-    method: 'POST',
-    body: JSON.stringify({
-      method: 'anvil_stopImpersonatingAccount',
-      params: [address],
-      id: 1,
-      jsonrpc: '2.0',
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to stop impersonating account ${address}`);
-  }
-
-  console.log(`Stop impersonating ${address}`);
-};
-
-export const getIExecResourceOwnership = async (
-  resourceAddress,
-  targetOwner
-) => {
-  const provider = new JsonRpcProvider(TEST_RPC_URL);
-
-  const RESOURCE_ABI = [
-    {
-      inputs: [],
-      name: 'owner',
-      outputs: [{ internalType: 'address', name: '', type: 'address' }],
-      stateMutability: 'view',
-      type: 'function',
-      constant: true,
-    },
-    {
-      inputs: [],
-      name: 'registry',
-      outputs: [
-        {
-          internalType: 'contract IRegistry',
-          name: '',
-          type: 'address',
-        },
-      ],
-      stateMutability: 'view',
-      type: 'function',
-    },
-  ];
-  const RESOURCE_REGISTRY_ABI = [
-    {
-      inputs: [
-        {
-          internalType: 'address',
-          name: 'from',
-          type: 'address',
-        },
-        {
-          internalType: 'address',
-          name: 'to',
-          type: 'address',
-        },
-        {
-          internalType: 'uint256',
-          name: 'tokenId',
-          type: 'uint256',
-        },
-      ],
-      name: 'safeTransferFrom',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
-    },
-  ];
-
-  const resourceContract = new Contract(
-    resourceAddress,
-    RESOURCE_ABI,
-    provider
-  ) as any;
-
-  const resourceOwner = await resourceContract.owner();
-  const resourceRegistryAddress = await resourceContract.registry();
-
-  const resourceRegistryContract = new Contract(
-    resourceRegistryAddress,
-    RESOURCE_REGISTRY_ABI,
-    provider
-  ) as any;
-
-  await impersonateAccount(TEST_RPC_URL, resourceOwner);
-  const tx = await resourceRegistryContract
-    .connect(new JsonRpcSigner(provider, resourceOwner))
-    .safeTransferFrom(resourceOwner, targetOwner, resourceAddress, {
-      gasPrice: 0,
-    });
-  await tx.wait();
-  await stopImpersonatingAccount(TEST_RPC_URL, resourceOwner);
-
-  const newOwner = await resourceContract.owner();
-  console.log(`Contract at ${resourceAddress} is now owned by ${newOwner}`);
 };
 
 export const setBalance = async (
@@ -369,36 +229,40 @@ export const createVoucherType = async ({
   return id as bigint;
 };
 
-// TODO: update createWorkerpoolorder() parameters when it is specified
-const createAndPublishWorkerpoolOrder = async (
+const ensureSufficientStake = async (iexec, requiredStake) => {
+  const walletAddress = await iexec.wallet.getAddress();
+  const account = await iexec.account.checkBalance(walletAddress);
+  const currentStake = account.stake;
+
+  if (currentStake < requiredStake) {
+    await setNRlcBalance(walletAddress, requiredStake);
+    await iexec.account.deposit(requiredStake);
+  }
+};
+
+export const createAndPublishWorkerpoolOrder = async (
   workerpool: string,
   workerpoolOwnerWallet: ethers.Wallet,
-  voucherOwnerAddress: string
+  requesterrestrict?: string,
+  workerpoolprice?: number = 0,
+  volume?: number = 1000
 ) => {
   const ethProvider = utils.getSignerFromPrivateKey(
     TEST_RPC_URL,
     workerpoolOwnerWallet.privateKey
   );
   const iexec = new IExec({ ethProvider }, getTestIExecOption());
-
-  const workerpoolprice = 1000;
-  const volume = 1000;
-
-  await setNRlcBalance(
-    await iexec.wallet.getAddress(),
-    volume * workerpoolprice
-  );
-  await iexec.account.deposit(volume * workerpoolprice);
+  const requiredStake = volume * workerpoolprice;
+  await ensureSufficientStake(iexec, requiredStake);
 
   const workerpoolorder = await iexec.order.createWorkerpoolorder({
     workerpool,
     category: 0,
-    requesterrestrict: voucherOwnerAddress,
+    requesterrestrict,
     volume,
     workerpoolprice,
     tag: ['tee', 'scone'],
   });
-
   await iexec.order
     .signWorkerpoolorder(workerpoolorder)
     .then((o) => iexec.order.publishWorkerpoolorder(o));
@@ -511,15 +375,19 @@ export const createVoucher = async ({
   }
 
   try {
+    // TODO: Voucher - Update createWorkerpoolorder() parameters when it is specified
+    const workerpoolprice = 1000;
     await createAndPublishWorkerpoolOrder(
       TEST_CHAIN.debugWorkerpool,
       TEST_CHAIN.debugWorkerpoolOwnerWallet,
-      owner
+      owner,
+      workerpoolprice
     );
     await createAndPublishWorkerpoolOrder(
       TEST_CHAIN.prodWorkerpool,
       TEST_CHAIN.prodWorkerpoolOwnerWallet,
-      owner
+      owner,
+      workerpoolprice
     );
   } catch (error) {
     console.error('Error publishing workerpoolorder:', error);
