@@ -16,7 +16,6 @@ import {
   IExecConsumer,
   SubgraphConsumer,
 } from './types.js';
-import { errors } from 'iexec';
 
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),
