@@ -258,6 +258,6 @@ export const sendEmail = async ({
       taskId,
     };
   } catch (error) {
-    throw new WorkflowError(`${error.message}`, error);
+    throw new WorkflowError(`Failed to sendEmail: ${error.message}`, error);
   }
 };

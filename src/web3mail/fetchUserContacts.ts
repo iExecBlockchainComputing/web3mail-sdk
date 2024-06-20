@@ -1,5 +1,5 @@
 import { ANY_DATASET_ADDRESS } from '../config/config.js';
-import { WorkflowError } from '../utils/errors.js';
+import { handleProtocolError, WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
 import {
@@ -16,6 +16,7 @@ import {
   IExecConsumer,
   SubgraphConsumer,
 } from './types.js';
+import { errors } from 'iexec';
 
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),
@@ -81,10 +82,9 @@ export const fetchUserContacts = async ({
     //keeping the most recent one
     return await getValidContact(graphQLClient, myContacts);
   } catch (error) {
-    throw new WorkflowError(
-      `Failed to fetch my contacts: ${error.message}`,
-      error
-    );
+    if (!handleProtocolError(error)) {
+      console.log(`Failed to fetch my contacts: ${error.message}`, error);
+    }
   }
 };
 

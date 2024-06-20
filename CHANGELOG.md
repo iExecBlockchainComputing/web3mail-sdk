@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## Next
+
+### Added
+
+- Added several error classes for managing iexec-sdk call errors
+
+### Changed
+
+- Changed `fetchMyContacts`,`fetchUserContacts` and `sendEmail` to handle more precise errors
+
 ## [0.6.1]
 
 ### Changed
