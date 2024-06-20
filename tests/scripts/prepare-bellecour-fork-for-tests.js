@@ -22,7 +22,7 @@ const DEBUG_WORKERPOOL = '0xdb214a4a444d176e22030be1ed89da1b029320f2'; // 'debug
 const PROD_WORKERPOOL = '0x0e7bc972c99187c191a17f3cae4a2711a4188c3f'; // 'prod-v8-bellecour.main.pools.iexec.eth';
 const WEB3_MAIL_DAPP_ADDRESS = '0x3d9d7600b6128c03b7ddbf050934e7ecfe0c61c8'; // 'web3mail.apps.iexec.eth';
 
-const rpcURL = DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545';
+const rpcURL = DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545';
 
 const provider = new JsonRpcProvider(rpcURL);
 

@@ -16,7 +16,7 @@ const { DRONE } = process.env;
 export const TEST_CHAIN = {
   rpcURL: process.env.DRONE
     ? 'http://bellecour-fork:8545'
-    : 'http://localhost:8545',
+    : 'http://127.0.0.1:8545',
   chainId: '134',
   smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
   resultProxyURL: process.env.DRONE
@@ -31,7 +31,7 @@ export const TEST_CHAIN = {
   ),
   voucherSubgraphURL: process.env.DRONE
     ? 'http://gaphnode:8000/subgraphs/name/bellecour/iexec-voucher'
-    : 'http://localhost:8000/subgraphs/name/bellecour/iexec-voucher',
+    : 'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
   debugWorkerpool: 'debug-v8-bellecour.main.pools.iexec.eth',
   debugWorkerpoolOwnerWallet: new Wallet(
     '0x800e01919eadf36f110f733decb1cc0f82e7941a748e89d7a3f76157f6654bb3'
@@ -44,7 +44,7 @@ export const TEST_CHAIN = {
     '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
   ),
   provider: new JsonRpcProvider(
-    process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://localhost:8545'
+    process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545'
   ),
   hubAddress: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f',
 };
