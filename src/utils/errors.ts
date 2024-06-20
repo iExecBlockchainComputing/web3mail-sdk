@@ -26,69 +26,75 @@ export class WorkflowError extends Error {
 
 export function handleProtocolError(error: Error): boolean {
   if (error instanceof ApiCallError) {
-    console.log(
-      'API call error occurred. Please check your API request and try again.'
+    throw new WorkflowError(
+      'API call error occurred. Please check your API request and try again.',
+      error
     );
-    return true;
   } else if (error instanceof BridgeError) {
-    console.log('Bridge error occurred. Please verify the bridge connection.');
-    return true;
+    throw new WorkflowError(
+      'Bridge error occurred. Please verify the bridge connection.',
+      error
+    );
   } else if (error instanceof ConfigurationError) {
-    console.log(
-      'Configuration error occurred. Please check your configuration settings.'
+    throw new WorkflowError(
+      'Configuration error occurred. Please check your configuration settings.',
+      error
     );
-    return true;
   } else if (error instanceof IpfsGatewayCallError) {
-    console.log(
-      'IPFS gateway call error occurred. Please check the IPFS gateway.'
+    throw new WorkflowError(
+      'IPFS gateway call error occurred. Please check the IPFS gateway.',
+      error
     );
-    return true;
   } else if (error instanceof MarketCallError) {
-    console.log('Market call error occurred. Please check the market service.');
-    return true;
+    throw new WorkflowError(
+      'Market call error occurred. Please check the market service.',
+      error
+    );
   } else if (error instanceof ObjectNotFoundError) {
-    console.log(
-      'Object not found error occurred. The requested object could not be found.'
+    throw new WorkflowError(
+      'Object not found error occurred. The requested object could not be found.',
+      error
     );
-    return true;
   } else if (error instanceof ResultProxyCallError) {
-    console.log(
-      'Result proxy call error occurred. Please check the result proxy service.'
+    throw new WorkflowError(
+      'Result proxy call error occurred. Please check the result proxy service.',
+      error
     );
-    return true;
   } else if (error instanceof SmsCallError) {
-    console.log('SMS call error occurred. Please check the SMS service.');
-    return true;
+    throw new WorkflowError(
+      'SMS call error occurred. Please check the SMS service.',
+      error
+    );
   } else if (error instanceof ValidationError) {
-    console.log(
-      'Validation error occurred. Please check the data you provided.'
+    throw new WorkflowError(
+      'Validation error occurred. Please check the data you provided.',
+      error
     );
-    return true;
   } else if (error instanceof Web3ProviderCallError) {
-    console.log(
-      'Web3 provider call error occurred. Please check the Web3 provider.'
+    throw new WorkflowError(
+      'Web3 provider call error occurred. Please check the Web3 provider.',
+      error
     );
-    return true;
   } else if (error instanceof Web3ProviderError) {
-    console.log(
-      'Web3 provider error occurred. Please check the Web3 provider.'
+    throw new WorkflowError(
+      'Web3 provider error occurred. Please check the Web3 provider.',
+      error
     );
-    return true;
   } else if (error instanceof Web3ProviderSendError) {
-    console.log(
-      'Web3 provider send error occurred. Please check the Web3 provider.'
+    throw new WorkflowError(
+      'Web3 provider send error occurred. Please check the Web3 provider.',
+      error
     );
-    return true;
   } else if (error instanceof Web3ProviderSignMessageError) {
-    console.log(
-      'Web3 provider sign message error occurred. Please check the Web3 provider.'
+    throw new WorkflowError(
+      'Web3 provider sign message error occurred. Please check the Web3 provider.',
+      error
     );
-    return true;
   } else if (error instanceof WorkerpoolCallError) {
-    console.log(
-      'Workerpool call error occurred. Please check the workerpool service.'
+    throw new WorkflowError(
+      'Workerpool call error occurred. Please check the workerpool service.',
+      error
     );
-    return true;
   }
 
   return false;
