@@ -15,12 +15,9 @@ import {
   WorkerpoolCallError,
 } from 'iexec/errors';
 export class WorkflowError extends Error {
-  originalError: Error;
-
   constructor(message: string, originalError: Error) {
-    super(message);
+    super(message, { cause: originalError });
     this.name = this.constructor.name;
-    this.originalError = originalError;
   }
 }
 

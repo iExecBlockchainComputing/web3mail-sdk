@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "module": "nodenext",
-    "target": "es6",
+    "target": "ES2022",
     "declaration": true,
     "sourceMap": true,
     "outDir": "dist",
