@@ -1,4 +1,4 @@
-import { WorkflowError } from '../utils/errors.js';
+import { handleProtocolError, WorkflowError } from '../utils/errors.js';
 import { throwIfMissing } from '../utils/validators.js';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import {
@@ -28,9 +28,11 @@ export const fetchMyContacts = async ({
       userAddress,
     });
   } catch (error) {
-    throw new WorkflowError(
-      `Failed to fetch my contacts: ${error.message}`,
-      error
-    );
+    if (!handleProtocolError(error)) {
+      throw new WorkflowError(
+        `Failed to fetch my contacts: ${error.message}`,
+        error
+      );
+    }
   }
 };

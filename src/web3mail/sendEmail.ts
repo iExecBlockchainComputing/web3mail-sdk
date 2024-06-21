@@ -6,7 +6,7 @@ import {
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   PROD_WORKERPOOL_ADDRESS,
 } from '../config/config.js';
-import { WorkflowError } from '../utils/errors.js';
+import { handleProtocolError, WorkflowError } from '../utils/errors.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
 import * as ipfs from '../utils/ipfs-service.js';
 import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
@@ -258,6 +258,11 @@ export const sendEmail = async ({
       taskId,
     };
   } catch (error) {
-    throw new WorkflowError(`Failed to sendEmail: ${error.message}`, error);
+    if (!handleProtocolError(error)) {
+      throw new WorkflowError(
+        `Failed to fetch my contacts: ${error.message}`,
+        error
+      );
+    }
   }
 };
