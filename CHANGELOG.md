@@ -8,6 +8,7 @@ Sure, here is the updated changelog with the added breaking change:
 
 ### Changed
 
+- Make the `ethProvider` constructor parameter optional, enabling access to read functions without requiring a wallet.
 - Changed `fetchMyContacts`, `fetchUserContacts`, and `sendEmail` to handle more precise errors
 - Removed `OriginalError` from `WorkflowError`
 

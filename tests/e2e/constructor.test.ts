@@ -108,4 +108,15 @@ describe('IExecWeb3mail()', () => {
     expect(await iexec.config.resolveSmsURL()).toBe(smsURL);
     expect(await iexec.config.resolveIexecGatewayURL()).toBe(iexecGatewayURL);
   });
+
+  it('When calling a read method should work as expected', async () => {
+    // --- GIVEN
+    const web3mail = new IExecWeb3mail();
+    const wallet = Wallet.createRandom();
+
+    // --- WHEN/THEN
+    await expect(
+      web3mail.fetchUserContacts({ userAddress: wallet.address })
+    ).resolves.not.toThrow();
+  });
 });
