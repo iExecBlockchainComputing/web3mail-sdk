@@ -6,10 +6,6 @@ Sure, here is the updated changelog with the added breaking change:
 
 ## Next
 
-### Added
-
-- Added several error classes for managing iexec-sdk call errors
-
 ### Changed
 
 - Changed `fetchMyContacts`, `fetchUserContacts`, and `sendEmail` to handle more precise errors
