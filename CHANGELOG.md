@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+Sure, here is the updated changelog with the added breaking change:
+
 ## Next
 
 ### Added
@@ -10,7 +12,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Changed `fetchMyContacts`,`fetchUserContacts` and `sendEmail` to handle more precise errors
+- Changed `fetchMyContacts`, `fetchUserContacts`, and `sendEmail` to handle more precise errors
+- Removed `OriginalError` from `WorkflowError`
 
 ## [0.6.1]
 
