@@ -83,7 +83,7 @@ export const fetchUserContacts = async ({
   } catch (error) {
     if (!handleProtocolError(error)) {
       throw new WorkflowError(
-        `Failed to fetch my contacts: ${error.message}`,
+        `Failed to fetch user contacts: ${error.message}`,
         error
       );
     }
