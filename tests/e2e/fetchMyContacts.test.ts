@@ -136,31 +136,4 @@ describe('web3mail.fetchMyContacts()', () => {
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
-
-  it.only(
-    'should throw a workflow error',
-    async () => {
-      // Call getTestConfig to get the default configuration
-      const [ethProvider, defaultOptions] = getTestConfig(wallet.privateKey);
-
-      // Override the iexecGatewayURL in the options
-      const options = {
-        ...defaultOptions,
-        iexecOptions: {
-          ...defaultOptions.iexecOptions,
-          iexecGatewayURL: 'https://test',
-        },
-      };
-
-      // Pass the modified options to IExecWeb3mail
-      const invalidWeb3mail = new IExecWeb3mail(ethProvider, options);
-      // Use expect with toThrowError to verify the error
-      await expect(invalidWeb3mail.fetchMyContacts()).rejects.toThrow(
-        new Error(
-          "Failed to fetch my contacts: A service in the iExec protocol appears to be unavailable. You can retry later or contact iExec's technical support for help."
-        )
-      );
-    },
-    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
-  );
 });

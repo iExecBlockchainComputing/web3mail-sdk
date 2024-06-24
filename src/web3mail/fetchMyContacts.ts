@@ -1,4 +1,3 @@
-import { handleProtocolError, WorkflowError } from '../utils/errors.js';
 import { throwIfMissing } from '../utils/validators.js';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import {
@@ -18,21 +17,12 @@ export const fetchMyContacts = async ({
   SubgraphConsumer &
   DappAddressConsumer &
   DappWhitelistAddressConsumer): Promise<Contact[]> => {
-  try {
-    const userAddress = await iexec.wallet.getAddress();
-    return await fetchUserContacts({
-      iexec,
-      graphQLClient,
-      dappAddressOrENS,
-      dappWhitelistAddress,
-      userAddress,
-    });
-  } catch (error) {
-    if (!handleProtocolError(error)) {
-      throw new WorkflowError(
-        `Failed to fetch my contacts: ${error.message}`,
-        error
-      );
-    }
-  }
+  const userAddress = await iexec.wallet.getAddress();
+  return fetchUserContacts({
+    iexec,
+    graphQLClient,
+    dappAddressOrENS,
+    dappWhitelistAddress,
+    userAddress,
+  });
 };
