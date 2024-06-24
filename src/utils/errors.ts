@@ -9,7 +9,7 @@ export class WorkflowError extends Error {
 export function handleProtocolError(error: Error): boolean {
   if (error instanceof ApiCallError) {
     throw new WorkflowError(
-      'A service in the iExec protocol appears to be unavailable. This issue is not caused by your actions, please contact iexec technical support:',
+      "A service in the iExec protocol appears to be unavailable. You can retry later or contact iExec's technical support for help.",
       error
     );
   }
