@@ -75,7 +75,7 @@ export const getValidContact = async (
     });
   } catch (error) {
     throw new WorkflowError({
-      message: 'Failed to fetch subgraph:',
+      message: 'Failed to fetch subgraph',
       errorCause: error,
     });
   }
