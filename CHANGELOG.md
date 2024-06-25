@@ -14,7 +14,7 @@ All notable changes to this project will be documented in this file.
 - Changed `fetchMyContacts`, `fetchUserContacts` and `sendEmail` error handling:
   - Distinguish iExec protocol errors from other errors
   - Store original error as the error cause
-- Removed `originalError` from `WorkflowError`
+- [BREAKING] Removed `originalError` from `WorkflowError`
 
 ## [0.6.1]
 
