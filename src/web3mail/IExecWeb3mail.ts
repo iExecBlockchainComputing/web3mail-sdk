@@ -37,7 +37,7 @@ export class IExecWeb3mail {
   private graphQLClient: GraphQLClient;
 
   constructor(
-    ethProvider?: Eip1193Provider | EnhancedWallet | string,
+    ethProvider?: Eip1193Provider | Web3SignerProvider | string,
     options?: Web3MailConfigOptions
   ) {
     try {
