@@ -2,7 +2,6 @@
   "compilerOptions": {
     "module": "node16",
     "target": "ES2022",
-    "lib": ["ES2023"],
     "declaration": true,
     "sourceMap": true,
     "outDir": "dist",
