@@ -9,6 +9,8 @@ All notable changes to this project will be documented in this file.
 - Make the `ethProvider` constructor parameter optional, enabling access to read functions without requiring a wallet.
 - Changed `fetchMyContacts`, `fetchUserContacts`, and `sendEmail` to handle more precise errors
 - Removed `OriginalError` from `WorkflowError`
+- Upgrade typescript version
+- Move to target `ES2023` in order to support `cause` optional field in `Error`.
 
 ## [0.6.1]
 
