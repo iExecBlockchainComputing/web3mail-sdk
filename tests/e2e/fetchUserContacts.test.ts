@@ -86,6 +86,7 @@ describe('web3mail.fetchMyContacts()', () => {
     async () => {
       // Call getTestConfig to get the default configuration
       const [ethProvider, defaultOptions] = getTestConfig(wallet.privateKey);
+      const user1 = Wallet.createRandom().address;
 
       const options = {
         ...defaultOptions,
@@ -100,7 +101,9 @@ describe('web3mail.fetchMyContacts()', () => {
       let error: WorkflowError | undefined;
 
       try {
-        await invalidWeb3mail.fetchUserContacts();
+        await invalidWeb3mail.fetchUserContacts({
+          userAddress: user1,
+        });
       } catch (err) {
         error = err as WorkflowError;
       }
