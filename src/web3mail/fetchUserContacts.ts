@@ -81,7 +81,6 @@ export const fetchUserContacts = async ({
     //keeping the most recent one
     return await getValidContact(graphQLClient, myContacts);
   } catch (error) {
-    console.log(error);
     handleIfProtocolError(error);
 
     throw new WorkflowError({
