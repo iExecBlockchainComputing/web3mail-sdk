@@ -74,10 +74,10 @@ export const getValidContact = async (
       }
     });
   } catch (error) {
-    throw new WorkflowError(
-      `Failed to fetch subgraph: ${error.message}`,
-      error
-    );
+    throw new WorkflowError({
+      message: 'Failed to fetch subgraph:',
+      errorCause: error,
+    });
   }
 };
 
@@ -100,9 +100,9 @@ export const checkProtectedDataValidity = async (
 
     return protectedDatas.length === 1;
   } catch (error) {
-    throw new WorkflowError(
-      `Failed to fetch subgraph: ${error.message}`,
-      error
-    );
+    throw new WorkflowError({
+      message: 'Failed to fetch subgraph:',
+      errorCause: error,
+    });
   }
 };

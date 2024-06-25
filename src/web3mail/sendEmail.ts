@@ -203,7 +203,10 @@ export const sendEmail = async ({
     const encryptedFile = await iexec.dataset
       .encrypt(Buffer.from(vEmailContent, 'utf8'), emailContentEncryptionKey)
       .catch((e) => {
-        throw new WorkflowError('Failed to encrypt email content', e);
+        throw new WorkflowError({
+          message: 'Failed to encrypt email content',
+          errorCause: e,
+        });
       });
     const cid = await ipfs
       .add(encryptedFile, {
@@ -211,7 +214,10 @@ export const sendEmail = async ({
         ipfsGateway: ipfsGateway,
       })
       .catch((e) => {
-        throw new WorkflowError('Failed to upload encrypted email content', e);
+        throw new WorkflowError({
+          message: 'Failed to upload encrypted email content',
+          errorCause: e,
+        });
       });
     const multiaddr = `/ipfs/${cid}`;
 
