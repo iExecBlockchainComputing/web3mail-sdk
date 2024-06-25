@@ -139,7 +139,7 @@ describe('web3mail.fetchMyContacts()', () => {
       }
 
       expect(error).toBeInstanceOf(WorkflowError);
-      expect(error?.message).toBe('Failed to fetch user contacts:');
+      expect(error?.message).toBe('Failed to fetch user contacts');
       expect(error?.isProtocolError).toBe(false);
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
