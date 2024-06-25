@@ -2,8 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-Sure, here is the updated changelog with the added breaking change:
-
 ## Next
 
 ### Changed
