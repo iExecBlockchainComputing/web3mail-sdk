@@ -4,10 +4,7 @@ type: docker
 name: sdk-default
 
 trigger:
-  event:
-    include:
-      - push
-      - pull_request
+  event: push
 
 steps:
   ##### START LOCAL STACK #####
@@ -469,10 +466,7 @@ type: docker
 name: dapp-default
 
 trigger:
-  event:
-    include:
-      - push
-      - pull_request
+  event: push
 
 steps:
   - name: install
@@ -673,10 +667,7 @@ type: docker
 name: dapp-deployment-default
 
 trigger:
-  event:
-    include:
-      - push
-      - pull_request
+  event: push
 
 steps:
   - name: install deps

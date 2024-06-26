@@ -7,10 +7,10 @@ import {
   Contact,
   FetchUserContactsParams,
   SendEmailParams,
-  Web3SignerProvider,
   AddressOrENS,
   Web3MailConfigOptions,
   SendEmailResponse,
+  Web3SignerProvider,
 } from './types.js';
 import { GraphQLClient } from 'graphql-request';
 import {
@@ -20,6 +20,7 @@ import {
   DATAPROTECTOR_SUBGRAPH_ENDPOINT,
   WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../config/config.js';
+import { isValidProvider } from '../utils/validators.js';
 
 export class IExecWeb3mail {
   private iexec: IExec;
@@ -37,11 +38,14 @@ export class IExecWeb3mail {
   private graphQLClient: GraphQLClient;
 
   constructor(
-    ethProvider: Eip1193Provider | Web3SignerProvider,
+    ethProvider?: Eip1193Provider | Web3SignerProvider | string,
     options?: Web3MailConfigOptions
   ) {
     try {
-      this.iexec = new IExec({ ethProvider }, options?.iexecOptions);
+      this.iexec = new IExec(
+        { ethProvider: ethProvider || 'bellecour' },
+        options?.iexecOptions
+      );
     } catch (e) {
       throw Error('Unsupported ethProvider');
     }
@@ -61,13 +65,15 @@ export class IExecWeb3mail {
       options?.dappWhitelistAddress || WHITELIST_SMART_CONTRACT_ADDRESS;
   }
 
-  fetchMyContacts = (): Promise<Contact[]> =>
-    fetchMyContacts({
+  async fetchMyContacts(): Promise<Contact[]> {
+    await isValidProvider(this.iexec);
+    return fetchMyContacts({
       iexec: this.iexec,
       graphQLClient: this.graphQLClient,
       dappAddressOrENS: this.dappAddressOrENS,
       dappWhitelistAddress: this.dappWhitelistAddress,
     });
+  }
 
   fetchUserContacts(args?: FetchUserContactsParams): Promise<Contact[]> {
     return fetchUserContacts({
@@ -79,8 +85,9 @@ export class IExecWeb3mail {
     });
   }
 
-  sendEmail = (args: SendEmailParams): Promise<SendEmailResponse> =>
-    sendEmail({
+  async sendEmail(args: SendEmailParams): Promise<SendEmailResponse> {
+    await isValidProvider(this.iexec);
+    return sendEmail({
       ...args,
       iexec: this.iexec,
       ipfsNode: this.ipfsNode,
@@ -89,4 +96,5 @@ export class IExecWeb3mail {
       dappWhitelistAddress: this.dappWhitelistAddress,
       graphQLClient: this.graphQLClient,
     });
+  }
 }

@@ -9,7 +9,7 @@ import {
   WHITELIST_SMART_CONTRACT_ADDRESS,
   PROD_WORKERPOOL_ADDRESS,
 } from '../../src/config/config.js';
-import { IExecWeb3mail } from '../../src/index.js';
+import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
@@ -160,7 +160,10 @@ describe('web3mail.sendEmail()', () => {
       };
 
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
-        'ProtectedData is not valid'
+        new WorkflowError({
+          message: 'Failed to sendEmail',
+          errorCause: Error('ProtectedData is not valid'),
+        })
       );
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -181,7 +184,10 @@ describe('web3mail.sendEmail()', () => {
       };
       await sleep(5_000);
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
-        'No Dataset order found for the desired price'
+        new WorkflowError({
+          message: 'Failed to sendEmail',
+          errorCause: Error('No Dataset order found for the desired price'),
+        })
       );
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000
@@ -237,7 +243,10 @@ describe('web3mail.sendEmail()', () => {
         workerpoolAddressOrEns: workerpoolAddress,
       };
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
-        'emailContent must be at most 512000 characters'
+        new WorkflowError({
+          message: 'Failed to sendEmail',
+          errorCause: Error('emailContent must be at most 512000 characters'),
+        })
       );
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -253,7 +262,10 @@ describe('web3mail.sendEmail()', () => {
         workerpoolAddressOrEns: workerpoolAddress,
       };
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
-        'senderName must be at least 3 characters'
+        new WorkflowError({
+          message: 'Failed to sendEmail',
+          errorCause: Error('senderName must be at least 3 characters'),
+        })
       );
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -269,7 +281,10 @@ describe('web3mail.sendEmail()', () => {
         workerpoolAddressOrEns: workerpoolAddress,
       };
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
-        'senderName must be at most 20 characters'
+        new WorkflowError({
+          message: 'Failed to sendEmail',
+          errorCause: Error('senderName must be at most 20 characters'),
+        })
       );
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -299,7 +314,10 @@ describe('web3mail.sendEmail()', () => {
         workerpoolAddressOrEns: workerpoolAddress,
       };
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
-        'label must be at most 10 characters'
+        new WorkflowError({
+          message: 'Failed to sendEmail',
+          errorCause: Error('label must be at most 10 characters'),
+        })
       );
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -315,9 +333,81 @@ describe('web3mail.sendEmail()', () => {
         workerpoolAddressOrEns: workerpoolAddress,
       };
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
-        'label must be at least 3 characters'
+        new WorkflowError({
+          message: 'Failed to sendEmail',
+          errorCause: Error('label must be at least 3 characters'),
+        })
       );
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
+  );
+
+  it(
+    'should throw a protocol error',
+    async () => {
+      // Call getTestConfig to get the default configuration
+      const [ethProvider, defaultOptions] = getTestConfig(
+        providerWallet.privateKey
+      );
+
+      const options = {
+        ...defaultOptions,
+        iexecOptions: {
+          ...defaultOptions.iexecOptions,
+          iexecGatewayURL: 'https://test',
+        },
+      };
+
+      // Pass the modified options to IExecWeb3mail
+      const invalidWeb3mail = new IExecWeb3mail(ethProvider, options);
+      let error: WorkflowError | undefined;
+
+      try {
+        await invalidWeb3mail.sendEmail({
+          protectedData: validProtectedData.address,
+          emailSubject: 'My email subject',
+          emailContent: 'My email content',
+        });
+      } catch (err) {
+        error = err as WorkflowError;
+      }
+
+      expect(error).toBeInstanceOf(WorkflowError);
+      expect(error?.message).toBe(
+        "A service in the iExec protocol appears to be unavailable. You can retry later or contact iExec's technical support for help."
+      );
+      expect(error?.isProtocolError).toBe(true);
+    },
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+  );
+
+  it(
+    'should throw a fetchUserContacts error',
+    async () => {
+      // Call getTestConfig to get the default configuration
+      const [ethProvider, defaultOptions] = getTestConfig(
+        providerWallet.privateKey
+      );
+
+      const options = {
+        ...defaultOptions,
+        dataProtectorSubgraph: 'https://test',
+      };
+
+      // Pass the modified options to IExecWeb3mail
+      const invalidWeb3mail = new IExecWeb3mail(ethProvider, options);
+      let error: WorkflowError | undefined;
+
+      try {
+        await invalidWeb3mail.fetchMyContacts();
+      } catch (err) {
+        error = err as WorkflowError;
+      }
+
+      expect(error).toBeInstanceOf(WorkflowError);
+      expect(error?.message).toBe('Failed to fetch user contacts');
+      expect(error?.isProtocolError).toBe(false);
+    },
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 });

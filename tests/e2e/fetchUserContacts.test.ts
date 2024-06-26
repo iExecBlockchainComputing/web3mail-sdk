@@ -5,7 +5,7 @@ import {
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet, Wallet } from 'ethers';
 import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
-import { IExecWeb3mail } from '../../src/index.js';
+import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
@@ -79,5 +79,69 @@ describe('web3mail.fetchMyContacts()', () => {
       expect(contacts.length).toBeGreaterThan(0);
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
+  );
+
+  it(
+    'should throw a protocol error',
+    async () => {
+      // Call getTestConfig to get the default configuration
+      const [ethProvider, defaultOptions] = getTestConfig(wallet.privateKey);
+      const user1 = Wallet.createRandom().address;
+
+      const options = {
+        ...defaultOptions,
+        iexecOptions: {
+          ...defaultOptions.iexecOptions,
+          iexecGatewayURL: 'https://test',
+        },
+      };
+
+      // Pass the modified options to IExecWeb3mail
+      const invalidWeb3mail = new IExecWeb3mail(ethProvider, options);
+      let error: WorkflowError | undefined;
+
+      try {
+        await invalidWeb3mail.fetchUserContacts({
+          userAddress: user1,
+        });
+      } catch (err) {
+        error = err as WorkflowError;
+      }
+
+      expect(error).toBeInstanceOf(WorkflowError);
+      expect(error?.message).toBe(
+        "A service in the iExec protocol appears to be unavailable. You can retry later or contact iExec's technical support for help."
+      );
+      expect(error?.isProtocolError).toBe(true);
+    },
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+  );
+
+  it(
+    'should throw a fetchUserContacts error',
+    async () => {
+      // Call getTestConfig to get the default configuration
+      const [ethProvider, defaultOptions] = getTestConfig(wallet.privateKey);
+
+      const options = {
+        ...defaultOptions,
+        dataProtectorSubgraph: 'https://test',
+      };
+
+      // Pass the modified options to IExecWeb3mail
+      const invalidWeb3mail = new IExecWeb3mail(ethProvider, options);
+      let error: WorkflowError | undefined;
+
+      try {
+        await invalidWeb3mail.fetchMyContacts();
+      } catch (err) {
+        error = err as WorkflowError;
+      }
+
+      expect(error).toBeInstanceOf(WorkflowError);
+      expect(error?.message).toBe('Failed to fetch user contacts');
+      expect(error?.isProtocolError).toBe(false);
+    },
+    2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 });
