@@ -35,12 +35,19 @@ export type SendEmailParams = {
   workerpoolMaxPrice?: number;
 };
 
+export type FetchMyContactsParams = {
+  /**
+   * Get contacts for this specific user only
+   */
+  isUserStrict?: boolean;
+};
+
 export type FetchUserContactsParams = {
   /**
    * Address of the user
    */
   userAddress: Address;
-};
+} & FetchMyContactsParams;
 
 export type SendEmailResponse = {
   taskId: string;
