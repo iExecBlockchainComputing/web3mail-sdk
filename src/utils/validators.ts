@@ -1,6 +1,6 @@
 import { isAddress } from 'ethers';
 import { IExec } from 'iexec';
-import { ValidationError, number, string } from 'yup';
+import { ValidationError, boolean, number, string } from 'yup';
 
 export const isValidProvider = async (iexec: IExec) => {
   const client = await iexec.config.resolveContractsClient();
@@ -58,3 +58,5 @@ export const labelSchema = () => string().trim().min(3).max(10).optional();
 
 export const positiveNumberSchema = () =>
   number().integer().min(0).typeError('${path} must be a non-negative number');
+
+export const booleanSchema = () => boolean();

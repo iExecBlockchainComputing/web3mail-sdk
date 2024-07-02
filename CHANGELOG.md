@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Next
 
+### Added
+
+- added `isUserStrict` optional param into both `fetchUserContacts` and `fetchMyContacts` functions
+
 ### Changed
 
 - Make the `ethProvider` constructor parameter optional, enabling access to read functions without requiring a wallet.

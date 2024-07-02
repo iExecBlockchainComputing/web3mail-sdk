@@ -5,6 +5,7 @@ import { getValidContact } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
   addressSchema,
+  booleanSchema,
   isEnsTest,
   throwIfMissing,
 } from '../utils/validators.js';
@@ -23,6 +24,7 @@ export const fetchUserContacts = async ({
   dappAddressOrENS = throwIfMissing(),
   dappWhitelistAddress = throwIfMissing(),
   userAddress,
+  isUserStrict = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -41,17 +43,22 @@ export const fetchUserContacts = async ({
       .required()
       .label('userAddress')
       .validateSync(userAddress);
+    const vIsUserStrict = booleanSchema()
+      .label('isUserStrict')
+      .validateSync(isUserStrict);
 
     const [dappOrders, whitelistOrders] = await Promise.all([
       fetchAllOrdersByApp({
         iexec,
         userAddress: vUserAddress,
         appAddress: vDappAddressOrENS,
+        isUserStrict: vIsUserStrict,
       }),
       fetchAllOrdersByApp({
         iexec,
         userAddress: vUserAddress,
         appAddress: vDappWhitelistAddress,
+        isUserStrict: vIsUserStrict,
       }),
     ]);
 
@@ -90,13 +97,19 @@ export const fetchUserContacts = async ({
   }
 };
 
-async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
+async function fetchAllOrdersByApp({
+  iexec,
+  userAddress,
+  appAddress,
+  isUserStrict,
+}) {
   const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook(
     ANY_DATASET_ADDRESS,
     {
       app: appAddress,
       requester: userAddress,
       isAppStrict: true,
+      isRequesterStrict: isUserStrict,
       // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
       pageSize: 1000,
     }
