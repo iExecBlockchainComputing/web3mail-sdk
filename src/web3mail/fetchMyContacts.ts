@@ -1,10 +1,10 @@
-import { WorkflowError } from '../utils/errors.js';
-import { throwIfMissing } from '../utils/validators.js';
+import { booleanSchema, throwIfMissing } from '../utils/validators.js';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import {
   Contact,
   DappAddressConsumer,
   DappWhitelistAddressConsumer,
+  FetchMyContactsParams,
   IExecConsumer,
   SubgraphConsumer,
 } from './types.js';
@@ -14,23 +14,23 @@ export const fetchMyContacts = async ({
   iexec = throwIfMissing(),
   dappAddressOrENS = throwIfMissing(),
   dappWhitelistAddress = throwIfMissing(),
+  isUserStrict = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
-  DappWhitelistAddressConsumer): Promise<Contact[]> => {
-  try {
-    const userAddress = await iexec.wallet.getAddress();
-    return await fetchUserContacts({
-      iexec,
-      graphQLClient,
-      dappAddressOrENS,
-      dappWhitelistAddress,
-      userAddress,
-    });
-  } catch (error) {
-    throw new WorkflowError(
-      `Failed to fetch my contacts: ${error.message}`,
-      error
-    );
-  }
+  DappWhitelistAddressConsumer &
+  FetchMyContactsParams): Promise<Contact[]> => {
+  const vIsUserStrict = booleanSchema()
+    .label('isUserStrict')
+    .validateSync(isUserStrict);
+
+  const userAddress = await iexec.wallet.getAddress();
+  return fetchUserContacts({
+    iexec,
+    graphQLClient,
+    dappAddressOrENS,
+    dappWhitelistAddress,
+    userAddress,
+    isUserStrict: vIsUserStrict,
+  });
 };

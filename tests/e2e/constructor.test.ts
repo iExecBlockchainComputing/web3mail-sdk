@@ -2,25 +2,18 @@
 // needed to access and assert IExecDataProtector's private properties
 import { describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
-import { getSignerFromPrivateKey } from 'iexec/utils';
 import {
   DATAPROTECTOR_SUBGRAPH_ENDPOINT,
   DEFAULT_IPFS_GATEWAY,
 } from '../../src/config/config.js';
 import { IExecWeb3mail } from '../../src/index.js';
+import { getTestWeb3SignerProvider } from '../test-utils.js';
 
 describe('IExecWeb3mail()', () => {
-  it('throw when instantiated with an invalid ethProvider', async () => {
-    const invalidProvider: any = null;
-    expect(() => new IExecWeb3mail(invalidProvider)).toThrow(
-      Error('Unsupported ethProvider')
-    );
-  });
-
   it('instantiates with a valid ethProvider', async () => {
     const wallet = Wallet.createRandom();
     const web3mail = new IExecWeb3mail(
-      getSignerFromPrivateKey('https://bellecour.iex.ec', wallet.privateKey)
+      getTestWeb3SignerProvider(wallet.privateKey)
     );
     expect(web3mail).toBeInstanceOf(IExecWeb3mail);
   });
@@ -28,7 +21,7 @@ describe('IExecWeb3mail()', () => {
   it('should use default ipfs gateway url when ipfsGateway is not provided', async () => {
     const wallet = Wallet.createRandom();
     const web3mail = new IExecWeb3mail(
-      getSignerFromPrivateKey('https://bellecour.iex.ec', wallet.privateKey)
+      getTestWeb3SignerProvider(wallet.privateKey)
     );
     const ipfsGateway = web3mail['ipfsGateway'];
     expect(ipfsGateway).toStrictEqual(DEFAULT_IPFS_GATEWAY);
@@ -38,7 +31,7 @@ describe('IExecWeb3mail()', () => {
     const customIpfsGateway = 'https://example.com/ipfs_gateway';
     const wallet = Wallet.createRandom();
     const web3mail = new IExecWeb3mail(
-      getSignerFromPrivateKey('https://bellecour.iex.ec', wallet.privateKey),
+      getTestWeb3SignerProvider(wallet.privateKey),
       {
         ipfsGateway: customIpfsGateway,
       }
@@ -50,7 +43,7 @@ describe('IExecWeb3mail()', () => {
   it('should use default data Protector Subgraph URL when subgraphUrl is not provided', async () => {
     const wallet = Wallet.createRandom();
     const web3mail = new IExecWeb3mail(
-      getSignerFromPrivateKey('https://bellecour.iex.ec', wallet.privateKey)
+      getTestWeb3SignerProvider(wallet.privateKey)
     );
     const graphQLClientUrl = web3mail['graphQLClient'];
     expect(graphQLClientUrl['url']).toBe(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
@@ -60,7 +53,7 @@ describe('IExecWeb3mail()', () => {
     const customSubgraphUrl = 'https://example.com/custom-subgraph';
     const wallet = Wallet.createRandom();
     const web3mail = new IExecWeb3mail(
-      getSignerFromPrivateKey('https://bellecour.iex.ec', wallet.privateKey),
+      getTestWeb3SignerProvider(wallet.privateKey),
       {
         dataProtectorSubgraph: customSubgraphUrl,
       }
@@ -80,7 +73,7 @@ describe('IExecWeb3mail()', () => {
     const customDappWhitelistAddress =
       '0x781482C39CcE25546583EaC4957Fb7Bf04C277BB';
     const web3mail = new IExecWeb3mail(
-      getSignerFromPrivateKey('https://bellecour.iex.ec', wallet.privateKey),
+      getTestWeb3SignerProvider(wallet.privateKey),
       {
         iexecOptions: {
           smsURL,
@@ -107,5 +100,16 @@ describe('IExecWeb3mail()', () => {
     expect(whitelistAddress).toStrictEqual(customDappWhitelistAddress);
     expect(await iexec.config.resolveSmsURL()).toBe(smsURL);
     expect(await iexec.config.resolveIexecGatewayURL()).toBe(iexecGatewayURL);
+  });
+
+  it('When calling a read method should work as expected', async () => {
+    // --- GIVEN
+    const web3mail = new IExecWeb3mail();
+    const wallet = Wallet.createRandom();
+
+    // --- WHEN/THEN
+    await expect(
+      web3mail.fetchUserContacts({ userAddress: wallet.address })
+    ).resolves.not.toThrow();
   });
 });

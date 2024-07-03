@@ -1,5 +1,15 @@
 import { isAddress } from 'ethers';
-import { ValidationError, number, string } from 'yup';
+import { IExec } from 'iexec';
+import { ValidationError, boolean, number, string } from 'yup';
+
+export const isValidProvider = async (iexec: IExec) => {
+  const client = await iexec.config.resolveContractsClient();
+  if (!client.signer) {
+    throw new Error(
+      'Unauthorized method. Please log in with your wallet, you must set a valid provider with a signer.'
+    );
+  }
+};
 
 export const throwIfMissing = (): never => {
   throw new ValidationError('Missing parameter');
@@ -48,3 +58,5 @@ export const labelSchema = () => string().trim().min(3).max(10).optional();
 
 export const positiveNumberSchema = () =>
   number().integer().min(0).typeError('${path} must be a non-negative number');
+
+export const booleanSchema = () => boolean();
