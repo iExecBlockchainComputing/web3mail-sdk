@@ -1,5 +1,5 @@
 import { isAddress } from 'ethers';
-import { ValidationError, number, string } from 'yup';
+import { ValidationError, boolean, number, string } from 'yup';
 
 export const throwIfMissing = (): never => {
   throw new ValidationError('Missing parameter');
@@ -48,3 +48,6 @@ export const labelSchema = () => string().trim().min(3).max(10).optional();
 
 export const positiveNumberSchema = () =>
   number().integer().min(0).typeError('${path} must be a non-negative number');
+
+export const booleanSchema = () =>
+  boolean().strict().typeError('${path} should be a boolean');
