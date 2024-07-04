@@ -621,21 +621,29 @@ steps:
     image: node:18.19
     commands:
       - npm run check-format
+    depends_on:
+      - install
 
   - name: lint
     image: node:18.19
     commands:
       - npm run lint
+    depends_on:
+      - install
 
   - name: test
     image: node:18.19
     commands:
       - npm run test
+    depends_on:
+      - install
 
   - name: build
     image: node:18.19
     commands:
       - npm run build
+    depends_on:
+      - install
 
   - name: authenticate
     image: robertstettner/drone-npm-auth
@@ -644,6 +652,12 @@ steps:
         from_secret: npm_username
       token:
         from_secret: npm_token
+    depends_on:
+      - format
+      - lint
+      - check-types
+      - test
+      - build
 
   - name: deprecate-old-nightly-version
     image: node:18.19
@@ -653,11 +667,23 @@ steps:
       # fetches the latest nightly version of the @iexec/web3mail package from npm registry
       - PREVIOUS_NIGHTLY_VERSION=$(npm show @iexec/web3mail versions --json | jq -r 'map(select(test("nightly"))) | .[-1]')
       - if [ -n "$PREVIOUS_NIGHTLY_VERSION" ]; then npm deprecate @iexec/web3mail@$PREVIOUS_NIGHTLY_VERSION "Deprecate $PREVIOUS_NIGHTLY_VERSION"; fi
+    depends_on:
+      - format
+      - lint
+      - check-types
+      - test
+      - build
 
   - name: set-version-nightly
     image: node:18.19
     commands:
       - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
+    depends_on:
+      - format
+      - lint
+      - check-types
+      - test
+      - build
 
   - name: publish
     image: plugins/npm
@@ -669,6 +695,12 @@ steps:
         from_secret: npm_token
       tag: nightly
       access: public
+    depends_on:
+      - format
+      - lint
+      - check-types
+      - test
+      - build
 
 ---
 # sdk @iexec/web3mail publish npm latest pipeline
@@ -963,21 +995,29 @@ steps:
     image: node:18.19
     commands:
       - npm run check-format
+    depends_on:
+      - install
 
   - name: lint
     image: node:18.19
     commands:
       - npm run lint
+    depends_on:
+      - install
 
   - name: test
     image: node:18.19
     commands:
       - npm run test
+    depends_on:
+      - install
 
   - name: build
     image: node:18.19
     commands:
       - npm run build
+    depends_on:
+      - install
 
   - name: publish
     image: plugins/npm
@@ -989,6 +1029,12 @@ steps:
         from_secret: npm_token
       tag: latest
       access: public
+    depends_on:
+      - format
+      - lint
+      - check-types
+      - test
+      - build
 
 ---
 # dapp web3mail-dapp default pipeline
