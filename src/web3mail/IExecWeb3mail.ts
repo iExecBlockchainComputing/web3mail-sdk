@@ -11,6 +11,7 @@ import {
   Web3MailConfigOptions,
   SendEmailResponse,
   Web3SignerProvider,
+  FetchMyContactsParams,
 } from './types.js';
 import { GraphQLClient } from 'graphql-request';
 import {
@@ -65,9 +66,10 @@ export class IExecWeb3mail {
       options?.dappWhitelistAddress || WHITELIST_SMART_CONTRACT_ADDRESS;
   }
 
-  async fetchMyContacts(): Promise<Contact[]> {
+  async fetchMyContacts(args?: FetchMyContactsParams): Promise<Contact[]> {
     await isValidProvider(this.iexec);
     return fetchMyContacts({
+      ...args,
       iexec: this.iexec,
       graphQLClient: this.graphQLClient,
       dappAddressOrENS: this.dappAddressOrENS,
@@ -75,7 +77,7 @@ export class IExecWeb3mail {
     });
   }
 
-  fetchUserContacts(args?: FetchUserContactsParams): Promise<Contact[]> {
+  fetchUserContacts(args: FetchUserContactsParams): Promise<Contact[]> {
     return fetchUserContacts({
       ...args,
       iexec: this.iexec,
