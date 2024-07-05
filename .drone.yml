@@ -631,12 +631,20 @@ steps:
     depends_on:
       - install
 
+  - name: check-types
+    image: node:18.19
+    commands:
+      - npm run check-types
+    depends_on:
+      - install
+
   - name: test
     image: node:18.19
     commands:
       - npm run test
     depends_on:
       - install
+      - stack-ready
 
   - name: build
     image: node:18.19
@@ -1005,12 +1013,20 @@ steps:
     depends_on:
       - install
 
+  - name: check-types
+    image: node:18.19
+    commands:
+      - npm run check-types
+    depends_on:
+      - install
+
   - name: test
     image: node:18.19
     commands:
       - npm run test
     depends_on:
       - install
+      - stack-ready
 
   - name: build
     image: node:18.19
