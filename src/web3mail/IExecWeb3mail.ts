@@ -66,7 +66,7 @@ export class IExecWeb3mail {
       options?.dappWhitelistAddress || WHITELIST_SMART_CONTRACT_ADDRESS;
   }
 
-  async fetchMyContacts(args: FetchMyContactsParams): Promise<Contact[]> {
+  async fetchMyContacts(args?: FetchMyContactsParams): Promise<Contact[]> {
     await isValidProvider(this.iexec);
     return fetchMyContacts({
       ...args,
