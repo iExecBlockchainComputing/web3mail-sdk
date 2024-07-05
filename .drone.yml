@@ -692,6 +692,7 @@ steps:
       - check-types
       - test
       - build
+      - deprecate-old-nightly-version
 
   - name: publish
     image: plugins/npm
@@ -709,6 +710,8 @@ steps:
       - check-types
       - test
       - build
+      - deprecate-old-nightly-version
+      - set-version-nightly
 
 ---
 # sdk @iexec/web3mail publish npm latest pipeline
