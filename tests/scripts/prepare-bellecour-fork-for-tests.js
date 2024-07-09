@@ -6,9 +6,9 @@ import {
   keccak256,
   toBeHex,
 } from 'ethers';
+
 // eslint-disable-next-line import/extensions
 import { VOUCHER_HUB_ADDRESS } from '../bellecour-fork/voucher-config.js'; // TODO: change with deployment address once voucher is deployed on bellecour
-
 const { DRONE } = process.env;
 
 const TARGET_VOUCHER_MANAGER_WALLET =
@@ -17,11 +17,10 @@ const DEBUG_WORKERPOOL_OWNER_WALLET =
   '0x02D0e61355e963210d0DE382e6BA09781181bB94';
 const PROD_WORKERPOOL_OWNER_WALLET =
   '0x1Ff6AfF580e8Ca738F76485E0914C2aCaDa7B462';
-const APP_OWNER_WALLET = '0x626D65C778fB98f813C25F84249E3012B80e8d91';
 const DEBUG_WORKERPOOL = '0xdb214a4a444d176e22030be1ed89da1b029320f2'; // 'debug-v8-bellecour.main.pools.iexec.eth';
 const PROD_WORKERPOOL = '0x0e7bc972c99187c191a17f3cae4a2711a4188c3f'; // 'prod-v8-bellecour.main.pools.iexec.eth';
+const APP_OWNER_WALLET = '0x626D65C778fB98f813C25F84249E3012B80e8d91';
 const WEB3_MAIL_DAPP_ADDRESS = '0x3d9d7600b6128c03b7ddbf050934e7ecfe0c61c8'; // 'web3mail.apps.iexec.eth';
-
 const rpcURL = DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545';
 
 const provider = new JsonRpcProvider(rpcURL);
@@ -276,7 +275,7 @@ const main = async () => {
     PROD_WORKERPOOL_OWNER_WALLET
   );
 
-  // prepare web3mail app for tests
+  // prepare oracle factory app for tests
   await getIExecResourceOwnership(WEB3_MAIL_DAPP_ADDRESS, APP_OWNER_WALLET);
 };
 
