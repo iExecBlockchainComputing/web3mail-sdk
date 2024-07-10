@@ -1,5 +1,5 @@
 import { getSignerFromPrivateKey } from 'iexec/utils';
-import { Web3SignerProvider } from '../web3mail/types.js';
+import { EnhancedWallet } from 'iexec';
 
-export const getWeb3Provider = (privateKey: string): Web3SignerProvider =>
+export const getWeb3Provider = (privateKey: string): EnhancedWallet =>
   getSignerFromPrivateKey('bellecour', privateKey);

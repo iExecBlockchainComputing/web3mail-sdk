@@ -1,5 +1,5 @@
 import { Eip1193Provider } from 'ethers';
-import { IExec } from 'iexec';
+import { EnhancedWallet, IExec } from 'iexec';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import { fetchMyContacts } from './fetchMyContacts.js';
 import { sendEmail } from './sendEmail.js';
@@ -10,7 +10,6 @@ import {
   AddressOrENS,
   Web3MailConfigOptions,
   SendEmailResponse,
-  Web3SignerProvider,
   FetchMyContactsParams,
 } from './types.js';
 import { GraphQLClient } from 'graphql-request';
@@ -39,7 +38,7 @@ export class IExecWeb3mail {
   private graphQLClient: GraphQLClient;
 
   constructor(
-    ethProvider?: Eip1193Provider | Web3SignerProvider | string,
+    ethProvider?: Eip1193Provider | EnhancedWallet | string,
     options?: Web3MailConfigOptions
   ) {
     try {
