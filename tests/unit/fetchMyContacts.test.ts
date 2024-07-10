@@ -1,7 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { GraphQLClient } from 'graphql-request';
 import { IExec } from 'iexec';
-import { getWeb3Provider } from '@iexec/dataprotector';
+import { getTestWeb3SignerProvider } from '../test-utils.js';
 import { Wallet } from 'ethers';
 import {
   DATAPROTECTOR_SUBGRAPH_ENDPOINT,
@@ -33,7 +33,7 @@ describe('fetchMyContacts', () => {
   };
   it('should fetch granted access without parameters (using default parameters)', async () => {
     const graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
-    const ethProvider = getWeb3Provider(Wallet.createRandom().privateKey);
+    const ethProvider = getTestWeb3SignerProvider(Wallet.createRandom().privateKey);
     const iexec = new IExec({
       ethProvider,
     });
@@ -81,7 +81,7 @@ describe('fetchMyContacts', () => {
   it('should fetch granted access with isRequesterStrict param equal to true', async () => {
     const graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
     const wallet = Wallet.createRandom();
-    const ethProvider = getWeb3Provider(wallet.privateKey);
+    const ethProvider = getTestWeb3SignerProvider(wallet.privateKey);
     const iexec = new IExec({
       ethProvider,
     });
