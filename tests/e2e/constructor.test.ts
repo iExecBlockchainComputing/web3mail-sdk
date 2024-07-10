@@ -10,13 +10,6 @@ import { IExecWeb3mail } from '../../src/index.js';
 import { getTestWeb3SignerProvider } from '../test-utils.js';
 
 describe('IExecWeb3mail()', () => {
-  it('throw when instantiated with an invalid ethProvider', async () => {
-    const invalidProvider: any = null;
-    expect(() => new IExecWeb3mail(invalidProvider)).toThrow(
-      Error('Unsupported ethProvider')
-    );
-  });
-
   it('instantiates with a valid ethProvider', async () => {
     const wallet = Wallet.createRandom();
     const web3mail = new IExecWeb3mail(
@@ -107,5 +100,16 @@ describe('IExecWeb3mail()', () => {
     expect(whitelistAddress).toStrictEqual(customDappWhitelistAddress);
     expect(await iexec.config.resolveSmsURL()).toBe(smsURL);
     expect(await iexec.config.resolveIexecGatewayURL()).toBe(iexecGatewayURL);
+  });
+
+  it('When calling a read method should work as expected', async () => {
+    // --- GIVEN
+    const web3mail = new IExecWeb3mail();
+    const wallet = Wallet.createRandom();
+
+    // --- WHEN/THEN
+    await expect(
+      web3mail.fetchUserContacts({ userAddress: wallet.address })
+    ).resolves.not.toThrow();
   });
 });

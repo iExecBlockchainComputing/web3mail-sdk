@@ -1,10 +1,11 @@
 import { ANY_DATASET_ADDRESS } from '../config/config.js';
-import { WorkflowError } from '../utils/errors.js';
+import { handleIfProtocolError, WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
   addressSchema,
+  booleanSchema,
   isEnsTest,
   throwIfMissing,
 } from '../utils/validators.js';
@@ -23,6 +24,7 @@ export const fetchUserContacts = async ({
   dappAddressOrENS = throwIfMissing(),
   dappWhitelistAddress = throwIfMissing(),
   userAddress,
+  isUserStrict = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -41,17 +43,22 @@ export const fetchUserContacts = async ({
       .required()
       .label('userAddress')
       .validateSync(userAddress);
+    const vIsUserStrict = booleanSchema()
+      .label('isUserStrict')
+      .validateSync(isUserStrict);
 
     const [dappOrders, whitelistOrders] = await Promise.all([
       fetchAllOrdersByApp({
         iexec,
         userAddress: vUserAddress,
         appAddress: vDappAddressOrENS,
+        isUserStrict: vIsUserStrict,
       }),
       fetchAllOrdersByApp({
         iexec,
         userAddress: vUserAddress,
         appAddress: vDappWhitelistAddress,
+        isUserStrict: vIsUserStrict,
       }),
     ]);
 
@@ -81,20 +88,28 @@ export const fetchUserContacts = async ({
     //keeping the most recent one
     return await getValidContact(graphQLClient, myContacts);
   } catch (error) {
-    throw new WorkflowError(
-      `Failed to fetch my contacts: ${error.message}`,
-      error
-    );
+    handleIfProtocolError(error);
+
+    throw new WorkflowError({
+      message: 'Failed to fetch user contacts',
+      errorCause: error,
+    });
   }
 };
 
-async function fetchAllOrdersByApp({ iexec, userAddress, appAddress }) {
+async function fetchAllOrdersByApp({
+  iexec,
+  userAddress,
+  appAddress,
+  isUserStrict,
+}) {
   const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook(
     ANY_DATASET_ADDRESS,
     {
       app: appAddress,
       requester: userAddress,
       isAppStrict: true,
+      isRequesterStrict: isUserStrict,
       // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
       pageSize: 1000,
     }

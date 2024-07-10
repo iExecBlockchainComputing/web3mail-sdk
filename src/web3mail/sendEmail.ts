@@ -6,7 +6,7 @@ import {
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   PROD_WORKERPOOL_ADDRESS,
 } from '../config/config.js';
-import { WorkflowError } from '../utils/errors.js';
+import { handleIfProtocolError, WorkflowError } from '../utils/errors.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
 import * as ipfs from '../utils/ipfs-service.js';
 import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
@@ -208,7 +208,10 @@ export const sendEmail = async ({
     const encryptedFile = await iexec.dataset
       .encrypt(Buffer.from(vEmailContent, 'utf8'), emailContentEncryptionKey)
       .catch((e) => {
-        throw new WorkflowError('Failed to encrypt email content', e);
+        throw new WorkflowError({
+          message: 'Failed to encrypt email content',
+          errorCause: e,
+        });
       });
     const cid = await ipfs
       .add(encryptedFile, {
@@ -216,7 +219,10 @@ export const sendEmail = async ({
         ipfsGateway: ipfsGateway,
       })
       .catch((e) => {
-        throw new WorkflowError('Failed to upload encrypted email content', e);
+        throw new WorkflowError({
+          message: 'Failed to upload encrypted email content',
+          errorCause: e,
+        });
       });
     const multiaddr = `/ipfs/${cid}`;
 
@@ -266,6 +272,11 @@ export const sendEmail = async ({
       taskId,
     };
   } catch (error) {
-    throw new WorkflowError(`${error.message}`, error);
+    handleIfProtocolError(error);
+
+    throw new WorkflowError({
+      message: 'Failed to sendEmail',
+      errorCause: error,
+    });
   }
 };
