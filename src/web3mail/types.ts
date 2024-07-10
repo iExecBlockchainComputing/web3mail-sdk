@@ -1,8 +1,8 @@
 import { GraphQLClient } from 'graphql-request';
-import { IExec } from 'iexec';
+import { EnhancedWallet, IExec } from 'iexec';
 import { IExecConfigOptions } from 'iexec/IExecConfig';
 
-//export type Web3SignerProvider = EnhancedWallet;
+export type Web3SignerProvider = EnhancedWallet;
 
 export type IExecConsumer = {
   iexec: IExec;
