@@ -13,6 +13,7 @@ import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
   addressSchema,
+  booleanSchema,
   contentTypeSchema,
   emailContentSchema,
   emailSubjectSchema,
@@ -49,6 +50,7 @@ export const sendEmail = async ({
   workerpoolMaxPrice = MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   senderName,
   protectedData,
+  useVoucher,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -98,7 +100,9 @@ export const sendEmail = async ({
     const vWorkerpoolMaxPrice = positiveNumberSchema()
       .label('workerpoolMaxPrice')
       .validateSync(workerpoolMaxPrice);
-
+    const vUseVoucher = booleanSchema()
+      .label('useVoucher')
+      .validateSync(useVoucher);
     // Check protected data validity through subgraph
     const isValidProtectedData = await checkProtectedDataValidity(
       graphQLClient,
@@ -252,12 +256,15 @@ export const sendEmail = async ({
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
 
     // Match orders and compute task ID
-    const { dealid } = await iexec.order.matchOrders({
-      apporder: apporder,
-      datasetorder: datasetorder,
-      workerpoolorder: workerpoolorder,
-      requestorder: requestorder,
-    });
+    const { dealid } = await iexec.order.matchOrders(
+      {
+        apporder: apporder,
+        datasetorder: datasetorder,
+        workerpoolorder: workerpoolorder,
+        requestorder: requestorder,
+      },
+      { preflightCheck: false, useVoucher: vUseVoucher }
+    );
     const taskId = await iexec.deal.computeTaskId(dealid, 0);
 
     return {
