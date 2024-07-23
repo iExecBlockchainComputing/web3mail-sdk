@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Next
+
+### Changed
+
+- remove internal to in function `sendEmail` to get a storage token
+
 ## [1.0.2]
 
 ### Changed
