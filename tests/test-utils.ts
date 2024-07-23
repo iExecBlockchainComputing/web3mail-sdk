@@ -229,7 +229,7 @@ export const createVoucherType = async ({
   return id as bigint;
 };
 
-const ensureSufficientStake = async (iexec, requiredStake) => {
+export const ensureSufficientStake = async (iexec, requiredStake) => {
   const walletAddress = await iexec.wallet.getAddress();
   const account = await iexec.account.checkBalance(walletAddress);
   const currentStake = account.stake;
@@ -400,4 +400,52 @@ export const createVoucher = async ({
     console.error('Error getting voucher:', error);
     throw error;
   }
+};
+
+export const addVoucherEligibleAsset = async (assetAddress, voucherTypeId) => {
+  const voucherHubContract = new Contract(VOUCHER_HUB_ADDRESS, [
+    {
+      inputs: [
+        {
+          internalType: 'uint256',
+          name: 'voucherTypeId',
+          type: 'uint256',
+        },
+        {
+          internalType: 'address',
+          name: 'asset',
+          type: 'address',
+        },
+      ],
+      name: 'addEligibleAsset',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+    },
+  ]);
+
+  const signer = TEST_CHAIN.voucherManagerWallet.connect(TEST_CHAIN.provider);
+
+  const retryableAddEligibleAsset = async (tryCount = 1) => {
+    try {
+      const tx = await voucherHubContract
+        .connect(signer)
+        .addEligibleAsset(voucherTypeId, assetAddress);
+      await tx.wait();
+    } catch (error) {
+      console.warn(
+        `Error adding eligible asset to voucher (try count ${tryCount}):`,
+        error
+      );
+      if (tryCount < 3) {
+        await sleep(3000 * tryCount);
+        await retryableAddEligibleAsset(tryCount + 1);
+      } else {
+        throw new Error(
+          `Failed to add eligible asset to voucher after ${tryCount} attempts`
+        );
+      }
+    }
+  };
+  await retryableAddEligibleAsset();
 };
