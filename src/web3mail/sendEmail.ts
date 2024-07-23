@@ -50,7 +50,7 @@ export const sendEmail = async ({
   workerpoolMaxPrice = MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   senderName,
   protectedData,
-  useVoucher,
+  useVoucher = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -263,7 +263,7 @@ export const sendEmail = async ({
         workerpoolorder: workerpoolorder,
         requestorder: requestorder,
       },
-      { preflightCheck: false, useVoucher: vUseVoucher }
+      { useVoucher: vUseVoucher }
     );
     const taskId = await iexec.deal.computeTaskId(dealid, 0);
 
