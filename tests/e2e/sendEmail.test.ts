@@ -1,5 +1,5 @@
 import {
-  IExecDataProtector,
+  IExecDataProtectorCore,
   ProtectedDataWithSecretProps,
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
@@ -28,7 +28,7 @@ describe('web3mail.sendEmail()', () => {
   let consumerWallet: HDNodeWallet;
   let providerWallet: HDNodeWallet;
   let web3mail: IExecWeb3mail;
-  let dataProtector: IExecDataProtector;
+  let dataProtector: IExecDataProtectorCore;
   let validProtectedData: ProtectedDataWithSecretProps;
   let invalidProtectedData: ProtectedDataWithSecretProps;
   let workerpoolAddress: string;
@@ -50,7 +50,7 @@ describe('web3mail.sendEmail()', () => {
     );
 
     //create valid protected data
-    dataProtector = new IExecDataProtector(
+    dataProtector = new IExecDataProtectorCore(
       ...getTestConfig(providerWallet.privateKey)
     );
     validProtectedData = await dataProtector.protectData({
