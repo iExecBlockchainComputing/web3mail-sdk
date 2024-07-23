@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## Next
+
+### Changed
+
+- remove unnecessary initialization of storage in `sendEmail`
+
 ## [1.0.2]
 
 ### Changed

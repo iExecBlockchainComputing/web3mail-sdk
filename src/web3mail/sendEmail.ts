@@ -114,14 +114,6 @@ export const sendEmail = async ({
 
     const requesterAddress = await iexec.wallet.getAddress();
 
-    // Initialize IPFS storage if not already initialized
-    const isIpfsStorageInitialized =
-      await iexec.storage.checkStorageTokenExists(requesterAddress);
-    if (!isIpfsStorageInitialized) {
-      const token = await iexec.storage.defaultStorageLogin();
-      await iexec.storage.pushStorageToken(token);
-    }
-
     const [
       datasetorderForApp,
       datasetorderForWhitelist,
