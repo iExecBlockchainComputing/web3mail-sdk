@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- remove internal to in function `sendEmail` to get a storage token
+- remove unnecessary initialization of storage in `sendEmail`
 
 ## [1.0.2]
 
