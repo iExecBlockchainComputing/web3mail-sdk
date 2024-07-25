@@ -59,4 +59,5 @@ export const labelSchema = () => string().trim().min(3).max(10).optional();
 export const positiveNumberSchema = () =>
   number().integer().min(0).typeError('${path} must be a non-negative number');
 
-export const booleanSchema = () => boolean();
+export const booleanSchema = () =>
+  boolean().strict().typeError('${path} should be a boolean');
