@@ -291,7 +291,7 @@ steps:
       - subgraph-deploy
       - bellecour-fork-voucher-deployment
   ##### START LOCAL STACK END #####
-  
+
   - name: install
     image: node:18.19
     pull: always
@@ -360,6 +360,7 @@ trigger:
     - sdk-nightly
   branch:
     - develop
+    - voucher
 
 steps:
   ##### START LOCAL STACK #####
@@ -712,6 +713,14 @@ steps:
       - test
       - build
       - deprecate-old-nightly-version
+
+  - name: set voucher version suffix
+    image: node:18
+    commands:
+      - eval npm pkg set version="$(npm pkg get version)-voucher"
+    when:
+      branch:
+        - voucher
 
   - name: publish
     image: plugins/npm
