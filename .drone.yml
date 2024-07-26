@@ -361,6 +361,7 @@ trigger:
   branch:
     - develop
     - voucher
+    - draft/sdk-publish-nightly-voucher
 
 steps:
   ##### START LOCAL STACK #####
@@ -615,6 +616,24 @@ steps:
       - ipfs-healthy
       - graphnode-healthy
 
+  - name: bellecour-fork-voucher-deployment
+    #  https://github.com/iExecBlockchainComputing/voucher-deployer
+    image: pierreiexec/voucher-deployer
+    pull: always
+    environment:
+      RPC_URL: http://bellecour-fork:8545
+      GRAPHNODE_URL: http://graphnode:8020
+      IPFS_URL: http://ipfs:5001
+    commands:
+      - sh /app/entrypoint.sh
+      # update the voucher-config for test scripts (js & ts)
+      - echo "export const VOUCHER_HUB_ADDRESS = '$(cat /app/out/VoucherHub.address)';" > ./tests/bellecour-fork/voucher-config.js
+      - cp ./tests/bellecour-fork/voucher-config.js ./tests/bellecour-fork/voucher-config.ts
+    depends_on:
+      - bellecour-fork-healthy
+      - ipfs-healthy
+      - graphnode-healthy
+
   - name: stack-ready
     image: bash
     commands:
@@ -627,6 +646,7 @@ steps:
       - ipfs-healthy
       - graphnode-healthy
       - subgraph-deploy
+      - bellecour-fork-voucher-deployment
   ##### START LOCAL STACK END #####
 
   - name: install
@@ -721,6 +741,7 @@ steps:
     when:
       branch:
         - voucher
+        - draft/sdk-publish-nightly-voucher
 
   - name: publish
     image: plugins/npm
