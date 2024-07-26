@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## Next
 
+### Added
+
+- support for ethers `AbstractProvider` and `AbstractSigner` in constructor
+
 ### Changed
 
 - remove unnecessary initialization of storage in `sendEmail`
+- updated `iexec` and `ethers` dependencies
 
 ## [1.0.2]
 
