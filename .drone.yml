@@ -341,6 +341,7 @@ trigger:
     - sdk-nightly
   branch:
     - develop
+    - hotfix/add-workerpool-requester-restrict-r3ach
 
 steps:
   ##### START LOCAL STACK #####
@@ -667,20 +668,20 @@ steps:
       - test
       - build
 
-  - name: deprecate-old-nightly-version
-    image: node:18.19
-    pull: always
-    commands:
-      - apt-get update && apt-get install -y jq
-      # fetches the latest nightly version of the @iexec/web3mail package from npm registry
-      - PREVIOUS_NIGHTLY_VERSION=$(npm show @iexec/web3mail versions --json | jq -r 'map(select(test("nightly"))) | .[-1]')
-      - if [ -n "$PREVIOUS_NIGHTLY_VERSION" ]; then npm deprecate @iexec/web3mail@$PREVIOUS_NIGHTLY_VERSION "Deprecate $PREVIOUS_NIGHTLY_VERSION"; fi
-    depends_on:
-      - format
-      - lint
-      - check-types
-      - test
-      - build
+  # - name: deprecate-old-nightly-version
+  #   image: node:18.19
+  #   pull: always
+  #   commands:
+  #     - apt-get update && apt-get install -y jq
+  #     # fetches the latest nightly version of the @iexec/web3mail package from npm registry
+  #     - PREVIOUS_NIGHTLY_VERSION=$(npm show @iexec/web3mail versions --json | jq -r 'map(select(test("nightly"))) | .[-1]')
+  #     - if [ -n "$PREVIOUS_NIGHTLY_VERSION" ]; then npm deprecate @iexec/web3mail@$PREVIOUS_NIGHTLY_VERSION "Deprecate $PREVIOUS_NIGHTLY_VERSION"; fi
+  #   depends_on:
+  #     - format
+  #     - lint
+  #     - check-types
+  #     - test
+  #     - build
 
   - name: set-version-nightly
     image: node:18.19
@@ -692,7 +693,7 @@ steps:
       - check-types
       - test
       - build
-      - deprecate-old-nightly-version
+      # - deprecate-old-nightly-version
 
   - name: publish
     image: plugins/npm
@@ -710,7 +711,7 @@ steps:
       - check-types
       - test
       - build
-      - deprecate-old-nightly-version
+      # - deprecate-old-nightly-version
       - set-version-nightly
 
 ---
