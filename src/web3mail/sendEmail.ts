@@ -49,6 +49,7 @@ export const sendEmail = async ({
   workerpoolMaxPrice = MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   senderName,
   protectedData,
+  workerpoolOrderRequesterRestrict,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -98,7 +99,9 @@ export const sendEmail = async ({
     const vWorkerpoolMaxPrice = positiveNumberSchema()
       .label('workerpoolMaxPrice')
       .validateSync(workerpoolMaxPrice);
-
+    const vWorkerpoolOrderRequesterRestrict = addressOrEnsSchema()
+      .label('workerpoolOrderRequesterRestrict')
+      .validateSync(workerpoolOrderRequesterRestrict);
     // Check protected data validity through subgraph
     const isValidProtectedData = await checkProtectedDataValidity(
       graphQLClient,
@@ -166,6 +169,7 @@ export const sendEmail = async ({
           minTag: ['tee', 'scone'],
           maxTag: ['tee', 'scone'],
           category: 0,
+          requester: vWorkerpoolOrderRequesterRestrict,
         })
         .then((workerpoolOrderbook) => {
           const desiredPriceWorkerpoolOrderbook =

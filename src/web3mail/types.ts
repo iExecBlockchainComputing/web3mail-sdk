@@ -33,6 +33,7 @@ export type SendEmailParams = {
   dataMaxPrice?: number;
   appMaxPrice?: number;
   workerpoolMaxPrice?: number;
+  workerpoolOrderRequesterRestrict?: Address;
 };
 
 export type FetchMyContactsParams = {
