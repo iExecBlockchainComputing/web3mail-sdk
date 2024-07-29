@@ -8,6 +8,8 @@ import { randomInt } from 'crypto';
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
+export const waitSubgraphIndexing = () => sleep(5_000);
+
 export const getRequiredFieldMessage = (field: string = 'this') =>
   `${field} is a required field`;
 

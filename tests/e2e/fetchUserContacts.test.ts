@@ -10,6 +10,7 @@ import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
   getTestConfig,
+  waitSubgraphIndexing,
 } from '../test-utils.js';
 
 describe('web3mail.fetchMyContacts()', () => {
@@ -33,6 +34,7 @@ describe('web3mail.fetchMyContacts()', () => {
       data: { email: 'test2@gmail.com' },
       name: 'test do not use',
     });
+    await waitSubgraphIndexing();
   }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
 
   it(
