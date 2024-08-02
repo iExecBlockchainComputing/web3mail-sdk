@@ -236,30 +236,6 @@ describe('web3mail.sendEmail()', () => {
   );
 
   it(
-    'should fail to send email with email content size > 512 kilo-bytes',
-    async () => {
-      const desiredSizeInBytes = 520000; // 520 kilo-bytes
-      const characterToRepeat = 'A';
-      const OVERSIZED_CONTENT = characterToRepeat.repeat(desiredSizeInBytes);
-
-      const params = {
-        emailSubject: 'e2e mail object for test',
-        emailContent: OVERSIZED_CONTENT,
-        protectedData: validProtectedData.address,
-        senderName: 'Product Team',
-        workerpoolAddressOrEns: workerpoolAddress,
-      };
-      await expect(web3mail.sendEmail(params)).rejects.toThrow(
-        new WorkflowError({
-          message: 'Failed to sendEmail',
-          errorCause: Error('emailContent must be at most 512000 characters'),
-        })
-      );
-    },
-    MAX_EXPECTED_WEB2_SERVICES_TIME
-  );
-
-  it(
     'should successfully send email with a valid label',
     async () => {
       const params = {

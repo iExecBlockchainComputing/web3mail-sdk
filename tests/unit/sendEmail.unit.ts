@@ -108,5 +108,33 @@ describe('sendEmail', () => {
         );
       });
     });
+
+    describe('When emailContent is more than 512kb (too big)', () => {
+      it('should throw a yup ValidationError with the correct message', async () => {
+        // --- GIVEN
+        const desiredSizeInBytes = 520000; // 520 kilo-bytes
+        const characterToRepeat = 'A';
+        const OVERSIZED_CONTENT = characterToRepeat.repeat(desiredSizeInBytes);
+        const sendEmailParams = {
+          emailSubject: 'e2e mail object for test',
+          emailContent: OVERSIZED_CONTENT,
+          protectedData: getRandomAddress(),
+        };
+
+        await expect(
+          // --- WHEN
+          sendEmail({
+            // @ts-expect-error No need for graphQLClient here
+            graphQLClient: {},
+            // @ts-expect-error No need for iexec here
+            iexec: {},
+            ...sendEmailParams,
+          })
+          // --- THEN
+        ).rejects.toThrow(
+          new ValidationError('emailContent must be at most 512000 characters')
+        );
+      });
+    });
   });
 });
