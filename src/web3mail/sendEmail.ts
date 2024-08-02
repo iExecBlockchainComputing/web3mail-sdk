@@ -105,7 +105,9 @@ export const sendEmail = async ({
       vDatasetAddress
     );
     if (!isValidProtectedData) {
-      throw new Error('ProtectedData is not valid');
+      throw new Error(
+        'This protected data does not contain "email:string" in its schema.'
+      );
     }
 
     const requesterAddress = await iexec.wallet.getAddress();
