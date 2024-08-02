@@ -259,7 +259,7 @@ export const sendEmail = async ({
     handleIfProtocolError(error);
 
     throw new WorkflowError({
-      message: 'Failed to send email',
+      message: 'Failed to sendEmail',
       errorCause: error,
     });
   }
