@@ -302,6 +302,14 @@ steps:
     depends_on:
       - install
 
+  - name: unit tests
+    image: node:18.19
+    commands:
+      - npm run test:unit
+    depends_on:
+      - install
+      - stack-ready
+
   - name: test
     image: node:18.19
     commands:
