@@ -1,4 +1,4 @@
-import { Eip1193Provider } from 'ethers';
+import { AbstractProvider, AbstractSigner, Eip1193Provider } from 'ethers';
 import { IExec } from 'iexec';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import { fetchMyContacts } from './fetchMyContacts.js';
@@ -39,7 +39,12 @@ export class IExecWeb3mail {
   private graphQLClient: GraphQLClient;
 
   constructor(
-    ethProvider?: Eip1193Provider | Web3SignerProvider | string,
+    ethProvider?:
+      | Eip1193Provider
+      | AbstractProvider
+      | AbstractSigner
+      | Web3SignerProvider
+      | string,
     options?: Web3MailConfigOptions
   ) {
     try {

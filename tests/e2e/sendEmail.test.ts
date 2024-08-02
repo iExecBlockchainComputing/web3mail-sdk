@@ -19,7 +19,7 @@ import {
   getTestConfig,
   getTestIExecOption,
   getTestWeb3SignerProvider,
-  sleep,
+  waitSubgraphIndexing,
 } from '../test-utils.js';
 import { IExec } from 'iexec';
 
@@ -83,10 +83,8 @@ describe('web3mail.sendEmail()', () => {
       data: { foo: 'bar' },
       name: 'test do not use',
     });
-
+    await waitSubgraphIndexing();
     web3mail = new IExecWeb3mail(...getTestConfig(consumerWallet.privateKey));
-    // avoid race condition with subgraph indexation
-    await sleep(5_000);
   }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000);
 
   it(
@@ -113,6 +111,8 @@ describe('web3mail.sendEmail()', () => {
         data: { email: 'example@test.com' },
         name: 'test do not use',
       });
+      await waitSubgraphIndexing();
+
       //grant access to whitelist
       await dataProtector.grantAccess({
         authorizedApp: WHITELIST_SMART_CONTRACT_ADDRESS, //whitelist address
@@ -180,13 +180,14 @@ describe('web3mail.sendEmail()', () => {
         data: { email: 'example@test.com' },
         name: 'test do not use',
       });
+      await waitSubgraphIndexing();
+
       const params = {
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
         protectedData: protectedData.address,
         workerpoolAddressOrEns: workerpoolAddress,
       };
-      await sleep(5_000);
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
         new WorkflowError({
           message: 'Failed to sendEmail',

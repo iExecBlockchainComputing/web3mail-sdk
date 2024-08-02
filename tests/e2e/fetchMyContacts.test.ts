@@ -14,6 +14,7 @@ import {
   getTestConfig,
   getTestWeb3SignerProvider,
   getTestIExecOption,
+  waitSubgraphIndexing,
 } from '../test-utils.js';
 import IExec from 'iexec/IExec';
 
@@ -31,6 +32,7 @@ describe('web3mail.fetchMyContacts()', () => {
       data: { email: 'test@gmail.com' },
       name: 'test do not use',
     });
+    await waitSubgraphIndexing();
   }, 2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
 
   it(
@@ -119,6 +121,7 @@ describe('web3mail.fetchMyContacts()', () => {
         data: { notemail: 'not email' },
         name: 'test do not use',
       });
+      await waitSubgraphIndexing();
 
       await dataProtector.grantAccess({
         authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
