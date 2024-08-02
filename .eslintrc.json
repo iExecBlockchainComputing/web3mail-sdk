@@ -14,9 +14,10 @@
     "plugin:jest/recommended"
   ],
   "rules": {
-    "sonarjs/cognitive-complexity": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-use-before-define": ["error", { "functions": false }]
+    "@typescript-eslint/no-use-before-define": ["error", { "functions": false }],
+    "sonarjs/cognitive-complexity": "warn",
+    "sonarjs/prefer-immediate-return": "off"
   },
   "overrides": [
     {

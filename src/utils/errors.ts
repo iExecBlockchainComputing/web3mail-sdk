@@ -1,4 +1,5 @@
 import { ApiCallError } from 'iexec/errors';
+
 export class WorkflowError extends Error {
   isProtocolError: boolean;
 
