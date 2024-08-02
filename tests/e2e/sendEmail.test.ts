@@ -165,7 +165,9 @@ describe('web3mail.sendEmail()', () => {
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
         new WorkflowError({
           message: 'Failed to sendEmail',
-          errorCause: Error('ProtectedData is not valid'),
+          errorCause: Error(
+            'This protected data does not contain "email:string" in its schema.'
+          ),
         })
       );
     },
