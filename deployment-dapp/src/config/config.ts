@@ -1,5 +1,55 @@
 import { readFileSync } from 'fs';
+import { KnownEnv, getEnvironment } from '@iexec/dataprotector-environments';
 
+let { ENV = 'prod' } = process.env;
+
+const {
+  chainId,
+  rpcURL,
+  hubAddress,
+  ensRegistryAddress,
+  ensPublicResolverAddress,
+  voucherHubAddress,
+  smsURL,
+  iexecGatewayURL,
+  resultProxyURL,
+  ipfsGatewayURL,
+  ipfsNodeURL,
+  pocoSubgraphURL,
+  voucherSubgraphURL,
+  dappAddressOrENS,
+  dappWhitelistAddress,
+  dataProtectorSubgraph,
+  ipfsNode,
+  ipfsGateway,
+  workerpoolProdAddress,
+} = getEnvironment(ENV as KnownEnv);
+
+export const iexecOptions = {
+  chainId,
+  rpcURL,
+  hubAddress,
+  ensRegistryAddress,
+  ensPublicResolverAddress,
+  voucherHubAddress,
+  smsURL,
+  iexecGatewayURL,
+  resultProxyURL,
+  ipfsGatewayURL,
+  ipfsNodeURL,
+  pocoSubgraphURL,
+  voucherSubgraphURL,
+};
+
+export const web3mailOptions = {
+  dappAddressOrENS,
+  dappWhitelistAddress,
+  dataProtectorSubgraph,
+  ipfsNode,
+  ipfsGateway,
+};
+
+export const WORKERPOOL = workerpoolProdAddress;
 //hosting url
 export const HOST = 'https://bellecour.iex.ec';
 
