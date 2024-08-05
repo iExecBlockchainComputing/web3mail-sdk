@@ -5,6 +5,7 @@ import {
 } from '../src/web3mail/types.js';
 import { IExec, utils } from 'iexec';
 import { randomInt } from 'crypto';
+import 'dotenv/config';
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 

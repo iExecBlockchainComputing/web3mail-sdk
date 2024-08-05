@@ -10,6 +10,7 @@ import {
   WEB3_MAIL_ENS_NAME_PROD,
 } from './config/config.js';
 import { orderHashSchema } from './utils/validator.js';
+import 'dotenv/config';
 
 const main = async () => {
   // get env variables from drone
