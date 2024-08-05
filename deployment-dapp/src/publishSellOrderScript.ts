@@ -10,17 +10,21 @@ import {
   WEB3_MAIL_ENS_NAME_PROD,
   DEFAULT_APP_PRICE,
   DEFAULT_APP_VOLUME,
+  DRONE_TARGET_DEPLOY_BUBBLE,
+  DRONE_TARGET_SELL_ORDER_BUBBLE,
 } from './config/config.js';
 import {
   positiveStrictIntegerSchema,
   positiveNumberSchema,
 } from './utils/validator.js';
+import 'dotenv/config';
 
 const main = async () => {
   // get env variables from drone
   const {
     DRONE_DEPLOY_TO,
     WALLET_PRIVATE_KEY_DEV,
+    WALLET_PRIVATE_KEY_BUBBLE,
     WALLET_PRIVATE_KEY_PROD,
     PRICE,
     VOLUME,
@@ -31,6 +35,8 @@ const main = async () => {
     ![
       DRONE_TARGET_DEPLOY_DEV,
       DRONE_TARGET_SELL_ORDER_DEV,
+      DRONE_TARGET_DEPLOY_BUBBLE,
+      DRONE_TARGET_SELL_ORDER_BUBBLE,
       DRONE_TARGET_DEPLOY_PROD,
       DRONE_TARGET_SELL_ORDER_PROD,
     ].includes(DRONE_DEPLOY_TO)
@@ -44,6 +50,12 @@ const main = async () => {
     )
   ) {
     privateKey = WALLET_PRIVATE_KEY_DEV;
+  } else if (
+    [DRONE_TARGET_DEPLOY_BUBBLE, DRONE_TARGET_SELL_ORDER_BUBBLE].includes(
+      DRONE_DEPLOY_TO
+    )
+  ) {
+    privateKey = WALLET_PRIVATE_KEY_BUBBLE;
   } else if (
     [DRONE_TARGET_DEPLOY_PROD, DRONE_TARGET_SELL_ORDER_PROD].includes(
       DRONE_DEPLOY_TO

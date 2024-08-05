@@ -1,5 +1,56 @@
 import { readFileSync } from 'fs';
+import { KnownEnv, getEnvironment } from '@iexec/dataprotector-environments';
+import 'dotenv/config';
 
+const { ENV } = process.env;
+
+const {
+  chainId,
+  rpcURL,
+  hubAddress,
+  ensRegistryAddress,
+  ensPublicResolverAddress,
+  voucherHubAddress,
+  smsURL,
+  iexecGatewayURL,
+  resultProxyURL,
+  ipfsGatewayURL,
+  ipfsNodeURL,
+  pocoSubgraphURL,
+  voucherSubgraphURL,
+  dappAddressOrENS,
+  dappWhitelistAddress,
+  dataProtectorSubgraph,
+  ipfsNode,
+  ipfsGateway,
+  workerpoolProdAddress,
+} = getEnvironment(ENV as KnownEnv);
+
+export const iexecOptions = {
+  chainId,
+  rpcURL,
+  hubAddress,
+  ensRegistryAddress,
+  ensPublicResolverAddress,
+  voucherHubAddress,
+  smsURL,
+  iexecGatewayURL,
+  resultProxyURL,
+  ipfsGatewayURL,
+  ipfsNodeURL,
+  pocoSubgraphURL,
+  voucherSubgraphURL,
+};
+
+export const web3mailOptions = {
+  dappAddressOrENS,
+  dappWhitelistAddress,
+  dataProtectorSubgraph,
+  ipfsNode,
+  ipfsGateway,
+};
+
+export const WORKERPOOL = workerpoolProdAddress;
 //hosting url
 export const HOST = 'https://bellecour.iex.ec';
 
@@ -16,6 +67,7 @@ export const APP_TAG = ['tee', 'scone'];
 //ENS name
 export const WEB3_MAIL_ENS_NAME_DEV = 'web3mail-dev.apps.iexec.eth';
 export const WEB3_MAIL_ENS_NAME_PROD = 'web3mail.apps.iexec.eth';
+export const WEB3_MAIL_ENS_NAME_BUBBLE = 'web3mail-bubble.apps.iexec.eth';
 
 //scone image
 const SCONIFIER_VERSION = '5.7.5-v12';
@@ -30,11 +82,16 @@ export const DOCKER_IMAGE_DEV_TAG = `dev-${process.env.DRONE_COMMIT}-sconify-${S
 
 //drone target
 export const DRONE_TARGET_DEPLOY_DEV = 'dapp-dev';
+export const DRONE_TARGET_DEPLOY_BUBBLE = 'dapp-bubble';
 export const DRONE_TARGET_DEPLOY_PROD = 'dapp-prod';
 export const DRONE_TARGET_SELL_ORDER_DEV = 'dapp-publish-sell-order-dev';
+export const DRONE_TARGET_SELL_ORDER_BUBBLE = 'dapp-publish-sell-order-bubble';
 export const DRONE_TARGET_SELL_ORDER_PROD = 'dapp-publish-sell-order-prod';
 export const DRONE_TARGET_REVOKE_SELL_ORDER_DEV = 'dapp-revoke-sell-order-dev';
+export const DRONE_TARGET_REVOKE_SELL_ORDER_BUBBLE =
+  'dapp-revoke-sell-order-bubble';
 export const DRONE_TARGET_REVOKE_SELL_ORDER_PROD =
   'dapp-revoke-sell-order-prod';
 export const DRONE_TARGET_PUSH_SECRET_DEV = 'dapp-push-secret-dev';
+export const DRONE_TARGET_PUSH_SECRET_BUBBLE = 'dapp-push-secret-bubble';
 export const DRONE_TARGET_PUSH_SECRET_PROD = 'dapp-push-secret-prod';
