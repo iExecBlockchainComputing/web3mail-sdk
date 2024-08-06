@@ -46,8 +46,8 @@ export const web3mailOptions = {
   dappAddressOrENS,
   dappWhitelistAddress,
   dataProtectorSubgraph,
-  ipfsNode,
-  ipfsGateway,
+  ipfsNode: ipfsNodeURL,
+  ipfsGateway: ipfsGatewayURL,
 };
 
 export const WORKERPOOL = workerpoolProdAddress;
