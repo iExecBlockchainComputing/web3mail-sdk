@@ -56,10 +56,10 @@
     "pocoSubgraphURL": "http://thegraph.wp-throughput.az1.internal:8000/subgraphs/name/bellecour/poco-v5",
     "voucherSubgraphURL": "http://thegraph.wp-throughput.az1.internal:8000/subgraphs/name/bellecour/iexec-voucher",
     "dappAddressOrENS": "0xC4d4961E686e2cA1F68710533932693ED8bF2F5f",
-    "dappWhitelistAddress": "25455501",
+    "dappWhitelistAddress": "0xb176bBD88c43A8CF1aAB67Da4e785172Fe0F0146",
     "dataProtectorSubgraph": "http://thegraph.wp-throughput.az1.internal:8000/subgraphs/name/DataProtector-v2",
-    "ipfsNode": "",
-    "ipfsGateway": "",
+    "ipfsNode": "/dns4/ipfs-upload.v8-bellecour.iex.ec/https",
+    "ipfsGateway": "https://ipfs-gateway.v8-bellecour.iex.ec",
     "workerpoolProdAddress": "0x3779Da315D935D3E3957561667236BF6859C1b0E"
   }
 }
