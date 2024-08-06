@@ -1,5 +1,6 @@
 import { deployApp } from './singleFunction/deployApp.js';
 import {
+  DOCKER_IMAGE_BUBBLE_TAG,
   DOCKER_IMAGE_DEV_TAG,
   DOCKER_IMAGE_PROD_TAG,
   DRONE_TARGET_DEPLOY_BUBBLE,
@@ -43,6 +44,8 @@ const main = async () => {
   let dockerImageTag;
   if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_DEV) {
     dockerImageTag = DOCKER_IMAGE_DEV_TAG;
+  } else if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_BUBBLE) {
+    dockerImageTag = DOCKER_IMAGE_BUBBLE_TAG;
   } else if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_PROD) {
     dockerImageTag = DOCKER_IMAGE_PROD_TAG;
   }

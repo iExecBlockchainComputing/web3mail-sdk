@@ -3,15 +3,16 @@ import { publishSellOrder } from './singleFunction/publishSellOrder.js';
 import { resolveName } from './singleFunction/resolveName.js';
 import {
   DRONE_TARGET_SELL_ORDER_DEV,
+  DRONE_TARGET_SELL_ORDER_BUBBLE,
   DRONE_TARGET_SELL_ORDER_PROD,
   DRONE_TARGET_DEPLOY_DEV,
+  DRONE_TARGET_DEPLOY_BUBBLE,
   DRONE_TARGET_DEPLOY_PROD,
   WEB3_MAIL_ENS_NAME_DEV,
+  WEB3_MAIL_ENS_NAME_BUBBLE,
   WEB3_MAIL_ENS_NAME_PROD,
   DEFAULT_APP_PRICE,
   DEFAULT_APP_VOLUME,
-  DRONE_TARGET_DEPLOY_BUBBLE,
-  DRONE_TARGET_SELL_ORDER_BUBBLE,
 } from './config/config.js';
 import {
   positiveStrictIntegerSchema,
@@ -34,10 +35,10 @@ const main = async () => {
     !DRONE_DEPLOY_TO ||
     ![
       DRONE_TARGET_DEPLOY_DEV,
-      DRONE_TARGET_SELL_ORDER_DEV,
       DRONE_TARGET_DEPLOY_BUBBLE,
-      DRONE_TARGET_SELL_ORDER_BUBBLE,
       DRONE_TARGET_DEPLOY_PROD,
+      DRONE_TARGET_SELL_ORDER_DEV,
+      DRONE_TARGET_SELL_ORDER_BUBBLE,
       DRONE_TARGET_SELL_ORDER_PROD,
     ].includes(DRONE_DEPLOY_TO)
   )
@@ -74,6 +75,8 @@ const main = async () => {
     let ensName;
     if (DRONE_DEPLOY_TO === DRONE_TARGET_SELL_ORDER_DEV) {
       ensName = WEB3_MAIL_ENS_NAME_DEV;
+    } else if (DRONE_DEPLOY_TO === DRONE_TARGET_SELL_ORDER_BUBBLE) {
+      ensName = WEB3_MAIL_ENS_NAME_BUBBLE;
     } else if (DRONE_DEPLOY_TO === DRONE_TARGET_SELL_ORDER_PROD) {
       ensName = WEB3_MAIL_ENS_NAME_PROD;
     }
