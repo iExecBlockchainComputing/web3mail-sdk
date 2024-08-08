@@ -44,10 +44,11 @@
   "dependencies": {
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/random": "^5.7.0",
+    "@iexec/web3mail-environments": "file:environments",
     "buffer": "^6.0.3",
     "ethers": "^6.13.2",
     "graphql-request": "^6.1.0",
-    "iexec": "^8.10.0",
+    "iexec": "8.9.1",
     "kubo-rpc-client": "^3.0.1",
     "yup": "^1.1.1"
   },
@@ -59,6 +60,7 @@
     "@types/jest": "^29.5.4",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
     "@typescript-eslint/parser": "^6.7.5",
+    "dotenv": "^16.4.5",
     "eslint": "^8.51.0",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-prettier": "^9.0.0",
