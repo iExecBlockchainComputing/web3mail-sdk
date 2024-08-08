@@ -58,7 +58,7 @@ describe('fetchMyContacts', () => {
       1,
       'any',
       {
-        app: WEB3_MAIL_DAPP_ADDRESS,
+        app: WEB3_MAIL_DAPP_ADDRESS.toLocaleLowerCase(),
         requester: userAddress,
         isAppStrict: true,
         isRequesterStrict: false,
@@ -107,7 +107,7 @@ describe('fetchMyContacts', () => {
       1,
       'any',
       {
-        app: WEB3_MAIL_DAPP_ADDRESS,
+        app: WEB3_MAIL_DAPP_ADDRESS.toLowerCase(),
         requester: userAddress,
         isAppStrict: true,
         isRequesterStrict: true,
