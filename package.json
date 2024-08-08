@@ -48,7 +48,7 @@
     "ethers": "^6.13.2",
     "graphql-request": "^6.1.0",
     "iexec": "^8.10.0",
-    "kubo-rpc-client": "^3.0.1",
+    "kubo-rpc-client": "^4.1.1",
     "yup": "^1.1.1"
   },
   "devDependencies": {
