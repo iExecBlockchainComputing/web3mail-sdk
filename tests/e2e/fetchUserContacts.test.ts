@@ -4,16 +4,22 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet, Wallet } from 'ethers';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
+import {
+  WEB3_MAIL_DAPP_ADDRESS,
+  dataProtectorOptions,
+  web3mailOptions,
+  iexecOptions,
+} from '../../src/config/config.js';
 import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
-  getTestConfig,
+  getRandomAddress,
+  getTestWeb3SignerProvider,
   waitSubgraphIndexing,
 } from '../test-utils.js';
 
-describe('web3mail.fetchMyContacts()', () => {
+describe('web3mail.fetchUserContacts()', () => {
   let wallet: HDNodeWallet;
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtector;
@@ -22,9 +28,15 @@ describe('web3mail.fetchMyContacts()', () => {
 
   beforeAll(async () => {
     wallet = Wallet.createRandom();
-    dataProtector = new IExecDataProtector(...getTestConfig(wallet.privateKey));
-    web3mail = new IExecWeb3mail(...getTestConfig(wallet.privateKey));
-
+    const consumerProvider = getTestWeb3SignerProvider(wallet.privateKey);
+    dataProtector = new IExecDataProtector(consumerProvider, {
+      ...dataProtectorOptions,
+      iexecOptions,
+    });
+    web3mail = new IExecWeb3mail(consumerProvider, {
+      ...web3mailOptions,
+      iexecOptions,
+    });
     //create valid protected data
     protectedData1 = await dataProtector.protectData({
       data: { email: 'test1@gmail.com' },
@@ -86,14 +98,12 @@ describe('web3mail.fetchMyContacts()', () => {
   it(
     'should throw a protocol error',
     async () => {
-      // Call getTestConfig to get the default configuration
-      const [ethProvider, defaultOptions] = getTestConfig(wallet.privateKey);
+      const ethProvider = getTestWeb3SignerProvider(wallet.privateKey);
       const user1 = Wallet.createRandom().address;
-
       const options = {
-        ...defaultOptions,
+        ...web3mailOptions,
         iexecOptions: {
-          ...defaultOptions.iexecOptions,
+          ...iexecOptions,
           iexecGatewayURL: 'https://test',
         },
       };
@@ -122,11 +132,10 @@ describe('web3mail.fetchMyContacts()', () => {
   it(
     'should throw a fetchUserContacts error',
     async () => {
-      // Call getTestConfig to get the default configuration
-      const [ethProvider, defaultOptions] = getTestConfig(wallet.privateKey);
+      const ethProvider = getTestWeb3SignerProvider(wallet.privateKey);
 
       const options = {
-        ...defaultOptions,
+        ...web3mailOptions,
         dataProtectorSubgraph: 'https://test',
       };
 
@@ -135,7 +144,9 @@ describe('web3mail.fetchMyContacts()', () => {
       let error: WorkflowError | undefined;
 
       try {
-        await invalidWeb3mail.fetchMyContacts();
+        await invalidWeb3mail.fetchUserContacts({
+          userAddress: getRandomAddress(),
+        });
       } catch (err) {
         error = err as WorkflowError;
       }

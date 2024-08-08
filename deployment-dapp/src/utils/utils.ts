@@ -1,12 +1,18 @@
 import fs from 'fs/promises';
 import { IExec, utils } from 'iexec';
-import { HOST } from '../config/config.js';
+import { iexecOptions } from '../config/config.js';
 
 export const getIExec = (privateKey: string): IExec => {
-  const ethProvider = utils.getSignerFromPrivateKey(HOST, privateKey);
-  return new IExec({
-    ethProvider,
-  });
+  const ethProvider = utils.getSignerFromPrivateKey(
+    iexecOptions.rpcURL,
+    privateKey
+  );
+  return new IExec(
+    {
+      ethProvider,
+    },
+    iexecOptions
+  );
 };
 
 export const getDockerImageChecksum = async (

@@ -1,20 +1,25 @@
 import {
   DRONE_TARGET_DEPLOY_DEV,
+  DRONE_TARGET_DEPLOY_BUBBLE,
   DRONE_TARGET_DEPLOY_PROD,
   DRONE_TARGET_PUSH_SECRET_DEV,
+  DRONE_TARGET_PUSH_SECRET_BUBBLE,
   DRONE_TARGET_PUSH_SECRET_PROD,
   WEB3_MAIL_ENS_NAME_DEV,
+  WEB3_MAIL_ENS_NAME_BUBBLE,
   WEB3_MAIL_ENS_NAME_PROD,
 } from './config/config.js';
 import { pushSecret } from './singleFunction/pushSecret.js';
 import { resolveName } from './singleFunction/resolveName.js';
 import { getIExec, loadAppAddress } from './utils/utils.js';
+import 'dotenv/config';
 
 const main = async () => {
   // get env variables from drone
   const {
     DRONE_DEPLOY_TO,
     WALLET_PRIVATE_KEY_DEV,
+    WALLET_PRIVATE_KEY_BUBBLE,
     WALLET_PRIVATE_KEY_PROD,
     MJ_APIKEY_PUBLIC,
     MJ_APIKEY_PRIVATE,
@@ -25,8 +30,10 @@ const main = async () => {
     !DRONE_DEPLOY_TO ||
     ![
       DRONE_TARGET_DEPLOY_DEV,
+      DRONE_TARGET_DEPLOY_BUBBLE,
       DRONE_TARGET_DEPLOY_PROD,
       DRONE_TARGET_PUSH_SECRET_DEV,
+      DRONE_TARGET_PUSH_SECRET_BUBBLE,
       DRONE_TARGET_PUSH_SECRET_PROD,
     ].includes(DRONE_DEPLOY_TO)
   )
@@ -42,6 +49,11 @@ const main = async () => {
     DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_DEV
   ) {
     privateKey = WALLET_PRIVATE_KEY_DEV;
+  } else if (
+    DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_BUBBLE ||
+    DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_BUBBLE
+  ) {
+    privateKey = WALLET_PRIVATE_KEY_BUBBLE;
   } else if (
     DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_PROD ||
     DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_PROD
@@ -59,6 +71,8 @@ const main = async () => {
     let ensName;
     if (DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_DEV) {
       ensName = WEB3_MAIL_ENS_NAME_DEV;
+    } else if (DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_BUBBLE) {
+      ensName = WEB3_MAIL_ENS_NAME_BUBBLE;
     } else if (DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_PROD) {
       ensName = WEB3_MAIL_ENS_NAME_PROD;
     }

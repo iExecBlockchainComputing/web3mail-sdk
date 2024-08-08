@@ -3,19 +3,24 @@ import { revokeSellOrder } from './singleFunction/revokeSellOrder.js';
 import { resolveName } from './singleFunction/resolveName.js';
 import {
   DRONE_TARGET_REVOKE_SELL_ORDER_DEV,
+  DRONE_TARGET_REVOKE_SELL_ORDER_BUBBLE,
   DRONE_TARGET_REVOKE_SELL_ORDER_PROD,
   DRONE_TARGET_DEPLOY_DEV,
+  DRONE_TARGET_DEPLOY_BUBBLE,
   DRONE_TARGET_DEPLOY_PROD,
   WEB3_MAIL_ENS_NAME_DEV,
+  WEB3_MAIL_ENS_NAME_BUBBLE,
   WEB3_MAIL_ENS_NAME_PROD,
 } from './config/config.js';
 import { orderHashSchema } from './utils/validator.js';
+import 'dotenv/config';
 
 const main = async () => {
   // get env variables from drone
   const {
     DRONE_DEPLOY_TO,
     WALLET_PRIVATE_KEY_DEV,
+    WALLET_PRIVATE_KEY_BUBBLE,
     WALLET_PRIVATE_KEY_PROD,
     ORDER_HASH,
   } = process.env;
@@ -24,8 +29,10 @@ const main = async () => {
     !DRONE_DEPLOY_TO ||
     ![
       DRONE_TARGET_DEPLOY_DEV,
-      DRONE_TARGET_REVOKE_SELL_ORDER_DEV,
+      DRONE_TARGET_DEPLOY_BUBBLE,
       DRONE_TARGET_DEPLOY_PROD,
+      DRONE_TARGET_REVOKE_SELL_ORDER_DEV,
+      DRONE_TARGET_REVOKE_SELL_ORDER_BUBBLE,
       DRONE_TARGET_REVOKE_SELL_ORDER_PROD,
     ].includes(DRONE_DEPLOY_TO)
   )
@@ -39,13 +46,19 @@ const main = async () => {
   ) {
     privateKey = WALLET_PRIVATE_KEY_DEV;
   } else if (
+    [
+      DRONE_TARGET_DEPLOY_BUBBLE,
+      DRONE_TARGET_REVOKE_SELL_ORDER_BUBBLE,
+    ].includes(DRONE_DEPLOY_TO)
+  ) {
+    privateKey = WALLET_PRIVATE_KEY_BUBBLE;
+  } else if (
     [DRONE_TARGET_DEPLOY_PROD, DRONE_TARGET_REVOKE_SELL_ORDER_PROD].includes(
       DRONE_DEPLOY_TO
     )
   ) {
     privateKey = WALLET_PRIVATE_KEY_PROD;
   }
-
   if (!privateKey)
     throw Error(`Failed to get privateKey for target ${DRONE_DEPLOY_TO}`);
 
@@ -56,6 +69,8 @@ const main = async () => {
     let ensName;
     if (DRONE_DEPLOY_TO === DRONE_TARGET_REVOKE_SELL_ORDER_DEV) {
       ensName = WEB3_MAIL_ENS_NAME_DEV;
+    } else if (DRONE_DEPLOY_TO === DRONE_TARGET_REVOKE_SELL_ORDER_BUBBLE) {
+      ensName = WEB3_MAIL_ENS_NAME_BUBBLE;
     } else if (DRONE_DEPLOY_TO === DRONE_TARGET_REVOKE_SELL_ORDER_PROD) {
       ensName = WEB3_MAIL_ENS_NAME_PROD;
     }
