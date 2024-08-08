@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.4] (2024-08-08)
+
+### Changed
+
+- Bump `kubo-rpc-client` from v3 to v4
+
 ## [1.0.3]
 
 ### Added
