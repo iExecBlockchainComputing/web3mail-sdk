@@ -1,4 +1,4 @@
-# Dataprotector environments
+# web3mail environments
 
 This package centralize the configuration of web3mail environments in [environments.json](./environments.json)
 
