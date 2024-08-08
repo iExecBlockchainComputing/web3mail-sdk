@@ -1,11 +1,9 @@
 import { Contract, JsonRpcProvider, JsonRpcSigner, Wallet } from 'ethers';
-import {
-  Web3MailConfigOptions,
-  Web3SignerProvider,
-} from '../src/web3mail/types.js';
+import { Web3SignerProvider } from '../src/web3mail/types.js';
 import { IExec, utils } from 'iexec';
 import { randomInt } from 'crypto';
 import 'dotenv/config';
+import { iexecOptions } from '../src/config/config.js';
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -22,41 +20,10 @@ export const MAX_EXPECTED_BLOCKTIME = 5_000;
 
 export const MAX_EXPECTED_WEB2_SERVICES_TIME = 80_000;
 
-const TEST_RPC_URL = process.env.DRONE
-  ? 'http://bellecour-fork:8545'
-  : 'http://127.0.0.1:8545';
-
 export const getTestWeb3SignerProvider = (
   privateKey: string
 ): Web3SignerProvider =>
-  utils.getSignerFromPrivateKey(TEST_RPC_URL, privateKey);
-
-export const getTestIExecOption = () => ({
-  smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
-  resultProxyURL: process.env.DRONE
-    ? 'http://result-proxy:13200'
-    : 'http://127.0.0.1:13200',
-  iexecGatewayURL: process.env.DRONE
-    ? 'http://market-api:3000'
-    : 'http://127.0.0.1:3000',
-});
-
-export const getTestConfig = (
-  privateKey: string
-): [Web3SignerProvider, Web3MailConfigOptions] => {
-  const ethProvider = getTestWeb3SignerProvider(privateKey);
-  const options = {
-    iexecOptions: getTestIExecOption(),
-    ipfsGateway: process.env.DRONE
-      ? 'http://ipfs:8080'
-      : 'http://127.0.0.1:8080',
-    ipfsNode: process.env.DRONE ? 'http://ipfs:5001' : 'http://127.0.0.1:5001',
-    dataProtectorSubgraph: process.env.DRONE
-      ? 'http://graphnode:8000/subgraphs/name/DataProtector'
-      : 'http://127.0.0.1:8000/subgraphs/name/DataProtector',
-  };
-  return [ethProvider, options];
-};
+  utils.getSignerFromPrivateKey(iexecOptions.rpcURL, privateKey);
 
 export const getId = () => randomInt(0, 1000000);
 
@@ -95,7 +62,6 @@ export const createAndPublishTestOrders = async (
     .then(resourceProvider.order.signWorkerpoolorder)
     .then(resourceProvider.order.publishWorkerpoolorder);
 };
-
 const impersonateAccount = async (rpcURL, address) => {
   const response = await fetch(rpcURL, {
     method: 'POST',
@@ -142,7 +108,7 @@ export const getIExecResourceOwnership = async (
   resourceAddress,
   targetOwner
 ) => {
-  const provider = new JsonRpcProvider(TEST_RPC_URL);
+  const provider = new JsonRpcProvider(iexecOptions.rpcURL);
 
   const RESOURCE_ABI = [
     {
@@ -208,14 +174,14 @@ export const getIExecResourceOwnership = async (
     provider
   ) as any;
 
-  await impersonateAccount(TEST_RPC_URL, resourceOwner);
+  await impersonateAccount(iexecOptions.rpcURL, resourceOwner);
   const tx = await resourceRegistryContract
     .connect(new JsonRpcSigner(provider, resourceOwner))
     .safeTransferFrom(resourceOwner, targetOwner, resourceAddress, {
       gasPrice: 0,
     });
   await tx.wait();
-  await stopImpersonatingAccount(TEST_RPC_URL, resourceOwner);
+  await stopImpersonatingAccount(iexecOptions.rpcURL, resourceOwner);
 
   const newOwner = await resourceContract.owner();
   console.log(`Contract at ${resourceAddress} is now owned by ${newOwner}`);

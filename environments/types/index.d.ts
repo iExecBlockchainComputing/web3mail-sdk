@@ -15,6 +15,7 @@ export declare type EnvKey =
   | 'voucherSubgraphURL'
   | 'dappAddressOrENS'
   | 'dappWhitelistAddress'
+  | 'dataprotectorContractAddress'
   | 'dataProtectorSubgraph'
   | 'ipfsNode'
   | 'ipfsGateway'

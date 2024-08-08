@@ -7,21 +7,18 @@ import { HDNodeWallet } from 'ethers';
 import {
   WEB3_MAIL_DAPP_ADDRESS,
   WHITELIST_SMART_CONTRACT_ADDRESS,
-  PROD_WORKERPOOL_ADDRESS,
+  iexecOptions,
+  dataProtectorOptions,
+  web3mailOptions,
 } from '../../src/config/config.js';
 import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
-  createAndPublishTestOrders,
-  getIExecResourceOwnership,
   getRandomWallet,
-  getTestConfig,
-  getTestIExecOption,
   getTestWeb3SignerProvider,
   waitSubgraphIndexing,
 } from '../test-utils.js';
-import { IExec } from 'iexec';
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: HDNodeWallet;
@@ -35,44 +32,22 @@ describe('web3mail.sendEmail()', () => {
   beforeAll(async () => {
     providerWallet = getRandomWallet();
     consumerWallet = getRandomWallet();
-    const ethProvider = getTestWeb3SignerProvider(getRandomWallet().privateKey);
-    const iexecOptions = getTestIExecOption();
-    const resourceProvider = new IExec({ ethProvider }, iexecOptions);
 
-    // impersonate app owner and get app ownership
-    const appAddress = await resourceProvider.ens.resolveName(
-      WEB3_MAIL_DAPP_ADDRESS
-    );
-    await getIExecResourceOwnership(
-      appAddress,
-      await resourceProvider.wallet.getAddress()
-    );
-
-    // impersonate workerpool owner and get app ownership
-    workerpoolAddress = await resourceProvider.ens.resolveName(
-      PROD_WORKERPOOL_ADDRESS
-    );
-    await getIExecResourceOwnership(
-      workerpoolAddress,
-      await resourceProvider.wallet.getAddress()
-    );
-
-    await createAndPublishTestOrders(
-      resourceProvider,
-      appAddress,
-      workerpoolAddress
-    );
+    const privateKey = getRandomWallet().privateKey;
+    const ethProvider = getTestWeb3SignerProvider(privateKey);
 
     //create valid protected data
-    dataProtector = new IExecDataProtector(
-      ...getTestConfig(providerWallet.privateKey)
-    );
+    dataProtector = new IExecDataProtector(ethProvider, {
+      ...dataProtectorOptions,
+      iexecOptions,
+    });
+
     validProtectedData = await dataProtector.protectData({
       data: { email: 'example@test.com' },
       name: 'test do not use',
     });
     await dataProtector.grantAccess({
-      authorizedApp: appAddress,
+      authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
       protectedData: validProtectedData.address,
       authorizedUser: consumerWallet.address, // consumer wallet
       numberOfAccess: 1000,
@@ -84,7 +59,14 @@ describe('web3mail.sendEmail()', () => {
       name: 'test do not use',
     });
     await waitSubgraphIndexing();
-    web3mail = new IExecWeb3mail(...getTestConfig(consumerWallet.privateKey));
+
+    const consumerProvider = getTestWeb3SignerProvider(
+      consumerWallet.privateKey
+    );
+    web3mail = new IExecWeb3mail(consumerProvider, {
+      ...web3mailOptions,
+      iexecOptions,
+    });
   }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000);
 
   it(
@@ -346,21 +328,16 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should throw a protocol error',
     async () => {
-      // Call getTestConfig to get the default configuration
-      const [ethProvider, defaultOptions] = getTestConfig(
-        providerWallet.privateKey
-      );
-
-      const options = {
-        ...defaultOptions,
-        iexecOptions: {
-          ...defaultOptions.iexecOptions,
-          iexecGatewayURL: 'https://test',
-        },
-      };
+      const provider = getTestWeb3SignerProvider(providerWallet.privateKey);
 
       // Pass the modified options to IExecWeb3mail
-      const invalidWeb3mail = new IExecWeb3mail(ethProvider, options);
+      const invalidWeb3mail = new IExecWeb3mail(provider, {
+        ...web3mailOptions,
+        iexecOptions: {
+          ...iexecOptions,
+          iexecGatewayURL: 'https://test',
+        },
+      });
       let error: WorkflowError | undefined;
 
       try {
@@ -385,18 +362,14 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should throw a fetchUserContacts error',
     async () => {
-      // Call getTestConfig to get the default configuration
-      const [ethProvider, defaultOptions] = getTestConfig(
-        providerWallet.privateKey
-      );
-
-      const options = {
-        ...defaultOptions,
-        dataProtectorSubgraph: 'https://test',
-      };
+      const provider = getTestWeb3SignerProvider(providerWallet.privateKey);
 
       // Pass the modified options to IExecWeb3mail
-      const invalidWeb3mail = new IExecWeb3mail(ethProvider, options);
+      const invalidWeb3mail = new IExecWeb3mail(provider, {
+        ...web3mailOptions,
+        dataProtectorSubgraph: 'https://test',
+        iexecOptions,
+      });
       let error: WorkflowError | undefined;
 
       try {

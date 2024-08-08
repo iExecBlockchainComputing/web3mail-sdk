@@ -5,15 +5,18 @@ import {
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet, Wallet } from 'ethers';
 import { NULL_ADDRESS } from 'iexec/utils';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
+import {
+  WEB3_MAIL_DAPP_ADDRESS,
+  dataProtectorOptions,
+  web3mailOptions,
+  iexecOptions,
+} from '../../src/config/config.js';
 import { IExecWeb3mail } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
   deployRandomDataset,
-  getTestConfig,
   getTestWeb3SignerProvider,
-  getTestIExecOption,
   waitSubgraphIndexing,
 } from '../test-utils.js';
 import IExec from 'iexec/IExec';
@@ -26,8 +29,15 @@ describe('web3mail.fetchMyContacts()', () => {
 
   beforeAll(async () => {
     wallet = Wallet.createRandom();
-    dataProtector = new IExecDataProtector(...getTestConfig(wallet.privateKey));
-    web3mail = new IExecWeb3mail(...getTestConfig(wallet.privateKey));
+    const ethProvider = getTestWeb3SignerProvider(wallet.privateKey);
+    dataProtector = new IExecDataProtector(ethProvider, {
+      ...dataProtectorOptions,
+      iexecOptions,
+    });
+    web3mail = new IExecWeb3mail(ethProvider, {
+      ...web3mailOptions,
+      iexecOptions,
+    });
     protectedData = await dataProtector.protectData({
       data: { email: 'test@gmail.com' },
       name: 'test do not use',
@@ -92,8 +102,6 @@ describe('web3mail.fetchMyContacts()', () => {
   it(
     'Should not return dataset as a contact',
     async () => {
-      const iexecOptions = getTestIExecOption();
-
       const iexec = new IExec(
         { ethProvider: getTestWeb3SignerProvider(wallet.privateKey) },
         iexecOptions

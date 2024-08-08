@@ -1,5 +1,5 @@
 {
-  "name": "@iexec/dataprotector-environments",
+  "name": "@iexec/web3mail-environments",
   "private": true,
   "type": "module",
   "main": "./esm/index.js",
