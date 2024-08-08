@@ -13,9 +13,13 @@
     "ipfsNodeURL": "https://ipfs-upload.v8-bellecour.iex.ec",
     "pocoSubgraphURL": "https://thegraph.bellecour.iex.ec/subgraphs/name/bellecour/poco-v5",
     "voucherSubgraphURL": "TO_COMPLETE",
+
     "dappAddressOrENS": "web3mail.apps.iexec.eth",
     "dappWhitelistAddress": "0x781482C39CcE25546583EaC4957Fb7Bf04C277D2",
-    "dataProtectorSubgraph": "https://thegraph-product.iex.ec/subgraphs/name/bellecour/dataprotector-v2",
+
+    "dataprotectorContractAddress": "0x3a4Ab33F3D605e75b6D00A32A0Fa55C3628F6A59",
+    "dataProtectorSubgraph": "https://thegraph-product.iex.ec/subgraphs/name/bellecour/staging-dataprotector-v2",
+
     "workerpoolProdAddress": "prod-v8-bellecour.main.pools.iexec.eth"
   },
   "staging": {
@@ -32,9 +36,13 @@
     "ipfsNodeURL": "https://ipfs-upload.stagingv8.iex.ec",
     "pocoSubgraphURL": "https://thegraph.bellecour.iex.ec/subgraphs/name/bellecour/poco-v5",
     "voucherSubgraphURL": "TO_COMPLETE",
+
     "dappAddressOrENS": "0x3a4Ab33F3D605e75b6D00A32A0Fa55C3628F6A59",
     "dappWhitelistAddress": "25455501",
-    "dataProtectorSubgraph": "https://thegraph-product.iex.ec/subgraphs/name/bellecour/dataprotector-v2",
+
+    "dataprotectorContractAddress": "0xd3A14A1B7165672036A7A8756390C912dD67B81D",
+    "dataProtectorSubgraph": "https://thegraph-product.iex.ec/subgraphs/name/bellecour/staging-dataprotector-v2",
+
     "workerpoolProdAddress": "prod-stagingv8.main.pools.iexec.eth"
   },
   "bubble": {
@@ -51,9 +59,13 @@
     "ipfsNodeURL": "https://ipfs-upload.v8-bellecour.iex.ec",
     "pocoSubgraphURL": "http://thegraph.wp-throughput.az1.internal:8000/subgraphs/name/bellecour/poco-v5",
     "voucherSubgraphURL": "http://thegraph.wp-throughput.az1.internal:8000/subgraphs/name/bellecour/iexec-voucher",
+
     "dappAddressOrENS": "0x33e5fdc96a8d399C36CCd7Ab9FF6E36CA9D28731",
     "dappWhitelistAddress": "0xf86Aa3DbC57b160Cc55d82c919E79aAbc816fDB7",
-    "dataProtectorSubgraph": "https://thegraph-product.iex.ec/subgraphs/name/bellecour/dataprotector-v2",
+
+    "dataprotectorContractAddress": "0xc96304e3c037f81dA488ed9dEa1D8F2a48278a75",
+    "dataProtectorSubgraph": "http://thegraph.wp-throughput.az1.internal:8000/subgraphs/name/DataProtector-v2",
+
     "workerpoolProdAddress": "0x3779Da315D935D3E3957561667236BF6859C1b0E"
   }
 }
