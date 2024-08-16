@@ -30,7 +30,7 @@ import { IExec } from 'iexec';
 import { NULL_ADDRESS } from 'iexec/utils';
 import 'dotenv/config';
 
-const { ENV } = process.env;
+const { ENV = 'bellecour-fork' } = process.env;
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: HDNodeWallet;
@@ -426,7 +426,7 @@ describe('web3mail.sendEmail()', () => {
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
-  // TODO: enable tests for other env once the voucher is deployed
+  // TODO: remove the 'if' statement when the voucher is deployed in all environments
   if (ENV === 'bellecour-fork') {
     describe('use voucher', () => {
       beforeEach(async () => {

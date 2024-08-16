@@ -11,9 +11,9 @@ import {
 } from '../test-utils.js';
 import 'dotenv/config';
 
-const { ENV } = process.env;
+const { ENV = 'bellecour-fork' } = process.env;
 
-// TODO: enable tests for other env once the voucher is deployed
+// TODO: remove the 'if' statement when the voucher is deployed in all environments
 if (ENV === 'bellecour-fork') {
   describe('voucher test utils', () => {
     test(

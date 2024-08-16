@@ -15,7 +15,7 @@ import { getEnvironment, KnownEnv } from '@iexec/web3mail-environments';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'dotenv/config';
 
-const { ENV, DRONE } = process.env;
+const { ENV = 'bellecour-fork', DRONE } = process.env;
 
 const {
   chainId,
