@@ -1,9 +1,9 @@
 // reexport environments.json as es module
-import { createRequire } from "module";
-import { KNOWN_ENVS } from "../common/utils.js";
+import { createRequire } from 'module';
+import { KNOWN_ENVS } from '../common/utils';
 
 export const environments = createRequire(import.meta.url)(
-  "../environments.json"
+  '../environments.json'
 );
 
 export const getEnvironment = (env) => {

@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { getEnvironment, KnownEnv } from '@iexec/web3mail-environments';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import 'dotenv/config';
 
 const { ENV } = process.env;

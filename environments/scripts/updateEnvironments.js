@@ -1,7 +1,7 @@
-import fs from "fs";
-import { KNOWN_ENVS, KNOWN_KEYS } from "../common/utils.js";
+import fs from 'fs';
+import { KNOWN_ENVS, KNOWN_KEYS } from '../common/utils';
 
-const ENV_JSON = "environments.json";
+const ENV_JSON = 'environments.json';
 
 const { ENV, KEY, VALUE } = process.env;
 
@@ -9,17 +9,17 @@ if (!KNOWN_ENVS.includes(ENV))
   throw Error(
     `unknown ENV "${ENV}", must be one of ${KNOWN_ENVS.map(
       (name) => `"${name}"`
-    ).join(", ")}`
+    ).join(', ')}`
   );
 
 if (!KNOWN_KEYS.includes(KEY))
   throw Error(
     `unknown KEY "${KEY}", must be one of ${KNOWN_KEYS.map(
       (name) => `"${name}"`
-    ).join(", ")}`
+    ).join(', ')}`
   );
 
-if (!VALUE) throw Error("missing value to update");
+if (!VALUE) throw Error('missing value to update');
 
 const env = JSON.parse(fs.readFileSync(ENV_JSON));
 
