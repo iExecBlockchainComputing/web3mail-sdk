@@ -9,46 +9,57 @@ import {
   getTestWeb3SignerProvider,
   timeouts,
 } from '../test-utils.js';
+import 'dotenv/config';
 
-describe('voucher test utils', () => {
-  test(
-    'createVoucherType should create a voucherType and return the id',
-    async () => {
-      const voucherTypeId = await createVoucherType({
-        description: 'test voucher type',
-        duration: 42,
-      });
-      expect(typeof voucherTypeId).toBe('bigint');
-    },
-    timeouts.createVoucherType
-  );
-  test(
-    'createVoucher should create a voucher and publish workerpool orders',
-    async () => {
-      const owner = getRandomAddress();
-      const voucherTypeId = await createVoucherType();
+const { ENV = 'bellecour-fork' } = process.env;
 
-      await createVoucher({
-        owner,
-        voucherType: voucherTypeId,
-        value: 48,
-      });
+// TODO: remove the 'if' statement when the voucher is deployed in all environments
+if (ENV === 'bellecour-fork') {
+  describe('voucher test utils', () => {
+    test(
+      'createVoucherType should create a voucherType and return the id',
+      async () => {
+        const voucherTypeId = await createVoucherType({
+          description: 'test voucher type',
+          duration: 42,
+        });
+        expect(typeof voucherTypeId).toBe('bigint');
+      },
+      timeouts.createVoucherType
+    );
+    test(
+      'createVoucher should create a voucher and publish workerpool orders',
+      async () => {
+        const owner = getRandomAddress();
+        const voucherTypeId = await createVoucherType();
 
-      const iexec = new IExec(
-        { ethProvider: getTestWeb3SignerProvider() },
-        getTestIExecOption()
-      );
-
-      const debugWorkerpoolOrderbook =
-        await iexec.orderbook.fetchWorkerpoolOrderbook({
-          workerpool: 'debug-v8-bellecour.main.pools.iexec.eth',
-          minTag: ['tee', 'scone'],
-          requester: owner,
-          isRequesterStrict: true,
+        await createVoucher({
+          owner,
+          voucherType: voucherTypeId,
+          value: 48,
         });
 
-      expect(debugWorkerpoolOrderbook.count).toBeGreaterThan(0);
-    },
-    timeouts.createVoucher
-  );
-});
+        const iexec = new IExec(
+          { ethProvider: getTestWeb3SignerProvider() },
+          getTestIExecOption()
+        );
+
+        const debugWorkerpoolOrderbook =
+          await iexec.orderbook.fetchWorkerpoolOrderbook({
+            workerpool: 'debug-v8-bellecour.main.pools.iexec.eth',
+            minTag: ['tee', 'scone'],
+            requester: owner,
+            isRequesterStrict: true,
+          });
+
+        expect(debugWorkerpoolOrderbook.count).toBeGreaterThan(0);
+      },
+      timeouts.createVoucher
+    );
+  });
+} else {
+  console.log(`Voucher not yet deployed in [${ENV}] environment`);
+  test('placeholder test', () => {
+    expect(true).toBe(true);
+  });
+}

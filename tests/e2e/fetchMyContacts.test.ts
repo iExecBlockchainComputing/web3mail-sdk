@@ -11,9 +11,10 @@ import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
   deployRandomDataset,
-  getTestConfig,
+  getWeb3mailConfig,
   getTestWeb3SignerProvider,
   getTestIExecOption,
+  getDataProtectorConfig,
 } from '../test-utils.js';
 import IExec from 'iexec/IExec';
 
@@ -26,9 +27,9 @@ describe('web3mail.fetchMyContacts()', () => {
   beforeAll(async () => {
     wallet = Wallet.createRandom();
     dataProtector = new IExecDataProtectorCore(
-      ...getTestConfig(wallet.privateKey)
+      ...getDataProtectorConfig(wallet.privateKey)
     );
-    web3mail = new IExecWeb3mail(...getTestConfig(wallet.privateKey));
+    web3mail = new IExecWeb3mail(...getWeb3mailConfig(wallet.privateKey));
     protectedData = await dataProtector.protectData({
       data: { email: 'test@gmail.com' },
       name: 'test do not use',

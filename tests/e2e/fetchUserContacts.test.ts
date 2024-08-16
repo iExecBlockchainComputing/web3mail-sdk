@@ -9,7 +9,8 @@ import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
-  getTestConfig,
+  getDataProtectorConfig,
+  getWeb3mailConfig,
 } from '../test-utils.js';
 
 describe('web3mail.fetchMyContacts()', () => {
@@ -22,9 +23,9 @@ describe('web3mail.fetchMyContacts()', () => {
   beforeAll(async () => {
     wallet = Wallet.createRandom();
     dataProtector = new IExecDataProtectorCore(
-      ...getTestConfig(wallet.privateKey)
+      ...getDataProtectorConfig(wallet.privateKey)
     );
-    web3mail = new IExecWeb3mail(...getTestConfig(wallet.privateKey));
+    web3mail = new IExecWeb3mail(...getWeb3mailConfig(wallet.privateKey));
 
     //create valid protected data
     protectedData1 = await dataProtector.protectData({
@@ -86,8 +87,10 @@ describe('web3mail.fetchMyContacts()', () => {
   it(
     'should throw a protocol error',
     async () => {
-      // Call getTestConfig to get the default configuration
-      const [ethProvider, defaultOptions] = getTestConfig(wallet.privateKey);
+      // Call getWeb3mailConfig to get the default configuration
+      const [ethProvider, defaultOptions] = getWeb3mailConfig(
+        wallet.privateKey
+      );
       const user1 = Wallet.createRandom().address;
 
       const options = {
@@ -122,8 +125,10 @@ describe('web3mail.fetchMyContacts()', () => {
   it(
     'should throw a fetchUserContacts error',
     async () => {
-      // Call getTestConfig to get the default configuration
-      const [ethProvider, defaultOptions] = getTestConfig(wallet.privateKey);
+      // Call getWeb3mailConfig to get the default configuration
+      const [ethProvider, defaultOptions] = getWeb3mailConfig(
+        wallet.privateKey
+      );
 
       const options = {
         ...defaultOptions,

@@ -10,45 +10,120 @@ import { randomInt } from 'crypto';
 import { getSignerFromPrivateKey } from 'iexec/utils';
 // eslint-disable-next-line import/extensions
 import { VOUCHER_HUB_ADDRESS } from './bellecour-fork/voucher-config.js';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { getEnvironment, KnownEnv } from '@iexec/web3mail-environments';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import 'dotenv/config';
 
-const { DRONE } = process.env;
+const { ENV = 'bellecour-fork', DRONE } = process.env;
 
-export const TEST_CHAIN = {
-  rpcURL: process.env.DRONE
-    ? 'http://bellecour-fork:8545'
-    : 'http://127.0.0.1:8545',
-  chainId: '134',
-  smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
-  resultProxyURL: process.env.DRONE
-    ? 'http://result-proxy:13200'
-    : 'http://127.0.0.1:13200',
-  iexecGatewayURL: process.env.DRONE
-    ? 'http://market-api:3000'
-    : 'http://127.0.0.1:3000',
-  voucherHubAddress: VOUCHER_HUB_ADDRESS, // TODO: change with deployment address once voucher is deployed on bellecour
-  voucherManagerWallet: new Wallet(
-    '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
-  ),
-  voucherSubgraphURL: process.env.DRONE
-    ? 'http://gaphnode:8000/subgraphs/name/bellecour/iexec-voucher'
-    : 'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
-  debugWorkerpool: 'debug-v8-bellecour.main.pools.iexec.eth',
-  debugWorkerpoolOwnerWallet: new Wallet(
-    '0x800e01919eadf36f110f733decb1cc0f82e7941a748e89d7a3f76157f6654bb3'
-  ),
-  prodWorkerpool: 'prod-v8-bellecour.main.pools.iexec.eth',
-  prodWorkerpoolOwnerWallet: new Wallet(
-    '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
-  ),
-  appOwnerWallet: new Wallet(
-    '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
-  ),
-  provider: new JsonRpcProvider(
-    process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545'
-  ),
-  hubAddress: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f',
+const {
+  chainId,
+  rpcURL,
+  hubAddress,
+  ensRegistryAddress,
+  ensPublicResolverAddress,
+  voucherHubAddress,
+  smsURL,
+  iexecGatewayURL,
+  resultProxyURL,
+  ipfsGatewayURL,
+  ipfsNodeURL,
+  pocoSubgraphURL,
+  voucherSubgraphURL,
+
+  dappAddressOrENS,
+  dappWhitelistAddress,
+  dataProtectorSubgraph,
+  ipfsNode,
+  ipfsGateway,
+
+  dataprotectorContractAddress,
+  workerpool,
+} = getEnvironment(ENV as KnownEnv);
+
+const getDataProtectorSubgraph = () => {
+  if (ENV === 'bellecour-fork') {
+    return DRONE
+      ? 'http://graphnode:8000/subgraphs/name/DataProtector'
+      : 'http://127.0.0.1:8000/subgraphs/name/DataProtector';
+  }
+  return dataProtectorSubgraph;
 };
 
+const web3mailOptions = {
+  dappAddressOrENS,
+  dappWhitelistAddress,
+  dataProtectorSubgraph: getDataProtectorSubgraph(),
+  ipfsNode,
+  ipfsGateway,
+};
+
+const dataProtectorOptions = {
+  dataprotectorContractAddress,
+  subgraphUrl: dataProtectorSubgraph,
+  ipfsNode,
+  ipfsGateway,
+};
+let TEST_CHAIN;
+if (ENV === 'bellecour-fork') {
+  TEST_CHAIN = {
+    chainId: chainId,
+    hubAddress,
+    ensRegistryAddress,
+    ensPublicResolverAddress,
+    pocoSubgraphURL,
+    voucherHubAddress: VOUCHER_HUB_ADDRESS,
+    rpcURL: DRONE ? 'http://bellecour-fork:8545' : rpcURL,
+    smsURL: DRONE ? 'http://sms:13300' : smsURL,
+    resultProxyURL: DRONE ? 'http://result-proxy:13200' : resultProxyURL,
+    iexecGatewayURL: DRONE ? 'http://market-api:3000' : iexecGatewayURL,
+    ipfsNodUrl: DRONE ? 'http://ipfs:5001' : 'http://127.0.0.1:5001',
+    ipfsGatewayUrl: DRONE ? 'http://ipfs:8080' : 'http://127.0.0.1:8080',
+    dataProtectorSubgraph: DRONE
+      ? 'http://graphnode:8000/subgraphs/name/DataProtector'
+      : 'http://127.0.0.1:8000/subgraphs/name/DataProtector',
+
+    voucherManagerWallet: new Wallet(
+      '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
+    ),
+    voucherSubgraphURL: DRONE
+      ? 'http://gaphnode:8000/subgraphs/name/bellecour/iexec-voucher'
+      : voucherSubgraphURL,
+    debugWorkerpool: 'debug-v8-bellecour.main.pools.iexec.eth',
+    debugWorkerpoolOwnerWallet: new Wallet(
+      '0x800e01919eadf36f110f733decb1cc0f82e7941a748e89d7a3f76157f6654bb3'
+    ),
+    prodWorkerpool: 'prod-v8-bellecour.main.pools.iexec.eth',
+    prodWorkerpoolOwnerWallet: new Wallet(
+      '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
+    ),
+    appOwnerWallet: new Wallet(
+      '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
+    ),
+    provider: new JsonRpcProvider(
+      DRONE ? 'http://bellecour-fork:8545' : rpcURL
+    ),
+  };
+} else {
+  TEST_CHAIN = {
+    rpcURL,
+    chainId,
+    smsURL,
+    hubAddress,
+    resultProxyURL,
+    iexecGatewayURL,
+    ipfsGatewayURL,
+    ipfsNodeURL,
+    voucherHubAddress,
+    pocoSubgraphURL,
+    voucherSubgraphURL,
+    prodWorkerpool: workerpool,
+    provider: new JsonRpcProvider(rpcURL),
+  };
+}
+
+export { TEST_CHAIN };
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export const getRequiredFieldMessage = (field: string = 'this') =>
@@ -70,34 +145,41 @@ export const timeouts = {
   createVoucher: MAX_EXPECTED_BLOCKTIME * 4 + MARKET_API_CALL_TIMEOUT * 2,
 };
 
-const TEST_RPC_URL = process.env.DRONE
-  ? 'http://bellecour-fork:8545'
-  : 'http://127.0.0.1:8545';
-
 export const getTestWeb3SignerProvider = (
   privateKey: string = Wallet.createRandom().privateKey
 ): Web3SignerProvider =>
   utils.getSignerFromPrivateKey(TEST_CHAIN.rpcURL, privateKey);
 
 export const getTestIExecOption = () => ({
+  rpcURL: TEST_CHAIN.rpcURL,
   smsURL: TEST_CHAIN.smsURL,
   resultProxyURL: TEST_CHAIN.resultProxyURL,
   iexecGatewayURL: TEST_CHAIN.iexecGatewayURL,
+  hubAddress: TEST_CHAIN.hubAddress,
+  ipfsGatewayURL: TEST_CHAIN.ipfsGatewayURL,
+  ipfsNodeURL: TEST_CHAIN.ipfsNodeURL,
   voucherHubAddress: TEST_CHAIN.voucherHubAddress,
   voucherSubgraphURL: TEST_CHAIN.voucherSubgraphURL,
 });
 
-export const getTestConfig = (
+export const getWeb3mailConfig = (
   privateKey: string
 ): [Web3SignerProvider, Web3MailConfigOptions] => {
   const ethProvider = getTestWeb3SignerProvider(privateKey);
   const options = {
     iexecOptions: getTestIExecOption(),
-    ipfsGateway: DRONE ? 'http://ipfs:8080' : 'http://127.0.0.1:8080',
-    ipfsNode: DRONE ? 'http://ipfs:5001' : 'http://127.0.0.1:5001',
-    dataProtectorSubgraph: DRONE
-      ? 'http://graphnode:8000/subgraphs/name/DataProtector'
-      : 'http://127.0.0.1:8000/subgraphs/name/DataProtector',
+    ...web3mailOptions,
+  };
+  return [ethProvider, options];
+};
+
+export const getDataProtectorConfig = (
+  privateKey: string
+): [Web3SignerProvider, Web3MailConfigOptions] => {
+  const ethProvider = getTestWeb3SignerProvider(privateKey);
+  const options = {
+    iexecOptions: getTestIExecOption(),
+    ...dataProtectorOptions,
   };
   return [ethProvider, options];
 };
@@ -217,6 +299,7 @@ export const createVoucherType = async ({
     VOUCHER_HUB_ABI,
     TEST_CHAIN.provider
   );
+  console.log(TEST_CHAIN.provider);
   const signer = TEST_CHAIN.voucherManagerWallet.connect(TEST_CHAIN.provider);
   const createVoucherTypeTxHash = await voucherHubContract
     .connect(signer)
@@ -241,14 +324,14 @@ export const ensureSufficientStake = async (iexec, requiredStake) => {
 };
 
 export const createAndPublishWorkerpoolOrder = async (
-  workerpool: string,
+  workerpoolAddress: string,
   workerpoolOwnerWallet: ethers.Wallet,
   requesterrestrict?: string,
   workerpoolprice?: number = 0,
   volume?: number = 1000
 ) => {
   const ethProvider = utils.getSignerFromPrivateKey(
-    TEST_RPC_URL,
+    TEST_CHAIN.rpcURL,
     workerpoolOwnerWallet.privateKey
   );
   const iexec = new IExec({ ethProvider }, getTestIExecOption());
@@ -256,7 +339,7 @@ export const createAndPublishWorkerpoolOrder = async (
   await ensureSufficientStake(iexec, requiredStake);
 
   const workerpoolorder = await iexec.order.createWorkerpoolorder({
-    workerpool,
+    workerpool: workerpoolAddress,
     category: 0,
     requesterrestrict,
     volume,
