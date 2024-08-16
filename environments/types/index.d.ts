@@ -18,6 +18,7 @@ export declare type EnvKey =
   | 'dataProtectorSubgraph'
   | 'ipfsNode'
   | 'ipfsGateway'
+  | 'dataprotectorContractAddress'
   | 'workerpool';
 
 export declare type Environment = Record<EnvKey, string | null>;

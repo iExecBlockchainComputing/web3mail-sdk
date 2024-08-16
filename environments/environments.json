@@ -20,6 +20,8 @@
     "ipfsNode": "https://ipfs-upload.v8-bellecour.iex.ec",
     "ipfsGateway": "https://ipfs-gateway.v8-bellecour.iex.ec",
 
+    "dataprotectorContractAddress": "0x3a4Ab33F3D605e75b6D00A32A0Fa55C3628F6A59",
+
     "workerpool": "prod-v8-bellecour.main.pools.iexec.eth"
   },
   "staging": {
@@ -42,6 +44,8 @@
     "dataProtectorSubgraph": "",
     "ipfsNode": "https://ipfs-upload.v8-bellecour.iex.ec",
     "ipfsGateway": "https://ipfs-gateway.v8-bellecour.iex.ec",
+
+    "dataprotectorContractAddress": "0xd3A14A1B7165672036A7A8756390C912dD67B81D",
 
     "workerpool": "prod-stagingv8.main.pools.iexec.eth"
   },
@@ -66,6 +70,8 @@
     "ipfsNode": "https://ipfs-upload.v8-bellecour.iex.ec",
     "ipfsGateway": "https://ipfs-gateway.v8-bellecour.iex.ec",
 
+    "dataprotectorContractAddress": "0xc96304e3c037f81dA488ed9dEa1D8F2a48278a75",
+
     "workerpool": "0x3779Da315D935D3E3957561667236BF6859C1b0E"
   },
   "bellecour-fork": {
@@ -88,6 +94,8 @@
     "dataProtectorSubgraph": "https://thegraph-product.iex.ec/subgraphs/name/bellecour/dataprotector",
     "ipfsNode": "https://ipfs-upload.v8-bellecour.iex.ec",
     "ipfsGateway": "https://ipfs-gateway.v8-bellecour.iex.ec",
+
+    "dataprotectorContractAddress": "0x3a4Ab33F3D605e75b6D00A32A0Fa55C3628F6A59",
 
     "workerpool": "prod-v8-bellecour.main.pools.iexec.eth"
   }

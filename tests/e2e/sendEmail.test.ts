@@ -20,13 +20,17 @@ import {
   createVoucherType,
   ensureSufficientStake,
   getRandomWallet,
-  getTestConfig,
+  getWeb3mailConfig,
   getTestIExecOption,
   getTestWeb3SignerProvider,
   sleep,
+  getDataProtectorConfig,
 } from '../test-utils.js';
 import { IExec } from 'iexec';
 import { NULL_ADDRESS } from 'iexec/utils';
+import 'dotenv/config';
+
+const { ENV } = process.env;
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: HDNodeWallet;
@@ -43,25 +47,30 @@ describe('web3mail.sendEmail()', () => {
 
   beforeAll(async () => {
     providerWallet = getRandomWallet();
-    const ethProvider = getTestWeb3SignerProvider(
-      TEST_CHAIN.appOwnerWallet.privateKey
-    );
-    const resourceProvider = new IExec({ ethProvider }, iexecOptions);
-    debugWorkerpoolAddress = await resourceProvider.ens.resolveName(
-      TEST_CHAIN.debugWorkerpool
-    );
-    prodWorkerpoolAddress = await resourceProvider.ens.resolveName(
-      TEST_CHAIN.prodWorkerpool
-    );
-    await createAndPublishAppOrders(resourceProvider, WEB3_MAIL_DAPP_ADDRESS);
-    // free workerpool
-    await createAndPublishWorkerpoolOrder(
-      TEST_CHAIN.debugWorkerpool,
-      TEST_CHAIN.debugWorkerpoolOwnerWallet
-    );
+
+    // TODO: remove the 'if' statement when the voucher is deployed in all environments
+    if (ENV === 'bellecour-fork') {
+      const ethProvider = getTestWeb3SignerProvider(
+        TEST_CHAIN.appOwnerWallet.privateKey
+      );
+      const resourceProvider = new IExec({ ethProvider }, iexecOptions);
+      debugWorkerpoolAddress = await resourceProvider.ens.resolveName(
+        TEST_CHAIN.debugWorkerpool
+      );
+      prodWorkerpoolAddress = await resourceProvider.ens.resolveName(
+        TEST_CHAIN.prodWorkerpool
+      );
+      await createAndPublishAppOrders(resourceProvider, WEB3_MAIL_DAPP_ADDRESS);
+      // free workerpool
+      await createAndPublishWorkerpoolOrder(
+        TEST_CHAIN.debugWorkerpool,
+        TEST_CHAIN.debugWorkerpoolOwnerWallet
+      );
+    }
+
     //create valid protected data
     dataProtector = new IExecDataProtectorCore(
-      ...getTestConfig(providerWallet.privateKey)
+      ...getDataProtectorConfig(providerWallet.privateKey)
     );
     validProtectedData = await dataProtector.protectData({
       data: { email: 'example@test.com' },
@@ -91,7 +100,9 @@ describe('web3mail.sendEmail()', () => {
       authorizedUser: consumerWallet.address, // consumer wallet
       numberOfAccess: 1000,
     });
-    web3mail = new IExecWeb3mail(...getTestConfig(consumerWallet.privateKey));
+    web3mail = new IExecWeb3mail(
+      ...getWeb3mailConfig(consumerWallet.privateKey)
+    );
   });
 
   it(
@@ -350,8 +361,8 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should throw a protocol error',
     async () => {
-      // Call getTestConfig to get the default configuration
-      const [ethProvider, defaultOptions] = getTestConfig(
+      // Call getWeb3mailConfig to get the default configuration
+      const [ethProvider, defaultOptions] = getWeb3mailConfig(
         providerWallet.privateKey
       );
 
@@ -389,8 +400,8 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should throw a fetchUserContacts error',
     async () => {
-      // Call getTestConfig to get the default configuration
-      const [ethProvider, defaultOptions] = getTestConfig(
+      // Call getWeb3mailConfig to get the default configuration
+      const [ethProvider, defaultOptions] = getWeb3mailConfig(
         providerWallet.privateKey
       );
 
@@ -415,195 +426,205 @@ describe('web3mail.sendEmail()', () => {
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
+  // TODO: enable tests for other env once the voucher is deployed
+  if (ENV === 'bellecour-fork') {
+    describe('use voucher', () => {
+      beforeEach(async () => {
+        // payable workerpool
+        await createAndPublishWorkerpoolOrder(
+          TEST_CHAIN.prodWorkerpool,
+          TEST_CHAIN.prodWorkerpoolOwnerWallet,
+          NULL_ADDRESS,
+          workerpoolprice
+        );
+      });
+      it(
+        'should throw error if no voucher available for the requester',
+        async () => {
+          const params = {
+            emailSubject: 'e2e mail object for test',
+            emailContent: 'e2e mail content for test',
+            protectedData: validProtectedData.address,
+            workerpoolAddressOrEns: debugWorkerpoolAddress,
+            workerpoolMaxPrice: 1000,
+            useVoucher: true,
+          };
+          let error;
+          try {
+            await web3mail.sendEmail(params);
+          } catch (err) {
+            error = err;
+          }
+          expect(error).toBeDefined();
+          expect(error.message).toBe('Failed to sendEmail');
+          expect(error.cause.message).toBe(
+            `No voucher available for the requester ${consumerWallet.address}`
+          );
+        },
+        2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+      );
+      it(
+        'should throw error if workerpool is not sponsored by the voucher',
+        async () => {
+          const voucherType = await createVoucherType({
+            description: 'test voucher type',
+            duration: 60 * 60,
+          });
+          await createVoucher({
+            owner: consumerWallet.address,
+            voucherType,
+            value: 1000,
+          });
+          const params = {
+            emailSubject: 'e2e mail object for test',
+            emailContent: 'e2e mail content for test',
+            protectedData: validProtectedData.address,
+            workerpoolAddress: prodWorkerpoolAddress,
+            workerpoolMaxPrice: 1000,
+            useVoucher: true,
+          };
 
-  describe('use voucher', () => {
-    beforeEach(async () => {
-      // payable workerpool
-      await createAndPublishWorkerpoolOrder(
-        TEST_CHAIN.prodWorkerpool,
-        TEST_CHAIN.prodWorkerpoolOwnerWallet,
-        NULL_ADDRESS,
-        workerpoolprice
+          let error;
+          try {
+            await web3mail.sendEmail(params);
+          } catch (err) {
+            error = err;
+          }
+          expect(error).toBeDefined();
+          expect(error.message).toBe('Failed to sendEmail');
+          expect(error.cause.message).toBe(
+            `Orders can't be matched. Please approve an additional ${workerpoolprice} for voucher usage.`
+          );
+        },
+        2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+      );
+      it(
+        'throw error if voucher balance is insufficient to sponsor workerpool',
+        async () => {
+          // payable workerpool
+          await createAndPublishWorkerpoolOrder(
+            TEST_CHAIN.prodWorkerpool,
+            TEST_CHAIN.prodWorkerpoolOwnerWallet,
+            consumerWallet.address,
+            workerpoolprice
+          );
+          const voucherType = await createVoucherType({
+            description: 'test voucher type',
+            duration: 60 * 60,
+          });
+          const voucherValue = 500;
+          await createVoucher({
+            owner: consumerWallet.address,
+            voucherType,
+            value: voucherValue,
+          });
+          await addVoucherEligibleAsset(prodWorkerpoolAddress, voucherType);
+          const params = {
+            emailSubject: 'e2e mail object for test',
+            emailContent: 'e2e mail content for test',
+            protectedData: validProtectedData.address,
+            workerpoolAddress: prodWorkerpoolAddress,
+            workerpoolMaxPrice: 1000,
+            useVoucher: true,
+          };
+          const missingAmount = workerpoolprice - voucherValue;
+          let error;
+          try {
+            await web3mail.sendEmail(params);
+          } catch (err) {
+            error = err;
+          }
+          expect(error).toBeDefined();
+          expect(error.message).toBe('Failed to sendEmail');
+          expect(error.cause.message).toBe(
+            `Orders can't be matched. Please approve an additional ${missingAmount} for voucher usage.`
+          );
+        },
+        2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+      );
+      it(
+        'should create task if voucher balance is insufficient to sponsor workerpool and user approve missing amount',
+        async () => {
+          // payable workerpool
+          await createAndPublishWorkerpoolOrder(
+            TEST_CHAIN.prodWorkerpool,
+            TEST_CHAIN.prodWorkerpoolOwnerWallet,
+            consumerWallet.address,
+            workerpoolprice
+          );
+          const voucherType = await createVoucherType({
+            description: 'test voucher type',
+            duration: 60 * 60,
+          });
+          const voucherValue = 500;
+          const voucherAddress = await createVoucher({
+            owner: consumerWallet.address,
+            voucherType,
+            value: voucherValue,
+          });
+          await addVoucherEligibleAsset(prodWorkerpoolAddress, voucherType);
+          const params = {
+            emailSubject: 'e2e mail object for test',
+            emailContent: 'e2e mail content for test',
+            protectedData: validProtectedData.address,
+            workerpoolAddress: prodWorkerpoolAddress,
+            workerpoolMaxPrice: 1000,
+            useVoucher: true,
+          };
+          const missingAmount = workerpoolprice - voucherValue;
+          await ensureSufficientStake(consumerIExecInstance, missingAmount);
+          await consumerIExecInstance.account.approve(
+            missingAmount,
+            voucherAddress
+          );
+
+          const sendEmailResponse = await web3mail.sendEmail(params);
+          expect(sendEmailResponse.taskId).toBeDefined();
+        },
+        2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+      );
+      it(
+        'should create a deal for send email if voucher balance is sufficient to sponsor workerpool',
+        async () => {
+          // payable workerpool
+          await createAndPublishWorkerpoolOrder(
+            TEST_CHAIN.prodWorkerpool,
+            TEST_CHAIN.prodWorkerpoolOwnerWallet,
+            consumerWallet.address,
+            workerpoolprice
+          );
+          const voucherType = await createVoucherType({
+            description: 'test voucher type',
+            duration: 60 * 60,
+          });
+          const voucherValue = 1000;
+          await createVoucher({
+            owner: consumerWallet.address,
+            voucherType,
+            value: voucherValue,
+          });
+          await addVoucherEligibleAsset(prodWorkerpoolAddress, voucherType);
+          const params = {
+            emailSubject: 'e2e mail object for test',
+            emailContent: 'e2e mail content for test',
+            protectedData: validProtectedData.address,
+            workerpoolAddress: prodWorkerpoolAddress,
+            workerpoolMaxPrice: 1000,
+            useVoucher: true,
+          };
+          const sendEmailResponse = await web3mail.sendEmail(params);
+          expect(sendEmailResponse.taskId).toBeDefined();
+        },
+        2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
       );
     });
-    it(
-      'should throw error if no voucher available for the requester',
-      async () => {
-        const params = {
-          emailSubject: 'e2e mail object for test',
-          emailContent: 'e2e mail content for test',
-          protectedData: validProtectedData.address,
-          workerpoolAddressOrEns: debugWorkerpoolAddress,
-          workerpoolMaxPrice: 1000,
-          useVoucher: true,
-        };
-        let error;
-        try {
-          await web3mail.sendEmail(params);
-        } catch (err) {
-          error = err;
-        }
-        expect(error).toBeDefined();
-        expect(error.message).toBe('Failed to sendEmail');
-        expect(error.cause.message).toBe(
-          `No voucher available for the requester ${consumerWallet.address}`
-        );
-      },
-      2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+  } else {
+    console.log(
+      `Voucher not deployed in [${ENV}] environment, enable voucher tests once deployed`
     );
-    it(
-      'should throw error if workerpool is not sponsored by the voucher',
-      async () => {
-        const voucherType = await createVoucherType({
-          description: 'test voucher type',
-          duration: 60 * 60,
-        });
-        await createVoucher({
-          owner: consumerWallet.address,
-          voucherType,
-          value: 1000,
-        });
-        const params = {
-          emailSubject: 'e2e mail object for test',
-          emailContent: 'e2e mail content for test',
-          protectedData: validProtectedData.address,
-          workerpoolAddress: prodWorkerpoolAddress,
-          workerpoolMaxPrice: 1000,
-          useVoucher: true,
-        };
 
-        let error;
-        try {
-          await web3mail.sendEmail(params);
-        } catch (err) {
-          error = err;
-        }
-        expect(error).toBeDefined();
-        expect(error.message).toBe('Failed to sendEmail');
-        expect(error.cause.message).toBe(
-          `Orders can't be matched. Please approve an additional ${workerpoolprice} for voucher usage.`
-        );
-      },
-      2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
-    );
-    it(
-      'throw error if voucher balance is insufficient to sponsor workerpool',
-      async () => {
-        // payable workerpool
-        await createAndPublishWorkerpoolOrder(
-          TEST_CHAIN.prodWorkerpool,
-          TEST_CHAIN.prodWorkerpoolOwnerWallet,
-          consumerWallet.address,
-          workerpoolprice
-        );
-        const voucherType = await createVoucherType({
-          description: 'test voucher type',
-          duration: 60 * 60,
-        });
-        const voucherValue = 500;
-        await createVoucher({
-          owner: consumerWallet.address,
-          voucherType,
-          value: voucherValue,
-        });
-        await addVoucherEligibleAsset(prodWorkerpoolAddress, voucherType);
-        const params = {
-          emailSubject: 'e2e mail object for test',
-          emailContent: 'e2e mail content for test',
-          protectedData: validProtectedData.address,
-          workerpoolAddress: prodWorkerpoolAddress,
-          workerpoolMaxPrice: 1000,
-          useVoucher: true,
-        };
-        const missingAmount = workerpoolprice - voucherValue;
-        let error;
-        try {
-          await web3mail.sendEmail(params);
-        } catch (err) {
-          error = err;
-        }
-        expect(error).toBeDefined();
-        expect(error.message).toBe('Failed to sendEmail');
-        expect(error.cause.message).toBe(
-          `Orders can't be matched. Please approve an additional ${missingAmount} for voucher usage.`
-        );
-      },
-      2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
-    );
-    it(
-      'should create task if voucher balance is insufficient to sponsor workerpool and user approve missing amount',
-      async () => {
-        // payable workerpool
-        await createAndPublishWorkerpoolOrder(
-          TEST_CHAIN.prodWorkerpool,
-          TEST_CHAIN.prodWorkerpoolOwnerWallet,
-          consumerWallet.address,
-          workerpoolprice
-        );
-        const voucherType = await createVoucherType({
-          description: 'test voucher type',
-          duration: 60 * 60,
-        });
-        const voucherValue = 500;
-        const voucherAddress = await createVoucher({
-          owner: consumerWallet.address,
-          voucherType,
-          value: voucherValue,
-        });
-        await addVoucherEligibleAsset(prodWorkerpoolAddress, voucherType);
-        const params = {
-          emailSubject: 'e2e mail object for test',
-          emailContent: 'e2e mail content for test',
-          protectedData: validProtectedData.address,
-          workerpoolAddress: prodWorkerpoolAddress,
-          workerpoolMaxPrice: 1000,
-          useVoucher: true,
-        };
-        const missingAmount = workerpoolprice - voucherValue;
-        await ensureSufficientStake(consumerIExecInstance, missingAmount);
-        await consumerIExecInstance.account.approve(
-          missingAmount,
-          voucherAddress
-        );
-
-        const sendEmailResponse = await web3mail.sendEmail(params);
-        expect(sendEmailResponse.taskId).toBeDefined();
-      },
-      2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
-    );
-    it(
-      'should create a deal for send email if voucher balance is sufficient to sponsor workerpool',
-      async () => {
-        // payable workerpool
-        await createAndPublishWorkerpoolOrder(
-          TEST_CHAIN.prodWorkerpool,
-          TEST_CHAIN.prodWorkerpoolOwnerWallet,
-          consumerWallet.address,
-          workerpoolprice
-        );
-        const voucherType = await createVoucherType({
-          description: 'test voucher type',
-          duration: 60 * 60,
-        });
-        const voucherValue = 1000;
-        await createVoucher({
-          owner: consumerWallet.address,
-          voucherType,
-          value: voucherValue,
-        });
-        await addVoucherEligibleAsset(prodWorkerpoolAddress, voucherType);
-        const params = {
-          emailSubject: 'e2e mail object for test',
-          emailContent: 'e2e mail content for test',
-          protectedData: validProtectedData.address,
-          workerpoolAddress: prodWorkerpoolAddress,
-          workerpoolMaxPrice: 1000,
-          useVoucher: true,
-        };
-        const sendEmailResponse = await web3mail.sendEmail(params);
-        expect(sendEmailResponse.taskId).toBeDefined();
-      },
-      2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
-    );
-  });
+    test('placeholder test', () => {
+      expect(true).toBe(true);
+    });
+  }
 });

@@ -22,6 +22,6 @@ export const KNOWN_KEYS = [
   'dataProtectorSubgraph',
   'ipfsNode',
   'ipfsGateway',
-
+  'dataprotectorContractAddress',
   'workerpool',
 ];
