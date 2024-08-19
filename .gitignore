@@ -30,4 +30,3 @@ tests/voucher-deployer
 
 #dist
 **/dist/
-tests/bellecour-fork/**
