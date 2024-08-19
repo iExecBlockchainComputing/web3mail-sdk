@@ -2,11 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
-## Next
+## [1.0.4] (2024-08-08)
+
+### Added
+
+- support for ethers `AbstractProvider` and `AbstractSigner` in constructor
+
+### Changed
+
+- update `kubo-rpc-client` from v3 to v4
+- update `iexec` and `ethers` dependencies
+
+## [1.0.3]
+
+### Added
+
+- support for ethers `AbstractProvider` and `AbstractSigner` in constructor
 
 ### Changed
 
 - remove unnecessary initialization of storage in `sendEmail`
+- updated `iexec` and `ethers` dependencies
 
 ## [1.0.2]
 
