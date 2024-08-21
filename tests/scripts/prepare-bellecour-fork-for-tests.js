@@ -24,7 +24,9 @@ const WEB3_MAIL_DAPP_ADDRESS = '0x3d9d7600b6128c03b7ddbf050934e7ecfe0c61c8'; // 
 
 const rpcURL = DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545';
 
-const provider = new JsonRpcProvider(rpcURL);
+const provider = new JsonRpcProvider(rpcURL, undefined, {
+  pollingInterval: 1000, // speed up tests
+});
 
 const setBalance = async (address, weiAmount) => {
   fetch(rpcURL, {
