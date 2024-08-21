@@ -1,14 +1,13 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { GraphQLClient } from 'graphql-request';
 import { IExec } from 'iexec';
-import { getWeb3Provider } from '@iexec/dataprotector';
-import { Wallet } from 'ethers';
 import {
   DATAPROTECTOR_SUBGRAPH_ENDPOINT,
   WEB3_MAIL_DAPP_ADDRESS,
   WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../../src/config/config.js';
 import { fetchMyContacts } from '../../src/web3mail/fetchMyContacts.js';
+import { getTestWeb3SignerProvider } from '../test-utils.js';
 
 describe('fetchMyContacts', () => {
   const MOCK_ORDER = {
@@ -33,10 +32,7 @@ describe('fetchMyContacts', () => {
   };
   it('should fetch granted access without parameters (using default parameters)', async () => {
     const graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
-    const ethProvider = getWeb3Provider(Wallet.createRandom().privateKey);
-    const iexec = new IExec({
-      ethProvider,
-    });
+    const iexec = new IExec({ ethProvider: getTestWeb3SignerProvider() });
     const mockFetchDatasetOrderbook: any = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         ok: true,
@@ -80,11 +76,7 @@ describe('fetchMyContacts', () => {
 
   it('should fetch granted access with isRequesterStrict param equal to true', async () => {
     const graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
-    const wallet = Wallet.createRandom();
-    const ethProvider = getWeb3Provider(wallet.privateKey);
-    const iexec = new IExec({
-      ethProvider,
-    });
+    const iexec = new IExec({ ethProvider: getTestWeb3SignerProvider() });
     const mockFetchDatasetOrderbook: any = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         ok: true,
