@@ -42,7 +42,6 @@ steps:
       - npm run test:unit
     depends_on:
       - install
-      - stack-ready
 
   ##### START LOCAL STACK #####
   - name: prepare-local-stack-env
@@ -352,7 +351,8 @@ steps:
       - format
       - lint
       - check-types
-      - test
+      - test:unit
+      - test:e2e
       - build
 
 ---
