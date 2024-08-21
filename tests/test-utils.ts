@@ -76,10 +76,6 @@ export const timeouts = {
   createVoucher: MAX_EXPECTED_BLOCKTIME * 4 + MARKET_API_CALL_TIMEOUT * 2,
 };
 
-const TEST_RPC_URL = process.env.DRONE
-  ? 'http://bellecour-fork:8545'
-  : 'http://127.0.0.1:8545';
-
 export const getTestWeb3SignerProvider = (
   privateKey: string = Wallet.createRandom().privateKey
 ): Web3SignerProvider =>
@@ -254,7 +250,7 @@ export const createAndPublishWorkerpoolOrder = async (
   volume?: number = 1000
 ) => {
   const ethProvider = utils.getSignerFromPrivateKey(
-    TEST_RPC_URL,
+    TEST_CHAIN.rpcURL,
     workerpoolOwnerWallet.privateKey
   );
   const iexec = new IExec({ ethProvider }, getTestIExecOption());
