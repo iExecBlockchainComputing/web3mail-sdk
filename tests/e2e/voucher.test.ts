@@ -13,7 +13,7 @@ import 'dotenv/config';
 
 const { ENV = 'bellecour-fork' } = process.env;
 
-// TODO: remove the 'if' statement when the voucher is deployed in all environments
+// TODO: update when the voucher is configured in the Bubble environment (add voucher manager wallet)
 if (ENV === 'bellecour-fork') {
   describe('voucher test utils', () => {
     test(

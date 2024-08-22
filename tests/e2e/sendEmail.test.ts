@@ -48,7 +48,6 @@ describe('web3mail.sendEmail()', () => {
   beforeAll(async () => {
     providerWallet = getRandomWallet();
 
-    // TODO: remove the 'if' statement when the voucher is deployed in all environments
     if (ENV === 'bellecour-fork') {
       const ethProvider = getTestWeb3SignerProvider(
         TEST_CHAIN.appOwnerWallet.privateKey
@@ -426,7 +425,7 @@ describe('web3mail.sendEmail()', () => {
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
-  // TODO: remove the 'if' statement when the voucher is deployed in all environments
+  // TODO: update when the voucher is configured in the Bubble environment (add voucher manager wallet)
   if (ENV === 'bellecour-fork') {
     describe('use voucher', () => {
       beforeEach(async () => {
@@ -620,7 +619,7 @@ describe('web3mail.sendEmail()', () => {
     });
   } else {
     console.log(
-      `Voucher not deployed in [${ENV}] environment, enable voucher tests once deployed`
+      `Voucher not configured in [${ENV}] environment, enable voucher tests once configured`
     );
 
     test('placeholder test', () => {
