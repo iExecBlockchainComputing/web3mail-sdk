@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file.
 ### Changed
 
 - Directly return yup `ValidationError` instead of wrapping it into a WorkflowError, for `fetchUserContacts` and `sendEmail`
-- start to separate unit tests from e2e tests
 - `sendEmail`: Changed returned error message from 'ProtectedData is not valid' to 'This protected data does not contain "email:string" in its schema.'
 
 ## [1.0.4] (2024-08-08)
