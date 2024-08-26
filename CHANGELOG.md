@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## Next
+
+### Changed
+
+- Directly return yup `ValidationError` instead of wrapping it into a WorkflowError, for `fetchUserContacts` and `sendEmail`
+- `sendEmail`: Changed returned error message from 'ProtectedData is not valid' to 'This protected data does not contain "email:string" in its schema.'
+
 ## [1.0.4] (2024-08-08)
 
 ### Added

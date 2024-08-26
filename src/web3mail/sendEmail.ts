@@ -56,56 +56,58 @@ export const sendEmail = async ({
   IpfsNodeConfigConsumer &
   IpfsGatewayConfigConsumer &
   SendEmailParams): Promise<SendEmailResponse> => {
-  try {
-    const vDatasetAddress = addressOrEnsSchema()
-      .required()
-      .label('protectedData')
-      .validateSync(protectedData);
-    const vEmailSubject = emailSubjectSchema()
-      .required()
-      .label('emailSubject')
-      .validateSync(emailSubject);
-    const vEmailContent = emailContentSchema()
-      .required()
-      .label('emailContent')
-      .validateSync(emailContent);
-    const vContentType = contentTypeSchema()
-      .required()
-      .label('contentType')
-      .validateSync(contentType);
-    const vSenderName = senderNameSchema()
-      .label('senderName')
-      .validateSync(senderName);
-    const vLabel = labelSchema().label('label').validateSync(label);
-    const vWorkerpoolAddressOrEns = addressOrEnsSchema()
-      .required()
-      .label('WorkerpoolAddressOrEns')
-      .validateSync(workerpoolAddressOrEns);
-    const vDappAddressOrENS = addressOrEnsSchema()
-      .required()
-      .label('dappAddressOrENS')
-      .validateSync(dappAddressOrENS);
-    const vDappWhitelistAddress = addressSchema()
-      .required()
-      .label('dappWhitelistAddress')
-      .validateSync(dappWhitelistAddress);
-    const vDataMaxPrice = positiveNumberSchema()
-      .label('dataMaxPrice')
-      .validateSync(dataMaxPrice);
-    const vAppMaxPrice = positiveNumberSchema()
-      .label('appMaxPrice')
-      .validateSync(appMaxPrice);
-    const vWorkerpoolMaxPrice = positiveNumberSchema()
-      .label('workerpoolMaxPrice')
-      .validateSync(workerpoolMaxPrice);
+  const vDatasetAddress = addressOrEnsSchema()
+    .required()
+    .label('protectedData')
+    .validateSync(protectedData);
+  const vEmailSubject = emailSubjectSchema()
+    .required()
+    .label('emailSubject')
+    .validateSync(emailSubject);
+  const vEmailContent = emailContentSchema()
+    .required()
+    .label('emailContent')
+    .validateSync(emailContent);
+  const vContentType = contentTypeSchema()
+    .required()
+    .label('contentType')
+    .validateSync(contentType);
+  const vSenderName = senderNameSchema()
+    .label('senderName')
+    .validateSync(senderName);
+  const vLabel = labelSchema().label('label').validateSync(label);
+  const vWorkerpoolAddressOrEns = addressOrEnsSchema()
+    .required()
+    .label('WorkerpoolAddressOrEns')
+    .validateSync(workerpoolAddressOrEns);
+  const vDappAddressOrENS = addressOrEnsSchema()
+    .required()
+    .label('dappAddressOrENS')
+    .validateSync(dappAddressOrENS);
+  const vDappWhitelistAddress = addressSchema()
+    .required()
+    .label('dappWhitelistAddress')
+    .validateSync(dappWhitelistAddress);
+  const vDataMaxPrice = positiveNumberSchema()
+    .label('dataMaxPrice')
+    .validateSync(dataMaxPrice);
+  const vAppMaxPrice = positiveNumberSchema()
+    .label('appMaxPrice')
+    .validateSync(appMaxPrice);
+  const vWorkerpoolMaxPrice = positiveNumberSchema()
+    .label('workerpoolMaxPrice')
+    .validateSync(workerpoolMaxPrice);
 
+  try {
     // Check protected data validity through subgraph
     const isValidProtectedData = await checkProtectedDataValidity(
       graphQLClient,
       vDatasetAddress
     );
     if (!isValidProtectedData) {
-      throw new Error('ProtectedData is not valid');
+      throw new Error(
+        'This protected data does not contain "email:string" in its schema.'
+      );
     }
 
     const requesterAddress = await iexec.wallet.getAddress();
