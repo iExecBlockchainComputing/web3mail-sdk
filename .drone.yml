@@ -386,6 +386,28 @@ steps:
     depends_on:
       - install
 
+  - name: set-version-nightly
+    image: node:18.19
+    commands:
+      - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
+    depends_on:
+      - format
+      - lint
+      - check-types
+      - test
+      - build
+      - deprecate-old-nightly-version
+
+  - name: set-version-voucher-suffix
+    image: node:18
+    commands:
+      - eval npm pkg set version="$(npm pkg get version)-voucher"
+    when:
+      branch:
+        - voucher
+    depends_on:
+      - set-version-nightly
+
   - name: authenticate
     image: robertstettner/drone-npm-auth
     settings:
@@ -414,28 +436,31 @@ steps:
       - check-types
       - test
       - build
+      - authenticate
+    when:
+      branch:
+        - develop
 
-  - name: set-version-nightly
+  - name: deprecate-old-voucher-nightly-version
     image: node:18.19
+    pull: always
     commands:
-      - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
+      - apt-get update && apt-get install -y jq
+      # fetches the latest voucher-nightly version of the @iexec/web3mail package from npm registry
+      - PREVIOUS_NIGHTLY_VERSION=$(npm show @iexec/web3mail versions --json | jq -r 'map(select(test("voucher-nightly"))) | .[-1]')
+      - if [ -n "$PREVIOUS_NIGHTLY_VERSION" ]; then npm deprecate @iexec/web3mail@$PREVIOUS_NIGHTLY_VERSION "Deprecate $PREVIOUS_NIGHTLY_VERSION"; fi
     depends_on:
       - format
       - lint
       - check-types
       - test
       - build
-      - deprecate-old-nightly-version
-
-  - name: set voucher version suffix
-    image: node:18
-    commands:
-      - eval npm pkg set version="$(npm pkg get version)-voucher"
+      - authenticate
     when:
       branch:
         - voucher
 
-  - name: publish
+  - name: publish-nightly
     image: plugins/npm
     pull: always
     settings:
@@ -453,6 +478,31 @@ steps:
       - build
       - deprecate-old-nightly-version
       - set-version-nightly
+    when:
+      branch:
+        - develop
+
+  - name: publish-voucher-nightly
+    image: plugins/npm
+    pull: always
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+      tag: voucher-nightly
+      access: public
+    depends_on:
+      - format
+      - lint
+      - check-types
+      - test
+      - build
+      - deprecate-old-voucher-nightly-version
+      - set-version-voucher-suffix
+    when:
+      branch:
+        - voucher
 
 ---
 # sdk @iexec/web3mail publish npm latest pipeline
