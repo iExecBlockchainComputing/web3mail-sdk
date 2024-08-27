@@ -44,7 +44,11 @@ export const TEST_CHAIN = {
     '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
   ),
   provider: new JsonRpcProvider(
-    process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545'
+    process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545',
+    undefined,
+    {
+      pollingInterval: 1000, // speed up tests
+    }
   ),
   hubAddress: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f',
 };
@@ -71,10 +75,6 @@ export const timeouts = {
   createVoucherType: MAX_EXPECTED_BLOCKTIME * 2,
   createVoucher: MAX_EXPECTED_BLOCKTIME * 4 + MARKET_API_CALL_TIMEOUT * 2,
 };
-
-const TEST_RPC_URL = process.env.DRONE
-  ? 'http://bellecour-fork:8545'
-  : 'http://127.0.0.1:8545';
 
 export const getTestWeb3SignerProvider = (
   privateKey: string = Wallet.createRandom().privateKey
@@ -250,7 +250,7 @@ export const createAndPublishWorkerpoolOrder = async (
   volume?: number = 1000
 ) => {
   const ethProvider = utils.getSignerFromPrivateKey(
-    TEST_RPC_URL,
+    TEST_CHAIN.rpcURL,
     workerpoolOwnerWallet.privateKey
   );
   const iexec = new IExec({ ethProvider }, getTestIExecOption());

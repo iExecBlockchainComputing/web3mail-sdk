@@ -73,7 +73,6 @@ describe('web3mail.sendEmail()', () => {
       name: 'test do not use',
     });
     await waitSubgraphIndexing();
-    web3mail = new IExecWeb3mail(...getTestConfig(consumerWallet.privateKey));
   }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 5_000);
 
   beforeEach(async () => {
