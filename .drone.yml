@@ -396,7 +396,6 @@ steps:
       - check-types
       - test
       - build
-      - deprecate-old-nightly-version
 
   - name: set-version-voucher-suffix
     image: node:18
