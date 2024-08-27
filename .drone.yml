@@ -379,6 +379,27 @@ steps:
       - npm -v
       - npm ci
 
+  - name: format
+    image: node:18.19
+    commands:
+      - npm run check-format
+    depends_on:
+      - install
+
+  - name: lint
+    image: node:18.19
+    commands:
+      - npm run lint
+    depends_on:
+      - install
+
+  - name: check-types
+    image: node:18.19
+    commands:
+      - npm run check-types
+    depends_on:
+      - install
+
   - name: build
     image: node:18.19
     commands:
@@ -391,10 +412,6 @@ steps:
     commands:
       - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
     depends_on:
-      - format
-      - lint
-      - check-types
-      - test
       - build
 
   - name: set-version-voucher-suffix
@@ -418,7 +435,6 @@ steps:
       - format
       - lint
       - check-types
-      - test
       - build
 
   - name: deprecate-old-nightly-version
@@ -433,7 +449,6 @@ steps:
       - format
       - lint
       - check-types
-      - test
       - build
       - authenticate
     when:
@@ -452,7 +467,6 @@ steps:
       - format
       - lint
       - check-types
-      - test
       - build
       - authenticate
     when:
@@ -473,7 +487,6 @@ steps:
       - format
       - lint
       - check-types
-      - test
       - build
       - deprecate-old-nightly-version
       - set-version-nightly
@@ -495,7 +508,6 @@ steps:
       - format
       - lint
       - check-types
-      - test
       - build
       - deprecate-old-voucher-nightly-version
       - set-version-voucher-suffix
