@@ -98,8 +98,8 @@ export const getTestConfig = (
     ipfsGateway: DRONE ? 'http://ipfs:8080' : 'http://127.0.0.1:8080',
     ipfsNode: DRONE ? 'http://ipfs:5001' : 'http://127.0.0.1:5001',
     dataProtectorSubgraph: DRONE
-      ? 'http://graphnode:8000/subgraphs/name/DataProtector'
-      : 'http://127.0.0.1:8000/subgraphs/name/DataProtector',
+      ? 'http://graphnode:8000/subgraphs/name/DataProtector-v2'
+      : 'http://127.0.0.1:8000/subgraphs/name/DataProtector-v2',
   };
   return [ethProvider, options];
 };
