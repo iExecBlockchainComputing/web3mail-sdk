@@ -5,7 +5,7 @@ import { WorkflowError } from './errors.js';
 const checkProtectedDataQuery = gql`
   query GetValidContacts(
     $requiredSchema: [String!]!
-    $id: [String!]!
+    $id: [Bytes!]!
     $start: Int!
     $range: Int!
   ) {

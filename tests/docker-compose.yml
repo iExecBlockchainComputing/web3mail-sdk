@@ -235,8 +235,8 @@ services:
     image: dataprotector-subgraph-deployer
     restart: 'on-failure'
     build:
-      context: https://github.com/iExecBlockchainComputing/dataprotector-sdk.git#main:packages/subgraph
-      dockerfile: deployer.Dockerfile
+      context: https://github.com/iExecBlockchainComputing/dataprotector-sdk.git#hotfix/fix-submodule-issue
+      dockerfile: ./packages/subgraph/deployer.Dockerfile
     depends_on:
       graphnode:
         condition: service_healthy
@@ -246,6 +246,7 @@ services:
       START_BLOCK: $BELLECOUR_FORK_BLOCK
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
+      ENV: prod
 
   stack-ready:
     image: bash
