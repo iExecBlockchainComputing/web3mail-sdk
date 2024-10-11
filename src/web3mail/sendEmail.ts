@@ -168,7 +168,7 @@ export const sendEmail = async ({
       iexec.orderbook
         .fetchWorkerpoolOrderbook({
           workerpool: workerpoolAddressOrEns,
-          app: dappAddressOrENS,
+          app: vDappWhitelistAddress,
           dataset: vDatasetAddress,
           minTag: ['tee', 'scone'],
           maxTag: ['tee', 'scone'],
