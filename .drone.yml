@@ -308,8 +308,6 @@ steps:
       - prepare-local-stack-env
       - ipfs-healthy
       - graphnode-healthy
-    depends_on:
-      - test:unit
 
   - name: bellecour-fork-voucher-deployment
     #  https://github.com/iExecBlockchainComputing/voucher-deployer
