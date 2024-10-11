@@ -186,6 +186,8 @@ services:
       POSTGRES_USER: graphnode
       POSTGRES_PASSWORD: password
       POSTGRES_DB: graphnode-db
+      PGDATA: '/var/lib/postgresql/data'
+      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
     healthcheck:
       test: pg_isready -U graphnode -d graphnode-db
       interval: 10s
