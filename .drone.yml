@@ -284,14 +284,10 @@ steps:
       IPFS_URL: http://ipfs:5001
       ENV: prod
     commands:
-      - git clone --single-branch -b main https://github.com/iExecBlockchainComputing/dataprotector-sdk.git
-      - rm -rf dataprotector-sdk/packages/protected-data-delivery-dapp
-      - rm -rf dataprotector-sdk/packages/sharing-smart-contract
-      - rm -rf dataprotector-sdk/packages/smart-contract
-      - rm -rf dataprotector-sdk/packages/sdk
-      - rm -rf dataprotector-sdk/packages/dataprotector-deserializer
-      - rm -rf dataprotector-sdk/packages/demo
-      - cd dataprotector-sdk/packages/subgraph
+      - git clone --filter=blob:none --sparse -b main https://github.com/iExecBlockchainComputing/dataprotector-sdk.git
+      - cd dataprotector-sdk
+      - git sparse-checkout set environments packages/subgraph
+      - cd packages/subgraph
       - npm ci
       - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
       - npm run all
