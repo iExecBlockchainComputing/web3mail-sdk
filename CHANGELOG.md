@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- migrate to new subgraph url `https://thegraph-product.iex.ec/subgraphs/name/bellecour/dataprotector-v2`
 - Directly return yup `ValidationError` instead of wrapping it into a WorkflowError, for `fetchUserContacts` and `sendEmail`
 - `sendEmail`: Changed returned error message from 'ProtectedData is not valid' to 'This protected data does not contain "email:string" in its schema.'
 
