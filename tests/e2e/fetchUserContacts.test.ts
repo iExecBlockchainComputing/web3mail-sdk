@@ -12,7 +12,6 @@ import {
   getTestConfig,
   waitSubgraphIndexing,
 } from '../test-utils.js';
-import { waitForSubgraphIndexing } from '../utils/waitForSubgraphIndexing.js';
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: HDNodeWallet;
@@ -45,25 +44,28 @@ describe('web3mail.fetchMyContacts()', () => {
     async () => {
       const user1 = Wallet.createRandom().address;
       const user2 = Wallet.createRandom().address;
-      await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-        protectedData: protectedData1.address,
-        authorizedUser: user1,
-      });
+      await Promise.all([
+        dataProtector.grantAccess({
+          authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+          protectedData: protectedData1.address,
+          authorizedUser: user1,
+        }),
+        dataProtector.grantAccess({
+          authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+          protectedData: protectedData2.address,
+          authorizedUser: user2,
+        }),
+      ]);
+      await waitSubgraphIndexing();
 
-      await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
-        protectedData: protectedData2.address,
-        authorizedUser: user2,
-      });
-      await waitForSubgraphIndexing();
-
-      const contactUser1 = await web3mail.fetchUserContacts({
-        userAddress: user1,
-      });
-      const contactUser2 = await web3mail.fetchUserContacts({
-        userAddress: user2,
-      });
+      const [contactUser1, contactUser2] = await Promise.all([
+        web3mail.fetchUserContacts({
+          userAddress: user1,
+        }),
+        web3mail.fetchUserContacts({
+          userAddress: user2,
+        }),
+      ]);
       expect(contactUser1).not.toEqual(contactUser2);
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -78,7 +80,7 @@ describe('web3mail.fetchMyContacts()', () => {
         protectedData: protectedData1.address,
         authorizedUser: userWithAccess,
       });
-      await waitForSubgraphIndexing();
+      await waitSubgraphIndexing();
 
       const contacts = await web3mail.fetchUserContacts({
         userAddress: userWithAccess,
