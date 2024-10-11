@@ -194,7 +194,7 @@ services:
       start_period: 30s
 
   graphnode:
-    image: graphprotocol/graph-node:v0.27.0
+    image: graphprotocol/graph-node:v0.34.1
     restart: unless-stopped
     expose:
       - 8000

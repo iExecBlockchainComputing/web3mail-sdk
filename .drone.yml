@@ -145,7 +145,7 @@ steps:
       - graphnode-postgres
 
   - name: graphnode
-    image: graphprotocol/graph-node:v0.27.0
+    image: graphprotocol/graph-node:v0.34.1
     detach: true
     expose:
       - 8000
