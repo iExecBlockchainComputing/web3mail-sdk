@@ -45,7 +45,10 @@ describe('web3mail.fetchMyContacts()', () => {
         protectedData: protectedData.address,
         authorizedUser: wallet.address,
       });
+      await waitSubgraphIndexing();
+
       const res = await web3mail.fetchMyContacts();
+
       const foundContactForASpecificRequester = res.find((obj) => {
         return obj.address === protectedData.address.toLocaleLowerCase();
       });
@@ -69,6 +72,7 @@ describe('web3mail.fetchMyContacts()', () => {
         protectedData: protectedData.address,
         authorizedUser: NULL_ADDRESS,
       });
+      await waitSubgraphIndexing();
 
       const res = await web3mail.fetchMyContacts();
 
