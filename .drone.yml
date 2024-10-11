@@ -302,7 +302,7 @@ steps:
       - npm ci
       - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
       - npm run all
-      - rm -rf dataprotector-sdk
+      - rm -rf ../../dataprotector-sdk
     depends_on:
       - prepare-local-stack-env
       - ipfs-healthy
