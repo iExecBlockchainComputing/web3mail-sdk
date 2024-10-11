@@ -280,14 +280,14 @@ steps:
   - name: subgraph-deploy
     image: node:18.19
     environment:
-      START_BLOCK: $BELLECOUR_FORK_BLOCK
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
+      ENV: prod
     commands:
       - git clone --single-branch -b main https://github.com/iExecBlockchainComputing/dataprotector-sdk.git
       - cd dataprotector-sdk/packages/subgraph
       - npm ci
-      - export START_BLOCK=$(cat ../local-stack-env/BELLECOUR_FORK_BLOCK)
+      - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
       - npm run all
     depends_on:
       - prepare-local-stack-env
