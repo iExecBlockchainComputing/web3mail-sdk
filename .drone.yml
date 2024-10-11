@@ -73,6 +73,8 @@ steps:
     expose:
       - 8080
       - 5001
+    depends_on:
+      - test:unit
 
   - name: ipfs-healthy
     image: bash
@@ -87,6 +89,8 @@ steps:
     detach: true
     expose:
       - 27017
+    depends_on:
+      - test:unit
 
   - name: market-mongo-healthy
     image: bash
@@ -102,6 +106,8 @@ steps:
       - redis-server --appendonly yes
     expose:
       - 6379
+    depends_on:
+      - test:unit
 
   - name: market-redis-healthy
     image: bash
@@ -117,6 +123,8 @@ steps:
       - mongod --bind_ip_all --port 13202
     expose:
       - 13202
+    depends_on:
+      - test:unit
 
   - name: result-proxy-mongo-healthy
     image: bash
@@ -136,6 +144,10 @@ steps:
       POSTGRES_USER: graphnode
       POSTGRES_PASSWORD: password
       POSTGRES_DB: graphnode-db
+      PGDATA: '/var/lib/postgresql/data'
+      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
+    depends_on:
+      - test:unit
 
   - name: graphnode-postgres-healthy
     image: bash
@@ -160,6 +172,7 @@ steps:
       ethereum: bellecour:http://bellecour-fork:8545
     commands:
       - export GRAPH_ETHEREUM_GENESIS_BLOCK_NUMBER=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
+      - cat local-stack-env/BELLECOUR_FORK_BLOCK
       - start
     depends_on:
       - prepare-local-stack-env
@@ -295,6 +308,8 @@ steps:
       - prepare-local-stack-env
       - ipfs-healthy
       - graphnode-healthy
+    depends_on:
+      - test:unit
 
   - name: bellecour-fork-voucher-deployment
     #  https://github.com/iExecBlockchainComputing/voucher-deployer
