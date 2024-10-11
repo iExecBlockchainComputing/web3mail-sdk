@@ -12,6 +12,7 @@ import {
   getTestConfig,
   waitSubgraphIndexing,
 } from '../test-utils.js';
+import { waitForSubgraphIndexing } from '../utils/waitForSubgraphIndexing.js';
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: HDNodeWallet;
@@ -55,6 +56,7 @@ describe('web3mail.fetchMyContacts()', () => {
         protectedData: protectedData2.address,
         authorizedUser: user2,
       });
+      await waitForSubgraphIndexing();
 
       const contactUser1 = await web3mail.fetchUserContacts({
         userAddress: user1,
@@ -76,6 +78,7 @@ describe('web3mail.fetchMyContacts()', () => {
         protectedData: protectedData1.address,
         authorizedUser: userWithAccess,
       });
+      await waitForSubgraphIndexing();
 
       const contacts = await web3mail.fetchUserContacts({
         userAddress: userWithAccess,
