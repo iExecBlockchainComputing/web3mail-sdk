@@ -59,6 +59,7 @@ steps:
       - anvil --host 0.0.0.0 --port 8545 --block-time 1 --hardfork berlin --fork-url $(cat local-stack-env/BELLECOUR_FORK_URL) --fork-block-number $(cat local-stack-env/BELLECOUR_FORK_BLOCK) --chain-id 134 --gas-limit 6700000 --gas-price 0
     depends_on:
       - prepare-local-stack-env
+      - test:unit
 
   - name: bellecour-fork-healthy
     image: bash

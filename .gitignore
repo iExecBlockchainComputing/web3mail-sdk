@@ -10,9 +10,8 @@
 
 # Miscellaneous
 /.DS_Store
-/.env
+*/.env
 /*.log
-*.env
 
 # TypeScript specific
 *.tsbuildinfo
