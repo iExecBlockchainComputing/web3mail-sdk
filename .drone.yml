@@ -460,7 +460,7 @@ steps:
     commands:
       - apt-get update && apt-get install -y jq
       # fetches the latest voucher-nightly version of the @iexec/web3mail package from npm registry
-      - PREVIOUS_NIGHTLY_VERSION=$(npm show @iexec/web3mail versions --json | jq -r 'map(select(test("voucher-nightly"))) | .[-1]')
+      - PREVIOUS_NIGHTLY_VERSION=$(npm show @iexec/web3mail versions --json | jq -r 'map(select(test("nightly.*-voucher$"))) | .[-1]')
       - if [ -n "$PREVIOUS_NIGHTLY_VERSION" ]; then npm deprecate @iexec/web3mail@$PREVIOUS_NIGHTLY_VERSION "Deprecate $PREVIOUS_NIGHTLY_VERSION"; fi
     depends_on:
       - format
