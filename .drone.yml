@@ -6,6 +6,10 @@ name: sdk-default
 trigger:
   event: push
 
+# required until dataprotector-subgraph-deployer is publicly available
+image_pull_secrets:
+  - dockerconfigregis
+
 steps:
   ##### START LOCAL STACK #####
   - name: prepare-local-stack-env
@@ -100,6 +104,7 @@ steps:
       POSTGRES_USER: graphnode
       POSTGRES_PASSWORD: password
       POSTGRES_DB: graphnode-db
+      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
 
   - name: graphnode-postgres-healthy
     image: bash
@@ -109,7 +114,7 @@ steps:
       - graphnode-postgres
 
   - name: graphnode
-    image: graphprotocol/graph-node:v0.27.0
+    image: graphprotocol/graph-node:v0.34.1
     detach: true
     expose:
       - 8000
@@ -242,18 +247,14 @@ steps:
       - market-watcher
 
   - name: subgraph-deploy
-    image: node:18.19
+    image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
     environment:
-      START_BLOCK: $BELLECOUR_FORK_BLOCK
+      ENV: prod
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
     commands:
-      - git clone --single-branch -b main https://github.com/iExecBlockchainComputing/dataprotector-sdk.git
-      - rm -rf dataprotector-subgraph && cp -r dataprotector-sdk/packages/subgraph dataprotector-subgraph
-      - rm -rf dataprotector-sdk && cd dataprotector-subgraph
-      - npm ci
-      - export START_BLOCK=$(cat ../local-stack-env/BELLECOUR_FORK_BLOCK)
-      - npm run all
+      - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
+      - cd /app/packages/subgraph && npm run all
     depends_on:
       - prepare-local-stack-env
       - ipfs-healthy
@@ -342,6 +343,10 @@ trigger:
   branch:
     - develop
 
+# required until dataprotector-subgraph-deployer is publicly available
+image_pull_secrets:
+  - dockerconfigregis
+
 steps:
   ##### START LOCAL STACK #####
   - name: prepare-local-stack-env
@@ -436,6 +441,7 @@ steps:
       POSTGRES_USER: graphnode
       POSTGRES_PASSWORD: password
       POSTGRES_DB: graphnode-db
+      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
 
   - name: graphnode-postgres-healthy
     image: bash
@@ -445,7 +451,7 @@ steps:
       - graphnode-postgres
 
   - name: graphnode
-    image: graphprotocol/graph-node:v0.27.0
+    image: graphprotocol/graph-node:v0.34.1
     detach: true
     expose:
       - 8000
@@ -578,18 +584,14 @@ steps:
       - market-watcher
 
   - name: subgraph-deploy
-    image: node:18.19
+    image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
     environment:
-      START_BLOCK: $BELLECOUR_FORK_BLOCK
+      ENV: prod
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
     commands:
-      - git clone --single-branch -b main https://github.com/iExecBlockchainComputing/dataprotector-sdk.git
-      - rm -rf dataprotector-subgraph && cp -r dataprotector-sdk/packages/subgraph dataprotector-subgraph
-      - rm -rf dataprotector-sdk && cd dataprotector-subgraph
-      - npm ci
-      - export START_BLOCK=$(cat ../local-stack-env/BELLECOUR_FORK_BLOCK)
-      - npm run all
+      - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
+      - cd /app/packages/subgraph && npm run all
     depends_on:
       - prepare-local-stack-env
       - ipfs-healthy
@@ -727,6 +729,10 @@ trigger:
   branch:
     - main
 
+# required until dataprotector-subgraph-deployer is publicly available
+image_pull_secrets:
+  - dockerconfigregis
+
 steps:
   ##### START LOCAL STACK #####
   - name: prepare-local-stack-env
@@ -821,6 +827,7 @@ steps:
       POSTGRES_USER: graphnode
       POSTGRES_PASSWORD: password
       POSTGRES_DB: graphnode-db
+      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
 
   - name: graphnode-postgres-healthy
     image: bash
@@ -830,7 +837,7 @@ steps:
       - graphnode-postgres
 
   - name: graphnode
-    image: graphprotocol/graph-node:v0.27.0
+    image: graphprotocol/graph-node:v0.34.1
     detach: true
     expose:
       - 8000
@@ -963,18 +970,14 @@ steps:
       - market-watcher
 
   - name: subgraph-deploy
-    image: node:18.19
+    image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
     environment:
-      START_BLOCK: $BELLECOUR_FORK_BLOCK
+      ENV: prod
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
     commands:
-      - git clone --single-branch -b main https://github.com/iExecBlockchainComputing/dataprotector-sdk.git
-      - rm -rf dataprotector-subgraph && cp -r dataprotector-sdk/packages/subgraph dataprotector-subgraph
-      - rm -rf dataprotector-sdk && cd dataprotector-subgraph
-      - npm ci
-      - export START_BLOCK=$(cat ../local-stack-env/BELLECOUR_FORK_BLOCK)
-      - npm run all
+      - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
+      - cd /app/packages/subgraph && npm run all
     depends_on:
       - prepare-local-stack-env
       - ipfs-healthy

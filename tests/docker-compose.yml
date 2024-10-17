@@ -150,6 +150,7 @@ services:
       POSTGRES_USER: graphnode
       POSTGRES_PASSWORD: password
       POSTGRES_DB: graphnode-db
+      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
     healthcheck:
       test: pg_isready -U graphnode -d graphnode-db
       interval: 10s
@@ -158,7 +159,7 @@ services:
       start_period: 30s
 
   graphnode:
-    image: graphprotocol/graph-node:v0.27.0
+    image: graphprotocol/graph-node:v0.34.1
     restart: unless-stopped
     expose:
       - 8000
@@ -196,17 +197,15 @@ services:
       start_period: 30s
 
   dataprotector-subgraph-deployer:
-    image: dataprotector-subgraph-deployer
+    image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
     restart: 'on-failure'
-    build:
-      context: https://github.com/iExecBlockchainComputing/dataprotector-sdk.git#main:packages/subgraph
-      dockerfile: deployer.Dockerfile
     depends_on:
       graphnode:
         condition: service_healthy
       ipfs:
         condition: service_started
     environment:
+      ENV: prod
       START_BLOCK: $BELLECOUR_FORK_BLOCK
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
