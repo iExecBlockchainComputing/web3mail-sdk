@@ -4,7 +4,9 @@ type: docker
 name: sdk-default
 
 trigger:
-  event: push
+  event:
+    exclude:
+      - promote
 
 # required until dataprotector-subgraph-deployer is publicly available
 image_pull_secrets:
