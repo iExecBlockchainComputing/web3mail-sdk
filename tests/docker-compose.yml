@@ -15,7 +15,6 @@ services:
       retries: 3
       start_period: 30s
 
-  # TODO: remove this once voucher is deployed on bellecour
   bellecour-fork-voucher-deployment:
     restart: 'no'
     # https://github.com/iExecBlockchainComputing/voucher-deployer
@@ -24,8 +23,8 @@ services:
       RPC_URL: http://bellecour-fork:8545
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
-    volumes:
-      - ./voucher-deployer/out:/app/out
+      VOUCHER_HUB_ADDRESS: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda'
+      VOUCHER_HUB_START_BLOCK: $BELLECOUR_FORK_BLOCK
     depends_on:
       bellecour-fork:
         condition: service_healthy
@@ -33,17 +32,6 @@ services:
         condition: service_healthy
       ipfs:
         condition: service_healthy
-
-  bellecour-fork-update-voucher-config:
-    image: bash
-    restart: 'no'
-    command: -c "echo \"export const VOUCHER_HUB_ADDRESS = '$$(cat /app/voucher-deployer/out/VoucherHub.address)';\" > /app/bellecour-fork/voucher-config.js && cp /app/bellecour-fork/voucher-config.js /app/bellecour-fork/voucher-config.ts"
-    volumes:
-      - ./voucher-deployer/out:/app/voucher-deployer/out
-      - ./bellecour-fork:/app/bellecour-fork
-    depends_on:
-      bellecour-fork-voucher-deployment:
-        condition: service_completed_successfully
 
   sms:
     image: iexechub/iexec-sms:7.1.0
@@ -266,6 +254,4 @@ services:
       dataprotector-subgraph-deployer:
         condition: service_completed_successfully
       bellecour-fork-voucher-deployment:
-        condition: service_completed_successfully
-      bellecour-fork-update-voucher-config:
         condition: service_completed_successfully

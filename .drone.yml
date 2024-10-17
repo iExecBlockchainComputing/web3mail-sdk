@@ -305,10 +305,8 @@ steps:
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
     commands:
+      - export VOUCHER_HUB_START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
       - sh /app/entrypoint.sh
-      # update the voucher-config for test scripts (js & ts)
-      - echo "export const VOUCHER_HUB_ADDRESS = '$(cat /app/out/VoucherHub.address)';" > ./tests/bellecour-fork/voucher-config.js
-      - cp ./tests/bellecour-fork/voucher-config.js ./tests/bellecour-fork/voucher-config.ts
     depends_on:
       - bellecour-fork-healthy
       - ipfs-healthy

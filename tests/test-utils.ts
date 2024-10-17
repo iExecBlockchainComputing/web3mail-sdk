@@ -8,8 +8,6 @@ import {
 import { IExec, utils } from 'iexec';
 import { randomInt } from 'crypto';
 import { getSignerFromPrivateKey } from 'iexec/utils';
-// eslint-disable-next-line import/extensions
-import { VOUCHER_HUB_ADDRESS } from './bellecour-fork/voucher-config.js';
 
 export const TEST_CHAIN = {
   rpcURL: process.env.DRONE
@@ -23,7 +21,7 @@ export const TEST_CHAIN = {
   iexecGatewayURL: process.env.DRONE
     ? 'http://market-api:3000'
     : 'http://127.0.0.1:3000',
-  voucherHubAddress: VOUCHER_HUB_ADDRESS, // TODO: change with deployment address once voucher is deployed on bellecour
+  voucherHubAddress: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda',
   voucherManagerWallet: new Wallet(
     '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
   ),
@@ -246,8 +244,8 @@ export const createAndPublishWorkerpoolOrder = async (
   workerpool: string,
   workerpoolOwnerWallet: ethers.Wallet,
   requesterrestrict?: string,
-  workerpoolprice?: number = 0,
-  volume?: number = 1000
+  workerpoolprice: number = 0,
+  volume: number = 1000
 ) => {
   const ethProvider = utils.getSignerFromPrivateKey(
     TEST_CHAIN.rpcURL,
@@ -405,7 +403,7 @@ export const createVoucher = async ({
 };
 
 export const addVoucherEligibleAsset = async (assetAddress, voucherTypeId) => {
-  const voucherHubContract = new Contract(VOUCHER_HUB_ADDRESS, [
+  const voucherHubContract = new Contract(TEST_CHAIN.voucherHubAddress, [
     {
       inputs: [
         {
