@@ -30,8 +30,8 @@
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.ts\"",
     "check-format": "prettier --check \"src/**/*.ts\"",
-    "stop-test-stack": "cd tests && docker compose down --volumes --remove-orphans",
-    "start-test-stack": "cd tests && npm run stop-test-stack && node scripts/prepare-test-env.js && docker compose build  &&  docker compose up -d && node scripts/prepare-bellecour-fork-for-tests.js"
+    "stop-test-stack": "cd tests && docker compose --project-name web3mail-sdk down --volumes --remove-orphans",
+    "start-test-stack": "cd tests && npm run stop-test-stack && node scripts/prepare-test-env.js && docker compose --project-name web3mail-sdk build  &&  docker compose --project-name web3mail-sdk up -d && node scripts/prepare-bellecour-fork-for-tests.js"
   },
   "repository": {
     "type": "git",
