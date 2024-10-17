@@ -11,8 +11,6 @@ import { getSignerFromPrivateKey } from 'iexec/utils';
 // eslint-disable-next-line import/extensions
 import { VOUCHER_HUB_ADDRESS } from './bellecour-fork/voucher-config.js';
 
-const { DRONE } = process.env;
-
 export const TEST_CHAIN = {
   rpcURL: process.env.DRONE
     ? 'http://bellecour-fork:8545'
@@ -95,11 +93,13 @@ export const getTestConfig = (
   const ethProvider = getTestWeb3SignerProvider(privateKey);
   const options = {
     iexecOptions: getTestIExecOption(),
-    ipfsGateway: DRONE ? 'http://ipfs:8080' : 'http://127.0.0.1:8080',
-    ipfsNode: DRONE ? 'http://ipfs:5001' : 'http://127.0.0.1:5001',
-    dataProtectorSubgraph: DRONE
-      ? 'http://graphnode:8000/subgraphs/name/DataProtector'
-      : 'http://127.0.0.1:8000/subgraphs/name/DataProtector',
+    ipfsGateway: process.env.DRONE
+      ? 'http://ipfs:8080'
+      : 'http://127.0.0.1:8080',
+    ipfsNode: process.env.DRONE ? 'http://ipfs:5001' : 'http://127.0.0.1:5001',
+    dataProtectorSubgraph: process.env.DRONE
+      ? 'http://graphnode:8000/subgraphs/name/DataProtector-v2'
+      : 'http://127.0.0.1:8000/subgraphs/name/DataProtector-v2',
   };
   return [ethProvider, options];
 };
