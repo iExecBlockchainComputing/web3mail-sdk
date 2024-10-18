@@ -7,7 +7,10 @@ import {
   DEFAULT_IPFS_GATEWAY,
 } from '../../src/config/config.js';
 import { IExecWeb3mail } from '../../src/index.js';
-import { getTestWeb3SignerProvider } from '../test-utils.js';
+import {
+  getTestWeb3SignerProvider,
+  MAX_EXPECTED_WEB2_SERVICES_TIME,
+} from '../test-utils.js';
 
 describe('IExecWeb3mail()', () => {
   it('instantiates with a valid ethProvider', async () => {
@@ -102,14 +105,18 @@ describe('IExecWeb3mail()', () => {
     expect(await iexec.config.resolveIexecGatewayURL()).toBe(iexecGatewayURL);
   });
 
-  it('When calling a read method should work as expected', async () => {
-    // --- GIVEN
-    const web3mail = new IExecWeb3mail();
-    const wallet = Wallet.createRandom();
+  it(
+    'When calling a read method should work as expected',
+    async () => {
+      // --- GIVEN
+      const web3mail = new IExecWeb3mail();
+      const wallet = Wallet.createRandom();
 
-    // --- WHEN/THEN
-    await expect(
-      web3mail.fetchUserContacts({ userAddress: wallet.address })
-    ).resolves.not.toThrow();
-  });
+      // --- WHEN/THEN
+      await expect(
+        web3mail.fetchUserContacts({ userAddress: wallet.address })
+      ).resolves.not.toThrow();
+    },
+    MAX_EXPECTED_WEB2_SERVICES_TIME
+  );
 });

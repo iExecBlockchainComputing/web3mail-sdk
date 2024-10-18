@@ -1,16 +1,26 @@
 import { describe, expect, it, jest } from '@jest/globals';
-import { GraphQLClient } from 'graphql-request';
-import { IExec } from 'iexec';
-import { getWeb3Provider } from '@iexec/dataprotector';
-import { Wallet } from 'ethers';
+import { Address } from 'iexec';
 import {
-  DATAPROTECTOR_SUBGRAPH_ENDPOINT,
   WEB3_MAIL_DAPP_ADDRESS,
   WHITELIST_SMART_CONTRACT_ADDRESS,
 } from '../../src/config/config.js';
-import { fetchMyContacts } from '../../src/web3mail/fetchMyContacts.js';
+import { type FetchMyContacts } from '../../src/web3mail/fetchMyContacts.js';
+import { getRandomAddress } from '../test-utils.js';
+
+jest.unstable_mockModule('../../src/utils/subgraphQuery.js', () => ({
+  getValidContact: jest.fn(),
+}));
 
 describe('fetchMyContacts', () => {
+  let testedModule: any;
+  let fetchMyContacts: FetchMyContacts;
+
+  beforeAll(async () => {
+    // import tested module after all mocked modules
+    testedModule = await import('../../src/web3mail/fetchMyContacts.js');
+    fetchMyContacts = testedModule.fetchMyContacts;
+  });
+
   const MOCK_ORDER = {
     order: {
       dataset: '0x35396912Db97ff130411301Ec722Fc92Ac37B00d',
@@ -32,11 +42,12 @@ describe('fetchMyContacts', () => {
     remaining: 10,
   };
   it('should fetch granted access without parameters (using default parameters)', async () => {
-    const graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
-    const ethProvider = getWeb3Provider(Wallet.createRandom().privateKey);
-    const iexec = new IExec({
-      ethProvider,
-    });
+    // --- GIVEN
+    const { getValidContact } = (await import(
+      '../../src/utils/subgraphQuery.js'
+    )) as unknown as { getValidContact: jest.Mock<() => Promise<[]>> };
+    getValidContact.mockResolvedValue([]);
+
     const mockFetchDatasetOrderbook: any = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         ok: true,
@@ -45,13 +56,30 @@ describe('fetchMyContacts', () => {
         orders: [MOCK_ORDER],
       });
     });
-    iexec.orderbook.fetchDatasetOrderbook = mockFetchDatasetOrderbook;
+
+    const iexec = {
+      wallet: {
+        getAddress: jest
+          .fn<() => Promise<Address>>()
+          .mockResolvedValue(getRandomAddress()),
+      },
+      ens: {
+        resolveName: jest
+          .fn<() => Promise<Address>>()
+          .mockResolvedValue(getRandomAddress()),
+      },
+      orderbook: {
+        fetchDatasetOrderbook: mockFetchDatasetOrderbook,
+      },
+    };
 
     await fetchMyContacts({
+      // @ts-expect-error Minimal iexec implementation with only what's necessary for this test
       iexec: iexec,
+      // @ts-expect-error No need for graphQLClient here
+      graphQLClient: {},
       dappAddressOrENS: WEB3_MAIL_DAPP_ADDRESS,
       dappWhitelistAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
-      graphQLClient,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
@@ -79,12 +107,12 @@ describe('fetchMyContacts', () => {
   });
 
   it('should fetch granted access with isRequesterStrict param equal to true', async () => {
-    const graphQLClient = new GraphQLClient(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
-    const wallet = Wallet.createRandom();
-    const ethProvider = getWeb3Provider(wallet.privateKey);
-    const iexec = new IExec({
-      ethProvider,
-    });
+    // --- GIVEN
+    const { getValidContact } = (await import(
+      '../../src/utils/subgraphQuery.js'
+    )) as unknown as { getValidContact: jest.Mock<() => Promise<[]>> };
+    getValidContact.mockResolvedValue([]);
+
     const mockFetchDatasetOrderbook: any = jest.fn().mockImplementation(() => {
       return Promise.resolve({
         ok: true,
@@ -93,14 +121,31 @@ describe('fetchMyContacts', () => {
         orders: [MOCK_ORDER],
       });
     });
-    iexec.orderbook.fetchDatasetOrderbook = mockFetchDatasetOrderbook;
+
+    const iexec = {
+      wallet: {
+        getAddress: jest
+          .fn<() => Promise<Address>>()
+          .mockResolvedValue(getRandomAddress()),
+      },
+      ens: {
+        resolveName: jest
+          .fn<() => Promise<Address>>()
+          .mockResolvedValue(getRandomAddress()),
+      },
+      orderbook: {
+        fetchDatasetOrderbook: mockFetchDatasetOrderbook,
+      },
+    };
 
     await fetchMyContacts({
+      // @ts-expect-error Minimal iexec implementation with only what's necessary for this test
       iexec: iexec,
+      // @ts-expect-error No need for graphQLClient here
+      graphQLClient: {},
       dappAddressOrENS: WEB3_MAIL_DAPP_ADDRESS,
       dappWhitelistAddress: WHITELIST_SMART_CONTRACT_ADDRESS,
       isUserStrict: true,
-      graphQLClient,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
