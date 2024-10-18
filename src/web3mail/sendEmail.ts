@@ -33,6 +33,8 @@ import {
   SubgraphConsumer,
 } from './types.js';
 
+export type SendEmail = typeof sendEmail;
+
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
