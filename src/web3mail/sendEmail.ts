@@ -23,6 +23,10 @@ import {
   throwIfMissing,
 } from '../utils/validators.js';
 import {
+  checkUserVoucher,
+  filterWorkerpoolOrders,
+} from './sendEmail.models.js';
+import {
   DappAddressConsumer,
   DappWhitelistAddressConsumer,
   IExecConsumer,
@@ -117,6 +121,12 @@ export const sendEmail = async ({
 
     const requesterAddress = await iexec.wallet.getAddress();
 
+    let userVoucher;
+    if (vUseVoucher) {
+      userVoucher = await iexec.voucher.showUserVoucher(requesterAddress);
+      checkUserVoucher(userVoucher);
+    }
+
     const [
       datasetorderForApp,
       datasetorderForWhitelist,
@@ -175,15 +185,12 @@ export const sendEmail = async ({
           category: 0,
         })
         .then((workerpoolOrderbook) => {
-          const desiredPriceWorkerpoolOrderbook =
-            workerpoolOrderbook.orders.filter(
-              (order) => order.order.workerpoolprice <= vWorkerpoolMaxPrice
-            );
-          const randomIndex = Math.floor(
-            Math.random() * desiredPriceWorkerpoolOrderbook.length
-          );
-          const desiredPriceWorkerpoolOrder =
-            desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
+          const desiredPriceWorkerpoolOrder = filterWorkerpoolOrders({
+            workerpoolOrders: workerpoolOrderbook.orders,
+            workerpoolMaxPrice: vWorkerpoolMaxPrice,
+            useVoucher: vUseVoucher,
+            userVoucher,
+          });
           if (!desiredPriceWorkerpoolOrder) {
             throw new Error('No Workerpool order found for the desired price');
           }
