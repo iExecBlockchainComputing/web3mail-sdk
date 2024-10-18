@@ -1,9 +1,27 @@
-import { expect, it } from '@jest/globals';
+import { expect, it, jest } from '@jest/globals';
 import { ValidationError } from 'yup';
-import { sendEmail } from '../../src/web3mail/sendEmail.js';
-import { getRandomAddress } from '../test-utils.js';
+import { type SendEmail } from '../../src/web3mail/sendEmail.js';
+import { getRandomAddress, TEST_CHAIN } from '../test-utils.js';
+import {
+  WEB3_MAIL_DAPP_ADDRESS,
+  WHITELIST_SMART_CONTRACT_ADDRESS,
+} from '../../src/config/config.js';
+import { mockAllForSendEmail } from '../utils/mockAllForSendEmail.js';
+
+jest.unstable_mockModule('../../src/utils/subgraphQuery.js', () => ({
+  checkProtectedDataValidity: jest.fn(),
+}));
 
 describe('sendEmail', () => {
+  let testedModule: any;
+  let sendEmail: SendEmail;
+
+  beforeAll(async () => {
+    // import tested module after all mocked modules
+    testedModule = await import('../../src/web3mail/sendEmail.js');
+    sendEmail = testedModule.sendEmail;
+  });
+
   describe('Check validation for input parameters', () => {
     describe('When senderName is less than 3 characters (too short)', () => {
       it('should throw a yup ValidationError with the correct message', async () => {
@@ -134,6 +152,61 @@ describe('sendEmail', () => {
         ).rejects.toThrow(
           new ValidationError('emailContent must be at most 512000 characters')
         );
+      });
+
+      describe('Should fetchWorkerpool orders for App & Whitelist', () => {
+        it('should throw a yup ValidationError with the correct message', async () => {
+          // --- GIVEN
+          const { checkProtectedDataValidity } = (await import(
+            '../../src/utils/subgraphQuery.js'
+          )) as unknown as {
+            checkProtectedDataValidity: jest.Mock<() => Promise<boolean>>;
+          };
+          checkProtectedDataValidity.mockResolvedValue(true);
+
+          const OVERSIZED_CONTENT = 'Test';
+          const protectedData = getRandomAddress().toLowerCase();
+          const iexec = mockAllForSendEmail();
+
+          // --- WHEN
+          await sendEmail({
+            // @ts-expect-error No need for graphQLClient here
+            graphQLClient: {},
+            // @ts-expect-error No need for iexec here
+            iexec,
+            // // @ts-expect-error No need
+            // ipfsNode: "",
+            // ipfsGateway: this.ipfsGateway,
+            dappAddressOrENS: WEB3_MAIL_DAPP_ADDRESS,
+            dappWhitelistAddress:
+              WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
+            emailSubject: 'e2e mail object for test',
+            emailContent: OVERSIZED_CONTENT,
+            protectedData,
+          });
+
+          // --- THEN
+          expect(
+            iexec.orderbook.fetchWorkerpoolOrderbook
+          ).toHaveBeenNthCalledWith(1, {
+            workerpool: TEST_CHAIN.prodWorkerpool,
+            app: WEB3_MAIL_DAPP_ADDRESS,
+            dataset: protectedData,
+            minTag: ['tee', 'scone'],
+            maxTag: ['tee', 'scone'],
+            category: 0,
+          });
+          expect(
+            iexec.orderbook.fetchWorkerpoolOrderbook
+          ).toHaveBeenNthCalledWith(2, {
+            workerpool: TEST_CHAIN.prodWorkerpool,
+            app: WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
+            dataset: protectedData,
+            minTag: ['tee', 'scone'],
+            maxTag: ['tee', 'scone'],
+            category: 0,
+          });
+        });
       });
     });
   });
