@@ -1,9 +1,24 @@
+import { Address, BN } from 'iexec';
 import { PublishedWorkerpoolorder } from 'iexec/IExecOrderbookModule';
-import { VoucherInfo } from 'iexec/IExecVoucherModule';
+// import { VoucherInfo } from 'iexec/IExecVoucherModule';
 import {
   checkUserVoucher,
   filterWorkerpoolOrders,
 } from '../../src/web3mail/sendEmail.models.js';
+
+// To import from 'iexec' once exported
+type VoucherInfo = {
+  owner: Address;
+  address: Address;
+  type: BN;
+  balance: BN;
+  expirationTimestamp: BN;
+  sponsoredApps: Address[];
+  sponsoredDatasets: Address[];
+  sponsoredWorkerpools: Address[];
+  allowanceAmount: BN;
+  authorizedAccounts: Address[];
+};
 
 describe('sendEmail.models', () => {
   describe('checkUserVoucher', () => {
@@ -29,7 +44,7 @@ describe('sendEmail.models', () => {
         // --- GIVEN
         const userVoucher = {
           expirationTimestamp: Date.now() / 1000 - 60, // Expired 1min ago
-        } as VoucherInfo;
+        } as unknown as VoucherInfo;
 
         expect(() =>
           checkUserVoucher({
@@ -49,7 +64,7 @@ describe('sendEmail.models', () => {
         const userVoucher = {
           expirationTimestamp: Date.now() / 1000 + 3600, // Will expire in 1h
           balance: 0,
-        } as VoucherInfo;
+        } as unknown as VoucherInfo;
 
         expect(() =>
           checkUserVoucher({
@@ -151,7 +166,7 @@ describe('sendEmail.models', () => {
           const userVoucher = {
             // balance: new BN(4), // Technically it should be a BN
             balance: 4,
-          };
+          } as unknown as VoucherInfo;
           const workerpoolOrders = [
             {
               order: {
@@ -185,7 +200,7 @@ describe('sendEmail.models', () => {
           const userVoucher = {
             // balance: new BN(4), // Technically it should be a BN
             balance: 2,
-          };
+          } as unknown as VoucherInfo;
           const workerpoolOrders = [
             {
               order: {
@@ -214,7 +229,7 @@ describe('sendEmail.models', () => {
           const userVoucher = {
             // balance: new BN(4), // Technically it should be a BN
             balance: 2,
-          };
+          } as unknown as VoucherInfo;
           const workerpoolOrders = [
             {
               order: {

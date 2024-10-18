@@ -1,5 +1,20 @@
+import { Address, BN } from 'iexec';
 import { PublishedWorkerpoolorder } from 'iexec/IExecOrderbookModule';
-import { VoucherInfo } from 'iexec/IExecVoucherModule';
+// import { VoucherInfo } from 'iexec/IExecVoucherModule';
+
+// To import from 'iexec' once exported
+type VoucherInfo = {
+  owner: Address;
+  address: Address;
+  type: BN;
+  balance: BN;
+  expirationTimestamp: BN;
+  sponsoredApps: Address[];
+  sponsoredDatasets: Address[];
+  sponsoredWorkerpools: Address[];
+  allowanceAmount: BN;
+  authorizedAccounts: Address[];
+};
 
 export function checkUserVoucher({
   userVoucher,
@@ -67,13 +82,15 @@ export function filterWorkerpoolOrders({
   const cheapestWorkerpoolOrder = sortedWorkerpoolOrders[0];
 
   // Enough balance on voucher
-  if (userVoucher.balance >= cheapestWorkerpoolOrder.order.workerpoolprice) {
+  if (
+    Number(userVoucher.balance) >= cheapestWorkerpoolOrder.order.workerpoolprice
+  ) {
     return cheapestWorkerpoolOrder.order;
   }
 
   // Some usable balance on voucher + user accepts to pay for the rest
   if (
-    userVoucher.balance + workerpoolMaxPrice >=
+    Number(userVoucher.balance) + workerpoolMaxPrice >=
     cheapestWorkerpoolOrder.order.workerpoolprice
   ) {
     return cheapestWorkerpoolOrder.order;
