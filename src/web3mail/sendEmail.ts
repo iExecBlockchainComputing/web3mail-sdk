@@ -227,7 +227,6 @@ export const sendEmail = async ({
     if (!workerpoolorder) {
       throw new WorkflowError({
         message: 'No Workerpool order found for the desired price',
-        errorCause: Error('No workerpool order published'),
       });
     }
 
