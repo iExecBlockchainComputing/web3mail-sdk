@@ -84,14 +84,14 @@ export function filterWorkerpoolOrders({
   );
   const cheapestWorkerpoolOrder = sortedWorkerpoolOrders[0];
 
-  // Enough balance on voucher
+  // If there is enough balance on the voucher -> good
   if (
     Number(userVoucher.balance) >= cheapestWorkerpoolOrder.order.workerpoolprice
   ) {
     return cheapestWorkerpoolOrder.order;
   }
 
-  // Some usable balance on voucher + user accepts to pay for the rest
+  // If there is some usable balance on the voucher + user accepts to pay for the rest -> good
   if (
     Number(userVoucher.balance) + workerpoolMaxPrice >=
     cheapestWorkerpoolOrder.order.workerpoolprice
@@ -99,6 +99,8 @@ export function filterWorkerpoolOrders({
     return cheapestWorkerpoolOrder.order;
   }
 
-  // Not enough money
-  return null;
+  // If not enough money -> bad
+  throw new Error(
+    'Oops, it seems your voucher balance is not enough to cover the worker price. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'
+  );
 }
