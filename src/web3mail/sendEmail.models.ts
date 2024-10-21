@@ -19,14 +19,8 @@ type VoucherInfo = {
 export function checkUserVoucher({
   userVoucher,
 }: {
-  userVoucher?: VoucherInfo;
+  userVoucher: VoucherInfo;
 }) {
-  if (!userVoucher) {
-    throw new Error(
-      'Oops, it seems your wallet is not associated with any voucher. Check on https://builder-dashboard.iex.ec/'
-    );
-  }
-
   if (Number(userVoucher.expirationTimestamp) < Date.now() / 1000) {
     throw new Error(
       'Oops, it seems your voucher has expired. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'

@@ -107,26 +107,34 @@ export const sendEmail = async ({
     .label('useVoucher')
     .validateSync(useVoucher);
 
-  try {
-    // Check protected data validity through subgraph
-    const isValidProtectedData = await checkProtectedDataValidity(
-      graphQLClient,
-      vDatasetAddress
+  // Check protected data schema through subgraph
+  const isValidProtectedData = await checkProtectedDataValidity(
+    graphQLClient,
+    vDatasetAddress
+  );
+  if (!isValidProtectedData) {
+    throw new Error(
+      'This protected data does not contain "email:string" in its schema.'
     );
-    if (!isValidProtectedData) {
-      throw new Error(
-        'This protected data does not contain "email:string" in its schema.'
-      );
-    }
+  }
 
-    const requesterAddress = await iexec.wallet.getAddress();
+  const requesterAddress = await iexec.wallet.getAddress();
 
-    let userVoucher;
-    if (vUseVoucher) {
+  let userVoucher;
+  if (vUseVoucher) {
+    try {
       userVoucher = await iexec.voucher.showUserVoucher(requesterAddress);
       checkUserVoucher(userVoucher);
+    } catch (err) {
+      if (err?.message?.startsWith('No Voucher found for address')) {
+        throw new Error(
+          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder-dashboard.iex.ec/'
+        );
+      }
     }
+  }
 
+  try {
     const [
       datasetorderForApp,
       datasetorderForWhitelist,

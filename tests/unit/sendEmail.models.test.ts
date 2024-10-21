@@ -22,23 +22,6 @@ type VoucherInfo = {
 
 describe('sendEmail.models', () => {
   describe('checkUserVoucher', () => {
-    describe('When user has NO voucher', () => {
-      it('should throw an Error with the correct message', async () => {
-        // --- GIVEN
-        const userVoucher = undefined;
-
-        expect(() =>
-          checkUserVoucher({
-            userVoucher,
-          })
-        ).toThrow(
-          new Error(
-            'Oops, it seems your wallet is not associated with any voucher. Check on https://builder-dashboard.iex.ec/'
-          )
-        );
-      });
-    });
-
     describe('When voucher is expired', () => {
       it('should throw an Error with the correct message', async () => {
         // --- GIVEN
