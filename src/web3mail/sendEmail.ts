@@ -225,9 +225,7 @@ export const sendEmail = async ({
       workerpoolorder = workerpoolorderForApp || workerpoolorderForWhitelist;
     }
     if (!workerpoolorder) {
-      throw new WorkflowError({
-        message: 'No Workerpool order found for the desired price',
-      });
+      throw new Error('No Workerpool order found for the desired price');
     }
 
     const datasetorder = datasetorderForApp || datasetorderForWhitelist;
