@@ -166,16 +166,18 @@ describe('sendEmail.models', () => {
             },
           ] as PublishedWorkerpoolorder[];
 
-          // --- WHEN
-          const foundOrder = filterWorkerpoolOrders({
-            workerpoolOrders,
-            workerpoolMaxPrice: 0,
-            useVoucher: true,
-            userVoucher,
-          });
-
-          // --- THEN
-          expect(foundOrder).toBeNull();
+          expect(() =>
+            filterWorkerpoolOrders({
+              workerpoolOrders,
+              workerpoolMaxPrice: 0,
+              useVoucher: true,
+              userVoucher,
+            })
+          ).toThrow(
+            new Error(
+              'Found some workerpool orders but none can be sponsored by your voucher.'
+            )
+          );
         });
       });
 
