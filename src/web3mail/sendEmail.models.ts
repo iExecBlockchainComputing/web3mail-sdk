@@ -49,6 +49,8 @@ export function filterWorkerpoolOrders({
   useVoucher: boolean;
   userVoucher?: VoucherInfo;
 }) {
+  console.log('workerpoolOrders', workerpoolOrders);
+  console.log('workerpoolMaxPrice', workerpoolMaxPrice);
   if (workerpoolOrders.length === 0) {
     return null;
   }
@@ -81,8 +83,11 @@ export function filterWorkerpoolOrders({
       );
     }
   );
+  console.log('onlySponsoredWorkerpools', onlySponsoredWorkerpools);
   if (onlySponsoredWorkerpools.length === 0) {
-    return null;
+    throw new Error(
+      'Found some workerpool orders but none can be sponsored by your voucher.'
+    );
   }
 
   const sortedWorkerpoolOrders = onlySponsoredWorkerpools.sort(
@@ -91,6 +96,7 @@ export function filterWorkerpoolOrders({
     }
   );
   const cheapestWorkerpoolOrder = sortedWorkerpoolOrders[0];
+  console.log('cheapestWorkerpoolOrder', cheapestWorkerpoolOrder);
 
   // If there is enough balance on the voucher -> good
   if (
