@@ -386,6 +386,8 @@ describe('web3mail.sendEmail()', () => {
           await web3mail.sendEmail(params);
         } catch (err) {
           error = err;
+          console.log('error', error);
+          console.log('error.cause.message', error.cause.message);
         }
         expect(error).toBeDefined();
         expect(error.message).toBe('Failed to sendEmail');
