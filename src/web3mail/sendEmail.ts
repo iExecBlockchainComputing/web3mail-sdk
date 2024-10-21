@@ -131,6 +131,7 @@ export const sendEmail = async ({
           'Oops, it seems your wallet is not associated with any voucher. Check on https://builder-dashboard.iex.ec/'
         );
       }
+      throw err;
     }
   }
 
