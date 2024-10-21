@@ -16,18 +16,22 @@ type VoucherInfo = {
   authorizedAccounts: Address[];
 };
 
+function bnToNumber(bn: BN) {
+  return Number(bn.toString());
+}
+
 export function checkUserVoucher({
   userVoucher,
 }: {
   userVoucher: VoucherInfo;
 }) {
-  if (Number(userVoucher.expirationTimestamp) < Date.now() / 1000) {
+  if (bnToNumber(userVoucher.expirationTimestamp) < Date.now() / 1000) {
     throw new Error(
       'Oops, it seems your voucher has expired. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'
     );
   }
 
-  if (userVoucher.balance === 0) {
+  if (bnToNumber(userVoucher.balance) === 0) {
     throw new Error(
       'Oops, it seems your voucher is empty. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'
     );
@@ -90,14 +94,15 @@ export function filterWorkerpoolOrders({
 
   // If there is enough balance on the voucher -> good
   if (
-    Number(userVoucher.balance) >= cheapestWorkerpoolOrder.order.workerpoolprice
+    bnToNumber(userVoucher.balance) >=
+    cheapestWorkerpoolOrder.order.workerpoolprice
   ) {
     return cheapestWorkerpoolOrder.order;
   }
 
   // If there is some usable balance on the voucher + user accepts to pay for the rest -> good
   if (
-    Number(userVoucher.balance) + workerpoolMaxPrice >=
+    bnToNumber(userVoucher.balance) + workerpoolMaxPrice >=
     cheapestWorkerpoolOrder.order.workerpoolprice
   ) {
     return cheapestWorkerpoolOrder.order;
