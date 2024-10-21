@@ -298,6 +298,24 @@ steps:
       - ipfs-healthy
       - graphnode-healthy
 
+  - name: voucher-subgraph-deployment
+    # https://github.com/iExecBlockchainComputing/iexec-voucher-subgraph
+    # TODO replace image with iexechub/voucher-subgraph-deployer when available
+    image: docker-regis.iex.ec/voucher-subgraph:8491d157
+    pull: always
+    environment:
+      RPC_URL: http://bellecour-fork:8545
+      GRAPHNODE_URL: http://graphnode:8020
+      IPFS_URL: http://ipfs:5001
+      VOUCHER_HUB_ADDRESS: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda'
+    commands:
+      - export VOUCHER_HUB_START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
+      - sh /app/entrypoint.sh
+    depends_on:
+      - prepare-local-stack-env
+      - ipfs-healthy
+      - graphnode-healthy
+
   - name: bellecour-fork-voucher-deployment
     #  https://github.com/iExecBlockchainComputing/voucher-deployer
     image: pierreiexec/voucher-deployer
