@@ -124,7 +124,7 @@ export const sendEmail = async ({
   if (vUseVoucher) {
     try {
       userVoucher = await iexec.voucher.showUserVoucher(requesterAddress);
-      checkUserVoucher(userVoucher);
+      checkUserVoucher({ userVoucher });
     } catch (err) {
       if (err?.message?.startsWith('No Voucher found for address')) {
         throw new Error(
