@@ -169,12 +169,9 @@ describe('web3mail.sendEmail()', () => {
       };
 
       await expect(web3mail.sendEmail(params)).rejects.toThrow(
-        new WorkflowError({
-          message: 'Failed to sendEmail',
-          errorCause: Error(
-            'This protected data does not contain "email:string" in its schema.'
-          ),
-        })
+        new Error(
+          'This protected data does not contain "email:string" in its schema.'
+        )
       );
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -357,9 +354,8 @@ describe('web3mail.sendEmail()', () => {
           error = err;
         }
         expect(error).toBeDefined();
-        expect(error.message).toBe('Failed to sendEmail');
-        expect(error.cause.message).toBe(
-          `No voucher available for the requester ${consumerWallet.address}`
+        expect(error.message).toBe(
+          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder-dashboard.iex.ec/'
         );
       },
       2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
