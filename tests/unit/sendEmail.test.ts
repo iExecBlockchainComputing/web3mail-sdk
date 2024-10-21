@@ -155,7 +155,7 @@ describe('sendEmail', () => {
       });
 
       describe('Should fetchWorkerpool orders for App & Whitelist', () => {
-        it('should throw a yup ValidationError with the correct message', async () => {
+        it('should call fetchWorkerpoolOrderbook twice with the correct params', async () => {
           // --- GIVEN
           const { checkProtectedDataValidity } = (await import(
             '../../src/utils/subgraphQuery.js'
