@@ -70,9 +70,18 @@ export function filterWorkerpoolOrders({
     throw new Error('useVoucher === true but userVoucher is undefined? Hum...');
   }
 
-  const sortedWorkerpoolOrders = workerpoolOrders.sort((order1, order2) => {
-    return order1.order.workerpoolprice - order2.order.workerpoolprice;
-  });
+  const onlySponsoredWorkerpools = workerpoolOrders.filter(
+    (workerpoolOrder) => {
+      return userVoucher.sponsoredWorkerpools.includes(
+        workerpoolOrder.order.workerpool
+      );
+    }
+  );
+  const sortedWorkerpoolOrders = onlySponsoredWorkerpools.sort(
+    (order1, order2) => {
+      return order1.order.workerpoolprice - order2.order.workerpoolprice;
+    }
+  );
   const cheapestWorkerpoolOrder = sortedWorkerpoolOrders[0];
 
   // Enough balance on voucher
