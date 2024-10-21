@@ -5,6 +5,7 @@ import {
   checkUserVoucher,
   filterWorkerpoolOrders,
 } from '../../src/web3mail/sendEmail.models.js';
+import { getRandomAddress } from '../test-utils.js';
 
 // To import from 'iexec' once exported
 type VoucherInfo = {
@@ -64,7 +65,7 @@ describe('sendEmail.models', () => {
 
   describe('filterWorkerpoolOrders()', () => {
     describe('When workerpool orders is an empty array', () => {
-      it('should just answer with null', () => {
+      it('should answer with null', () => {
         // --- GIVEN
         const workerpoolOrders = [];
 
@@ -143,22 +144,61 @@ describe('sendEmail.models', () => {
     });
 
     describe('useVoucher === true', () => {
-      describe('When voucher balance is greater than asked maxPrice', () => {
-        it('should answer with the cheapest order', () => {
+      describe('When there are workerpool orders but workerpool is NOT included in the voucher sponsored workerpools', () => {
+        it('should answer with null', () => {
           // --- GIVEN
           const userVoucher = {
-            // balance: new BN(4), // Technically it should be a BN
-            balance: 4,
+            balance: 4, // Technically it should be a BN
+            sponsoredWorkerpools: [getRandomAddress()],
           } as unknown as VoucherInfo;
           const workerpoolOrders = [
             {
               order: {
                 workerpoolprice: 3,
+                workerpool: getRandomAddress(),
               },
             },
             {
               order: {
                 workerpoolprice: 1,
+                workerpool: getRandomAddress(),
+              },
+            },
+          ] as PublishedWorkerpoolorder[];
+
+          // --- WHEN
+          const foundOrder = filterWorkerpoolOrders({
+            workerpoolOrders,
+            workerpoolMaxPrice: 0,
+            useVoucher: true,
+            userVoucher,
+          });
+
+          // --- THEN
+          expect(foundOrder).toBeNull();
+        });
+      });
+
+      describe('When voucher balance is greater than asked maxPrice', () => {
+        it('should answer with the cheapest order', () => {
+          // --- GIVEN
+          const userVoucher = {
+            balance: 4, // Technically it should be a BN
+            sponsoredWorkerpools: [
+              '0x3779Da315D935D3E3957561667236BF6859C1b0E',
+            ],
+          } as unknown as VoucherInfo;
+          const workerpoolOrders = [
+            {
+              order: {
+                workerpoolprice: 3,
+                workerpool: '0x3779Da315D935D3E3957561667236BF6859C1b0E',
+              },
+            },
+            {
+              order: {
+                workerpoolprice: 1,
+                workerpool: '0x3779Da315D935D3E3957561667236BF6859C1b0E',
               },
             },
           ] as PublishedWorkerpoolorder[];
@@ -181,13 +221,16 @@ describe('sendEmail.models', () => {
         it('should answer with the cheapest order', () => {
           // --- GIVEN
           const userVoucher = {
-            // balance: new BN(4), // Technically it should be a BN
-            balance: 2,
+            balance: 2, // Technically it should be a BN
+            sponsoredWorkerpools: [
+              '0x3779Da315D935D3E3957561667236BF6859C1b0E',
+            ],
           } as unknown as VoucherInfo;
           const workerpoolOrders = [
             {
               order: {
                 workerpoolprice: 3,
+                workerpool: '0x3779Da315D935D3E3957561667236BF6859C1b0E',
               },
             },
           ] as PublishedWorkerpoolorder[];
@@ -210,27 +253,32 @@ describe('sendEmail.models', () => {
         it('should answer with the cheapest order', () => {
           // --- GIVEN
           const userVoucher = {
-            // balance: new BN(4), // Technically it should be a BN
-            balance: 2,
+            balance: 2, // Technically it should be a BN
+            sponsoredWorkerpools: [
+              '0x3779Da315D935D3E3957561667236BF6859C1b0E',
+            ],
           } as unknown as VoucherInfo;
           const workerpoolOrders = [
             {
               order: {
                 workerpoolprice: 5,
+                workerpool: '0x3779Da315D935D3E3957561667236BF6859C1b0E',
               },
             },
           ] as PublishedWorkerpoolorder[];
 
-          // --- WHEN
-          const foundOrder = filterWorkerpoolOrders({
-            workerpoolOrders,
-            workerpoolMaxPrice: 1,
-            useVoucher: true,
-            userVoucher,
-          });
-
-          // --- THEN
-          expect(foundOrder).toBeNull();
+          expect(() =>
+            filterWorkerpoolOrders({
+              workerpoolOrders,
+              workerpoolMaxPrice: 1,
+              useVoucher: true,
+              userVoucher,
+            })
+          ).toThrow(
+            new Error(
+              'Oops, it seems your voucher balance is not enough to cover the worker price. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'
+            )
+          );
         });
       });
     });

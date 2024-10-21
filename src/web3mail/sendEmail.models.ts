@@ -77,6 +77,10 @@ export function filterWorkerpoolOrders({
       );
     }
   );
+  if (onlySponsoredWorkerpools.length === 0) {
+    return null;
+  }
+
   const sortedWorkerpoolOrders = onlySponsoredWorkerpools.sort(
     (order1, order2) => {
       return order1.order.workerpoolprice - order2.order.workerpoolprice;
