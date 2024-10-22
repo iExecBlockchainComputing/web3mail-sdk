@@ -7,8 +7,9 @@ trigger:
   event:
     exclude:
       - promote
+      - pull_request
 
-# required until dataprotector-subgraph-deployer is publicly available
+# required until dataprotector-subgraph-deployer and voucher-subgraph-deployer are publicly available
 image_pull_secrets:
   - dockerconfigregis
 
@@ -284,7 +285,8 @@ steps:
       - market-api
       - market-watcher
 
-  - name: subgraph-deploy
+  - name: dataprotector-subgraph-deployer
+    # TODO replace image with iexechub/dataprotector-subgraph-deployer when available
     image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
     environment:
       ENV: prod
@@ -298,19 +300,21 @@ steps:
       - ipfs-healthy
       - graphnode-healthy
 
-  - name: bellecour-fork-voucher-deployment
-    #  https://github.com/iExecBlockchainComputing/voucher-deployer
-    image: pierreiexec/voucher-deployer
+  - name: voucher-subgraph-deployer
+    # https://github.com/iExecBlockchainComputing/iexec-voucher-subgraph
+    # TODO replace image with iexechub/voucher-subgraph-deployer when available
+    image: docker-regis.iex.ec/voucher-subgraph:8491d157
     pull: always
     environment:
       RPC_URL: http://bellecour-fork:8545
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
+      VOUCHER_HUB_ADDRESS: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda'
     commands:
       - export VOUCHER_HUB_START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
-      - sh /app/entrypoint.sh
+      - cd /iexec-voucher-subgraph && npm run all
     depends_on:
-      - bellecour-fork-healthy
+      - prepare-local-stack-env
       - ipfs-healthy
       - graphnode-healthy
 
@@ -325,9 +329,10 @@ steps:
       - market-api-healthy
       - ipfs-healthy
       - graphnode-healthy
-      - subgraph-deploy
-      - bellecour-fork-voucher-deployment
+      - dataprotector-subgraph-deployer
+      - voucher-subgraph-deployer
   ##### START LOCAL STACK END #####
+
   - name: test:e2e
     image: node:18.19
     commands:

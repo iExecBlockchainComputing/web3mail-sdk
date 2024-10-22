@@ -26,10 +26,10 @@ export const TEST_CHAIN = {
     '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
   ),
   voucherSubgraphURL: process.env.DRONE
-    ? 'http://gaphnode:8000/subgraphs/name/bellecour/iexec-voucher'
+    ? 'http://graphnode:8000/subgraphs/name/bellecour/iexec-voucher'
     : 'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
-  debugWorkerpool: 'debug-v8-bellecour.main.pools.iexec.eth',
-  debugWorkerpoolOwnerWallet: new Wallet(
+  learnProdWorkerpool: 'prod-v8-learn.main.pools.iexec.eth',
+  learnProdWorkerpoolOwnerWallet: new Wallet(
     '0x800e01919eadf36f110f733decb1cc0f82e7941a748e89d7a3f76157f6654bb3'
   ),
   prodWorkerpool: 'prod-v8-bellecour.main.pools.iexec.eth',
@@ -51,7 +51,10 @@ export const TEST_CHAIN = {
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-export const waitSubgraphIndexing = () => sleep(5_000);
+export const MAX_EXPECTED_SUBGRAPH_INDEXING_TIME = 5_000;
+
+export const waitSubgraphIndexing = () =>
+  sleep(MAX_EXPECTED_SUBGRAPH_INDEXING_TIME);
 
 export const getRequiredFieldMessage = (field: string = 'this') =>
   `${field} is a required field`;
@@ -241,12 +244,14 @@ export const createVoucherType = async ({
   return id as bigint;
 };
 
-export const ensureSufficientStake = async (iexec, requiredStake) => {
+export const ensureSufficientStake = async (
+  iexec: IExec,
+  requiredStake: ethers.BigNumberish
+) => {
   const walletAddress = await iexec.wallet.getAddress();
   const account = await iexec.account.checkBalance(walletAddress);
-  const currentStake = account.stake;
 
-  if (currentStake < requiredStake) {
+  if (BigInt(account.stake.toString()) < BigInt(requiredStake.toString())) {
     await setNRlcBalance(walletAddress, requiredStake);
     await iexec.account.deposit(requiredStake);
   }
@@ -280,14 +285,18 @@ export const createAndPublishWorkerpoolOrder = async (
     .then((o) => iexec.order.publishWorkerpoolorder(o));
 };
 
+export const WORKERPOOL_ORDER_PER_VOUCHER = 1000;
+
 export const createVoucher = async ({
   owner,
   voucherType,
   value,
+  skipOrders = false,
 }: {
   owner: string;
   voucherType: ethers.BigNumberish;
   value: ethers.BigNumberish;
+  skipOrders?: boolean;
 }) => {
   const VOUCHER_HUB_ABI = [
     {
@@ -386,24 +395,20 @@ export const createVoucher = async ({
     throw error;
   }
 
-  try {
-    // TODO: Voucher - Update createWorkerpoolorder() parameters when it is specified
-    const workerpoolprice = 1000;
-    await createAndPublishWorkerpoolOrder(
-      TEST_CHAIN.debugWorkerpool,
-      TEST_CHAIN.debugWorkerpoolOwnerWallet,
-      owner,
-      workerpoolprice
-    );
-    await createAndPublishWorkerpoolOrder(
-      TEST_CHAIN.prodWorkerpool,
-      TEST_CHAIN.prodWorkerpoolOwnerWallet,
-      owner,
-      workerpoolprice
-    );
-  } catch (error) {
-    console.error('Error publishing workerpoolorder:', error);
-    throw error;
+  if (!skipOrders) {
+    try {
+      const workerpoolprice = Math.floor(value / WORKERPOOL_ORDER_PER_VOUCHER);
+      await createAndPublishWorkerpoolOrder(
+        TEST_CHAIN.prodWorkerpool,
+        TEST_CHAIN.prodWorkerpoolOwnerWallet,
+        owner,
+        workerpoolprice,
+        WORKERPOOL_ORDER_PER_VOUCHER
+      );
+    } catch (error) {
+      console.error('Error publishing workerpoolorder:', error);
+      throw error;
+    }
   }
 
   try {

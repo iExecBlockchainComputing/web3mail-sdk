@@ -168,6 +168,8 @@ describe('sendEmail', () => {
           const protectedData = getRandomAddress().toLowerCase();
           const iexec = mockAllForSendEmail();
 
+          const userAddress = await iexec.wallet.getAddress();
+
           // --- WHEN
           await sendEmail({
             // @ts-expect-error No need for graphQLClient here
@@ -192,6 +194,7 @@ describe('sendEmail', () => {
             workerpool: TEST_CHAIN.prodWorkerpool,
             app: WEB3_MAIL_DAPP_ADDRESS,
             dataset: protectedData,
+            requester: userAddress,
             minTag: ['tee', 'scone'],
             maxTag: ['tee', 'scone'],
             category: 0,
@@ -202,6 +205,7 @@ describe('sendEmail', () => {
             workerpool: TEST_CHAIN.prodWorkerpool,
             app: WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
             dataset: protectedData,
+            requester: userAddress,
             minTag: ['tee', 'scone'],
             maxTag: ['tee', 'scone'],
             category: 0,

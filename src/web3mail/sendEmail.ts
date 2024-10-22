@@ -23,6 +23,10 @@ import {
   throwIfMissing,
 } from '../utils/validators.js';
 import {
+  checkUserVoucher,
+  filterWorkerpoolOrders,
+} from './sendEmail.models.js';
+import {
   DappAddressConsumer,
   DappWhitelistAddressConsumer,
   IExecConsumer,
@@ -105,26 +109,40 @@ export const sendEmail = async ({
     .label('useVoucher')
     .validateSync(useVoucher);
 
-  try {
-    // Check protected data validity through subgraph
-    const isValidProtectedData = await checkProtectedDataValidity(
-      graphQLClient,
-      vDatasetAddress
+  // Check protected data schema through subgraph
+  const isValidProtectedData = await checkProtectedDataValidity(
+    graphQLClient,
+    vDatasetAddress
+  );
+  if (!isValidProtectedData) {
+    throw new Error(
+      'This protected data does not contain "email:string" in its schema.'
     );
-    if (!isValidProtectedData) {
-      throw new Error(
-        'This protected data does not contain "email:string" in its schema.'
-      );
+  }
+
+  const requesterAddress = await iexec.wallet.getAddress();
+
+  let userVoucher;
+  if (vUseVoucher) {
+    try {
+      userVoucher = await iexec.voucher.showUserVoucher(requesterAddress);
+      checkUserVoucher({ userVoucher });
+    } catch (err) {
+      if (err?.message?.startsWith('No Voucher found for address')) {
+        throw new Error(
+          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder-dashboard.iex.ec/'
+        );
+      }
+      throw err;
     }
+  }
 
-    const requesterAddress = await iexec.wallet.getAddress();
-
+  try {
     const [
       datasetorderForApp,
       datasetorderForWhitelist,
       apporder,
-      workerpoolorderForApp,
-      workerpoolorderForWhitelist,
+      workerpoolorder,
     ] = await Promise.all([
       // Fetch dataset order for web3mail app
       iexec.orderbook
@@ -167,63 +185,47 @@ export const sendEmail = async ({
           }
           return desiredPriceAppOrder;
         }),
-      // Fetch workerpool order for App
-      iexec.orderbook
-        .fetchWorkerpoolOrderbook({
+      // Fetch workerpool order for App or AppWhitelist
+      Promise.all([
+        // for app
+        iexec.orderbook.fetchWorkerpoolOrderbook({
           workerpool: workerpoolAddressOrEns,
-          app: dappAddressOrENS,
+          app: vDappAddressOrENS,
           dataset: vDatasetAddress,
+          requester: requesterAddress, // public orders + user specific orders
           minTag: ['tee', 'scone'],
           maxTag: ['tee', 'scone'],
           category: 0,
-        })
-        .then((workerpoolOrderbook) => {
-          const desiredPriceWorkerpoolOrderbook =
-            workerpoolOrderbook.orders.filter(
-              (order) => order.order.workerpoolprice <= vWorkerpoolMaxPrice
-            );
-          const randomIndex = Math.floor(
-            Math.random() * desiredPriceWorkerpoolOrderbook.length
-          );
-          const desiredPriceWorkerpoolOrder =
-            desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
-          return desiredPriceWorkerpoolOrder;
         }),
-      // Fetch workerpool order for AppWhitelist
-      iexec.orderbook
-        .fetchWorkerpoolOrderbook({
+        // for app whitelist
+        iexec.orderbook.fetchWorkerpoolOrderbook({
           workerpool: workerpoolAddressOrEns,
           app: vDappWhitelistAddress,
           dataset: vDatasetAddress,
+          requester: requesterAddress, // public orders + user specific orders
           minTag: ['tee', 'scone'],
           maxTag: ['tee', 'scone'],
           category: 0,
-        })
-        .then((workerpoolOrderbook) => {
-          const desiredPriceWorkerpoolOrderbook =
-            workerpoolOrderbook.orders.filter(
-              (order) => order.order.workerpoolprice <= vWorkerpoolMaxPrice
-            );
-          const randomIndex = Math.floor(
-            Math.random() * desiredPriceWorkerpoolOrderbook.length
-          );
-          const desiredPriceWorkerpoolOrder =
-            desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
-          return desiredPriceWorkerpoolOrder;
         }),
+      ]).then(
+        ([workerpoolOrderbookForApp, workerpoolOrderbookForAppWhitelist]) => {
+          const desiredPriceWorkerpoolOrder = filterWorkerpoolOrders({
+            workerpoolOrders: [
+              ...workerpoolOrderbookForApp.orders,
+              ...workerpoolOrderbookForAppWhitelist.orders,
+            ],
+            workerpoolMaxPrice: vWorkerpoolMaxPrice,
+            useVoucher: vUseVoucher,
+            userVoucher,
+          });
+          if (!desiredPriceWorkerpoolOrder) {
+            throw new Error('No Workerpool order found for the desired price');
+          }
+          return desiredPriceWorkerpoolOrder;
+        }
+      ),
     ]);
 
-    let workerpoolorder;
-    if (workerpoolorderForApp && workerpoolorderForWhitelist) {
-      // get cheapest order
-      workerpoolorder =
-        workerpoolorderForApp.workerpoolprice <
-        workerpoolorderForWhitelist.workerpoolprice
-          ? workerpoolorderForApp
-          : workerpoolorderForWhitelist;
-    } else {
-      workerpoolorder = workerpoolorderForApp || workerpoolorderForWhitelist;
-    }
     if (!workerpoolorder) {
       throw new Error('No Workerpool order found for the desired price');
     }
