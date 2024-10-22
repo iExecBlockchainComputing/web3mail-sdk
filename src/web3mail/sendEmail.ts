@@ -33,6 +33,8 @@ import {
   SubgraphConsumer,
 } from './types.js';
 
+export type SendEmail = typeof sendEmail;
+
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
@@ -121,7 +123,8 @@ export const sendEmail = async ({
       datasetorderForApp,
       datasetorderForWhitelist,
       apporder,
-      workerpoolorder,
+      workerpoolorderForApp,
+      workerpoolorderForWhitelist,
     ] = await Promise.all([
       // Fetch dataset order for web3mail app
       iexec.orderbook
@@ -164,7 +167,7 @@ export const sendEmail = async ({
           }
           return desiredPriceAppOrder;
         }),
-      // Fetch workerpool order
+      // Fetch workerpool order for App
       iexec.orderbook
         .fetchWorkerpoolOrderbook({
           workerpool: workerpoolAddressOrEns,
@@ -184,12 +187,46 @@ export const sendEmail = async ({
           );
           const desiredPriceWorkerpoolOrder =
             desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
-          if (!desiredPriceWorkerpoolOrder) {
-            throw new Error('No Workerpool order found for the desired price');
-          }
+          return desiredPriceWorkerpoolOrder;
+        }),
+      // Fetch workerpool order for AppWhitelist
+      iexec.orderbook
+        .fetchWorkerpoolOrderbook({
+          workerpool: workerpoolAddressOrEns,
+          app: vDappWhitelistAddress,
+          dataset: vDatasetAddress,
+          minTag: ['tee', 'scone'],
+          maxTag: ['tee', 'scone'],
+          category: 0,
+        })
+        .then((workerpoolOrderbook) => {
+          const desiredPriceWorkerpoolOrderbook =
+            workerpoolOrderbook.orders.filter(
+              (order) => order.order.workerpoolprice <= vWorkerpoolMaxPrice
+            );
+          const randomIndex = Math.floor(
+            Math.random() * desiredPriceWorkerpoolOrderbook.length
+          );
+          const desiredPriceWorkerpoolOrder =
+            desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
           return desiredPriceWorkerpoolOrder;
         }),
     ]);
+
+    let workerpoolorder;
+    if (workerpoolorderForApp && workerpoolorderForWhitelist) {
+      // get cheapest order
+      workerpoolorder =
+        workerpoolorderForApp.workerpoolprice <
+        workerpoolorderForWhitelist.workerpoolprice
+          ? workerpoolorderForApp
+          : workerpoolorderForWhitelist;
+    } else {
+      workerpoolorder = workerpoolorderForApp || workerpoolorderForWhitelist;
+    }
+    if (!workerpoolorder) {
+      throw new Error('No Workerpool order found for the desired price');
+    }
 
     const datasetorder = datasetorderForApp || datasetorderForWhitelist;
     if (!datasetorder) {
