@@ -125,6 +125,18 @@ export const deployRandomDataset = async (iexec: IExec, owner?: string) =>
       '0x0000000000000000000000000000000000000000000000000000000000000000',
   });
 
+export const getRandomTxHash = () => {
+  const characters = '0123456789abcdef';
+  let hash = '0x';
+
+  for (let i = 0; i < 64; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    hash += characters[randomIndex];
+  }
+
+  return hash;
+};
+
 export const createAndPublishAppOrders = async (
   resourceProvider,
   appAddress

@@ -37,6 +37,8 @@ import {
   SubgraphConsumer,
 } from './types.js';
 
+export type SendEmail = typeof sendEmail;
+
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
@@ -183,20 +185,35 @@ export const sendEmail = async ({
           }
           return desiredPriceAppOrder;
         }),
-      // Fetch workerpool order
-      iexec.orderbook
-        .fetchWorkerpoolOrderbook({
+      // Fetch workerpool order for App or AppWhitelist
+      Promise.all([
+        // for app
+        iexec.orderbook.fetchWorkerpoolOrderbook({
           workerpool: workerpoolAddressOrEns,
-          app: dappAddressOrENS,
+          app: vDappAddressOrENS,
           dataset: vDatasetAddress,
           requester: requesterAddress, // public orders + user specific orders
           minTag: ['tee', 'scone'],
           maxTag: ['tee', 'scone'],
           category: 0,
-        })
-        .then((workerpoolOrderbook) => {
+        }),
+        // for app whitelist
+        iexec.orderbook.fetchWorkerpoolOrderbook({
+          workerpool: workerpoolAddressOrEns,
+          app: vDappWhitelistAddress,
+          dataset: vDatasetAddress,
+          requester: requesterAddress, // public orders + user specific orders
+          minTag: ['tee', 'scone'],
+          maxTag: ['tee', 'scone'],
+          category: 0,
+        }),
+      ]).then(
+        ([workerpoolOrderbookForApp, workerpoolOrderbookForAppWhitelist]) => {
           const desiredPriceWorkerpoolOrder = filterWorkerpoolOrders({
-            workerpoolOrders: workerpoolOrderbook.orders,
+            workerpoolOrders: [
+              ...workerpoolOrderbookForApp.orders,
+              ...workerpoolOrderbookForAppWhitelist.orders,
+            ],
             workerpoolMaxPrice: vWorkerpoolMaxPrice,
             useVoucher: vUseVoucher,
             userVoucher,
@@ -205,8 +222,13 @@ export const sendEmail = async ({
             throw new Error('No Workerpool order found for the desired price');
           }
           return desiredPriceWorkerpoolOrder;
-        }),
+        }
+      ),
     ]);
+
+    if (!workerpoolorder) {
+      throw new Error('No Workerpool order found for the desired price');
+    }
 
     const datasetorder = datasetorderForApp || datasetorderForWhitelist;
     if (!datasetorder) {
