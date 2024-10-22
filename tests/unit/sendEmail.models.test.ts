@@ -182,7 +182,7 @@ describe('sendEmail.models', () => {
       });
 
       describe('When voucher balance is greater than asked maxPrice', () => {
-        it('should answer with the cheapest order', () => {
+        it('should answer with the cheapest sponsored order', () => {
           // --- GIVEN
           const userVoucher = {
             balance: 4, // Technically it should be a BN
@@ -203,6 +203,12 @@ describe('sendEmail.models', () => {
                 workerpool: '0x3779Da315D935D3E3957561667236BF6859C1b0E',
               },
             },
+            {
+              order: {
+                workerpoolprice: 0,
+                workerpool: getRandomAddress(),
+              },
+            },
           ] as PublishedWorkerpoolorder[];
 
           // --- WHEN
@@ -219,7 +225,7 @@ describe('sendEmail.models', () => {
         });
       });
 
-      describe('When voucher balance is not enough but user can pay the rest', () => {
+      describe('When voucher balance is not enough but user wants to pay the rest (workerpoolMaxPrice)', () => {
         it('should answer with the cheapest order', () => {
           // --- GIVEN
           const userVoucher = {
@@ -248,39 +254,6 @@ describe('sendEmail.models', () => {
           // --- THEN
           expect(foundOrder).toBeTruthy();
           expect(foundOrder.workerpoolprice).toBe(3);
-        });
-      });
-
-      describe("When voucher balance is not enough AND user won't pay the rest", () => {
-        it('should answer with the cheapest order', () => {
-          // --- GIVEN
-          const userVoucher = {
-            balance: 2, // Technically it should be a BN
-            sponsoredWorkerpools: [
-              '0x3779Da315D935D3E3957561667236BF6859C1b0E',
-            ],
-          } as unknown as VoucherInfo;
-          const workerpoolOrders = [
-            {
-              order: {
-                workerpoolprice: 5,
-                workerpool: '0x3779Da315D935D3E3957561667236BF6859C1b0E',
-              },
-            },
-          ] as PublishedWorkerpoolorder[];
-
-          expect(() =>
-            filterWorkerpoolOrders({
-              workerpoolOrders,
-              workerpoolMaxPrice: 1,
-              useVoucher: true,
-              userVoucher,
-            })
-          ).toThrow(
-            new Error(
-              'Oops, it seems your voucher balance is not enough to cover the worker price. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'
-            )
-          );
         });
       });
     });

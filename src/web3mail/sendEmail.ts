@@ -189,6 +189,7 @@ export const sendEmail = async ({
           workerpool: workerpoolAddressOrEns,
           app: dappAddressOrENS,
           dataset: vDatasetAddress,
+          requester: requesterAddress, // public orders + user specific orders
           minTag: ['tee', 'scone'],
           maxTag: ['tee', 'scone'],
           category: 0,

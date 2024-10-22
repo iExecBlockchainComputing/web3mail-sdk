@@ -49,73 +49,42 @@ export function filterWorkerpoolOrders({
   useVoucher: boolean;
   userVoucher?: VoucherInfo;
 }) {
-  console.log('workerpoolOrders', workerpoolOrders);
-  console.log('workerpoolMaxPrice', workerpoolMaxPrice);
   if (workerpoolOrders.length === 0) {
     return null;
   }
 
-  if (!useVoucher) {
-    const desiredPriceWorkerpoolOrderbook = workerpoolOrders.filter(
-      (order) => order.order.workerpoolprice <= workerpoolMaxPrice
-    );
-    if (desiredPriceWorkerpoolOrderbook.length === 0) {
-      return null;
-    }
+  let eligibleWorkerpoolOrders = workerpoolOrders;
+  let maxVoucherSponsoredAmount = 0; // may be safer to use bigint
 
-    // We take a random workerpool order? Why not the cheapest one?
-    const randomIndex = Math.floor(
-      Math.random() * desiredPriceWorkerpoolOrderbook.length
-    );
-    const desiredPriceWorkerpoolOrder =
-      desiredPriceWorkerpoolOrderbook[randomIndex].order;
-    return desiredPriceWorkerpoolOrder;
-  }
-
-  if (useVoucher && !userVoucher) {
-    throw new Error('useVoucher === true but userVoucher is undefined? Hum...');
-  }
-
-  const onlySponsoredWorkerpools = workerpoolOrders.filter(
-    (workerpoolOrder) => {
-      return userVoucher.sponsoredWorkerpools.includes(
-        workerpoolOrder.order.workerpool
+  if (useVoucher) {
+    if (!userVoucher) {
+      throw new Error(
+        'useVoucher === true but userVoucher is undefined? Hum...'
       );
     }
-  );
-  console.log('onlySponsoredWorkerpools', onlySponsoredWorkerpools);
-  if (onlySponsoredWorkerpools.length === 0) {
-    throw new Error(
-      'Found some workerpool orders but none can be sponsored by your voucher.'
+    // only voucher sponsored workerpoolorders
+    eligibleWorkerpoolOrders = eligibleWorkerpoolOrders.filter(({ order }) =>
+      userVoucher.sponsoredWorkerpools.includes(order.workerpool)
     );
-  }
-
-  const sortedWorkerpoolOrders = onlySponsoredWorkerpools.sort(
-    (order1, order2) => {
-      return order1.order.workerpoolprice - order2.order.workerpoolprice;
+    if (eligibleWorkerpoolOrders.length === 0) {
+      throw new Error(
+        'Found some workerpool orders but none can be sponsored by your voucher.'
+      );
     }
-  );
-  const cheapestWorkerpoolOrder = sortedWorkerpoolOrders[0];
-  console.log('cheapestWorkerpoolOrder', cheapestWorkerpoolOrder);
-
-  // If there is enough balance on the voucher -> good
-  if (
-    bnToNumber(userVoucher.balance) >=
-    cheapestWorkerpoolOrder.order.workerpoolprice
-  ) {
-    return cheapestWorkerpoolOrder.order;
+    maxVoucherSponsoredAmount = bnToNumber(userVoucher.balance);
   }
 
-  // If there is some usable balance on the voucher + user accepts to pay for the rest -> good
-  if (
-    bnToNumber(userVoucher.balance) + workerpoolMaxPrice >=
-    cheapestWorkerpoolOrder.order.workerpoolprice
-  ) {
-    return cheapestWorkerpoolOrder.order;
-  }
-
-  // If not enough money -> bad
-  throw new Error(
-    'Oops, it seems your voucher balance is not enough to cover the worker price. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'
+  const [cheapestOrder] = eligibleWorkerpoolOrders.sort(
+    (order1, order2) =>
+      order1.order.workerpoolprice - order2.order.workerpoolprice
   );
+
+  if (
+    !cheapestOrder ||
+    cheapestOrder.order.workerpoolprice >
+      workerpoolMaxPrice + maxVoucherSponsoredAmount
+  ) {
+    return null;
+  }
+  return cheapestOrder.order;
 }
