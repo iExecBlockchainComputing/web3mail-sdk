@@ -153,65 +153,66 @@ describe('sendEmail', () => {
           new ValidationError('emailContent must be at most 512000 characters')
         );
       });
+    });
+  });
 
-      describe('Should fetchWorkerpool orders for App & Whitelist', () => {
-        it('should call fetchWorkerpoolOrderbook twice with the correct params', async () => {
-          // --- GIVEN
-          const { checkProtectedDataValidity } = (await import(
-            '../../src/utils/subgraphQuery.js'
-          )) as unknown as {
-            checkProtectedDataValidity: jest.Mock<() => Promise<boolean>>;
-          };
-          checkProtectedDataValidity.mockResolvedValue(true);
+  describe('Orders fetching', () => {
+    it('should call fetchWorkerpoolOrderbook for App & Whitelist', async () => {
+      // --- GIVEN
+      const { checkProtectedDataValidity } = (await import(
+        '../../src/utils/subgraphQuery.js'
+      )) as unknown as {
+        checkProtectedDataValidity: jest.Mock<() => Promise<boolean>>;
+      };
+      checkProtectedDataValidity.mockResolvedValue(true);
 
-          const OVERSIZED_CONTENT = 'Test';
-          const protectedData = getRandomAddress().toLowerCase();
-          const iexec = mockAllForSendEmail();
+      const OVERSIZED_CONTENT = 'Test';
+      const protectedData = getRandomAddress().toLowerCase();
+      const iexec = mockAllForSendEmail();
 
-          const userAddress = await iexec.wallet.getAddress();
+      const userAddress = await iexec.wallet.getAddress();
 
-          // --- WHEN
-          await sendEmail({
-            // @ts-expect-error No need for graphQLClient here
-            graphQLClient: {},
-            // @ts-expect-error No need for iexec here
-            iexec,
-            // // @ts-expect-error No need
-            // ipfsNode: "",
-            // ipfsGateway: this.ipfsGateway,
-            dappAddressOrENS: WEB3_MAIL_DAPP_ADDRESS,
-            dappWhitelistAddress:
-              WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
-            emailSubject: 'e2e mail object for test',
-            emailContent: OVERSIZED_CONTENT,
-            protectedData,
-          });
-
-          // --- THEN
-          expect(
-            iexec.orderbook.fetchWorkerpoolOrderbook
-          ).toHaveBeenNthCalledWith(1, {
-            workerpool: TEST_CHAIN.prodWorkerpool,
-            app: WEB3_MAIL_DAPP_ADDRESS,
-            dataset: protectedData,
-            requester: userAddress,
-            minTag: ['tee', 'scone'],
-            maxTag: ['tee', 'scone'],
-            category: 0,
-          });
-          expect(
-            iexec.orderbook.fetchWorkerpoolOrderbook
-          ).toHaveBeenNthCalledWith(2, {
-            workerpool: TEST_CHAIN.prodWorkerpool,
-            app: WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
-            dataset: protectedData,
-            requester: userAddress,
-            minTag: ['tee', 'scone'],
-            maxTag: ['tee', 'scone'],
-            category: 0,
-          });
-        });
+      // --- WHEN
+      await sendEmail({
+        // @ts-expect-error No need for graphQLClient here
+        graphQLClient: {},
+        // @ts-expect-error No need for iexec here
+        iexec,
+        // // @ts-expect-error No need
+        // ipfsNode: "",
+        // ipfsGateway: this.ipfsGateway,
+        dappAddressOrENS: WEB3_MAIL_DAPP_ADDRESS,
+        dappWhitelistAddress: WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
+        emailSubject: 'e2e mail object for test',
+        emailContent: OVERSIZED_CONTENT,
+        protectedData,
       });
+
+      // --- THEN
+      expect(iexec.orderbook.fetchWorkerpoolOrderbook).toHaveBeenNthCalledWith(
+        1,
+        {
+          workerpool: TEST_CHAIN.prodWorkerpool,
+          app: WEB3_MAIL_DAPP_ADDRESS,
+          dataset: protectedData,
+          requester: userAddress,
+          minTag: ['tee', 'scone'],
+          maxTag: ['tee', 'scone'],
+          category: 0,
+        }
+      );
+      expect(iexec.orderbook.fetchWorkerpoolOrderbook).toHaveBeenNthCalledWith(
+        2,
+        {
+          workerpool: TEST_CHAIN.prodWorkerpool,
+          app: WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
+          dataset: protectedData,
+          requester: userAddress,
+          minTag: ['tee', 'scone'],
+          maxTag: ['tee', 'scone'],
+          category: 0,
+        }
+      );
     });
   });
 });
