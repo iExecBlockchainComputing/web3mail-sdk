@@ -6,3 +6,5 @@
 **/node_modules/
 **/tests/dataprotector-subgraph
 dataprotector-subgraph
+tests/scripts/*
+tests/bellecour-fork/*

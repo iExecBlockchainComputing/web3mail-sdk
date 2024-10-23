@@ -4,22 +4,61 @@ type: docker
 name: sdk-default
 
 trigger:
-  event: push
+  event:
+    exclude:
+      - promote
+      - pull_request
 
-# required until dataprotector-subgraph-deployer is publicly available
+# required until dataprotector-subgraph-deployer and voucher-subgraph-deployer are publicly available
 image_pull_secrets:
   - dockerconfigregis
 
 steps:
+  - name: install
+    image: node:18.19
+    pull: always
+    commands:
+      - node -v
+      - npm -v
+      - npm ci
+
+  - name: format
+    image: node:18.19
+    commands:
+      - npm run check-format
+    depends_on:
+      - install
+
+  - name: lint
+    image: node:18.19
+    commands:
+      - npm run lint
+    depends_on:
+      - install
+
+  - name: check-types
+    image: node:18.19
+    commands:
+      - npm run check-types
+    depends_on:
+      - install
+
+  - name: test:unit
+    image: node:18.19
+    commands:
+      - npm run test:unit
+    depends_on:
+      - install
+
   ##### START LOCAL STACK #####
   - name: prepare-local-stack-env
     image: node
     commands:
-      - node tests/prepare-test-env.js
+      - node tests/scripts/prepare-test-env.js
 
   - name: bellecour-fork
     detach: true
-    image: ghcr.io/foundry-rs/foundry:latest
+    image: ghcr.io/foundry-rs/foundry:v1.0.0
     pull: always
     expose:
       - 8545
@@ -246,7 +285,8 @@ steps:
       - market-api
       - market-watcher
 
-  - name: subgraph-deploy
+  - name: dataprotector-subgraph-deployer
+    # TODO replace image with iexechub/dataprotector-subgraph-deployer when available
     image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
     environment:
       ENV: prod
@@ -255,6 +295,24 @@ steps:
     commands:
       - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
       - cd /app/packages/subgraph && npm run all
+    depends_on:
+      - prepare-local-stack-env
+      - ipfs-healthy
+      - graphnode-healthy
+
+  - name: voucher-subgraph-deployer
+    # https://github.com/iExecBlockchainComputing/iexec-voucher-subgraph
+    # TODO replace image with iexechub/voucher-subgraph-deployer when available
+    image: docker-regis.iex.ec/voucher-subgraph:8491d157
+    pull: always
+    environment:
+      RPC_URL: http://bellecour-fork:8545
+      GRAPHNODE_URL: http://graphnode:8020
+      IPFS_URL: http://ipfs:5001
+      VOUCHER_HUB_ADDRESS: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda'
+    commands:
+      - export VOUCHER_HUB_START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
+      - cd /iexec-voucher-subgraph && npm run all
     depends_on:
       - prepare-local-stack-env
       - ipfs-healthy
@@ -271,50 +329,15 @@ steps:
       - market-api-healthy
       - ipfs-healthy
       - graphnode-healthy
-      - subgraph-deploy
+      - dataprotector-subgraph-deployer
+      - voucher-subgraph-deployer
   ##### START LOCAL STACK END #####
 
-  - name: install
-    image: node:18.19
-    pull: always
-    commands:
-      - node -v
-      - npm -v
-      - npm ci
-
-  - name: format
+  - name: test:e2e
     image: node:18.19
     commands:
-      - npm run check-format
-    depends_on:
-      - install
-
-  - name: lint
-    image: node:18.19
-    commands:
-      - npm run lint
-    depends_on:
-      - install
-
-  - name: check-types
-    image: node:18.19
-    commands:
-      - npm run check-types
-    depends_on:
-      - install
-
-  - name: unit tests
-    image: node:18.19
-    commands:
-      - npm run test:unit
-    depends_on:
-      - install
-      - stack-ready
-
-  - name: test
-    image: node:18.19
-    commands:
-      - npm run test
+      - npm run test:prepare
+      - npm run test:e2e
     depends_on:
       - install
       - stack-ready
@@ -334,7 +357,8 @@ steps:
       - format
       - lint
       - check-types
-      - test
+      - test:unit
+      - test:e2e
       - build
 
 ---
@@ -350,275 +374,9 @@ trigger:
     - sdk-nightly
   branch:
     - develop
-
-# required until dataprotector-subgraph-deployer is publicly available
-image_pull_secrets:
-  - dockerconfigregis
+    - voucher
 
 steps:
-  ##### START LOCAL STACK #####
-  - name: prepare-local-stack-env
-    image: node
-    commands:
-      - node tests/prepare-test-env.js
-
-  - name: bellecour-fork
-    detach: true
-    image: ghcr.io/foundry-rs/foundry:latest
-    pull: always
-    expose:
-      - 8545
-    commands:
-      - anvil --host 0.0.0.0 --port 8545 --block-time 1 --hardfork berlin --fork-url $(cat local-stack-env/BELLECOUR_FORK_URL) --fork-block-number $(cat local-stack-env/BELLECOUR_FORK_BLOCK) --chain-id 134 --gas-limit 6700000 --gas-price 0
-    depends_on:
-      - prepare-local-stack-env
-
-  - name: bellecour-fork-healthy
-    image: bash
-    commands:
-      - while ! nc -z bellecour-fork 8545 ; do sleep 1 ; done && echo "bellecour-fork ready"
-    depends_on:
-      - bellecour-fork
-
-  - name: ipfs
-    image: ipfs/go-ipfs:v0.9.1
-    detach: true
-    expose:
-      - 8080
-      - 5001
-
-  - name: ipfs-healthy
-    image: bash
-    commands:
-      - while ! nc -z ipfs 8080 ; do sleep 1 ; done && echo "ipfs gateway ready"
-      - while ! nc -z ipfs 5001 ; do sleep 1 ; done && echo "ipfs upload ready"
-    depends_on:
-      - ipfs
-
-  - name: market-mongo
-    image: mongo:6.0.3
-    detach: true
-    expose:
-      - 27017
-
-  - name: market-mongo-healthy
-    image: bash
-    commands:
-      - while ! nc -z market-mongo 27017 ; do sleep 1 ; done && echo "market-mongo ready"
-    depends_on:
-      - market-mongo
-
-  - name: market-redis
-    image: redis:7.0.7-alpine
-    detach: true
-    commands:
-      - redis-server --appendonly yes
-    expose:
-      - 6379
-
-  - name: market-redis-healthy
-    image: bash
-    commands:
-      - while ! nc -z market-redis 6379 ; do sleep 1 ; done && echo "market-redis ready"
-    depends_on:
-      - market-redis
-
-  - name: result-proxy-mongo
-    image: library/mongo:4.2
-    detach: true
-    commands:
-      - mongod --bind_ip_all --port 13202
-    expose:
-      - 13202
-
-  - name: result-proxy-mongo-healthy
-    image: bash
-    commands:
-      - while ! nc -z result-proxy-mongo 13202 ; do sleep 1 ; done && echo "result-proxy-mongo ready"
-    depends_on:
-      - result-proxy-mongo
-
-  - name: graphnode-postgres
-    image: postgres:12
-    detach: true
-    commands:
-      - docker-entrypoint.sh postgres -cshared_preload_libraries=pg_stat_statements
-    expose:
-      - 5432
-    environment:
-      POSTGRES_USER: graphnode
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: graphnode-db
-      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
-
-  - name: graphnode-postgres-healthy
-    image: bash
-    commands:
-      - while ! nc -z graphnode-postgres 5432 ; do sleep 1 ; done && echo "graphnode-postgres ready"
-    depends_on:
-      - graphnode-postgres
-
-  - name: graphnode
-    image: graphprotocol/graph-node:v0.34.1
-    detach: true
-    expose:
-      - 8000
-      - 8020
-    environment:
-      postgres_host: graphnode-postgres
-      postgres_port: 5432
-      postgres_user: graphnode
-      postgres_pass: password
-      postgres_db: graphnode-db
-      ipfs: ipfs:5001
-      ethereum: bellecour:http://bellecour-fork:8545
-    commands:
-      - export GRAPH_ETHEREUM_GENESIS_BLOCK_NUMBER=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
-      - start
-    depends_on:
-      - prepare-local-stack-env
-      - bellecour-fork-healthy
-      - ipfs-healthy
-      - graphnode-postgres-healthy
-
-  - name: graphnode-healthy
-    image: bash
-    commands:
-      - while ! nc -z graphnode 8020 ; do sleep 1 ; done && echo "graphnode admin ready"
-      - while ! nc -z graphnode 8000 ; do sleep 1 ; done && echo "graphnode gql ready"
-    depends_on:
-      - graphnode
-
-  - name: sms
-    image: iexechub/iexec-sms:7.1.0
-    detach: true
-    environment:
-      TZ: Europe/Paris
-      IEXEC_SMS_BLOCKCHAIN_NODE_ADDRESS: http://bellecour-fork:8545
-      IEXEC_HUB_ADDRESS: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f'
-      IEXEC_TEE_WORKER_PRE_COMPUTE_IMAGE: docker.io/iexechub/tee-worker-pre-compute:7.1.0-sconify-5.3.15-debug
-      IEXEC_TEE_WORKER_PRE_COMPUTE_FINGERPRINT: 9f0f782d6edc611baa23ca0978f555ee58ea70e092640c961e75c25e9e4b0f22
-      IEXEC_TEE_WORKER_PRE_COMPUTE_HEAP_SIZE_GB: 4
-      IEXEC_TEE_WORKER_POST_COMPUTE_IMAGE: docker.io/iexechub/tee-worker-post-compute:7.1.1-sconify-5.3.15-debug
-      IEXEC_TEE_WORKER_POST_COMPUTE_FINGERPRINT: face1376b97131e2dc75a556381d47a2e03bed9e1bc11e462471f99d1eefae50
-      IEXEC_TEE_WORKER_POST_COMPUTE_HEAP_SIZE_GB: 4
-      IEXEC_IGNORED_SGX_ADVISORIES: INTEL-SA-00161,INTEL-SA-00289,INTEL-SA-00334,INTEL-SA-00381,INTEL-SA-00389,INTEL-SA-00220,INTEL-SA-00270,INTEL-SA-00293,INTEL-SA-00320,INTEL-SA-00329,INTEL-SA-00477
-      IEXEC_SCONE_TOLERATED_INSECURE_OPTIONS: debug-mode,hyperthreading,outdated-tcb
-      IEXEC_SMS_DISPLAY_DEBUG_SESSION: 'true'
-      IEXEC_SCONE_CAS_HOST: foo
-      IEXEC_SMS_IMAGE_LAS_IMAGE: foo
-    expose:
-      - 13300
-    depends_on:
-      - bellecour-fork-healthy
-
-  - name: sms-healthy
-    image: bash
-    commands:
-      - while ! nc -z sms 13300 ; do sleep 1 ; done && echo "sms ready"
-    depends_on:
-      - sms
-
-  - name: result-proxy
-    image: iexechub/iexec-result-proxy:7.1.0
-    detach: true
-    environment:
-      IEXEC_PRIVATE_CHAIN_ADDRESS: http://bellecour-fork:8545
-      IEXEC_PUBLIC_CHAIN_ADDRESS: http://bellecour-fork:8545
-      IEXEC_HUB_ADDRESS: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f'
-      MONGO_HOST: result-proxy-mongo
-      MONGO_PORT: 13202
-      IEXEC_IPFS_HOST: ipfs
-    expose:
-      - 13200
-    depends_on:
-      - bellecour-fork-healthy
-      - ipfs-healthy
-      - result-proxy-mongo-healthy
-
-  - name: result-proxy-healthy
-    image: bash
-    commands:
-      - while ! nc -z result-proxy 13200 ; do sleep 1 ; done && echo "result-proxy ready"
-    depends_on:
-      - result-proxy
-
-  - name: market-watcher
-    image: iexechub/iexec-market-watcher:6.4
-    detach: true
-    environment:
-      CHAIN: BELLECOUR
-      ETH_WS_HOST: ws://bellecour-fork:8545
-      ETH_RPC_HOST: http://bellecour-fork:8545
-      MONGO_HOST: market-mongo
-      REDIS_HOST: market-redis
-    commands:
-      - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
-      - cd /app
-      - npm start
-    depends_on:
-      - prepare-local-stack-env
-      - bellecour-fork-healthy
-      - market-redis-healthy
-      - market-mongo-healthy
-
-  - name: market-api
-    image: iexechub/iexec-market-api:6.4
-    detach: true
-    expose:
-      - 3000
-    environment:
-      CHAINS: BELLECOUR_FORK
-      BELLECOUR_FORK_ETH_RPC_HOST: http://bellecour-fork:8545
-      BELLECOUR_FORK_CHAIN_ID: 134
-      BELLECOUR_FORK_IS_NATIVE: 'true'
-      BELLECOUR_FORK_IEXEC_ADDRESS: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f'
-      MONGO_HOST: market-mongo
-      REDIS_HOST: market-redis
-      RATE_LIMIT_MAX: 10000
-      RATE_LIMIT_PERIOD: 60000
-      MAX_OPEN_ORDERS_PER_WALLET: 1000
-    depends_on:
-      - bellecour-fork-healthy
-      - market-redis-healthy
-      - market-mongo-healthy
-
-  - name: market-api-healthy
-    image: bash
-    commands:
-      - while ! nc -z market-api 3000 ; do sleep 1 ; done && echo "market-api ready"
-    depends_on:
-      - market-api
-      - market-watcher
-
-  - name: subgraph-deploy
-    image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
-    environment:
-      ENV: prod
-      GRAPHNODE_URL: http://graphnode:8020
-      IPFS_URL: http://ipfs:5001
-    commands:
-      - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
-      - cd /app/packages/subgraph && npm run all
-    depends_on:
-      - prepare-local-stack-env
-      - ipfs-healthy
-      - graphnode-healthy
-
-  - name: stack-ready
-    image: bash
-    commands:
-      - echo "all services ready"
-    depends_on:
-      - bellecour-fork-healthy
-      - sms-healthy
-      - result-proxy-healthy
-      - market-api-healthy
-      - ipfs-healthy
-      - graphnode-healthy
-      - subgraph-deploy
-  ##### START LOCAL STACK END #####
-
   - name: install
     image: node:18.19
     pull: always
@@ -648,20 +406,29 @@ steps:
     depends_on:
       - install
 
-  - name: test
-    image: node:18.19
-    commands:
-      - npm run test
-    depends_on:
-      - install
-      - stack-ready
-
   - name: build
     image: node:18.19
     commands:
       - npm run build
     depends_on:
       - install
+
+  - name: set-version-nightly
+    image: node:18.19
+    commands:
+      - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
+    depends_on:
+      - build
+
+  - name: set-version-voucher-suffix
+    image: node:18
+    commands:
+      - eval npm pkg set version="$(npm pkg get version)-voucher"
+    when:
+      branch:
+        - voucher
+    depends_on:
+      - set-version-nightly
 
   - name: authenticate
     image: robertstettner/drone-npm-auth
@@ -674,7 +441,6 @@ steps:
       - format
       - lint
       - check-types
-      - test
       - build
 
   - name: deprecate-old-nightly-version
@@ -683,28 +449,37 @@ steps:
     commands:
       - apt-get update && apt-get install -y jq
       # fetches the latest nightly version of the @iexec/web3mail package from npm registry
-      - PREVIOUS_NIGHTLY_VERSION=$(npm show @iexec/web3mail versions --json | jq -r 'map(select(test("nightly"))) | .[-1]')
+      - PREVIOUS_NIGHTLY_VERSION=$(npm view @iexec/web3mail dist-tags --json | jq '."nightly"' | sed 's/"//g')
       - if [ -n "$PREVIOUS_NIGHTLY_VERSION" ]; then npm deprecate @iexec/web3mail@$PREVIOUS_NIGHTLY_VERSION "Deprecate $PREVIOUS_NIGHTLY_VERSION"; fi
     depends_on:
       - format
       - lint
       - check-types
-      - test
       - build
+      - authenticate
+    when:
+      branch:
+        - develop
 
-  - name: set-version-nightly
+  - name: deprecate-old-voucher-nightly-version
     image: node:18.19
+    pull: always
     commands:
-      - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
+      - apt-get update && apt-get install -y jq
+      # fetches the latest voucher-nightly version of the @iexec/web3mail package from npm registry
+      - PREVIOUS_NIGHTLY_VERSION=$(npm view @iexec/web3mail dist-tags --json | jq '."voucher-nightly"' | sed 's/"//g')
+      - if [ -n "$PREVIOUS_NIGHTLY_VERSION" ]; then npm deprecate @iexec/web3mail@$PREVIOUS_NIGHTLY_VERSION "Deprecate $PREVIOUS_NIGHTLY_VERSION"; fi
     depends_on:
       - format
       - lint
       - check-types
-      - test
       - build
-      - deprecate-old-nightly-version
+      - authenticate
+    when:
+      branch:
+        - voucher
 
-  - name: publish
+  - name: publish-nightly
     image: plugins/npm
     pull: always
     settings:
@@ -718,10 +493,33 @@ steps:
       - format
       - lint
       - check-types
-      - test
       - build
       - deprecate-old-nightly-version
       - set-version-nightly
+    when:
+      branch:
+        - develop
+
+  - name: publish-voucher-nightly
+    image: plugins/npm
+    pull: always
+    settings:
+      username:
+        from_secret: npm_username
+      token:
+        from_secret: npm_token
+      tag: voucher-nightly
+      access: public
+    depends_on:
+      - format
+      - lint
+      - check-types
+      - build
+      - deprecate-old-voucher-nightly-version
+      - set-version-voucher-suffix
+    when:
+      branch:
+        - voucher
 
 ---
 # sdk @iexec/web3mail publish npm latest pipeline
@@ -737,274 +535,7 @@ trigger:
   branch:
     - main
 
-# required until dataprotector-subgraph-deployer is publicly available
-image_pull_secrets:
-  - dockerconfigregis
-
 steps:
-  ##### START LOCAL STACK #####
-  - name: prepare-local-stack-env
-    image: node
-    commands:
-      - node tests/prepare-test-env.js
-
-  - name: bellecour-fork
-    detach: true
-    image: ghcr.io/foundry-rs/foundry:latest
-    pull: always
-    expose:
-      - 8545
-    commands:
-      - anvil --host 0.0.0.0 --port 8545 --block-time 1 --hardfork berlin --fork-url $(cat local-stack-env/BELLECOUR_FORK_URL) --fork-block-number $(cat local-stack-env/BELLECOUR_FORK_BLOCK) --chain-id 134 --gas-limit 6700000 --gas-price 0
-    depends_on:
-      - prepare-local-stack-env
-
-  - name: bellecour-fork-healthy
-    image: bash
-    commands:
-      - while ! nc -z bellecour-fork 8545 ; do sleep 1 ; done && echo "bellecour-fork ready"
-    depends_on:
-      - bellecour-fork
-
-  - name: ipfs
-    image: ipfs/go-ipfs:v0.9.1
-    detach: true
-    expose:
-      - 8080
-      - 5001
-
-  - name: ipfs-healthy
-    image: bash
-    commands:
-      - while ! nc -z ipfs 8080 ; do sleep 1 ; done && echo "ipfs gateway ready"
-      - while ! nc -z ipfs 5001 ; do sleep 1 ; done && echo "ipfs upload ready"
-    depends_on:
-      - ipfs
-
-  - name: market-mongo
-    image: mongo:6.0.3
-    detach: true
-    expose:
-      - 27017
-
-  - name: market-mongo-healthy
-    image: bash
-    commands:
-      - while ! nc -z market-mongo 27017 ; do sleep 1 ; done && echo "market-mongo ready"
-    depends_on:
-      - market-mongo
-
-  - name: market-redis
-    image: redis:7.0.7-alpine
-    detach: true
-    commands:
-      - redis-server --appendonly yes
-    expose:
-      - 6379
-
-  - name: market-redis-healthy
-    image: bash
-    commands:
-      - while ! nc -z market-redis 6379 ; do sleep 1 ; done && echo "market-redis ready"
-    depends_on:
-      - market-redis
-
-  - name: result-proxy-mongo
-    image: library/mongo:4.2
-    detach: true
-    commands:
-      - mongod --bind_ip_all --port 13202
-    expose:
-      - 13202
-
-  - name: result-proxy-mongo-healthy
-    image: bash
-    commands:
-      - while ! nc -z result-proxy-mongo 13202 ; do sleep 1 ; done && echo "result-proxy-mongo ready"
-    depends_on:
-      - result-proxy-mongo
-
-  - name: graphnode-postgres
-    image: postgres:12
-    detach: true
-    commands:
-      - docker-entrypoint.sh postgres -cshared_preload_libraries=pg_stat_statements
-    expose:
-      - 5432
-    environment:
-      POSTGRES_USER: graphnode
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: graphnode-db
-      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=C'
-
-  - name: graphnode-postgres-healthy
-    image: bash
-    commands:
-      - while ! nc -z graphnode-postgres 5432 ; do sleep 1 ; done && echo "graphnode-postgres ready"
-    depends_on:
-      - graphnode-postgres
-
-  - name: graphnode
-    image: graphprotocol/graph-node:v0.34.1
-    detach: true
-    expose:
-      - 8000
-      - 8020
-    environment:
-      postgres_host: graphnode-postgres
-      postgres_port: 5432
-      postgres_user: graphnode
-      postgres_pass: password
-      postgres_db: graphnode-db
-      ipfs: ipfs:5001
-      ethereum: bellecour:http://bellecour-fork:8545
-    commands:
-      - export GRAPH_ETHEREUM_GENESIS_BLOCK_NUMBER=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
-      - start
-    depends_on:
-      - prepare-local-stack-env
-      - bellecour-fork-healthy
-      - ipfs-healthy
-      - graphnode-postgres-healthy
-
-  - name: graphnode-healthy
-    image: bash
-    commands:
-      - while ! nc -z graphnode 8020 ; do sleep 1 ; done && echo "graphnode admin ready"
-      - while ! nc -z graphnode 8000 ; do sleep 1 ; done && echo "graphnode gql ready"
-    depends_on:
-      - graphnode
-
-  - name: sms
-    image: iexechub/iexec-sms:7.1.0
-    detach: true
-    environment:
-      TZ: Europe/Paris
-      IEXEC_SMS_BLOCKCHAIN_NODE_ADDRESS: http://bellecour-fork:8545
-      IEXEC_HUB_ADDRESS: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f'
-      IEXEC_TEE_WORKER_PRE_COMPUTE_IMAGE: docker.io/iexechub/tee-worker-pre-compute:7.1.0-sconify-5.3.15-debug
-      IEXEC_TEE_WORKER_PRE_COMPUTE_FINGERPRINT: 9f0f782d6edc611baa23ca0978f555ee58ea70e092640c961e75c25e9e4b0f22
-      IEXEC_TEE_WORKER_PRE_COMPUTE_HEAP_SIZE_GB: 4
-      IEXEC_TEE_WORKER_POST_COMPUTE_IMAGE: docker.io/iexechub/tee-worker-post-compute:7.1.1-sconify-5.3.15-debug
-      IEXEC_TEE_WORKER_POST_COMPUTE_FINGERPRINT: face1376b97131e2dc75a556381d47a2e03bed9e1bc11e462471f99d1eefae50
-      IEXEC_TEE_WORKER_POST_COMPUTE_HEAP_SIZE_GB: 4
-      IEXEC_IGNORED_SGX_ADVISORIES: INTEL-SA-00161,INTEL-SA-00289,INTEL-SA-00334,INTEL-SA-00381,INTEL-SA-00389,INTEL-SA-00220,INTEL-SA-00270,INTEL-SA-00293,INTEL-SA-00320,INTEL-SA-00329,INTEL-SA-00477
-      IEXEC_SCONE_TOLERATED_INSECURE_OPTIONS: debug-mode,hyperthreading,outdated-tcb
-      IEXEC_SMS_DISPLAY_DEBUG_SESSION: 'true'
-      IEXEC_SCONE_CAS_HOST: foo
-      IEXEC_SMS_IMAGE_LAS_IMAGE: foo
-    expose:
-      - 13300
-    depends_on:
-      - bellecour-fork-healthy
-
-  - name: sms-healthy
-    image: bash
-    commands:
-      - while ! nc -z sms 13300 ; do sleep 1 ; done && echo "sms ready"
-    depends_on:
-      - sms
-
-  - name: result-proxy
-    image: iexechub/iexec-result-proxy:7.1.0
-    detach: true
-    environment:
-      IEXEC_PRIVATE_CHAIN_ADDRESS: http://bellecour-fork:8545
-      IEXEC_PUBLIC_CHAIN_ADDRESS: http://bellecour-fork:8545
-      IEXEC_HUB_ADDRESS: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f'
-      MONGO_HOST: result-proxy-mongo
-      MONGO_PORT: 13202
-      IEXEC_IPFS_HOST: ipfs
-    expose:
-      - 13200
-    depends_on:
-      - bellecour-fork-healthy
-      - ipfs-healthy
-      - result-proxy-mongo-healthy
-
-  - name: result-proxy-healthy
-    image: bash
-    commands:
-      - while ! nc -z result-proxy 13200 ; do sleep 1 ; done && echo "result-proxy ready"
-    depends_on:
-      - result-proxy
-
-  - name: market-watcher
-    image: iexechub/iexec-market-watcher:6.4
-    detach: true
-    environment:
-      CHAIN: BELLECOUR
-      ETH_WS_HOST: ws://bellecour-fork:8545
-      ETH_RPC_HOST: http://bellecour-fork:8545
-      MONGO_HOST: market-mongo
-      REDIS_HOST: market-redis
-    commands:
-      - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
-      - cd /app
-      - npm start
-    depends_on:
-      - prepare-local-stack-env
-      - bellecour-fork-healthy
-      - market-redis-healthy
-      - market-mongo-healthy
-
-  - name: market-api
-    image: iexechub/iexec-market-api:6.4
-    detach: true
-    expose:
-      - 3000
-    environment:
-      CHAINS: BELLECOUR_FORK
-      BELLECOUR_FORK_ETH_RPC_HOST: http://bellecour-fork:8545
-      BELLECOUR_FORK_CHAIN_ID: 134
-      BELLECOUR_FORK_IS_NATIVE: 'true'
-      BELLECOUR_FORK_IEXEC_ADDRESS: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f'
-      MONGO_HOST: market-mongo
-      REDIS_HOST: market-redis
-      RATE_LIMIT_MAX: 10000
-      RATE_LIMIT_PERIOD: 60000
-      MAX_OPEN_ORDERS_PER_WALLET: 1000
-    depends_on:
-      - bellecour-fork-healthy
-      - market-redis-healthy
-      - market-mongo-healthy
-
-  - name: market-api-healthy
-    image: bash
-    commands:
-      - while ! nc -z market-api 3000 ; do sleep 1 ; done && echo "market-api ready"
-    depends_on:
-      - market-api
-      - market-watcher
-
-  - name: subgraph-deploy
-    image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
-    environment:
-      ENV: prod
-      GRAPHNODE_URL: http://graphnode:8020
-      IPFS_URL: http://ipfs:5001
-    commands:
-      - export START_BLOCK=$(cat local-stack-env/BELLECOUR_FORK_BLOCK)
-      - cd /app/packages/subgraph && npm run all
-    depends_on:
-      - prepare-local-stack-env
-      - ipfs-healthy
-      - graphnode-healthy
-
-  - name: stack-ready
-    image: bash
-    commands:
-      - echo "all services ready"
-    depends_on:
-      - bellecour-fork-healthy
-      - sms-healthy
-      - result-proxy-healthy
-      - market-api-healthy
-      - ipfs-healthy
-      - graphnode-healthy
-      - subgraph-deploy
-  ##### START LOCAL STACK END #####
-
   - name: install
     image: node:18.19
     pull: always
@@ -1012,35 +543,6 @@ steps:
       - node -v
       - npm -v
       - npm ci
-
-  - name: format
-    image: node:18.19
-    commands:
-      - npm run check-format
-    depends_on:
-      - install
-
-  - name: lint
-    image: node:18.19
-    commands:
-      - npm run lint
-    depends_on:
-      - install
-
-  - name: check-types
-    image: node:18.19
-    commands:
-      - npm run check-types
-    depends_on:
-      - install
-
-  - name: test
-    image: node:18.19
-    commands:
-      - npm run test
-    depends_on:
-      - install
-      - stack-ready
 
   - name: build
     image: node:18.19

@@ -19,6 +19,8 @@
 
 # tests output
 /coverage
+tests/voucher-deployer
+
 # CI
 .drone.yml
 

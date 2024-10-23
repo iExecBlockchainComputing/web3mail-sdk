@@ -1,7 +1,7 @@
 services:
   bellecour-fork:
     restart: 'no'
-    image: ghcr.io/foundry-rs/foundry:latest
+    image: ghcr.io/foundry-rs/foundry:v1.0.0
     entrypoint: anvil
     command: '--host 0.0.0.0 --port 8545 --block-time 1 --hardfork berlin --fork-url $BELLECOUR_FORK_URL --fork-block-number $BELLECOUR_FORK_BLOCK --chain-id 134 --gas-limit 6700000 --gas-price 0'
     expose:
@@ -9,7 +9,7 @@ services:
     ports:
       - 8545:8545
     healthcheck:
-      test: wget http://0.0.0.0:8545/ -q --post-data "{\"jsonrpc\":\"2.0\",\"method\":\"eth_chainId\",\"params\":[],\"id\":1}"
+      test: nc -z 0.0.0.0 8545
       interval: 10s
       timeout: 5s
       retries: 3
@@ -76,6 +76,12 @@ services:
     ports:
       - 8080:8080
       - 5001:5001
+    healthcheck:
+      test: nc -z 0.0.0.0 8080 && nc -z 0.0.0.0 5001
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   market-mongo:
     image: mongo:7.0.6
@@ -197,8 +203,9 @@ services:
       start_period: 30s
 
   dataprotector-subgraph-deployer:
+    # TODO replace image with iexechub/dataprotector-subgraph-deployer when available
     image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
-    restart: 'on-failure'
+    restart: 'no'
     depends_on:
       graphnode:
         condition: service_healthy
@@ -209,6 +216,25 @@ services:
       START_BLOCK: $BELLECOUR_FORK_BLOCK
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
+
+  voucher-subgraph-deployer:
+    restart: 'no'
+    # https://github.com/iExecBlockchainComputing/iexec-voucher-subgraph
+    # TODO replace image with iexechub/voucher-subgraph-deployer when available
+    image: pierreiexec/voucher-deployer
+    environment:
+      RPC_URL: http://bellecour-fork:8545
+      GRAPHNODE_URL: http://graphnode:8020
+      IPFS_URL: http://ipfs:5001
+      VOUCHER_HUB_ADDRESS: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda'
+      VOUCHER_HUB_START_BLOCK: $BELLECOUR_FORK_BLOCK
+    depends_on:
+      bellecour-fork:
+        condition: service_healthy
+      graphnode:
+        condition: service_healthy
+      ipfs:
+        condition: service_healthy
 
   stack-ready:
     image: bash
@@ -228,4 +254,6 @@ services:
       result-proxy:
         condition: service_started
       dataprotector-subgraph-deployer:
+        condition: service_completed_successfully
+      voucher-subgraph-deployer:
         condition: service_completed_successfully

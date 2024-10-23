@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## Next
 
+## Added
+
+- support for iExec voucher in `sendEmail()` via `useVoucher` option
+
 ### Changed
 
 - Directly return yup `ValidationError` instead of wrapping it into a WorkflowError, for `fetchUserContacts` and `sendEmail`

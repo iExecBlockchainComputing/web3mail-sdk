@@ -9,6 +9,8 @@ import {
   SubgraphConsumer,
 } from './types.js';
 
+export type FetchMyContacts = typeof fetchMyContacts;
+
 export const fetchMyContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
