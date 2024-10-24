@@ -36,7 +36,7 @@ describe('sendEmail.models', () => {
           })
         ).toThrow(
           new Error(
-            'Oops, it seems your voucher has expired. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'
+            'Oops, it seems your voucher has expired. You might want to ask for a top up. Check on https://builder.iex.ec/'
           )
         );
       });
@@ -56,7 +56,7 @@ describe('sendEmail.models', () => {
           })
         ).toThrow(
           new Error(
-            'Oops, it seems your voucher is empty. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'
+            'Oops, it seems your voucher is empty. You might want to ask for a top up. Check on https://builder.iex.ec/'
           )
         );
       });
