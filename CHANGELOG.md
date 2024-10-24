@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1]
+
+## Changed
+
+- Update builder dashboard URL in some error messages related to `sendEmail()` method
+
 ## [1.1.0]
 
 ## Added
