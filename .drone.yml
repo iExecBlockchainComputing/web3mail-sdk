@@ -493,6 +493,27 @@ steps:
       - npm -v
       - npm ci
 
+  - name: format
+    image: node:18.19
+    commands:
+      - npm run check-format
+    depends_on:
+      - install
+
+  - name: lint
+    image: node:18.19
+    commands:
+      - npm run lint
+    depends_on:
+      - install
+
+  - name: check-types
+    image: node:18.19
+    commands:
+      - npm run check-types
+    depends_on:
+      - install
+
   - name: build
     image: node:18.19
     commands:
@@ -514,7 +535,6 @@ steps:
       - format
       - lint
       - check-types
-      - test
       - build
 
 ---
