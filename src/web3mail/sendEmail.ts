@@ -130,7 +130,7 @@ export const sendEmail = async ({
     } catch (err) {
       if (err?.message?.startsWith('No Voucher found for address')) {
         throw new Error(
-          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder-dashboard.iex.ec/'
+          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder.iex.ec/'
         );
       }
       throw err;

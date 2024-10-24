@@ -27,13 +27,13 @@ export function checkUserVoucher({
 }) {
   if (bnToNumber(userVoucher.expirationTimestamp) < Date.now() / 1000) {
     throw new Error(
-      'Oops, it seems your voucher has expired. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'
+      'Oops, it seems your voucher has expired. You might want to ask for a top up. Check on https://builder.iex.ec/'
     );
   }
 
   if (bnToNumber(userVoucher.balance) === 0) {
     throw new Error(
-      'Oops, it seems your voucher is empty. You might want to ask for a top up. Check on https://builder-dashboard.iex.ec/'
+      'Oops, it seems your voucher is empty. You might want to ask for a top up. Check on https://builder.iex.ec/'
     );
   }
 }

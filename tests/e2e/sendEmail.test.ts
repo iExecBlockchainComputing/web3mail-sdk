@@ -388,7 +388,7 @@ describe('web3mail.sendEmail()', () => {
         }
         expect(error).toBeDefined();
         expect(error.message).toBe(
-          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder-dashboard.iex.ec/'
+          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder.iex.ec/'
         );
       },
       2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
