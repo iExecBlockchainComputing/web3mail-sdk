@@ -193,6 +193,7 @@ export const sendEmail = async ({
           app: vDappAddressOrENS,
           dataset: vDatasetAddress,
           requester: requesterAddress, // public orders + user specific orders
+          isRequesterStrict: useVoucher, // If voucher, we only want user specific orders
           minTag: ['tee', 'scone'],
           maxTag: ['tee', 'scone'],
           category: 0,
@@ -203,6 +204,7 @@ export const sendEmail = async ({
           app: vDappWhitelistAddress,
           dataset: vDatasetAddress,
           requester: requesterAddress, // public orders + user specific orders
+          isRequesterStrict: useVoucher, // If voucher, we only want user specific orders
           minTag: ['tee', 'scone'],
           maxTag: ['tee', 'scone'],
           category: 0,
