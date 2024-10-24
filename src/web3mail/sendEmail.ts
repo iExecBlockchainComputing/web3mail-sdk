@@ -13,6 +13,7 @@ import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
   addressSchema,
+  booleanSchema,
   contentTypeSchema,
   emailContentSchema,
   emailSubjectSchema,
@@ -21,6 +22,10 @@ import {
   senderNameSchema,
   throwIfMissing,
 } from '../utils/validators.js';
+import {
+  checkUserVoucher,
+  filterWorkerpoolOrders,
+} from './sendEmail.models.js';
 import {
   DappAddressConsumer,
   DappWhitelistAddressConsumer,
@@ -31,6 +36,8 @@ import {
   SendEmailResponse,
   SubgraphConsumer,
 } from './types.js';
+
+export type SendEmail = typeof sendEmail;
 
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
@@ -49,6 +56,7 @@ export const sendEmail = async ({
   workerpoolMaxPrice = MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   senderName,
   protectedData,
+  useVoucher = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -56,60 +64,80 @@ export const sendEmail = async ({
   IpfsNodeConfigConsumer &
   IpfsGatewayConfigConsumer &
   SendEmailParams): Promise<SendEmailResponse> => {
-  try {
-    const vDatasetAddress = addressOrEnsSchema()
-      .required()
-      .label('protectedData')
-      .validateSync(protectedData);
-    const vEmailSubject = emailSubjectSchema()
-      .required()
-      .label('emailSubject')
-      .validateSync(emailSubject);
-    const vEmailContent = emailContentSchema()
-      .required()
-      .label('emailContent')
-      .validateSync(emailContent);
-    const vContentType = contentTypeSchema()
-      .required()
-      .label('contentType')
-      .validateSync(contentType);
-    const vSenderName = senderNameSchema()
-      .label('senderName')
-      .validateSync(senderName);
-    const vLabel = labelSchema().label('label').validateSync(label);
-    const vWorkerpoolAddressOrEns = addressOrEnsSchema()
-      .required()
-      .label('WorkerpoolAddressOrEns')
-      .validateSync(workerpoolAddressOrEns);
-    const vDappAddressOrENS = addressOrEnsSchema()
-      .required()
-      .label('dappAddressOrENS')
-      .validateSync(dappAddressOrENS);
-    const vDappWhitelistAddress = addressSchema()
-      .required()
-      .label('dappWhitelistAddress')
-      .validateSync(dappWhitelistAddress);
-    const vDataMaxPrice = positiveNumberSchema()
-      .label('dataMaxPrice')
-      .validateSync(dataMaxPrice);
-    const vAppMaxPrice = positiveNumberSchema()
-      .label('appMaxPrice')
-      .validateSync(appMaxPrice);
-    const vWorkerpoolMaxPrice = positiveNumberSchema()
-      .label('workerpoolMaxPrice')
-      .validateSync(workerpoolMaxPrice);
+  const vDatasetAddress = addressOrEnsSchema()
+    .required()
+    .label('protectedData')
+    .validateSync(protectedData);
+  const vEmailSubject = emailSubjectSchema()
+    .required()
+    .label('emailSubject')
+    .validateSync(emailSubject);
+  const vEmailContent = emailContentSchema()
+    .required()
+    .label('emailContent')
+    .validateSync(emailContent);
+  const vContentType = contentTypeSchema()
+    .required()
+    .label('contentType')
+    .validateSync(contentType);
+  const vSenderName = senderNameSchema()
+    .label('senderName')
+    .validateSync(senderName);
+  const vLabel = labelSchema().label('label').validateSync(label);
+  const vWorkerpoolAddressOrEns = addressOrEnsSchema()
+    .required()
+    .label('WorkerpoolAddressOrEns')
+    .validateSync(workerpoolAddressOrEns);
+  const vDappAddressOrENS = addressOrEnsSchema()
+    .required()
+    .label('dappAddressOrENS')
+    .validateSync(dappAddressOrENS);
+  const vDappWhitelistAddress = addressSchema()
+    .required()
+    .label('dappWhitelistAddress')
+    .validateSync(dappWhitelistAddress);
+  const vDataMaxPrice = positiveNumberSchema()
+    .label('dataMaxPrice')
+    .validateSync(dataMaxPrice);
+  const vAppMaxPrice = positiveNumberSchema()
+    .label('appMaxPrice')
+    .validateSync(appMaxPrice);
+  const vWorkerpoolMaxPrice = positiveNumberSchema()
+    .label('workerpoolMaxPrice')
+    .validateSync(workerpoolMaxPrice);
+  const vUseVoucher = booleanSchema()
+    .label('useVoucher')
+    .validateSync(useVoucher);
 
-    // Check protected data validity through subgraph
-    const isValidProtectedData = await checkProtectedDataValidity(
-      graphQLClient,
-      vDatasetAddress
+  // Check protected data schema through subgraph
+  const isValidProtectedData = await checkProtectedDataValidity(
+    graphQLClient,
+    vDatasetAddress
+  );
+  if (!isValidProtectedData) {
+    throw new Error(
+      'This protected data does not contain "email:string" in its schema.'
     );
-    if (!isValidProtectedData) {
-      throw new Error('ProtectedData is not valid');
+  }
+
+  const requesterAddress = await iexec.wallet.getAddress();
+
+  let userVoucher;
+  if (vUseVoucher) {
+    try {
+      userVoucher = await iexec.voucher.showUserVoucher(requesterAddress);
+      checkUserVoucher({ userVoucher });
+    } catch (err) {
+      if (err?.message?.startsWith('No Voucher found for address')) {
+        throw new Error(
+          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder-dashboard.iex.ec/'
+        );
+      }
+      throw err;
     }
+  }
 
-    const requesterAddress = await iexec.wallet.getAddress();
-
+  try {
     const [
       datasetorderForApp,
       datasetorderForWhitelist,
@@ -157,32 +185,50 @@ export const sendEmail = async ({
           }
           return desiredPriceAppOrder;
         }),
-      // Fetch workerpool order
-      iexec.orderbook
-        .fetchWorkerpoolOrderbook({
+      // Fetch workerpool order for App or AppWhitelist
+      Promise.all([
+        // for app
+        iexec.orderbook.fetchWorkerpoolOrderbook({
           workerpool: workerpoolAddressOrEns,
-          app: dappAddressOrENS,
+          app: vDappAddressOrENS,
           dataset: vDatasetAddress,
+          requester: requesterAddress, // public orders + user specific orders
           minTag: ['tee', 'scone'],
           maxTag: ['tee', 'scone'],
           category: 0,
-        })
-        .then((workerpoolOrderbook) => {
-          const desiredPriceWorkerpoolOrderbook =
-            workerpoolOrderbook.orders.filter(
-              (order) => order.order.workerpoolprice <= vWorkerpoolMaxPrice
-            );
-          const randomIndex = Math.floor(
-            Math.random() * desiredPriceWorkerpoolOrderbook.length
-          );
-          const desiredPriceWorkerpoolOrder =
-            desiredPriceWorkerpoolOrderbook[randomIndex]?.order;
+        }),
+        // for app whitelist
+        iexec.orderbook.fetchWorkerpoolOrderbook({
+          workerpool: workerpoolAddressOrEns,
+          app: vDappWhitelistAddress,
+          dataset: vDatasetAddress,
+          requester: requesterAddress, // public orders + user specific orders
+          minTag: ['tee', 'scone'],
+          maxTag: ['tee', 'scone'],
+          category: 0,
+        }),
+      ]).then(
+        ([workerpoolOrderbookForApp, workerpoolOrderbookForAppWhitelist]) => {
+          const desiredPriceWorkerpoolOrder = filterWorkerpoolOrders({
+            workerpoolOrders: [
+              ...workerpoolOrderbookForApp.orders,
+              ...workerpoolOrderbookForAppWhitelist.orders,
+            ],
+            workerpoolMaxPrice: vWorkerpoolMaxPrice,
+            useVoucher: vUseVoucher,
+            userVoucher,
+          });
           if (!desiredPriceWorkerpoolOrder) {
             throw new Error('No Workerpool order found for the desired price');
           }
           return desiredPriceWorkerpoolOrder;
-        }),
+        }
+      ),
     ]);
+
+    if (!workerpoolorder) {
+      throw new Error('No Workerpool order found for the desired price');
+    }
 
     const datasetorder = datasetorderForApp || datasetorderForWhitelist;
     if (!datasetorder) {
@@ -244,12 +290,15 @@ export const sendEmail = async ({
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
 
     // Match orders and compute task ID
-    const { dealid } = await iexec.order.matchOrders({
-      apporder: apporder,
-      datasetorder: datasetorder,
-      workerpoolorder: workerpoolorder,
-      requestorder: requestorder,
-    });
+    const { dealid } = await iexec.order.matchOrders(
+      {
+        apporder: apporder,
+        datasetorder: datasetorder,
+        workerpoolorder: workerpoolorder,
+        requestorder: requestorder,
+      },
+      { useVoucher: vUseVoucher }
+    );
     const taskId = await iexec.deal.computeTaskId(dealid, 0);
 
     return {

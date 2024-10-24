@@ -19,9 +19,9 @@
 
 # tests output
 /coverage
+
 # CI
 .drone.yml
-
 
 # sonar output
 .scannerwork

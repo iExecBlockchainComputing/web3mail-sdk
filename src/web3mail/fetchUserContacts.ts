@@ -30,23 +30,23 @@ export const fetchUserContacts = async ({
   DappAddressConsumer &
   DappWhitelistAddressConsumer &
   FetchUserContactsParams): Promise<Contact[]> => {
-  try {
-    const vDappAddressOrENS = addressOrEnsSchema()
-      .required()
-      .label('dappAddressOrENS')
-      .validateSync(dappAddressOrENS);
-    const vDappWhitelistAddress = addressSchema()
-      .required()
-      .label('dappWhitelistAddress')
-      .validateSync(dappWhitelistAddress);
-    const vUserAddress = addressOrEnsSchema()
-      .required()
-      .label('userAddress')
-      .validateSync(userAddress);
-    const vIsUserStrict = booleanSchema()
-      .label('isUserStrict')
-      .validateSync(isUserStrict);
+  const vDappAddressOrENS = addressOrEnsSchema()
+    .required()
+    .label('dappAddressOrENS')
+    .validateSync(dappAddressOrENS);
+  const vDappWhitelistAddress = addressSchema()
+    .required()
+    .label('dappWhitelistAddress')
+    .validateSync(dappWhitelistAddress);
+  const vUserAddress = addressOrEnsSchema()
+    .required()
+    .label('userAddress')
+    .validateSync(userAddress);
+  const vIsUserStrict = booleanSchema()
+    .label('isUserStrict')
+    .validateSync(isUserStrict);
 
+  try {
     const [dappOrders, whitelistOrders] = await Promise.all([
       fetchAllOrdersByApp({
         iexec,
