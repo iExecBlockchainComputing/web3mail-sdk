@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ## Changed
 
 - Update builder dashboard URL in some error messages related to `sendEmail()` method
+- Use user specific workerpool orders if `useVoucher` is set to `true` 
 
 ## [1.1.0]
 
