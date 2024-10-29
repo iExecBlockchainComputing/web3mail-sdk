@@ -20,119 +20,135 @@ describe('sendEmail', () => {
     });
   });
 
-  it('should fail if developer secret is missing', async () => {
-    process.env.IEXEC_APP_DEVELOPER_SECRET = '';
-    await expect(() => start()).rejects.toThrow(
-      Error('Failed to parse the developer secret')
-    );
-  });
-  it('should fail if MJ_APIKEY_PUBLIC in developer secret is missing', async () => {
-    process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
-      MJ_APIKEY_PRIVATE: 'xxx',
-      MJ_SENDER: 'foo@bar.com',
+  describe('with bad IEXEC_APP_DEVELOPER_SECRET', () => {
+    it('should fail if developer secret is missing', async () => {
+      process.env.IEXEC_APP_DEVELOPER_SECRET = '';
+      await expect(() => start()).rejects.toThrow(
+        Error('Failed to parse the developer secret')
+      );
     });
-    await expect(() => start()).rejects.toThrow(
-      Error('"mailJetApiKeyPublic" is required')
-    );
-  });
-  it('should fail if MJ_APIKEY_PRIVATE in developer secret is missing', async () => {
-    process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
-      MJ_APIKEY_PUBLIC: 'xxx',
-      MJ_SENDER: 'foo@bar.com',
+    it('should fail if MJ_APIKEY_PUBLIC in developer secret is missing', async () => {
+      process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
+        MJ_APIKEY_PRIVATE: 'xxx',
+        MJ_SENDER: 'foo@bar.com',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error('App secret error: "MJ_APIKEY_PUBLIC" is required')
+      );
     });
-    await expect(() => start()).rejects.toThrow(
-      Error('"mailJetApiKeyPrivate" is required')
-    );
-  });
-  it('should fail if MJ_SENDER in developer secret is missing', async () => {
-    process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
-      MJ_APIKEY_PUBLIC: 'xxx',
-      MJ_APIKEY_PRIVATE: 'xxx',
+    it('should fail if MJ_APIKEY_PRIVATE in developer secret is missing', async () => {
+      process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
+        MJ_APIKEY_PUBLIC: 'xxx',
+        MJ_SENDER: 'foo@bar.com',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error('App secret error: "MJ_APIKEY_PRIVATE" is required')
+      );
     });
-    await expect(() => start()).rejects.toThrow(
-      Error('"mailJetSender" is required')
-    );
-  });
-  it('should fail if emailSubject is missing', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
-      emailSubject: '',
-      emailContentMultiAddr:
-        '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
+    it('should fail if MJ_SENDER in developer secret is missing', async () => {
+      process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
+        MJ_APIKEY_PUBLIC: 'xxx',
+        MJ_APIKEY_PRIVATE: 'xxx',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error('App secret error: "MJ_SENDER" is required')
+      );
     });
-    await expect(() => start()).rejects.toThrow(
-      Error('"emailSubject" is not allowed to be empty')
-    );
   });
-  it('should fail if emailContentMultiAddr is missing', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
-      emailContentMultiAddr: '',
-      emailSubject: 'email_subject',
+
+  describe('with bad IEXEC_REQUESTER_SECRET_1', () => {
+    it('should fail if IEXEC_REQUESTER_SECRET_1 is not a JSON', async () => {
+      process.env.IEXEC_REQUESTER_SECRET_1 = '_';
+      await expect(() => start()).rejects.toThrow(
+        Error('Failed to parse requester secret')
+      );
     });
-    await expect(() => start()).rejects.toThrow(
-      Error('"emailContentMultiAddr" is not allowed to be empty')
-    );
-  });
-  it('should fail if emailContentMultiAddr is no an ipfs multiaddr', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
-      emailContentMultiAddr: 'foo',
-      emailSubject: 'email_subject',
+    it('should fail if emailSubject is missing', async () => {
+      process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
+        emailSubject: '',
+        emailContentMultiAddr:
+          '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error(
+          'Requester secret error: "emailSubject" is not allowed to be empty'
+        )
+      );
     });
-    await expect(() => start()).rejects.toThrow(
-      Error('"emailContentMultiAddr" must be a multiAddr')
-    );
-  });
-  it('should fail if IEXEC_REQUESTER_SECRET_1 is not a JSON', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_1 = '_';
-    await expect(() => start()).rejects.toThrow(
-      Error('Failed to parse requester secret')
-    );
-  });
-  it('should fail if contentType contains invalid content-type', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
-      contentType: 'notacontenttype',
-      emailContentMultiAddr:
-        '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
-      emailSubject: 'email_subject',
+    it('should fail if emailContentMultiAddr is missing', async () => {
+      process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
+        emailContentMultiAddr: '',
+        emailSubject: 'email_subject',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error(
+          'Requester secret error: "emailContentMultiAddr" is not allowed to be empty'
+        )
+      );
     });
-    await expect(() => start()).rejects.toThrow(
-      Error('"contentType" must be one of [text/plain, text/html]')
-    );
-  });
-  it('should fail if senderName is empty', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
-      senderName: '',
-      emailContentMultiAddr:
-        '/ipfs/QmYhXeg4p4D729m432t8b9877b35e756a82749723456789',
-      emailSubject: 'email_subject',
+    it('should fail if emailContentMultiAddr is no an ipfs multiaddr', async () => {
+      process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
+        emailContentMultiAddr: 'foo',
+        emailSubject: 'email_subject',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error(
+          'Requester secret error: "emailContentMultiAddr" must be a multiAddr'
+        )
+      );
     });
-    await expect(() => start()).rejects.toThrow(
-      Error('"senderName" is not allowed to be empty')
-    );
-  });
-  it('should fail if senderName length is less than 3 characters', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
-      senderName: 'AB',
-      emailContentMultiAddr:
-        '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
-      emailSubject: 'email_subject',
+    it('should fail if contentType contains invalid content-type', async () => {
+      process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
+        contentType: 'notacontenttype',
+        emailContentMultiAddr:
+          '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
+        emailSubject: 'email_subject',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error(
+          'Requester secret error: "contentType" must be one of [text/plain, text/html]'
+        )
+      );
     });
-    await expect(() => start()).rejects.toThrow(
-      Error('"senderName" length must be at least 3 characters long')
-    );
-  });
-  it('should fail if senderName length is more than 20 characters', async () => {
-    process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
-      senderName: 'A very long sender tag may be flagged as spam',
-      emailContentMultiAddr:
-        '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
-      emailSubject: 'email_subject',
+    it('should fail if senderName is empty', async () => {
+      process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
+        senderName: '',
+        emailContentMultiAddr:
+          '/ipfs/QmYhXeg4p4D729m432t8b9877b35e756a82749723456789',
+        emailSubject: 'email_subject',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error('Requester secret error: "senderName" is not allowed to be empty')
+      );
     });
-    await expect(() => start()).rejects.toThrow(
-      Error(
-        '"senderName" length must be less than or equal to 20 characters long'
-      )
-    );
+    it('should fail if senderName length is less than 3 characters', async () => {
+      process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
+        senderName: 'AB',
+        emailContentMultiAddr:
+          '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
+        emailSubject: 'email_subject',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error(
+          'Requester secret error: "senderName" length must be at least 3 characters long'
+        )
+      );
+    });
+    it('should fail if senderName length is more than 20 characters', async () => {
+      process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
+        senderName: 'A very long sender tag may be flagged as spam',
+        emailContentMultiAddr:
+          '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
+        emailSubject: 'email_subject',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error(
+          'Requester secret error: "senderName" length must be less than or equal to 20 characters long'
+        )
+      );
+    });
   });
+
   it('should fail if email service fail to send the email', async () => {
     process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
       MJ_APIKEY_PUBLIC: 'xxx',
