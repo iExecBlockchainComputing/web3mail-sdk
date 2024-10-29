@@ -7,6 +7,7 @@ const {
   validateWorkerEnv,
   validateAppSecret,
   validateRequesterSecret,
+  validateProtectedData,
 } = require('./validation');
 const {
   downloadEncryptedContent,
@@ -51,8 +52,16 @@ async function start() {
   requesterSecret = validateRequesterSecret(requesterSecret);
 
   // Get the secret email address from the protected data
-  const deserializer = new IExecDataProtectorDeserializer();
-  const emailAddress = await deserializer.getValue('email', 'string');
+  let protectedData;
+  try {
+    const deserializer = new IExecDataProtectorDeserializer();
+    protectedData = {
+      email: await deserializer.getValue('email', 'string'),
+    };
+  } catch (e) {
+    throw Error(`Failed to parse ProtectedData: ${e.message}`);
+  }
+  validateProtectedData(protectedData);
 
   const encryptedEmailContent = await downloadEncryptedContent(
     requesterSecret.emailContentMultiAddr
@@ -64,7 +73,7 @@ async function start() {
 
   const response = await sendEmail({
     // from protected data
-    email: emailAddress,
+    email: protectedData.email,
     // from app developer secrets
     mailJetApiKeyPublic: appDeveloperSecret.MJ_APIKEY_PUBLIC,
     mailJetApiKeyPrivate: appDeveloperSecret.MJ_APIKEY_PRIVATE,

@@ -32,6 +32,21 @@ function validateAppSecret(obj) {
   return value;
 }
 
+const protectedDataEmailSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+function validateProtectedData(obj) {
+  const { error, value } = protectedDataEmailSchema.validate(obj, {
+    abortEarly: false,
+  });
+  if (error) {
+    const validationErrors = error.details.map((detail) => detail.message);
+    throw new Error(`ProtectedData error: ${validationErrors.join('; ')}`);
+  }
+  return value;
+}
+
 const requesterSecretSchema = Joi.object({
   emailSubject: Joi.string().required(),
   emailContentMultiAddr: Joi.string()
@@ -58,4 +73,5 @@ module.exports = {
   validateWorkerEnv,
   validateAppSecret,
   validateRequesterSecret,
+  validateProtectedData,
 };

@@ -149,6 +149,29 @@ describe('sendEmail', () => {
     });
   });
 
+  describe('with bad protectedData', () => {
+    it('should fail if the dataset is not a protectedData', async () => {
+      process.env.IEXEC_DATASET_FILENAME = 'invalidZipFile.txt';
+      await expect(() => start()).rejects.toThrow(
+        Error('Failed to parse ProtectedData: Failed to load protected data')
+      );
+    });
+
+    it('should fail if protectedData has no "email" key', async () => {
+      process.env.IEXEC_DATASET_FILENAME = 'dataNoEmail.zip';
+      await expect(() => start()).rejects.toThrow(
+        Error('Failed to parse ProtectedData: Failed to load path email')
+      );
+    });
+
+    it('should fail if protectedData "email" key is not an email', async () => {
+      process.env.IEXEC_DATASET_FILENAME = 'dataInvalidEmail.zip';
+      await expect(() => start()).rejects.toThrow(
+        Error('ProtectedData error: "email" must be a valid email')
+      );
+    });
+  });
+
   it('should fail if email service fail to send the email', async () => {
     process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
       MJ_APIKEY_PUBLIC: 'xxx',

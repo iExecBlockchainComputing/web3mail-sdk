@@ -2,6 +2,7 @@ const {
   validateWorkerEnv,
   validateAppSecret,
   validateRequesterSecret,
+  validateProtectedData,
 } = require('../../src/validation');
 
 describe('validateWorkerEnv function', () => {
@@ -144,6 +145,39 @@ describe('validateRequesterSecret function', () => {
       Error(
         'Requester secret error: "emailContentMultiAddr" is not allowed to be empty; "contentType" must be one of [text/plain, text/html]; "mailJetApiKeyPublic" is not allowed'
       )
+    );
+  });
+});
+
+describe('validateProtectedData function', () => {
+  let testedObj;
+
+  beforeEach(() => {
+    testedObj = {
+      email: 'foo+bar@bar.com', // accepts "+" aliases
+    };
+  });
+
+  it('should not throw an error if all input values are valid', () => {
+    expect(() => validateProtectedData(testedObj)).not.toThrow();
+  });
+
+  it('should not throw an error if all input values are valid', () => {
+    const res = validateProtectedData(testedObj);
+    expect(res).toStrictEqual({ email: 'foo+bar@bar.com' });
+  });
+
+  it('should throw an error if any required input is missing', () => {
+    delete testedObj.email;
+    expect(() => validateProtectedData(testedObj)).toThrow(
+      Error('ProtectedData error: "email" is required')
+    );
+  });
+
+  it('should throw an error if email is not an email', () => {
+    testedObj.email = 'fooatbardotcom';
+    expect(() => validateProtectedData(testedObj)).toThrow(
+      Error('ProtectedData error: "email" must be a valid email')
     );
   });
 });
