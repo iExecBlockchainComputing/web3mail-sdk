@@ -6,61 +6,63 @@ const {
 } = require('../../src/validation');
 
 describe('validateWorkerEnv function', () => {
-  let testedObj;
-
-  beforeEach(() => {
-    testedObj = {
-      IEXEC_OUT: '/path/to/iexec/out',
-    };
-  });
-
   it('should not throw an error if all input values are valid', () => {
-    expect(() => validateWorkerEnv(testedObj)).not.toThrow();
+    expect(() =>
+      validateWorkerEnv({
+        IEXEC_OUT: '/path/to/iexec/out',
+      })
+    ).not.toThrow();
   });
 
   it('should throw an error if any required input is missing', () => {
-    delete testedObj.IEXEC_OUT;
-    expect(() => validateWorkerEnv(testedObj)).toThrow(
+    expect(() => validateWorkerEnv({})).toThrow(
       Error('Worker environment error: "IEXEC_OUT" is required')
     );
   });
 });
 
 describe('validateAppSecret function', () => {
-  let testedObj;
-
-  beforeEach(() => {
-    testedObj = {
-      MJ_APIKEY_PUBLIC: 'api_public_key',
-      MJ_APIKEY_PRIVATE: 'api_private_key',
-      MJ_SENDER: 'sender@example.com',
-    };
-  });
-
   it('should not throw an error if all input values are valid', () => {
-    expect(() => validateAppSecret(testedObj)).not.toThrow();
+    expect(() =>
+      validateAppSecret({
+        MJ_APIKEY_PUBLIC: 'api_public_key',
+        MJ_APIKEY_PRIVATE: 'api_private_key',
+        MJ_SENDER: 'sender@example.com',
+      })
+    ).not.toThrow();
   });
 
   it('should throw an error if any required input is missing', () => {
-    const { MJ_APIKEY_PUBLIC, ...missingMJAPIKEYPUBLIC } = testedObj;
-    expect(() => validateAppSecret(missingMJAPIKEYPUBLIC)).toThrow(
-      /"MJ_APIKEY_PUBLIC" is required/i
-    );
-    const { MJ_APIKEY_PRIVATE, ...missingMJAPIKEYPRIVATE } = testedObj;
-    expect(() => validateAppSecret(missingMJAPIKEYPRIVATE)).toThrow(
-      /"MJ_APIKEY_PRIVATE" is required/i
-    );
-    const { MJ_SENDER, ...missingMJSENDER } = testedObj;
-    expect(() => validateAppSecret(missingMJSENDER)).toThrow(
-      /"MJ_SENDER" is required/i
-    );
+    expect(() =>
+      validateAppSecret({
+        MJ_APIKEY_PRIVATE: 'api_private_key',
+        MJ_SENDER: 'sender@example.com',
+      })
+    ).toThrow(/"MJ_APIKEY_PUBLIC" is required/i);
+
+    expect(() =>
+      validateAppSecret({
+        MJ_APIKEY_PUBLIC: 'api_public_key',
+        MJ_SENDER: 'sender@example.com',
+      })
+    ).toThrow(/"MJ_APIKEY_PRIVATE" is required/i);
+
+    expect(() =>
+      validateAppSecret({
+        MJ_APIKEY_PUBLIC: 'api_public_key',
+        MJ_APIKEY_PRIVATE: 'api_private_key',
+      })
+    ).toThrow(/"MJ_SENDER" is required/i);
   });
 
   it('should include all validation errors in the thrown error message', () => {
-    testedObj.MJ_APIKEY_PUBLIC = 12345;
-    testedObj.MJ_APIKEY_PRIVATE = '';
-    testedObj.MJ_SENDER = 'foo';
-    expect(() => validateAppSecret(testedObj)).toThrow(
+    expect(() =>
+      validateAppSecret({
+        MJ_APIKEY_PUBLIC: 12345,
+        MJ_APIKEY_PRIVATE: '',
+        MJ_SENDER: 'foo',
+      })
+    ).toThrow(
       Error(
         'App secret error: "MJ_APIKEY_PUBLIC" must be a string; "MJ_APIKEY_PRIVATE" is not allowed to be empty; "MJ_SENDER" must be a valid email'
       )
@@ -150,34 +152,32 @@ describe('validateRequesterSecret function', () => {
 });
 
 describe('validateProtectedData function', () => {
-  let testedObj;
+  it('should not throw an error if all input values are valid', () => {
+    expect(() =>
+      validateProtectedData({
+        email: 'foo+bar@bar.com',
+      })
+    ).not.toThrow();
+  });
 
-  beforeEach(() => {
-    testedObj = {
+  it('should not throw an error if all input values are valid', () => {
+    const res = validateProtectedData({
       email: 'foo+bar@bar.com', // accepts "+" aliases
-    };
-  });
-
-  it('should not throw an error if all input values are valid', () => {
-    expect(() => validateProtectedData(testedObj)).not.toThrow();
-  });
-
-  it('should not throw an error if all input values are valid', () => {
-    const res = validateProtectedData(testedObj);
+    });
     expect(res).toStrictEqual({ email: 'foo+bar@bar.com' });
   });
 
   it('should throw an error if any required input is missing', () => {
-    delete testedObj.email;
-    expect(() => validateProtectedData(testedObj)).toThrow(
+    expect(() => validateProtectedData({})).toThrow(
       Error('ProtectedData error: "email" is required')
     );
   });
 
   it('should throw an error if email is not an email', () => {
-    testedObj.email = 'fooatbardotcom';
-    expect(() => validateProtectedData(testedObj)).toThrow(
-      Error('ProtectedData error: "email" must be a valid email')
-    );
+    expect(() =>
+      validateProtectedData({
+        email: 'fooatbardotcom',
+      })
+    ).toThrow(Error('ProtectedData error: "email" must be a valid email'));
   });
 });
