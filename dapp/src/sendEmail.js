@@ -3,7 +3,12 @@ const {
   IExecDataProtectorDeserializer,
 } = require('@iexec/dataprotector-deserializer');
 const sendEmail = require('./emailService');
-const validateInputs = require('./validateInputs');
+const {
+  validateWorkerEnv,
+  validateAppSecret,
+  validateRequesterSecret,
+  validateProtectedData,
+} = require('./validation');
 const {
   downloadEncryptedContent,
   decryptContent,
@@ -20,64 +25,74 @@ async function writeTaskOutput(path, message) {
 }
 
 async function start() {
-  // Parse the developer secret environment variable
-  let developerSecret;
+  const { IEXEC_OUT, IEXEC_APP_DEVELOPER_SECRET, IEXEC_REQUESTER_SECRET_1 } =
+    process.env;
+
+  // Check worker env
+  const workerEnv = validateWorkerEnv({ IEXEC_OUT });
+
+  // Parse the app developer secret environment variable
+  let appDeveloperSecret;
   try {
-    developerSecret = JSON.parse(process.env.IEXEC_APP_DEVELOPER_SECRET);
+    appDeveloperSecret = JSON.parse(IEXEC_APP_DEVELOPER_SECRET);
   } catch {
     throw Error('Failed to parse the developer secret');
   }
+  appDeveloperSecret = validateAppSecret(appDeveloperSecret);
+
+  // Parse the requester secret environment variable
   let requesterSecret;
   try {
-    requesterSecret = process.env.IEXEC_REQUESTER_SECRET_1
-      ? JSON.parse(process.env.IEXEC_REQUESTER_SECRET_1)
+    requesterSecret = IEXEC_REQUESTER_SECRET_1
+      ? JSON.parse(IEXEC_REQUESTER_SECRET_1)
       : {};
   } catch {
     throw Error('Failed to parse requester secret');
   }
+  requesterSecret = validateRequesterSecret(requesterSecret);
 
-  const deserializer = new IExecDataProtectorDeserializer();
-  const email = await deserializer.getValue('email', 'string');
+  // Get the secret email address from the protected data
+  let protectedData;
+  try {
+    const deserializer = new IExecDataProtectorDeserializer();
+    protectedData = {
+      email: await deserializer.getValue('email', 'string'),
+    };
+  } catch (e) {
+    throw Error(`Failed to parse ProtectedData: ${e.message}`);
+  }
+  validateProtectedData(protectedData);
 
-  const unsafeEnvVars = {
-    iexecOut: process.env.IEXEC_OUT,
-    mailJetApiKeyPublic: developerSecret.MJ_APIKEY_PUBLIC,
-    mailJetApiKeyPrivate: developerSecret.MJ_APIKEY_PRIVATE,
-    mailJetSender: developerSecret.MJ_SENDER,
-    emailSubject: requesterSecret.emailSubject,
-    emailContentMultiAddr: requesterSecret.emailContentMultiAddr,
-    contentType: requesterSecret.contentType,
-    senderName: requesterSecret.senderName,
-    emailContentEncryptionKey: requesterSecret.emailContentEncryptionKey,
-  };
-  const envVars = validateInputs(unsafeEnvVars);
   const encryptedEmailContent = await downloadEncryptedContent(
-    envVars.emailContentMultiAddr
+    requesterSecret.emailContentMultiAddr
   );
-  const emailContent = decryptContent(
+  const requesterEmailContent = decryptContent(
     encryptedEmailContent,
-    envVars.emailContentEncryptionKey
+    requesterSecret.emailContentEncryptionKey
   );
 
   const response = await sendEmail({
-    email,
-    mailJetApiKeyPublic: envVars.mailJetApiKeyPublic,
-    mailJetApiKeyPrivate: envVars.mailJetApiKeyPrivate,
-    emailSubject: envVars.emailSubject,
-    emailContent,
-    mailJetSender: envVars.mailJetSender,
-    contentType: envVars.contentType,
-    senderName: envVars.senderName,
+    // from protected data
+    email: protectedData.email,
+    // from app developer secrets
+    mailJetApiKeyPublic: appDeveloperSecret.MJ_APIKEY_PUBLIC,
+    mailJetApiKeyPrivate: appDeveloperSecret.MJ_APIKEY_PRIVATE,
+    mailJetSender: appDeveloperSecret.MJ_SENDER,
+    // from requester secret
+    emailContent: requesterEmailContent,
+    emailSubject: requesterSecret.emailSubject,
+    contentType: requesterSecret.contentType,
+    senderName: requesterSecret.senderName,
   });
 
   await writeTaskOutput(
-    `${envVars.iexecOut}/result.txt`,
+    `${workerEnv.IEXEC_OUT}/result.txt`,
     JSON.stringify(response, null, 2)
   );
   await writeTaskOutput(
-    `${envVars.iexecOut}/computed.json`,
+    `${workerEnv.IEXEC_OUT}/computed.json`,
     JSON.stringify({
-      'deterministic-output-path': `${envVars.iexecOut}/result.txt`,
+      'deterministic-output-path': `${workerEnv.IEXEC_OUT}/result.txt`,
     })
   );
 }
