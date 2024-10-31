@@ -13,6 +13,7 @@ const {
   downloadEncryptedContent,
   decryptContent,
 } = require('./decryptEmailContent');
+const { validateEmailAddress } = require('./validateEmailAddress');
 
 async function writeTaskOutput(path, message) {
   try {
@@ -61,7 +62,15 @@ async function start() {
   } catch (e) {
     throw Error(`Failed to parse ProtectedData: ${e.message}`);
   }
+
+  // 1- Validate email address syntax (Joi regexp)
   validateProtectedData(protectedData);
+
+  // 2- Third-party validation service (Mailgun)
+  await validateEmailAddress({
+    emailAddress: protectedData.email,
+    mailgunApiKey: appDeveloperSecret.MAILGUN_APIKEY,
+  });
 
   const encryptedEmailContent = await downloadEncryptedContent(
     requesterSecret.emailContentMultiAddr
@@ -78,6 +87,7 @@ async function start() {
     mailJetApiKeyPublic: appDeveloperSecret.MJ_APIKEY_PUBLIC,
     mailJetApiKeyPrivate: appDeveloperSecret.MJ_APIKEY_PRIVATE,
     mailJetSender: appDeveloperSecret.MJ_SENDER,
+    mailgunApiKey: appDeveloperSecret.MAILGUN_APIKEY,
     // from requester secret
     emailContent: requesterEmailContent,
     emailSubject: requesterSecret.emailSubject,

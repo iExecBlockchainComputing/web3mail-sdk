@@ -19,6 +19,7 @@ const main = async () => {
     MJ_APIKEY_PUBLIC,
     MJ_APIKEY_PRIVATE,
     MJ_SENDER,
+    MAILGUN_APIKEY,
   } = process.env;
 
   if (
@@ -35,6 +36,7 @@ const main = async () => {
   if (!MJ_APIKEY_PUBLIC) throw Error('Missing env MJ_APIKEY_PUBLIC');
   if (!MJ_APIKEY_PRIVATE) throw Error('Missing env MJ_APIKEY_PRIVATE');
   if (!MJ_SENDER) throw Error('Missing env MJ_SENDER');
+  if (!MAILGUN_APIKEY) throw Error('Missing env MAILGUN_APIKEY');
 
   let privateKey;
   if (
@@ -75,6 +77,7 @@ const main = async () => {
     MJ_APIKEY_PUBLIC,
     MJ_APIKEY_PRIVATE,
     MJ_SENDER,
+    MAILGUN_APIKEY,
   });
   await pushSecret(iexec, appAddress, jsonSecret);
 };

@@ -1,4 +1,4 @@
-# Set the name of the Docker image
+# Set the name of the Docker image
 IMG_NAME=web3mail:non-tee
 
 # Build the regular non-TEE image
@@ -14,7 +14,7 @@ if [ ! -d "/tmp/iexec_out" ]; then
 fi
 
 # Place your .zip file in the /tmp/iexec_in directory and replace DATA_FILENAME with the name of the file you just placed in the directory
-# The .zip file should contain a file with the email content you want to protect
+# The .zip file should contain a file with the email content you want to protect
 DATA_FILENAME="your_file_name.zip"
 
 
@@ -22,6 +22,8 @@ DATA_FILENAME="your_file_name.zip"
 MJ_APIKEY_PUBLIC="your_mail_jet_api_key_public"
 MJ_APIKEY_PRIVATE="your_mail_jet_api_private"
 MJ_SENDER="your_mail_jet_sender"
+# Replace the value of the variable MAILGUN_APIKEY with your own Mailgun API key
+MAILGUN_APIKEY="your_mailgun_api_key"
 
 
 # Replace the following variables with your own values:
@@ -32,7 +34,7 @@ SENDER_NAME="the_sender_name"
 CONTENT_TYPE="text/plain"
 
 IEXEC_REQUESTER_SECRET_1='{"emailSubject":"'${EMAIL_SUBJECT}'","emailContentEncryptionKey":"'${EMAIL_CONTENT_ENCRYPTION_KEY}'","emailContentMultiAddr":"'${EMAIL_CONTENT_MULTIADDR}'","senderName":"'${SENDER_NAME}'","contentType":"'${CONTENT_TYPE}'"}'
-IEXEC_APP_DEVELOPER_SECRET='{"MJ_APIKEY_PUBLIC":"'$MJ_APIKEY_PUBLIC'","MJ_APIKEY_PRIVATE":"'$MJ_APIKEY_PRIVATE'","MJ_SENDER":"'$MJ_SENDER'"}'
+IEXEC_APP_DEVELOPER_SECRET='{"MJ_APIKEY_PUBLIC":"'$MJ_APIKEY_PUBLIC'","MJ_APIKEY_PRIVATE":"'$MJ_APIKEY_PRIVATE'","MJ_SENDER":"'$MJ_SENDER'","MAILGUN_APIKEY":"'MAILGUN_APIKEY'"}'
 
 docker run -it --rm \
             -v /tmp/iexec_in:/iexec_in \
