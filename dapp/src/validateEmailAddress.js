@@ -1,4 +1,4 @@
-export async function validateEmailAddress({ emailAddress, mailgunApiKey }) {
+async function validateEmailAddress({ emailAddress, mailgunApiKey }) {
   const response = await fetch(
     `https://api.mailgun.net/v4/address/validate?address=${encodeURIComponent(
       emailAddress
@@ -25,3 +25,7 @@ export async function validateEmailAddress({ emailAddress, mailgunApiKey }) {
     );
   }
 }
+
+module.exports = {
+  validateEmailAddress,
+};
