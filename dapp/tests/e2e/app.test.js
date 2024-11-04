@@ -196,13 +196,7 @@ describe('sendEmail', () => {
     await expect(() => start()).rejects.toThrow(Error('Failed to send email'));
   });
 
-  if (
-    process.env.DRONE &&
-    process.env.MJ_APIKEY_PUBLIC &&
-    process.env.MJ_APIKEY_PRIVATE &&
-    process.env.MJ_SENDER &&
-    process.env.MAILGUN_APIKEY
-  ) {
+  if (process.env.DRONE) {
     it('should send an email successfully', async () => {
       // clean IEXEC_OUT
       await fsPromises
