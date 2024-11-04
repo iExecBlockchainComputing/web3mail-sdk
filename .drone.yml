@@ -575,11 +575,11 @@ steps:
       - cd dapp
       - npm run lint
 
-  - name: unit-test
+  - name: test
     image: node:14-alpine3.11
     commands:
       - cd dapp
-      - npm run ctest tests/unit/
+      - npm run ctest
 
   - name: docker-publish-dry-run
     # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
