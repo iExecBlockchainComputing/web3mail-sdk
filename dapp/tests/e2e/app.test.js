@@ -11,6 +11,7 @@ describe('sendEmail', () => {
       MJ_APIKEY_PUBLIC: 'xxx',
       MJ_APIKEY_PRIVATE: 'xxx',
       MJ_SENDER: 'foo@bar.com',
+      MAILGUN_APIKEY: 'xxx',
     });
     process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
       emailContentMultiAddr:
@@ -31,6 +32,7 @@ describe('sendEmail', () => {
       process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
         MJ_APIKEY_PRIVATE: 'xxx',
         MJ_SENDER: 'foo@bar.com',
+        MAILGUN_APIKEY: 'xxx',
       });
       await expect(() => start()).rejects.toThrow(
         Error('App secret error: "MJ_APIKEY_PUBLIC" is required')
@@ -40,6 +42,7 @@ describe('sendEmail', () => {
       process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
         MJ_APIKEY_PUBLIC: 'xxx',
         MJ_SENDER: 'foo@bar.com',
+        MAILGUN_APIKEY: 'xxx',
       });
       await expect(() => start()).rejects.toThrow(
         Error('App secret error: "MJ_APIKEY_PRIVATE" is required')
@@ -49,9 +52,20 @@ describe('sendEmail', () => {
       process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
         MJ_APIKEY_PUBLIC: 'xxx',
         MJ_APIKEY_PRIVATE: 'xxx',
+        MAILGUN_APIKEY: 'xxx',
       });
       await expect(() => start()).rejects.toThrow(
         Error('App secret error: "MJ_SENDER" is required')
+      );
+    });
+    it('should fail if MAILGUN_APIKEY in developer secret is missing', async () => {
+      process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
+        MJ_APIKEY_PUBLIC: 'xxx',
+        MJ_APIKEY_PRIVATE: 'xxx',
+        MJ_SENDER: 'foo@bar.com',
+      });
+      await expect(() => start()).rejects.toThrow(
+        Error('App secret error: "MAILGUN_APIKEY" is required')
       );
     });
   });
@@ -177,6 +191,7 @@ describe('sendEmail', () => {
       MJ_APIKEY_PUBLIC: 'xxx',
       MJ_APIKEY_PRIVATE: 'xxx',
       MJ_SENDER: 'foo@bar.com',
+      MAILGUN_APIKEY: 'xxx',
     });
     await expect(() => start()).rejects.toThrow(Error('Failed to send email'));
   });
@@ -185,7 +200,8 @@ describe('sendEmail', () => {
     process.env.DRONE &&
     process.env.MJ_APIKEY_PUBLIC &&
     process.env.MJ_APIKEY_PRIVATE &&
-    process.env.MJ_SENDER
+    process.env.MJ_SENDER &&
+    process.env.MAILGUN_APIKEY
   ) {
     it('should send an email successfully', async () => {
       // clean IEXEC_OUT
@@ -195,11 +211,13 @@ describe('sendEmail', () => {
       await fsPromises.mkdir(process.env.IEXEC_OUT, { recursive: true });
 
       // developer secret setup
-      const { MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE, MJ_SENDER } = process.env;
+      const { MJ_APIKEY_PUBLIC, MJ_APIKEY_PRIVATE, MJ_SENDER, MAILGUN_APIKEY } =
+        process.env;
       process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
         MJ_APIKEY_PUBLIC,
         MJ_APIKEY_PRIVATE,
         MJ_SENDER,
+        MAILGUN_APIKEY,
       });
 
       // requester secret setup
