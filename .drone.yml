@@ -575,11 +575,20 @@ steps:
       - cd dapp
       - npm run lint
 
-  - name: unit-test
+  - name: test
     image: node:14-alpine3.11
+    environment:
+      MJ_APIKEY_PUBLIC:
+        from_secret: mj_apikey_public
+      MJ_APIKEY_PRIVATE:
+        from_secret: mj_apikey_private
+      MJ_SENDER:
+        from_secret: mj_sender
+      MAILGUN_APIKEY:
+        from_secret: mailgun_apikey
     commands:
       - cd dapp
-      - npm run ctest tests/unit/
+      - npm run ctest
 
   - name: docker-publish-dry-run
     # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
@@ -643,6 +652,8 @@ steps:
         from_secret: mj_apikey_private
       MJ_SENDER:
         from_secret: mj_sender
+      MAILGUN_APIKEY:
+        from_secret: mailgun_apikey
     commands:
       - cd dapp
       - npm run ctest
@@ -711,6 +722,8 @@ steps:
         from_secret: mj_apikey_private
       MJ_SENDER:
         from_secret: mj_sender
+      MAILGUN_APIKEY:
+        from_secret: mailgun_apikey
     commands:
       - cd dapp
       - npm run ctest
@@ -844,6 +857,8 @@ steps:
         from_secret: mj_apikey_private
       MJ_SENDER:
         from_secret: mj_sender
+      MAILGUN_APIKEY:
+        from_secret: mailgun_apikey
     commands:
       - cd deployment-dapp
       - npm run push-dapp-secret
@@ -1026,6 +1041,8 @@ steps:
         from_secret: mj_apikey_private
       MJ_SENDER:
         from_secret: mj_sender
+      MAILGUN_APIKEY:
+        from_secret: mailgun_apikey
     commands:
       - cd deployment-dapp
       - npm run push-dapp-secret
