@@ -2,6 +2,7 @@
 const fetch = require('node-fetch');
 
 async function validateEmailAddress({ emailAddress, mailgunApiKey }) {
+  // https://documentation.mailgun.com/docs/inboxready/mailgun-validate/single-valid-ir/#single-validation
   const basicAuth = Buffer.from(`api:${mailgunApiKey}`).toString('base64');
   const response = await fetch(
     `https://api.mailgun.net/v4/address/validate?address=${encodeURIComponent(
@@ -23,9 +24,7 @@ async function validateEmailAddress({ emailAddress, mailgunApiKey }) {
   const emailAddressSeemsLegit = await response.json();
 
   if (emailAddressSeemsLegit.result !== 'deliverable') {
-    throw new Error(
-      'Oops, this email address seems to be invalid, please enter another one.'
-    );
+    throw new Error('The protected email address seems to be invalid.');
   }
 }
 
