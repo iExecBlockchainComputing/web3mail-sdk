@@ -2,11 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## Next
+## [0.8.0]
 
 ### Changed
 
 - Check email address syntax before trying to send the email.
+- Check email deliverability before trying to send the email.
 
 ## [0.7.0]
 
