@@ -575,11 +575,20 @@ steps:
       - cd dapp
       - npm run lint
 
-  - name: unit-test
+  - name: test
     image: node:14-alpine3.11
+    environment:
+      MJ_APIKEY_PUBLIC:
+        from_secret: mj_apikey_public
+      MJ_APIKEY_PRIVATE:
+        from_secret: mj_apikey_private
+      MJ_SENDER:
+        from_secret: mj_sender
+      MAILGUN_APIKEY:
+        from_secret: mailgun_apikey
     commands:
       - cd dapp
-      - npm run ctest tests/unit/
+      - npm run ctest
 
   - name: docker-publish-dry-run
     # plugin doc https://plugins.drone.io/plugins/docker and repo https://github.com/drone-plugins/drone-docker
@@ -643,6 +652,8 @@ steps:
         from_secret: mj_apikey_private
       MJ_SENDER:
         from_secret: mj_sender
+      MAILGUN_APIKEY:
+        from_secret: mailgun_apikey
     commands:
       - cd dapp
       - npm run ctest
@@ -711,6 +722,8 @@ steps:
         from_secret: mj_apikey_private
       MJ_SENDER:
         from_secret: mj_sender
+      MAILGUN_APIKEY:
+        from_secret: mailgun_apikey
     commands:
       - cd dapp
       - npm run ctest
@@ -797,7 +810,7 @@ steps:
 
   - name: get scone fingerprint (prod)
     # /!\: maintain the version here
-    image: iexechub/web3mail-dapp:0.7.0-sconify-5.7.5-v12-production
+    image: iexechub/web3mail-dapp:0.8.0-sconify-5.7.5-v12-production
     commands:
       - SCONE_HASH=1 node > deployment-dapp/.scone-fingerprint
     when:
@@ -844,6 +857,8 @@ steps:
         from_secret: mj_apikey_private
       MJ_SENDER:
         from_secret: mj_sender
+      MAILGUN_APIKEY:
+        from_secret: mailgun_apikey
     commands:
       - cd deployment-dapp
       - npm run push-dapp-secret
@@ -1026,6 +1041,8 @@ steps:
         from_secret: mj_apikey_private
       MJ_SENDER:
         from_secret: mj_sender
+      MAILGUN_APIKEY:
+        from_secret: mailgun_apikey
     commands:
       - cd deployment-dapp
       - npm run push-dapp-secret
