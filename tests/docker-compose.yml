@@ -203,8 +203,7 @@ services:
       start_period: 30s
 
   dataprotector-subgraph-deployer:
-    # TODO replace image with iexechub/dataprotector-subgraph-deployer when available
-    image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
+    image: iexechub/dataprotector-subgraph-deployer:3.0.0
     restart: 'no'
     depends_on:
       graphnode:

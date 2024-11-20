@@ -9,10 +9,6 @@ trigger:
       - promote
       - pull_request
 
-# required until dataprotector-subgraph-deployer is publicly available
-image_pull_secrets:
-  - dockerconfigregis
-
 steps:
   - name: install
     image: node:18.19
@@ -286,8 +282,7 @@ steps:
       - market-watcher
 
   - name: dataprotector-subgraph-deployer
-    # TODO replace image with iexechub/dataprotector-subgraph-deployer when available
-    image: docker-regis.iex.ec/product/dataprotector-subgraph-deployer:3.0.0
+    image: iexechub/dataprotector-subgraph-deployer:3.0.0
     environment:
       ENV: prod
       GRAPHNODE_URL: http://graphnode:8020

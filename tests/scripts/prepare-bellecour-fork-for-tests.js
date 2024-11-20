@@ -1,7 +1,9 @@
 import {
   Contract,
+  EnsPlugin,
   JsonRpcProvider,
   JsonRpcSigner,
+  Network,
   formatEther,
   keccak256,
   toBeHex,
@@ -17,15 +19,27 @@ const LEARN_WORKERPOOL_OWNER_WALLET =
 const PROD_WORKERPOOL_OWNER_WALLET =
   '0x1Ff6AfF580e8Ca738F76485E0914C2aCaDa7B462';
 const APP_OWNER_WALLET = '0x626D65C778fB98f813C25F84249E3012B80e8d91';
-const LEARN_WORKERPOOL = '0x0975bfce90f4748dab6d6729c96b33a2cd5491f5'; // 'prod-v8-learn.main.pools.iexec.eth';
-const PROD_WORKERPOOL = '0x0e7bc972c99187c191a17f3cae4a2711a4188c3f'; // 'prod-v8-bellecour.main.pools.iexec.eth';
-const WEB3_MAIL_DAPP_ADDRESS = '0x3d9d7600b6128c03b7ddbf050934e7ecfe0c61c8'; // 'web3mail.apps.iexec.eth';
+const LEARN_WORKERPOOL_ENS = 'prod-v8-learn.main.pools.iexec.eth';
+const PROD_WORKERPOOL_ENS = 'prod-v8-bellecour.main.pools.iexec.eth';
+const WEB3_MAIL_DAPP_ADDRESS_ENS = 'web3mail.apps.iexec.eth';
 
 const rpcURL = DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545';
 
-const provider = new JsonRpcProvider(rpcURL, undefined, {
-  pollingInterval: 1000, // speed up tests
-});
+const provider = new JsonRpcProvider(
+  rpcURL,
+  new Network('bellecour-fork', 134).attachPlugin(
+    new EnsPlugin('0x5f5B93fca68c9C79318d1F3868A354EE67D8c006', 134)
+  ),
+  {
+    pollingInterval: 1000, // speed up tests
+  }
+);
+
+const LEARN_WORKERPOOL = await provider.resolveName(LEARN_WORKERPOOL_ENS);
+const PROD_WORKERPOOL = await provider.resolveName(PROD_WORKERPOOL_ENS);
+const WEB3_MAIL_DAPP_ADDRESS = await provider.resolveName(
+  WEB3_MAIL_DAPP_ADDRESS_ENS
+);
 
 const setBalance = async (address, weiAmount) => {
   fetch(rpcURL, {
