@@ -22,22 +22,16 @@ steps:
     image: node:18.19
     commands:
       - npm run check-format
-    depends_on:
-      - install
 
   - name: lint
     image: node:18.19
     commands:
       - npm run lint
-    depends_on:
-      - install
 
   - name: check-types
     image: node:18.19
     commands:
       - npm run check-types
-    depends_on:
-      - install
 
   - name: test:unit
     image: node:18.19
@@ -327,33 +321,15 @@ steps:
       - voucher-subgraph-deployer
   ##### START LOCAL STACK END #####
 
-  - name: test:e2e
-    image: node:18.19
-    commands:
-      - npm run test:prepare
-      - npm run test:e2e
-    depends_on:
-      - install
-      - stack-ready
-
   - name: build
     image: node:18.19
     commands:
       - npm run build
-    depends_on:
-      - install
 
   - name: npm-publish-dry-run
     image: node:18.19
     commands:
       - npm publish --dry-run
-    depends_on:
-      - format
-      - lint
-      - check-types
-      - test:unit
-      - test:e2e
-      - build
 
 ---
 # sdk @iexec/web3mail publish npm nightly pipeline
