@@ -9,7 +9,7 @@ services:
     ports:
       - 8545:8545
     healthcheck:
-      test: nc -z 0.0.0.0 8545
+      test: (echo >/dev/tcp/$(hostname)/8545) &>/dev/null
       interval: 10s
       timeout: 5s
       retries: 3
@@ -30,6 +30,8 @@ services:
       IEXEC_TEE_WORKER_POST_COMPUTE_FINGERPRINT: 'post-compute-fingerprint'
     ports:
       - 13300:13300
+    healthcheck:
+      test: curl -f localhost:13300/actuator/health || exit 1
     depends_on:
       bellecour-fork:
         condition: service_healthy
