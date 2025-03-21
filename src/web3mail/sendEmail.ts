@@ -282,7 +282,6 @@ export const sendEmail = async ({
       tag: ['tee', 'scone'],
       workerpool: vWorkerpoolAddressOrEns,
       params: {
-        iexec_developer_logger: true,
         iexec_secrets: {
           1: requesterSecretId,
         },
