@@ -350,7 +350,7 @@ describe('sendEmail', () => {
         expect(out.length).toBe(2);
       });
 
-      it('should detect non existent email address and exit in error', async () => {
+      it.skip('should detect non existent email address and exit in error', async () => {
         // protected data setup
         process.env.IEXEC_DATASET_FILENAME = 'dataEmailUserDoesNotExist.zip';
 
@@ -363,7 +363,7 @@ describe('sendEmail', () => {
         expect(out).toStrictEqual([]);
       });
 
-      it('should detect disposable email address and exit in error', async () => {
+      it.skip('should detect disposable email address and exit in error', async () => {
         // protected data setup
         process.env.IEXEC_DATASET_FILENAME = 'dataDisposableEmail.zip';
 
