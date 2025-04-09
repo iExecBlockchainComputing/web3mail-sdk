@@ -2,16 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1]
+
+### Changed
+
+- Migrated Bellecour subgraph URL to `https://thegraph.iex.ec/...`
+
+## [1.2.0]
+
+### Changed
+
+- Upgraded the iexec dependency to ^8.13.1, which includes:
+  - Migrated default SMS URL to https://sms.iex.ec.
+  - Migrated from the deprecated SMS apps secrets endpoint.
+
 ## [1.1.1]
 
-## Changed
+### Changed
 
 - Update builder dashboard URL in some error messages related to `sendEmail()` method
 - Use user specific workerpool orders if `useVoucher` is set to `true`
 
 ## [1.1.0]
 
-## Added
+### Added
 
 - support for iExec voucher in `sendEmail()` via `useVoucher` option
 
