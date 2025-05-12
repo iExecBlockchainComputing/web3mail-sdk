@@ -14,6 +14,9 @@ const {
   decryptContent,
 } = require('./decryptEmailContent');
 const { validateEmailAddress } = require('./validateEmailAddress');
+const {
+  checkEmailPreviousValidation,
+} = require('./checkEmailPreviousValidation');
 
 async function writeTaskOutput(path, message) {
   try {
@@ -66,11 +69,21 @@ async function start() {
   // 1- Validate email address syntax (Joi regexp)
   validateProtectedData(protectedData);
 
-  // 2- Third-party validation service (Mailgun)
-  await validateEmailAddress({
-    emailAddress: protectedData.email,
-    mailgunApiKey: appDeveloperSecret.MAILGUN_APIKEY,
+  // --- NEW: Check if email was already verified ---
+  const isEmailVerified = await checkEmailPreviousValidation({
+    datasetAddress: protectedData.email, // email = dataset
+    dappAddresses: appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS, // array of iApp addresses
   });
+
+  if (!isEmailVerified) {
+    // Run Mailgun validation if not previously verified
+    await validateEmailAddress({
+      emailAddress: protectedData.email,
+      mailgunApiKey: appDeveloperSecret.MAILGUN_APIKEY,
+    });
+  } else {
+    console.log('Email already verified, skipping Mailgun check.');
+  }
 
   const encryptedEmailContent = await downloadEncryptedContent(
     requesterSecret.emailContentMultiAddr
@@ -95,6 +108,12 @@ async function start() {
     senderName: requesterSecret.senderName,
   });
 
+  const bool32Bytes = Buffer.alloc(32);
+  if (isEmailVerified) {
+    bool32Bytes[31] = 1; // set last byte to 1 for true
+  }
+  const callbackData = `0x${bool32Bytes.toString('hex')}`;
+
   await writeTaskOutput(
     `${workerEnv.IEXEC_OUT}/result.txt`,
     JSON.stringify(response, null, 2)
@@ -103,6 +122,7 @@ async function start() {
     `${workerEnv.IEXEC_OUT}/computed.json`,
     JSON.stringify({
       'deterministic-output-path': `${workerEnv.IEXEC_OUT}/result.txt`,
+      'callback-data': callbackData,
     })
   );
 }
