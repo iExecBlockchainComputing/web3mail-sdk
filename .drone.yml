@@ -560,7 +560,7 @@ steps:
       - npm run check-format
 
   - name: lint
-    image: node:18.19
+    image: node:14-alpine3.11
     commands:
       - cd dapp
       - npm ci
