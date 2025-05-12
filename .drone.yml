@@ -563,6 +563,7 @@ steps:
     image: node:18.19
     commands:
       - cd dapp
+      - npm ci
       - npm run lint
 
   - name: test
