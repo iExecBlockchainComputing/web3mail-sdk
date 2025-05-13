@@ -29,6 +29,9 @@ describe('validateAppSecret function', () => {
         MJ_APIKEY_PRIVATE: 'api_private_key',
         MJ_SENDER: 'sender@example.com',
         MAILGUN_APIKEY: 'mailgun_api_key',
+        WEB3MAIL_WHITELISTED_APPS: JSON.parse(
+          '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]'
+        ),
       })
     ).not.toThrow();
   });
@@ -39,6 +42,8 @@ describe('validateAppSecret function', () => {
         MJ_APIKEY_PRIVATE: 'api_private_key',
         MJ_SENDER: 'sender@example.com',
         MAILGUN_APIKEY: 'mailgun_api_key',
+        WEB3MAIL_WHITELISTED_APPS:
+          '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
       })
     ).toThrow(/"MJ_APIKEY_PUBLIC" is required/i);
 
@@ -47,6 +52,8 @@ describe('validateAppSecret function', () => {
         MJ_APIKEY_PUBLIC: 'api_public_key',
         MJ_SENDER: 'sender@example.com',
         MAILGUN_APIKEY: 'mailgun_api_key',
+        WEB3MAIL_WHITELISTED_APPS:
+          '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
       })
     ).toThrow(/"MJ_APIKEY_PRIVATE" is required/i);
 
@@ -55,6 +62,8 @@ describe('validateAppSecret function', () => {
         MJ_APIKEY_PUBLIC: 'api_public_key',
         MJ_APIKEY_PRIVATE: 'api_private_key',
         MAILGUN_APIKEY: 'mailgun_api_key',
+        WEB3MAIL_WHITELISTED_APPS:
+          '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
       })
     ).toThrow(/"MJ_SENDER" is required/i);
 
@@ -63,8 +72,18 @@ describe('validateAppSecret function', () => {
         MJ_APIKEY_PUBLIC: 'api_public_key',
         MJ_APIKEY_PRIVATE: 'api_private_key',
         MJ_SENDER: 'sender@example.com',
+        WEB3MAIL_WHITELISTED_APPS:
+          '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
       })
     ).toThrow(/"MAILGUN_APIKEY" is required/i);
+
+    expect(() =>
+      validateAppSecret({
+        MJ_APIKEY_PUBLIC: 'api_public_key',
+        MJ_APIKEY_PRIVATE: 'api_private_key',
+        MJ_SENDER: 'sender@example.com',
+      })
+    ).toThrow(/"WEB3MAIL_WHITELISTED_APPS" is required/i);
   });
 
   it('should include all validation errors in the thrown error message', () => {
@@ -74,10 +93,11 @@ describe('validateAppSecret function', () => {
         MJ_APIKEY_PRIVATE: '',
         MJ_SENDER: 'foo',
         MAILGUN_APIKEY: '',
+        WEB3MAIL_WHITELISTED_APPS: '[4]',
       })
     ).toThrow(
       Error(
-        'App secret error: "MJ_APIKEY_PUBLIC" must be a string; "MJ_APIKEY_PRIVATE" is not allowed to be empty; "MJ_SENDER" must be a valid email; "MAILGUN_APIKEY" is not allowed to be empty'
+        'App secret error: "MJ_APIKEY_PUBLIC" must be a string; "MJ_APIKEY_PRIVATE" is not allowed to be empty; "MJ_SENDER" must be a valid email; "MAILGUN_APIKEY" is not allowed to be empty; "WEB3MAIL_WHITELISTED_APPS" must be an array'
       )
     );
   });
