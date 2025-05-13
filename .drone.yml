@@ -563,7 +563,6 @@ steps:
     image: node:14-alpine3.11
     commands:
       - cd dapp
-      - npm ci
       - npm run lint
 
   - name: test
@@ -577,6 +576,8 @@ steps:
         from_secret: mj_sender
       MAILGUN_APIKEY:
         from_secret: mailgun_apikey
+      WEB3MAIL_WHITELISTED_APPS:
+        from_secret: web3mail_whitelisted_apps
     commands:
       - cd dapp
       - npm run ctest
@@ -645,6 +646,8 @@ steps:
         from_secret: mj_sender
       MAILGUN_APIKEY:
         from_secret: mailgun_apikey
+      WEB3MAIL_WHITELISTED_APPS:
+        from_secret: web3mail_whitelisted_apps
     commands:
       - cd dapp
       - npm run ctest
@@ -715,6 +718,8 @@ steps:
         from_secret: mj_sender
       MAILGUN_APIKEY:
         from_secret: mailgun_apikey
+      WEB3MAIL_WHITELISTED_APPS:
+        from_secret: web3mail_whitelisted_apps
     commands:
       - cd dapp
       - npm run ctest
