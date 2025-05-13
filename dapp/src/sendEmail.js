@@ -39,7 +39,11 @@ async function start() {
   let appDeveloperSecret;
   try {
     appDeveloperSecret = JSON.parse(IEXEC_APP_DEVELOPER_SECRET);
-  } catch {
+    appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS =
+      appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS
+        ? JSON.parse(appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS)
+        : undefined;
+  } catch (e) {
     throw Error('Failed to parse the developer secret');
   }
   appDeveloperSecret = validateAppSecret(appDeveloperSecret);
