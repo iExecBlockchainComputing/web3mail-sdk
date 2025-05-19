@@ -373,6 +373,8 @@ describe('sendEmail', () => {
           status: 200,
         });
         expect(JSON.parse(computedJson)).toStrictEqual({
+          'callback-data':
+            '0x0000000000000000000000000000000000000000000000000000000000000001',
           'deterministic-output-path': `${IEXEC_OUT}/result.txt`,
         });
         // output should not contain extra files
