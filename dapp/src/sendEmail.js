@@ -91,7 +91,9 @@ async function start() {
     } else if (mailgunResult === false) {
       throw Error('The protected email address seems to be invalid.');
     } else {
-      console.warn('Mailgun verification failed or was unreachable. Proceeding without check.');
+      console.warn(
+        'Mailgun verification failed or was unreachable. Proceeding without check.'
+      );
     }
   } else {
     console.log('Email already verified, skipping Mailgun check.');
