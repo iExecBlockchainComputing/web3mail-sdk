@@ -32,10 +32,9 @@ async function start() {
   const { IEXEC_OUT, IEXEC_APP_DEVELOPER_SECRET, IEXEC_REQUESTER_SECRET_1 } =
     process.env;
 
-  // Check worker env
   const workerEnv = validateWorkerEnv({ IEXEC_OUT });
 
-  // Parse the app developer secret environment variable
+  // Parse and validate app secrets
   let appDeveloperSecret;
   try {
     appDeveloperSecret = JSON.parse(IEXEC_APP_DEVELOPER_SECRET);
@@ -44,22 +43,22 @@ async function start() {
         ? JSON.parse(appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS)
         : undefined;
   } catch (e) {
-    throw Error('Failed to parse the developer secret');
+    throw new Error('Failed to parse the developer secret');
   }
   appDeveloperSecret = validateAppSecret(appDeveloperSecret);
 
-  // Parse the requester secret environment variable
+  // Parse and validate requester secrets
   let requesterSecret;
   try {
     requesterSecret = IEXEC_REQUESTER_SECRET_1
       ? JSON.parse(IEXEC_REQUESTER_SECRET_1)
       : {};
   } catch {
-    throw Error('Failed to parse requester secret');
+    throw new Error('Failed to parse requester secret');
   }
   requesterSecret = validateRequesterSecret(requesterSecret);
 
-  // Get the secret email address from the protected data
+  // Decrypt protected email
   let protectedData;
   try {
     const deserializer = new IExecDataProtectorDeserializer();
@@ -70,25 +69,35 @@ async function start() {
     throw Error(`Failed to parse ProtectedData: ${e.message}`);
   }
 
-  // 1- Validate email address syntax (Joi regexp)
+  // Validate format
   validateProtectedData(protectedData);
 
-  // --- NEW: Check if email was already verified ---
-  const isEmailVerified = await checkEmailPreviousValidation({
-    datasetAddress: protectedData.email, // email = dataset
-    dappAddresses: appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS, // array of iApp addresses
+  // Step 1: Check if email was already validated
+  let isEmailValidated = await checkEmailPreviousValidation({
+    datasetAddress: protectedData.email,
+    dappAddresses: appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS,
   });
 
-  if (!isEmailVerified) {
-    // Run Mailgun validation if not previously verified
-    await validateEmailAddress({
+  // Step 2: If not, try Mailgun
+  if (!isEmailValidated) {
+    console.log('No prior verification found. Trying Mailgun...');
+    const mailgunResult = await validateEmailAddress({
       emailAddress: protectedData.email,
       mailgunApiKey: appDeveloperSecret.MAILGUN_APIKEY,
     });
+
+    if (mailgunResult === true) {
+      isEmailValidated = true;
+    } else if (mailgunResult === false) {
+      throw Error('The protected email address seems to be invalid.');
+    } else {
+      console.warn('Mailgun verification failed or was unreachable. Proceeding without check.');
+    }
   } else {
     console.log('Email already verified, skipping Mailgun check.');
   }
 
+  // Step 3: Decrypt email content
   const encryptedEmailContent = await downloadEncryptedContent(
     requesterSecret.emailContentMultiAddr
   );
@@ -97,27 +106,27 @@ async function start() {
     requesterSecret.emailContentEncryptionKey
   );
 
+  // Step 4: Send email
   const response = await sendEmail({
-    // from protected data
     email: protectedData.email,
-    // from app developer secrets
     mailJetApiKeyPublic: appDeveloperSecret.MJ_APIKEY_PUBLIC,
     mailJetApiKeyPrivate: appDeveloperSecret.MJ_APIKEY_PRIVATE,
     mailJetSender: appDeveloperSecret.MJ_SENDER,
     mailgunApiKey: appDeveloperSecret.MAILGUN_APIKEY,
-    // from requester secret
     emailContent: requesterEmailContent,
     emailSubject: requesterSecret.emailSubject,
     contentType: requesterSecret.contentType,
     senderName: requesterSecret.senderName,
   });
 
+  // Step 5: Encode result as ABI-style bool
   const bool32Bytes = Buffer.alloc(32);
-  if (isEmailVerified) {
+  if (isEmailValidated) {
     bool32Bytes[31] = 1; // set last byte to 1 for true
   }
   const callbackData = `0x${bool32Bytes.toString('hex')}`;
 
+  // Write outputs
   await writeTaskOutput(
     `${workerEnv.IEXEC_OUT}/result.txt`,
     JSON.stringify(response, null, 2)
