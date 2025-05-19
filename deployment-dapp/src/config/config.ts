@@ -38,3 +38,9 @@ export const DRONE_TARGET_REVOKE_SELL_ORDER_PROD =
   'dapp-revoke-sell-order-prod';
 export const DRONE_TARGET_PUSH_SECRET_DEV = 'dapp-push-secret-dev';
 export const DRONE_TARGET_PUSH_SECRET_PROD = 'dapp-push-secret-prod';
+
+//Previous Web3mail dapp addresses
+export const WEB3MAIL_WHITELISTED_APPS_DEV =
+  '["0x600dc5ad1fdb376a37777298ff2c75a48fd220d2"]';
+export const WEB3MAIL_WHITELISTED_APPS_PROD =
+  '["0x0d8b899f2faa0fe9f0b17bcf4debd0cbc9e574ef"]';
