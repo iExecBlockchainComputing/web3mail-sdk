@@ -18,7 +18,7 @@ export const WEB3_MAIL_ENS_NAME_DEV = 'web3mail-dev.apps.iexec.eth';
 export const WEB3_MAIL_ENS_NAME_PROD = 'web3mail.apps.iexec.eth';
 
 //scone image
-const SCONIFIER_VERSION = '5.7.5-v12';
+const SCONIFIER_VERSION = '5.7.6-v15';
 const dappVersion = JSON.parse(
   readFileSync('../dapp/package.json', 'utf-8')
 ).version;
@@ -26,7 +26,7 @@ const dappVersion = JSON.parse(
 export const DOCKER_IMAGE_NAMESPACE = 'iexechub';
 export const DOCKER_IMAGE_REPOSITORY = 'web3mail-dapp';
 export const DOCKER_IMAGE_PROD_TAG = `${dappVersion}-sconify-${SCONIFIER_VERSION}-production`;
-export const DOCKER_IMAGE_DEV_TAG = `dev-${process.env.DRONE_COMMIT}-sconify-${SCONIFIER_VERSION}-production`;
+export const DOCKER_IMAGE_DEV_TAG = `dev-7ddd1fb3c09c3a3969c186692e68e65a9d4fb5ce-sconify-${SCONIFIER_VERSION}-production`;
 
 //drone target
 export const DRONE_TARGET_DEPLOY_DEV = 'dapp-dev';
@@ -38,3 +38,9 @@ export const DRONE_TARGET_REVOKE_SELL_ORDER_PROD =
   'dapp-revoke-sell-order-prod';
 export const DRONE_TARGET_PUSH_SECRET_DEV = 'dapp-push-secret-dev';
 export const DRONE_TARGET_PUSH_SECRET_PROD = 'dapp-push-secret-prod';
+
+//Previous Web3mail dapp addresses
+export const WEB3MAIL_WHITELISTED_APPS_DEV =
+  '["0x600dc5ad1fdb376a37777298ff2c75a48fd220d2"]';
+export const WEB3MAIL_WHITELISTED_APPS_PROD =
+  '["0x0d8b899f2faa0fe9f0b17bcf4debd0cbc9e574ef"]';

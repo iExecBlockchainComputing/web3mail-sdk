@@ -560,7 +560,7 @@ steps:
       - npm run check-format
 
   - name: lint
-    image: node:18.19
+    image: node:14-alpine3.11
     commands:
       - cd dapp
       - npm run lint
@@ -576,6 +576,8 @@ steps:
         from_secret: mj_sender
       MAILGUN_APIKEY:
         from_secret: mailgun_apikey
+      WEB3MAIL_WHITELISTED_APPS:
+        from_secret: web3mail_whitelisted_apps
     commands:
       - cd dapp
       - npm run ctest
@@ -610,6 +612,7 @@ trigger:
     - dapp-dev-non-tee
   branch:
     - develop
+    - draft/add-callback-dev
 
 steps:
   - name: install
@@ -644,6 +647,8 @@ steps:
         from_secret: mj_sender
       MAILGUN_APIKEY:
         from_secret: mailgun_apikey
+      WEB3MAIL_WHITELISTED_APPS:
+        from_secret: web3mail_whitelisted_apps
     commands:
       - cd dapp
       - npm run ctest
@@ -714,6 +719,8 @@ steps:
         from_secret: mj_sender
       MAILGUN_APIKEY:
         from_secret: mailgun_apikey
+      WEB3MAIL_WHITELISTED_APPS:
+        from_secret: web3mail_whitelisted_apps
     commands:
       - cd dapp
       - npm run ctest
@@ -786,10 +793,11 @@ trigger:
   branch:
     - develop
     - main
+    - draft/add-callback-dev
 
 steps:
   - name: get scone fingerprint (dev)
-    image: iexechub/web3mail-dapp:dev-${DRONE_COMMIT}-sconify-5.7.5-v12-production
+    image: iexechub/web3mail-dapp:dev-7ddd1fb3c09c3a3969c186692e68e65a9d4fb5ce-sconify-5.7.6-v15-production
     commands:
       - SCONE_HASH=1 node > deployment-dapp/.scone-fingerprint
     when:
@@ -797,6 +805,7 @@ steps:
         - dapp-dev
       branch:
         - develop
+        - draft/add-callback-dev
 
   - name: get scone fingerprint (prod)
     # /!\: maintain the version here
@@ -883,6 +892,7 @@ steps:
         - dapp-dev
       branch:
         - develop
+        - draft/add-callback-dev
 
   - name: add resource to whitelist prod
     image: node:18.12.1
@@ -928,6 +938,7 @@ trigger:
   branch:
     - develop
     - main
+    - draft/add-callback-dev
 
 steps:
   - name: install deps
@@ -1007,6 +1018,7 @@ trigger:
   branch:
     - develop
     - main
+    - draft/add-callback-dev
 
 steps:
   - name: install deps

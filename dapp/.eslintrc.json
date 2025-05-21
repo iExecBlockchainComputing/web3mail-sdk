@@ -11,6 +11,13 @@
   "env": {
     "jest": true
   },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".json"]
+      }
+    }
+  },
   "overrides": [
     {
       "files": ["./tests/**/*.js"],
