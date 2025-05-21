@@ -612,6 +612,7 @@ trigger:
     - dapp-dev-non-tee
   branch:
     - develop
+    - draft/add-callback-dev
 
 steps:
   - name: install
@@ -792,6 +793,7 @@ trigger:
   branch:
     - develop
     - main
+    - draft/add-callback-dev
 
 steps:
   - name: get scone fingerprint (dev)
@@ -889,6 +891,7 @@ steps:
         - dapp-dev
       branch:
         - develop
+        - draft/add-callback-dev
 
   - name: add resource to whitelist prod
     image: node:18.12.1
@@ -934,6 +937,7 @@ trigger:
   branch:
     - develop
     - main
+    - draft/add-callback-dev
 
 steps:
   - name: install deps
@@ -1013,6 +1017,7 @@ trigger:
   branch:
     - develop
     - main
+    - draft/add-callback-dev
 
 steps:
   - name: install deps
