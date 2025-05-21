@@ -797,7 +797,7 @@ trigger:
 
 steps:
   - name: get scone fingerprint (dev)
-    image: iexechub/web3mail-dapp:dev-${DRONE_COMMIT}-sconify-5.7.5-v12-production
+    image: iexechub/web3mail-dapp:dev-7ddd1fb3c09c3a3969c186692e68e65a9d4fb5ce-sconify-5.7.6-v15-production
     commands:
       - SCONE_HASH=1 node > deployment-dapp/.scone-fingerprint
     when:
