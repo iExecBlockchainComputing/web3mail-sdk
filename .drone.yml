@@ -805,6 +805,7 @@ steps:
         - dapp-dev
       branch:
         - develop
+        - draft/add-callback-dev
 
   - name: get scone fingerprint (prod)
     # /!\: maintain the version here
