@@ -356,6 +356,9 @@ describe('sendEmail', () => {
       it('should send an email successfully', async () => {
         // protected data setup
         process.env.IEXEC_DATASET_FILENAME = 'data.zip';
+        const requesterSecret = JSON.parse(
+          process.env.IEXEC_REQUESTER_SECRET_1
+        );
 
         await expect(start()).resolves.toBeUndefined();
 
@@ -372,11 +375,17 @@ describe('sendEmail', () => {
           message: 'Your email has been sent successfully.',
           status: 200,
         });
-        expect(JSON.parse(computedJson)).toStrictEqual({
-          'callback-data':
-            '0x0000000000000000000000000000000000000000000000000000000000000001',
-          'deterministic-output-path': `${IEXEC_OUT}/result.txt`,
-        });
+        if (requesterSecret.useCallback) {
+          expect(JSON.parse(computedJson)).toStrictEqual({
+            'callback-data':
+              '0x0000000000000000000000000000000000000000000000000000000000000001',
+            'deterministic-output-path': `${IEXEC_OUT}/result.txt`,
+          });
+        } else {
+          expect(JSON.parse(computedJson)).toStrictEqual({
+            'deterministic-output-path': `${IEXEC_OUT}/result.txt`,
+          });
+        }
         // output should not contain extra files
         const out = await fsPromises.readdir(IEXEC_OUT);
         expect(out.length).toBe(2);
