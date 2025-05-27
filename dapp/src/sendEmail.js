@@ -137,7 +137,7 @@ async function start() {
     `${workerEnv.IEXEC_OUT}/computed.json`,
     JSON.stringify({
       'deterministic-output-path': `${workerEnv.IEXEC_OUT}/result.txt`,
-      'callback-data': callbackData,
+      ...(requesterSecret.useCallback && { 'callback-data': callbackData }),
     })
   );
 }
