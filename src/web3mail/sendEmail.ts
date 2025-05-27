@@ -270,7 +270,7 @@ export const sendEmail = async ({
         contentType: vContentType,
         senderName: vSenderName,
         emailContentEncryptionKey,
-        useCallback: true
+        useCallback: true,
       })
     );
 
