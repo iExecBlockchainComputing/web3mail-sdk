@@ -11,3 +11,4 @@ export const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
 export const WHITELIST_SMART_CONTRACT_ADDRESS =
   '0x781482C39CcE25546583EaC4957Fb7Bf04C277D2';
 export const ANY_DATASET_ADDRESS = 'any';
+export const CALLBACK_WEB3MAIL = '0x5f936db7ad6d29371808e42a87015595d90509ba';
