@@ -62,7 +62,7 @@ const main = async () => {
 
   const iexec = getIExec(privateKey);
 
-  let appAddress = await loadAppAddress().catch(() => {
+  const appAddress = await loadAppAddress().catch(() => {
     console.log('No app address found falling back to ENS');
     let ensName;
     if (DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_DEV) {
@@ -75,7 +75,6 @@ const main = async () => {
     return resolveName(iexec, ensName);
   });
 
-  appAddress = '0x32788862f29e0807a98b8c085d84d8d02b5c567c';
   if (!appAddress) throw Error('Failed to get app address'); // If the app was not deployed, do not continue
   const fullWhitelistedApps = [
     ...new Set([...baseWhitelistedApps, appAddress]),
