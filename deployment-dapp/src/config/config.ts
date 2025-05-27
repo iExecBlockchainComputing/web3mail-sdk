@@ -26,7 +26,7 @@ const dappVersion = JSON.parse(
 export const DOCKER_IMAGE_NAMESPACE = 'iexechub';
 export const DOCKER_IMAGE_REPOSITORY = 'web3mail-dapp';
 export const DOCKER_IMAGE_PROD_TAG = `${dappVersion}-sconify-${SCONIFIER_VERSION}-production`;
-export const DOCKER_IMAGE_DEV_TAG = `dev-7ddd1fb3c09c3a3969c186692e68e65a9d4fb5ce-sconify-${SCONIFIER_VERSION}-production`;
+export const DOCKER_IMAGE_DEV_TAG = `dev-${process.env.DRONE_COMMIT}-sconify-${SCONIFIER_VERSION}-production`;
 
 //drone target
 export const DRONE_TARGET_DEPLOY_DEV = 'dapp-dev';
