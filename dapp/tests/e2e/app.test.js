@@ -24,6 +24,8 @@ describe('sendEmail', () => {
         MJ_APIKEY_PRIVATE: 'xxx',
         MJ_SENDER: 'foo@bar.com',
         MAILGUN_APIKEY: 'xxx',
+        WEB3MAIL_WHITELISTED_APPS:
+          '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
       });
       // requester secret setup
       process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
@@ -50,6 +52,8 @@ describe('sendEmail', () => {
           MJ_APIKEY_PRIVATE: 'xxx',
           MJ_SENDER: 'foo@bar.com',
           MAILGUN_APIKEY: 'xxx',
+          WEB3MAIL_WHITELISTED_APPS:
+            '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
         });
         await expect(() => start()).rejects.toThrow(
           Error('App secret error: "MJ_APIKEY_PUBLIC" is required')
@@ -63,6 +67,8 @@ describe('sendEmail', () => {
           MJ_APIKEY_PUBLIC: 'xxx',
           MJ_SENDER: 'foo@bar.com',
           MAILGUN_APIKEY: 'xxx',
+          WEB3MAIL_WHITELISTED_APPS:
+            '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
         });
         await expect(() => start()).rejects.toThrow(
           Error('App secret error: "MJ_APIKEY_PRIVATE" is required')
@@ -76,6 +82,8 @@ describe('sendEmail', () => {
           MJ_APIKEY_PUBLIC: 'xxx',
           MJ_APIKEY_PRIVATE: 'xxx',
           MAILGUN_APIKEY: 'xxx',
+          WEB3MAIL_WHITELISTED_APPS:
+            '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
         });
         await expect(() => start()).rejects.toThrow(
           Error('App secret error: "MJ_SENDER" is required')
@@ -89,9 +97,25 @@ describe('sendEmail', () => {
           MJ_APIKEY_PUBLIC: 'xxx',
           MJ_APIKEY_PRIVATE: 'xxx',
           MJ_SENDER: 'foo@bar.com',
+          WEB3MAIL_WHITELISTED_APPS:
+            '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
         });
         await expect(() => start()).rejects.toThrow(
           Error('App secret error: "MAILGUN_APIKEY" is required')
+        );
+        // output should be empty
+        const out = await fsPromises.readdir(process.env.IEXEC_OUT);
+        expect(out).toStrictEqual([]);
+      });
+      it('should fail if WEB3MAIL_WHITELISTED_APPS in developer secret is missing', async () => {
+        process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
+          MJ_APIKEY_PUBLIC: 'xxx',
+          MJ_APIKEY_PRIVATE: 'xxx',
+          MAILGUN_APIKEY: 'xxx',
+          MJ_SENDER: 'foo@bar.com',
+        });
+        await expect(() => start()).rejects.toThrow(
+          Error('App secret error: "WEB3MAIL_WHITELISTED_APPS" is required')
         );
         // output should be empty
         const out = await fsPromises.readdir(process.env.IEXEC_OUT);
@@ -260,6 +284,8 @@ describe('sendEmail', () => {
           MJ_APIKEY_PRIVATE: 'xxx',
           MJ_SENDER: 'foo@bar.com',
           MAILGUN_APIKEY: 'fake',
+          WEB3MAIL_WHITELISTED_APPS:
+            '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
         });
         // check the error is not an email validation error (mailgun validation is skipped, mailjet rejects)
         await expect(() => start()).rejects.toThrow(
@@ -275,6 +301,8 @@ describe('sendEmail', () => {
           MJ_APIKEY_PRIVATE: 'xxx',
           MJ_SENDER: 'foo@bar.com',
           MAILGUN_APIKEY: 'xxx',
+          WEB3MAIL_WHITELISTED_APPS:
+            '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
         });
         await expect(() => start()).rejects.toThrow(
           Error('Failed to send email')
@@ -303,12 +331,14 @@ describe('sendEmail', () => {
           MJ_APIKEY_PRIVATE,
           MJ_SENDER,
           MAILGUN_APIKEY,
+          WEB3MAIL_WHITELISTED_APPS,
         } = process.env;
         process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
           MJ_APIKEY_PUBLIC,
           MJ_APIKEY_PRIVATE,
           MJ_SENDER,
           MAILGUN_APIKEY,
+          WEB3MAIL_WHITELISTED_APPS,
         });
 
         // requester secret setup
@@ -326,6 +356,9 @@ describe('sendEmail', () => {
       it('should send an email successfully', async () => {
         // protected data setup
         process.env.IEXEC_DATASET_FILENAME = 'data.zip';
+        const requesterSecret = JSON.parse(
+          process.env.IEXEC_REQUESTER_SECRET_1
+        );
 
         await expect(start()).resolves.toBeUndefined();
 
@@ -342,9 +375,17 @@ describe('sendEmail', () => {
           message: 'Your email has been sent successfully.',
           status: 200,
         });
-        expect(JSON.parse(computedJson)).toStrictEqual({
-          'deterministic-output-path': `${IEXEC_OUT}/result.txt`,
-        });
+        if (requesterSecret.useCallback) {
+          expect(JSON.parse(computedJson)).toStrictEqual({
+            'callback-data':
+              '0x0000000000000000000000000000000000000000000000000000000000000001',
+            'deterministic-output-path': `${IEXEC_OUT}/result.txt`,
+          });
+        } else {
+          expect(JSON.parse(computedJson)).toStrictEqual({
+            'deterministic-output-path': `${IEXEC_OUT}/result.txt`,
+          });
+        }
         // output should not contain extra files
         const out = await fsPromises.readdir(IEXEC_OUT);
         expect(out.length).toBe(2);
