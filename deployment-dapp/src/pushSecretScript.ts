@@ -5,6 +5,8 @@ import {
   DRONE_TARGET_PUSH_SECRET_PROD,
   WEB3_MAIL_ENS_NAME_DEV,
   WEB3_MAIL_ENS_NAME_PROD,
+  WEB3MAIL_WHITELISTED_APPS_DEV,
+  WEB3MAIL_WHITELISTED_APPS_PROD,
 } from './config/config.js';
 import { pushSecret } from './singleFunction/pushSecret.js';
 import { resolveName } from './singleFunction/resolveName.js';
@@ -39,16 +41,20 @@ const main = async () => {
   if (!MAILGUN_APIKEY) throw Error('Missing env MAILGUN_APIKEY');
 
   let privateKey;
+  let baseWhitelistedApps;
+
   if (
     DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_DEV ||
     DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_DEV
   ) {
     privateKey = WALLET_PRIVATE_KEY_DEV;
+    baseWhitelistedApps = JSON.parse(WEB3MAIL_WHITELISTED_APPS_DEV);
   } else if (
     DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_PROD ||
     DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_PROD
   ) {
     privateKey = WALLET_PRIVATE_KEY_PROD;
+    baseWhitelistedApps = JSON.parse(WEB3MAIL_WHITELISTED_APPS_PROD);
   }
 
   if (!privateKey)
@@ -70,7 +76,9 @@ const main = async () => {
   });
 
   if (!appAddress) throw Error('Failed to get app address'); // If the app was not deployed, do not continue
-
+  const fullWhitelistedApps = [
+    ...new Set([...baseWhitelistedApps, appAddress]),
+  ];
   //deploy app
   //push app secret to the secret management
   const jsonSecret = JSON.stringify({
@@ -78,7 +86,9 @@ const main = async () => {
     MJ_APIKEY_PRIVATE,
     MJ_SENDER,
     MAILGUN_APIKEY,
+    WEB3MAIL_WHITELISTED_APPS: JSON.stringify(fullWhitelistedApps),
   });
+
   await pushSecret(iexec, appAddress, jsonSecret);
 };
 
