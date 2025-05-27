@@ -21,6 +21,8 @@
   "license": "ISC",
   "dependencies": {
     "@iexec/dataprotector-deserializer": "^0.1.0",
+    "graphql": "^16.11.0",
+    "graphql-request": "^3.7.0",
     "joi": "^17.9.2",
     "jszip": "^3.10.1",
     "node-fetch": "^2.7.0",
