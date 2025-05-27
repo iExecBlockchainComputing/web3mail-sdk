@@ -58,6 +58,7 @@ const requesterSecretSchema = Joi.object({
   emailContentEncryptionKey: Joi.string().base64(),
   contentType: Joi.string().valid('text/plain', 'text/html'),
   senderName: Joi.string().min(3).max(20),
+  useCallback: Joi.boolean().optional(),
 });
 
 function validateRequesterSecret(obj) {
