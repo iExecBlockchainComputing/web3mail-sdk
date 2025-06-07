@@ -86,7 +86,7 @@ steps:
       - ipfs
 
   - name: market-mongo
-    image: mongo:6.0.3
+    image: mongo:6.0.24
     detach: true
     expose:
       - 27017
