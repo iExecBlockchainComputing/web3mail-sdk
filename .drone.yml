@@ -11,7 +11,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - node -v
@@ -19,28 +19,28 @@ steps:
       - npm ci
 
   - name: format
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run check-format
     depends_on:
       - install
 
   - name: lint
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run lint
     depends_on:
       - install
 
   - name: check-types
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run check-types
     depends_on:
       - install
 
   - name: test:unit
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run test:unit
     depends_on:
@@ -54,7 +54,7 @@ steps:
 
   - name: bellecour-fork
     detach: true
-    image: ghcr.io/foundry-rs/foundry:v1.0.0
+    image: ghcr.io/foundry-rs/foundry:v1.2.3
     pull: always
     expose:
       - 8545
@@ -71,7 +71,7 @@ steps:
       - bellecour-fork
 
   - name: ipfs
-    image: ipfs/go-ipfs:v0.9.1
+    image: ipfs/go-ipfs:v0.35.0
     detach: true
     expose:
       - 8080
@@ -99,7 +99,7 @@ steps:
       - market-mongo
 
   - name: market-redis
-    image: redis:7.0.7-alpine
+    image: redis:7.4.4-alpine
     detach: true
     commands:
       - redis-server --appendonly yes
@@ -114,7 +114,7 @@ steps:
       - market-redis
 
   - name: result-proxy-mongo
-    image: library/mongo:4.2
+    image: library/mongo:4.4
     detach: true
     commands:
       - mongod --bind_ip_all --port 13202
@@ -149,7 +149,7 @@ steps:
       - graphnode-postgres
 
   - name: graphnode
-    image: graphprotocol/graph-node:v0.34.1
+    image: graphprotocol/graph-node:v0.39.1
     detach: true
     expose:
       - 8000
@@ -205,7 +205,7 @@ steps:
       - sms
 
   - name: result-proxy
-    image: iexechub/iexec-result-proxy:7.1.0
+    image: iexechub/iexec-result-proxy:7.3.0
     detach: true
     environment:
       IEXEC_PRIVATE_CHAIN_ADDRESS: http://bellecour-fork:8545
@@ -292,7 +292,7 @@ steps:
 
   - name: voucher-subgraph-deployer
     # https://github.com/iExecBlockchainComputing/iexec-voucher-subgraph
-    image: iexechub/voucher-subgraph-deployer:1.0.0
+    image: iexechub/voucher-subgraph-deployer:1.1.0
     pull: always
     environment:
       RPC_URL: http://bellecour-fork:8545
@@ -323,7 +323,7 @@ steps:
   ##### START LOCAL STACK END #####
 
   - name: test:e2e
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run test:prepare
       - npm run test:e2e
@@ -332,14 +332,14 @@ steps:
       - stack-ready
 
   - name: build
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run build
     depends_on:
       - install
 
   - name: npm-publish-dry-run
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm publish --dry-run
     depends_on:
@@ -366,7 +366,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - node -v
@@ -374,35 +374,35 @@ steps:
       - npm ci
 
   - name: format
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run check-format
     depends_on:
       - install
 
   - name: lint
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run lint
     depends_on:
       - install
 
   - name: check-types
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run check-types
     depends_on:
       - install
 
   - name: build
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run build
     depends_on:
       - install
 
   - name: set-version-nightly
-    image: node:18.19
+    image: node:18.20
     commands:
       - eval npm pkg set version="$(npm pkg get version)-nightly-$DRONE_COMMIT"
     depends_on:
@@ -422,7 +422,7 @@ steps:
       - build
 
   - name: deprecate-old-nightly-version
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - apt-get update && apt-get install -y jq
@@ -476,7 +476,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - node -v
@@ -484,28 +484,28 @@ steps:
       - npm ci
 
   - name: format
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run check-format
     depends_on:
       - install
 
   - name: lint
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run lint
     depends_on:
       - install
 
   - name: check-types
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run check-types
     depends_on:
       - install
 
   - name: build
-    image: node:18.19
+    image: node:18.20
     commands:
       - npm run build
     depends_on:
@@ -548,7 +548,7 @@ steps:
       - npm ci
 
   - name: check version match [get scone fingerprint (prod)]
-    image: node:18.19
+    image: node:18.20
     commands:
       - cd dapp
       - cat ../.drone.yml | grep "iexechub/web3mail-dapp:$(npm pkg get version | sed 's/"//g')-sconify-"
@@ -630,7 +630,7 @@ steps:
       - npm run check-format
 
   - name: lint
-    image: node:18.19
+    image: node:18.20
     commands:
       - cd dapp
       - npm run lint
@@ -702,7 +702,7 @@ steps:
       - npm run check-format
 
   - name: lint
-    image: node:18.19
+    image: node:18.20
     commands:
       - cd dapp
       - npm run lint
@@ -725,7 +725,7 @@ steps:
       - npm run ctest
 
   - name: extract-version-from-package
-    image: node:18.19
+    image: node:18.20
     # generates the .tags file for the docker plugin
     commands:
       - cd dapp
@@ -759,20 +759,20 @@ trigger:
 
 steps:
   - name: install deps
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - cd deployment-dapp
       - npm ci
 
   - name: lint
-    image: node:18.19
+    image: node:18.20
     commands:
       - cd deployment-dapp
       - npm run lint
 
   - name: format
-    image: node:18.19
+    image: node:18.20
     commands:
       - cd deployment-dapp
       - npm run check-format
@@ -816,7 +816,7 @@ steps:
         - main
 
   - name: install deps
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - npm ci
@@ -826,7 +826,7 @@ steps:
       - npm ci
 
   - name: deploy dapp contract
-    image: node:18.19
+    image: node:18.20
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -839,7 +839,7 @@ steps:
       - npm run deploy-dapp
 
   - name: push dapp secret
-    image: node:18.19
+    image: node:18.20
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -860,7 +860,7 @@ steps:
       - npm run push-dapp-secret
 
   - name: publish free sell order
-    image: node:18.19
+    image: node:18.20
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -875,7 +875,7 @@ steps:
       - npm run publish-sell-order
 
   - name: add resource to whitelist dev
-    image: node:18.12.1
+    image: node:18.20.8
     environment:
       WALLET_PRIVATE_KEY:
         from_secret: web3mail-dapp-owner-dev-privatekey
@@ -891,7 +891,7 @@ steps:
         - develop
 
   - name: add resource to whitelist prod
-    image: node:18.12.1
+    image: node:18.20.8
     environment:
       WALLET_PRIVATE_KEY:
         from_secret: web3mail-dapp-owner-prod-privatekey
@@ -907,7 +907,7 @@ steps:
         - main
 
   - name: configure ENS
-    image: node:18.19
+    image: node:18.20
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -937,14 +937,14 @@ trigger:
 
 steps:
   - name: install deps
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - cd deployment-dapp
       - npm ci
 
   - name: publish sell order
-    image: node:18.19
+    image: node:18.20
     pull: always
     params:
       - PRICE
@@ -977,14 +977,14 @@ trigger:
 
 steps:
   - name: install deps
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - cd deployment-dapp
       - npm ci
 
   - name: revoke sell order
-    image: node:18.19
+    image: node:18.20
     pull: always
     params:
       - ORDER_HASH
@@ -1016,14 +1016,14 @@ trigger:
 
 steps:
   - name: install deps
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - cd deployment-dapp
       - npm ci
 
   - name: push dapp secret
-    image: node:18.19
+    image: node:18.20
     pull: always
     environment:
       DRONE_DEPLOY_TO: $DRONE_DEPLOY_TO
@@ -1060,7 +1060,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - node -v
@@ -1070,7 +1070,7 @@ steps:
       - npm install --save-dev ts-node
 
   - name: add resource to whitelist dev
-    image: node:18.12.1
+    image: node:18.20.8
     params:
       - ADDRESS_TO_ADD
     environment:
@@ -1088,7 +1088,7 @@ steps:
         - develop
 
   - name: add resource to whitelist prod
-    image: node:18.12.1
+    image: node:18.20.8
     params:
       - ADDRESS_TO_ADD
     environment:
@@ -1122,7 +1122,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - node -v
@@ -1132,7 +1132,7 @@ steps:
       - npm install --save-dev ts-node
 
   - name: remove ressource from whitelist dev
-    image: node:18.12.1
+    image: node:18.20.8
     params:
       - ADDRESS_TO_REMOVE
     environment:
@@ -1150,7 +1150,7 @@ steps:
         - develop
 
   - name: remove resource from whitelist prod
-    image: node:18.12.1
+    image: node:18.20.8
     params:
       - ADDRESS_TO_REMOVE
     environment:
@@ -1184,7 +1184,7 @@ trigger:
 
 steps:
   - name: install
-    image: node:18.19
+    image: node:18.20
     pull: always
     commands:
       - node -v
@@ -1194,7 +1194,7 @@ steps:
       - npm install --save-dev ts-node
 
   - name: transfer ownsership dev
-    image: node:18.12.1
+    image: node:18.20.8
     params:
       - NEW_OWNER_ADDRESS
     environment:
@@ -1212,7 +1212,7 @@ steps:
         - develop
 
   - name: transfer ownsership prod
-    image: node:18.12.1
+    image: node:18.20.8
     params:
       - NEW_OWNER_ADDRESS
     environment:
@@ -1249,7 +1249,7 @@ steps:
         from_secret: npm_token
 
   - name: deprecate package
-    image: node:18.19
+    image: node:18.20
     params:
       - PACKAGE_VERSION
     commands:
@@ -1275,7 +1275,7 @@ steps:
         from_secret: npm_token
 
   - name: undeprecate package
-    image: node:18.19
+    image: node:18.20
     params:
       - PACKAGE_VERSION
     commands:
