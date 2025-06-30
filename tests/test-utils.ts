@@ -10,43 +10,82 @@ import { randomInt } from 'crypto';
 import { getSignerFromPrivateKey } from 'iexec/utils';
 
 export const TEST_CHAIN = {
-  rpcURL: process.env.DRONE
-    ? 'http://bellecour-fork:8545'
-    : 'http://127.0.0.1:8545',
-  chainId: '134',
-  smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
-  resultProxyURL: process.env.DRONE
-    ? 'http://result-proxy:13200'
-    : 'http://127.0.0.1:13200',
-  iexecGatewayURL: process.env.DRONE
-    ? 'http://market-api:3000'
-    : 'http://127.0.0.1:3000',
-  voucherHubAddress: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda',
-  voucherManagerWallet: new Wallet(
-    '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
-  ),
-  voucherSubgraphURL: process.env.DRONE
-    ? 'http://graphnode:8000/subgraphs/name/bellecour/iexec-voucher'
-    : 'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
-  learnProdWorkerpool: 'prod-v8-learn.main.pools.iexec.eth',
-  learnProdWorkerpoolOwnerWallet: new Wallet(
-    '0x800e01919eadf36f110f733decb1cc0f82e7941a748e89d7a3f76157f6654bb3'
-  ),
-  prodWorkerpool: 'prod-v8-bellecour.main.pools.iexec.eth',
-  prodWorkerpoolOwnerWallet: new Wallet(
-    '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
-  ),
-  appOwnerWallet: new Wallet(
-    '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
-  ),
-  provider: new JsonRpcProvider(
-    process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545',
-    undefined,
-    {
-      pollingInterval: 1000, // speed up tests
-    }
-  ),
-  hubAddress: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f',
+  134: {
+    rpcURL: process.env.DRONE
+      ? 'http://bellecour-fork:8545'
+      : 'http://127.0.0.1:8545',
+    smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
+    resultProxyURL: process.env.DRONE
+      ? 'http://result-proxy:13200'
+      : 'http://127.0.0.1:13200',
+    iexecGatewayURL: process.env.DRONE
+      ? 'http://market-api:3000'
+      : 'http://127.0.0.1:3000',
+    voucherHubAddress: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda',
+    voucherManagerWallet: new Wallet(
+      '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
+    ),
+    voucherSubgraphURL: process.env.DRONE
+      ? 'http://graphnode:8000/subgraphs/name/bellecour/iexec-voucher'
+      : 'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
+    learnProdWorkerpool: 'prod-v8-learn.main.pools.iexec.eth',
+    learnProdWorkerpoolOwnerWallet: new Wallet(
+      '0x800e01919eadf36f110f733decb1cc0f82e7941a748e89d7a3f76157f6654bb3'
+    ),
+    prodWorkerpool: 'prod-v8-bellecour.main.pools.iexec.eth',
+    prodWorkerpoolOwnerWallet: new Wallet(
+      '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
+    ),
+    appOwnerWallet: new Wallet(
+      '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
+    ),
+    provider: new JsonRpcProvider(
+      process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545',
+      undefined,
+      {
+        pollingInterval: 1000, // speed up tests
+      }
+    ),
+    hubAddress: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f',
+  },
+  421614: { // TODO replace with actual Arbitrum Sepolia config
+    rpcURL: process.env.DRONE
+      ? 'http://arbitrum-sepolia-fork:8545'
+      : 'http://127.0.0.1:8545',
+    smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
+    resultProxyURL: process.env.DRONE
+      ? 'http://result-proxy:13200'
+      : 'http://127.0.0.1:13200',
+    iexecGatewayURL: process.env.DRONE
+      ? 'http://market-api:3000'
+      : 'http://127.0.0.1:3000',
+    voucherHubAddress: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda',
+    voucherManagerWallet: new Wallet(
+      '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
+    ),
+    voucherSubgraphURL: process.env.DRONE
+      ? 'http://graphnode:8000/subgraphs/name/bellecour/iexec-voucher'
+      : 'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
+    learnProdWorkerpool: 'prod-v8-learn.main.pools.iexec.eth',
+    learnProdWorkerpoolOwnerWallet: new Wallet(
+      '0x800e01919eadf36f110f733decb1cc0f82e7941a748e89d7a3f76157f6654bb3'
+    ),
+    prodWorkerpool: 'prod-v8-bellecour.main.pools.iexec.eth',
+    prodWorkerpoolOwnerWallet: new Wallet(
+      '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
+    ),
+    appOwnerWallet: new Wallet(
+      '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
+    ),
+    provider: new JsonRpcProvider(
+      process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545',
+      undefined,
+      {
+        pollingInterval: 1000, // speed up tests
+      }
+    ),
+    hubAddress: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f',
+  }
 };
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -76,16 +115,17 @@ export const timeouts = {
 };
 
 export const getTestWeb3SignerProvider = (
-  privateKey: string = Wallet.createRandom().privateKey
+  privateKey: string = Wallet.createRandom().privateKey,
+  chainId: number = 134
 ): Web3SignerProvider =>
-  utils.getSignerFromPrivateKey(TEST_CHAIN.rpcURL, privateKey);
+  utils.getSignerFromPrivateKey(TEST_CHAIN[chainId].rpcURL, privateKey);
 
-export const getTestIExecOption = () => ({
-  smsURL: TEST_CHAIN.smsURL,
-  resultProxyURL: TEST_CHAIN.resultProxyURL,
-  iexecGatewayURL: TEST_CHAIN.iexecGatewayURL,
-  voucherHubAddress: TEST_CHAIN.voucherHubAddress,
-  voucherSubgraphURL: TEST_CHAIN.voucherSubgraphURL,
+export const getTestIExecOption = (chainId) => ({
+  smsURL: TEST_CHAIN[chainId].smsURL,
+  resultProxyURL: TEST_CHAIN[chainId].resultProxyURL,
+  iexecGatewayURL: TEST_CHAIN[chainId].iexecGatewayURL,
+  voucherHubAddress: TEST_CHAIN[chainId].voucherHubAddress,
+  voucherSubgraphURL: TEST_CHAIN[chainId].voucherSubgraphURL,
 });
 
 export const getTestConfig = (
@@ -154,9 +194,10 @@ export const createAndPublishAppOrders = async (
 
 export const setBalance = async (
   address: string,
-  targetWeiBalance: ethers.BigNumberish
+  targetWeiBalance: ethers.BigNumberish,
+  chainId: number = 134
 ) => {
-  await fetch(TEST_CHAIN.rpcURL, {
+  await fetch(TEST_CHAIN[chainId].rpcURL, {
     method: 'POST',
     body: JSON.stringify({
       method: 'anvil_setBalance',
@@ -172,7 +213,7 @@ export const setBalance = async (
 
 export const setNRlcBalance = async (
   address: string,
-  nRlcTargetBalance: ethers.BigNumberish
+  nRlcTargetBalance: ethers.BigNumberish,
 ) => {
   const weiAmount = BigInt(`${nRlcTargetBalance}`) * 10n ** 9n; // 1 nRLC is 10^9 wei
   await setBalance(address, weiAmount);
@@ -181,6 +222,7 @@ export const setNRlcBalance = async (
 export const createVoucherType = async ({
   description = 'test',
   duration = 1000,
+  chainId = 134,
 } = {}) => {
   const VOUCHER_HUB_ABI = [
     {
@@ -228,11 +270,11 @@ export const createVoucherType = async ({
     },
   ];
   const voucherHubContract = new Contract(
-    TEST_CHAIN.voucherHubAddress,
+    TEST_CHAIN[chainId].voucherHubAddress,
     VOUCHER_HUB_ABI,
-    TEST_CHAIN.provider
+    TEST_CHAIN[chainId].provider
   );
-  const signer = TEST_CHAIN.voucherManagerWallet.connect(TEST_CHAIN.provider);
+  const signer = TEST_CHAIN[chainId].voucherManagerWallet.connect(TEST_CHAIN[chainId].provider);
   const createVoucherTypeTxHash = await voucherHubContract
     .connect(signer)
     .createVoucherType(description, duration);
@@ -262,10 +304,11 @@ export const createAndPublishWorkerpoolOrder = async (
   workerpoolOwnerWallet: ethers.Wallet,
   requesterrestrict?: string,
   workerpoolprice: number = 0,
-  volume: number = 1000
+  volume: number = 1000,
+  chainId: number = 134
 ) => {
   const ethProvider = utils.getSignerFromPrivateKey(
-    TEST_CHAIN.rpcURL,
+    TEST_CHAIN[chainId].rpcURL,
     workerpoolOwnerWallet.privateKey
   );
   const iexec = new IExec({ ethProvider }, getTestIExecOption());
@@ -292,6 +335,7 @@ export const createVoucher = async ({
   voucherType,
   value,
   skipOrders = false,
+  chainId = 134,
 }: {
   owner: string;
   voucherType: ethers.BigNumberish;
@@ -352,11 +396,11 @@ export const createVoucher = async ({
   const iexec = new IExec(
     {
       ethProvider: getSignerFromPrivateKey(
-        TEST_CHAIN.rpcURL,
-        TEST_CHAIN.voucherManagerWallet.privateKey
+        TEST_CHAIN[chainId].rpcURL,
+        TEST_CHAIN[chainId].voucherManagerWallet.privateKey
       ),
     },
-    { hubAddress: TEST_CHAIN.hubAddress }
+    { hubAddress: TEST_CHAIN[chainId].hubAddress }
   );
 
   // ensure RLC balance
@@ -367,7 +411,7 @@ export const createVoucher = async ({
   const iexecContract = contractClient.getIExecContract();
 
   try {
-    await iexecContract.depositFor(TEST_CHAIN.voucherHubAddress, {
+    await iexecContract.depositFor(TEST_CHAIN[chainId].voucherHubAddress, {
       value: BigInt(value) * 10n ** 9n,
       gasPrice: 0,
     });
@@ -377,12 +421,12 @@ export const createVoucher = async ({
   }
 
   const voucherHubContract = new Contract(
-    TEST_CHAIN.voucherHubAddress,
+    TEST_CHAIN[chainId].voucherHubAddress,
     VOUCHER_HUB_ABI,
-    TEST_CHAIN.provider
+    TEST_CHAIN[chainId].provider
   );
 
-  const signer = TEST_CHAIN.voucherManagerWallet.connect(TEST_CHAIN.provider);
+  const signer = TEST_CHAIN[chainId].voucherManagerWallet.connect(TEST_CHAIN[chainId].provider);
 
   try {
     const createVoucherTxHash = await voucherHubContract
@@ -399,8 +443,8 @@ export const createVoucher = async ({
     try {
       const workerpoolprice = Math.floor(value / WORKERPOOL_ORDER_PER_VOUCHER);
       await createAndPublishWorkerpoolOrder(
-        TEST_CHAIN.prodWorkerpool,
-        TEST_CHAIN.prodWorkerpoolOwnerWallet,
+        TEST_CHAIN[chainId].prodWorkerpool,
+        TEST_CHAIN[chainId].prodWorkerpoolOwnerWallet,
         owner,
         workerpoolprice,
         WORKERPOOL_ORDER_PER_VOUCHER
@@ -419,8 +463,8 @@ export const createVoucher = async ({
   }
 };
 
-export const addVoucherEligibleAsset = async (assetAddress, voucherTypeId) => {
-  const voucherHubContract = new Contract(TEST_CHAIN.voucherHubAddress, [
+export const addVoucherEligibleAsset = async (assetAddress, voucherTypeI, chainId = 134) => {
+  const voucherHubContract = new Contract(TEST_CHAIN[chainId].voucherHubAddress, [
     {
       inputs: [
         {
@@ -441,7 +485,7 @@ export const addVoucherEligibleAsset = async (assetAddress, voucherTypeId) => {
     },
   ]);
 
-  const signer = TEST_CHAIN.voucherManagerWallet.connect(TEST_CHAIN.provider);
+  const signer = TEST_CHAIN[chainId].voucherManagerWallet.connect(TEST_CHAIN[chainId].provider);
 
   const retryableAddEligibleAsset = async (tryCount = 1) => {
     try {

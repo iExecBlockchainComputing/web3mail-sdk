@@ -2,11 +2,9 @@ import { expect, it, jest } from '@jest/globals';
 import { ValidationError } from 'yup';
 import { type SendEmail } from '../../src/web3mail/sendEmail.js';
 import { getRandomAddress, TEST_CHAIN } from '../test-utils.js';
-import {
-  WEB3_MAIL_DAPP_ADDRESS,
-  WHITELIST_SMART_CONTRACT_ADDRESS,
-} from '../../src/config/config.js';
 import { mockAllForSendEmail } from '../utils/mockAllForSendEmail.js';
+import { CHAIN_CONFIG } from '../../src/config/config.js';
+const chainId = 134; // Bellecour chain ID
 
 jest.unstable_mockModule('../../src/utils/subgraphQuery.js', () => ({
   checkProtectedDataValidity: jest.fn(),
@@ -181,8 +179,8 @@ describe('sendEmail', () => {
         // // @ts-expect-error No need
         // ipfsNode: "",
         // ipfsGateway: this.ipfsGateway,
-        dappAddressOrENS: WEB3_MAIL_DAPP_ADDRESS,
-        dappWhitelistAddress: WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
+        dappAddressOrENS: CHAIN_CONFIG[chainId].dappAddressOrENS,
+        dappWhitelistAddress: CHAIN_CONFIG[chainId].dappWhitelistAddress.toLowerCase(),
         emailSubject: 'e2e mail object for test',
         emailContent: OVERSIZED_CONTENT,
         protectedData,
@@ -192,8 +190,8 @@ describe('sendEmail', () => {
       expect(iexec.orderbook.fetchWorkerpoolOrderbook).toHaveBeenNthCalledWith(
         1,
         {
-          workerpool: TEST_CHAIN.prodWorkerpool,
-          app: WEB3_MAIL_DAPP_ADDRESS,
+          workerpool: TEST_CHAIN[chainId].prodWorkerpool,
+          app: CHAIN_CONFIG[chainId].dappAddressOrENS.toLowerCase(),
           dataset: protectedData,
           requester: userAddress,
           isRequesterStrict: false,
@@ -205,8 +203,8 @@ describe('sendEmail', () => {
       expect(iexec.orderbook.fetchWorkerpoolOrderbook).toHaveBeenNthCalledWith(
         2,
         {
-          workerpool: TEST_CHAIN.prodWorkerpool,
-          app: WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
+          workerpool: TEST_CHAIN[chainId].prodWorkerpool,
+          app: CHAIN_CONFIG[chainId].dappWhitelistAddress.toLowerCase(),
           dataset: protectedData,
           requester: userAddress,
           isRequesterStrict: false,

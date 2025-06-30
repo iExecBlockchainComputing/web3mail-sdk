@@ -5,7 +5,6 @@ import {
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet, Wallet } from 'ethers';
 import { NULL_ADDRESS } from 'iexec/utils';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
 import { IExecWeb3mail } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
@@ -17,6 +16,10 @@ import {
   waitSubgraphIndexing,
 } from '../test-utils.js';
 import IExec from 'iexec/IExec';
+import { CHAIN_CONFIG } from '../../src/config/config.js';
+
+const chainId = 134; // Bellecour chain ID
+
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: HDNodeWallet;
@@ -41,7 +44,7 @@ describe('web3mail.fetchMyContacts()', () => {
     'pass with a granted access for a specific requester',
     async () => {
       await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        authorizedApp: CHAIN_CONFIG[chainId].dappAddressOrENS,
         protectedData: protectedData.address,
         authorizedUser: wallet.address,
       });
@@ -51,11 +54,11 @@ describe('web3mail.fetchMyContacts()', () => {
       });
       expect(
         foundContactForASpecificRequester &&
-          foundContactForASpecificRequester.address
+        foundContactForASpecificRequester.address
       ).toBeDefined();
       expect(
         foundContactForASpecificRequester &&
-          foundContactForASpecificRequester.address
+        foundContactForASpecificRequester.address
       ).toBe(protectedData.address.toLocaleLowerCase());
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -65,7 +68,7 @@ describe('web3mail.fetchMyContacts()', () => {
     'pass with a granted access for any requester',
     async () => {
       const grantedAccessForAnyRequester = await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        authorizedApp: CHAIN_CONFIG[chainId].dappAddressOrENS,
         protectedData: protectedData.address,
         authorizedUser: NULL_ADDRESS,
       });
@@ -94,7 +97,7 @@ describe('web3mail.fetchMyContacts()', () => {
   it(
     'Should not return dataset as a contact',
     async () => {
-      const iexecOptions = getTestIExecOption();
+      const iexecOptions = getTestIExecOption(chainId);
 
       const iexec = new IExec(
         { ethProvider: getTestWeb3SignerProvider(wallet.privateKey) },
@@ -104,7 +107,7 @@ describe('web3mail.fetchMyContacts()', () => {
       const encryptionKey = await iexec.dataset.generateEncryptionKey();
       await iexec.dataset.pushDatasetSecret(dataset.address, encryptionKey);
       await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        authorizedApp: CHAIN_CONFIG[chainId].dappAddressOrENS,
         protectedData: dataset.address,
         authorizedUser: wallet.address,
       });
@@ -126,7 +129,7 @@ describe('web3mail.fetchMyContacts()', () => {
       await waitSubgraphIndexing();
 
       await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        authorizedApp: CHAIN_CONFIG[chainId].dappAddressOrENS,
         protectedData: notValidProtectedData.address,
         authorizedUser: wallet.address,
       });

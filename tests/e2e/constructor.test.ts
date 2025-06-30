@@ -2,15 +2,14 @@
 // needed to access and assert IExecDataProtector's private properties
 import { describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
-import {
-  DATAPROTECTOR_SUBGRAPH_ENDPOINT,
-  DEFAULT_IPFS_GATEWAY,
-} from '../../src/config/config.js';
 import { IExecWeb3mail } from '../../src/index.js';
 import {
   getTestWeb3SignerProvider,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
 } from '../test-utils.js';
+import { CHAIN_CONFIG } from '../../src/config/config.js';
+
+const chainId = 134; // Bellecour chain ID
 
 describe('IExecWeb3mail()', () => {
   it('instantiates with a valid ethProvider', async () => {
@@ -27,7 +26,7 @@ describe('IExecWeb3mail()', () => {
       getTestWeb3SignerProvider(wallet.privateKey)
     );
     const ipfsGateway = web3mail['ipfsGateway'];
-    expect(ipfsGateway).toStrictEqual(DEFAULT_IPFS_GATEWAY);
+    expect(ipfsGateway).toStrictEqual(CHAIN_CONFIG[chainId].ipfsGateway);
   });
 
   it('should use provided ipfs gateway url when ipfsGateway is provided', async () => {
@@ -49,7 +48,8 @@ describe('IExecWeb3mail()', () => {
       getTestWeb3SignerProvider(wallet.privateKey)
     );
     const graphQLClientUrl = web3mail['graphQLClient'];
-    expect(graphQLClientUrl['url']).toBe(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
+    expect(graphQLClientUrl['url']).toBe(
+      CHAIN_CONFIG[chainId].dataProtectorSubgraph);
   });
 
   it('should use provided data Protector Subgraph URL when subgraphUrl is provided', async () => {
