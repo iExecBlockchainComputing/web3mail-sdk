@@ -1,5 +1,4 @@
 import { create } from 'kubo-rpc-client';
-import { IPFS_UPLOAD_URL, DEFAULT_IPFS_GATEWAY } from '../config/config.js';
 
 interface GetOptions {
   ipfsGateway?: string;
@@ -10,7 +9,7 @@ interface AddOptions extends GetOptions {
 
 const get = async (
   cid,
-  { ipfsGateway = DEFAULT_IPFS_GATEWAY }: GetOptions = {}
+  { ipfsGateway }: GetOptions = {}
 ) => {
   const multiaddr = `/ipfs/${cid.toString()}`;
   const publicUrl = `${ipfsGateway}${multiaddr}`;
@@ -25,8 +24,8 @@ const get = async (
 const add = async (
   content,
   {
-    ipfsNode = IPFS_UPLOAD_URL,
-    ipfsGateway = DEFAULT_IPFS_GATEWAY,
+    ipfsNode,
+    ipfsGateway,
   }: AddOptions = {}
 ) => {
   const ipfsClient = create(ipfsNode);

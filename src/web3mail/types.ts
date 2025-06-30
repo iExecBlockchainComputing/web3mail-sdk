@@ -1,6 +1,7 @@
 import { GraphQLClient } from 'graphql-request';
 import { EnhancedWallet, IExec } from 'iexec';
 import { IExecConfigOptions } from 'iexec/IExecConfig';
+import { AbstractProvider, AbstractSigner, Eip1193Provider } from 'ethers';
 
 export type Web3SignerProvider = EnhancedWallet;
 
@@ -108,6 +109,13 @@ export type Web3MailConfigOptions = {
    * If not provided, the default IPFS gateway URL will be used.
    */
   ipfsGateway?: string;
+
+  /**
+   * if true allows using a provider connected to an experimental networks (default false)
+   *
+   * ⚠️ experimental networks are networks on which the iExec's stack is partially deployed, experimental networks can be subject to instabilities or discontinuity. Access is provided without warranties.
+   */
+  allowExperimentalNetworks?: boolean;
 };
 
 export type DappAddressConsumer = {
@@ -125,3 +133,20 @@ export type IpfsGatewayConfigConsumer = {
 export type DappWhitelistAddressConsumer = {
   dappWhitelistAddress: string;
 };
+
+export type EthersCompatibleProvider =
+  | AbstractProvider
+  | AbstractSigner
+  | Eip1193Provider
+  | Web3SignerProvider
+  | string;
+
+export interface Web3mailResolvedConfig {
+  dappAddressOrENS: AddressOrENS;
+  dappWhitelistAddress: AddressOrENS;
+  graphQLClient: GraphQLClient;
+  ipfsNode: string;
+  ipfsGateway: string;
+  defaultWorkerpool: string;
+  iexec: IExec;
+}

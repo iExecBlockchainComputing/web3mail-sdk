@@ -1,4 +1,3 @@
-import { AbstractProvider, AbstractSigner, Eip1193Provider } from 'ethers';
 import { IExec } from 'iexec';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import { fetchMyContacts } from './fetchMyContacts.js';
@@ -10,19 +9,20 @@ import {
   AddressOrENS,
   Web3MailConfigOptions,
   SendEmailResponse,
-  Web3SignerProvider,
   FetchMyContactsParams,
+  EthersCompatibleProvider,
+  Web3mailResolvedConfig,
 } from './types.js';
 import { GraphQLClient } from 'graphql-request';
-import {
-  WEB3_MAIL_DAPP_ADDRESS,
-  IPFS_UPLOAD_URL,
-  DEFAULT_IPFS_GATEWAY,
-  DATAPROTECTOR_SUBGRAPH_ENDPOINT,
-  WHITELIST_SMART_CONTRACT_ADDRESS,
-} from '../config/config.js';
 import { isValidProvider } from '../utils/validators.js';
-
+import { getChainIdFromProvider } from '../utils/getChainId.js';
+import { getChainConfig } from '../config/config.js';
+import {
+  createIExecInstance,
+  createSubgraphClient,
+  resolveConfigValues,
+  validateRequiredConfig,
+} from '../utils/configResolvers.js';
 export class IExecWeb3mail {
   private iexec: IExec;
 
@@ -30,49 +30,46 @@ export class IExecWeb3mail {
 
   private ipfsGateway: string;
 
-  private dataProtectorSubgraph: string;
-
   private dappAddressOrENS: AddressOrENS;
 
   private dappWhitelistAddress: AddressOrENS;
 
   private graphQLClient: GraphQLClient;
 
+  private initPromise: Promise<void> | null = null;
+
+  private defaultWorkerpool: AddressOrENS;
+
+  private ethProvider: EthersCompatibleProvider;
+
+  private options: Web3MailConfigOptions;
+
   constructor(
-    ethProvider?:
-      | Eip1193Provider
-      | AbstractProvider
-      | AbstractSigner
-      | Web3SignerProvider
-      | string,
+    ethProvider?: EthersCompatibleProvider,
     options?: Web3MailConfigOptions
   ) {
-    try {
-      this.iexec = new IExec(
-        { ethProvider: ethProvider || 'bellecour' },
-        options?.iexecOptions
-      );
-    } catch (e) {
-      throw Error('Unsupported ethProvider');
-    }
+    this.ethProvider = ethProvider || 'bellecour';
+    this.options = options || {};
+  }
 
-    try {
-      this.dataProtectorSubgraph =
-        options?.dataProtectorSubgraph || DATAPROTECTOR_SUBGRAPH_ENDPOINT;
-      this.graphQLClient = new GraphQLClient(this.dataProtectorSubgraph);
-    } catch (e) {
-      throw Error('Impossible to create GraphQLClient');
+  protected async init(): Promise<void> {
+    if (!this.initPromise) {
+      this.initPromise = this.resolveConfig().then((config) => {
+        this.dappWhitelistAddress = config.dappWhitelistAddress;
+        this.graphQLClient = config.graphQLClient;
+        this.ipfsNode = config.ipfsNode;
+        this.ipfsGateway = config.ipfsGateway;
+        this.defaultWorkerpool = config.defaultWorkerpool;
+        this.iexec = config.iexec;
+      });
     }
-
-    this.dappAddressOrENS = options?.dappAddressOrENS || WEB3_MAIL_DAPP_ADDRESS;
-    this.ipfsNode = options?.ipfsNode || IPFS_UPLOAD_URL;
-    this.ipfsGateway = options?.ipfsGateway || DEFAULT_IPFS_GATEWAY;
-    this.dappWhitelistAddress =
-      options?.dappWhitelistAddress || WHITELIST_SMART_CONTRACT_ADDRESS;
+    return this.initPromise;
   }
 
   async fetchMyContacts(args?: FetchMyContactsParams): Promise<Contact[]> {
+    await this.init();
     await isValidProvider(this.iexec);
+
     return fetchMyContacts({
       ...args,
       iexec: this.iexec,
@@ -82,7 +79,10 @@ export class IExecWeb3mail {
     });
   }
 
-  fetchUserContacts(args: FetchUserContactsParams): Promise<Contact[]> {
+  async fetchUserContacts(args: FetchUserContactsParams): Promise<Contact[]> {
+    await this.init();
+    await isValidProvider(this.iexec);
+
     return fetchUserContacts({
       ...args,
       iexec: this.iexec,
@@ -93,16 +93,45 @@ export class IExecWeb3mail {
   }
 
   async sendEmail(args: SendEmailParams): Promise<SendEmailResponse> {
+    await this.init();
     await isValidProvider(this.iexec);
+
     return sendEmail({
       ...args,
       iexec: this.iexec,
       ipfsNode: this.ipfsNode,
       ipfsGateway: this.ipfsGateway,
       dappAddressOrENS: this.dappAddressOrENS,
+      workerpoolAddressOrEns: this.defaultWorkerpool,
       dappWhitelistAddress: this.dappWhitelistAddress,
       graphQLClient: this.graphQLClient,
-      useVoucher: args?.useVoucher,
     });
+  }
+
+  private async resolveConfig(): Promise<Web3mailResolvedConfig> {
+    const chainId = await getChainIdFromProvider(this.ethProvider);
+    const chainConfig = getChainConfig(chainId, {
+      allowExperimentalNetworks: this.options.allowExperimentalNetworks,
+    });
+
+    const config = resolveConfigValues(this.options, chainConfig);
+    validateRequiredConfig(config, chainId);
+
+    const [iexec, graphQLClient] = await Promise.all([
+      Promise.resolve(
+        createIExecInstance(this.ethProvider, config.ipfsGateway!, this.options)
+      ),
+      Promise.resolve(createSubgraphClient(config.dataProtectorSubgraph!)),
+    ]);
+
+    return {
+      dappWhitelistAddress: config.dappWhitelistAddress!.toLowerCase(),
+      dappAddressOrENS: config.dappAddressOrENS!,
+      defaultWorkerpool: config.defaultWorkerpool!.toLowerCase(),
+      graphQLClient,
+      ipfsNode: config.ipfsNode!,
+      ipfsGateway: config.ipfsGateway!,
+      iexec,
+    };
   }
 }
