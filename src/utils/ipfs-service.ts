@@ -7,10 +7,7 @@ interface AddOptions extends GetOptions {
   ipfsNode?: string;
 }
 
-const get = async (
-  cid,
-  { ipfsGateway }: GetOptions = {}
-) => {
+const get = async (cid, { ipfsGateway }: GetOptions = {}) => {
   const multiaddr = `/ipfs/${cid.toString()}`;
   const publicUrl = `${ipfsGateway}${multiaddr}`;
   const res = await fetch(publicUrl);
@@ -21,13 +18,7 @@ const get = async (
   return new Uint8Array(arrayBuffer);
 };
 
-const add = async (
-  content,
-  {
-    ipfsNode,
-    ipfsGateway,
-  }: AddOptions = {}
-) => {
+const add = async (content, { ipfsNode, ipfsGateway }: AddOptions = {}) => {
   const ipfsClient = create(ipfsNode);
   const { cid } = await ipfsClient.add(content);
   await get(cid.toString(), { ipfsGateway });
