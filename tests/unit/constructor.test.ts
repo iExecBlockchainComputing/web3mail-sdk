@@ -5,6 +5,8 @@ describe('When instantiating SDK without a signer', () => {
     it('should throw an error for unauthorized method', async () => {
       // --- GIVEN
       const web3mail = new IExecWeb3mail();
+      // eslint-disable-next-line @typescript-eslint/dot-notation
+      await web3mail['init']();
 
       // --- WHEN/THEN
       await expect(web3mail.fetchMyContacts()).rejects.toThrow(

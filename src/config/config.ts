@@ -7,7 +7,7 @@ export interface ChainConfig {
   dataProtectorSubgraph: string;
   ipfsGateway: string;
   ipfsNode: string;
-  workerpoolAddress: string;
+  defaultWorkerpool: string;
   isExperimental?: boolean;
 }
 
@@ -28,7 +28,7 @@ export const CHAIN_CONFIG: Record<ChainId, ChainConfig> = {
       'https://thegraph.iex.ec/subgraphs/name/bellecour/dataprotector-v2',
     ipfsGateway: 'https://ipfs-gateway.v8-bellecour.iex.ec',
     ipfsNode: 'https://ipfs-upload.v8-bellecour.iex.ec',
-    workerpoolAddress: '0x39c3cdd91a7f1c4ed59108a9da4e79de9a1c1b59', // prod-v8-bellecour.main.pools.iexec.eth
+    defaultWorkerpool: '0x39c3cdd91a7f1c4ed59108a9da4e79de9a1c1b59', // prod-v8-bellecour.main.pools.iexec.eth
     isExperimental: false,
   },
   // Arbitrum Sepolia
@@ -40,7 +40,7 @@ export const CHAIN_CONFIG: Record<ChainId, ChainConfig> = {
       'https://thegraph.arbitrum-sepolia-testnet.iex.ec/api/subgraphs/id/5YjRPLtjS6GH6bB4yY55Qg4HzwtRGQ8TaHtGf9UBWWd',
     ipfsGateway: 'https://ipfs-gateway.v8-bellecour.iex.ec',
     ipfsNode: 'https://ipfs-upload.v8-bellecour.iex.ec',
-    workerpoolAddress: '', // TODO  Replace with deployed workerpool address on Arbitrum Sepolia
+    defaultWorkerpool: '', // TODO  Replace with deployed workerpool address on Arbitrum Sepolia
     isExperimental: true,
   },
 };
