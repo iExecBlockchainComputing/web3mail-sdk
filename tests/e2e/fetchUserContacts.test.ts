@@ -4,7 +4,7 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet, Wallet } from 'ethers';
-import { WEB3_MAIL_DAPP_ADDRESS } from '../../src/config/config.js';
+import { DEFAULT_CHAIN_ID, getChainConfig } from '../../src/config/config.js';
 import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
@@ -45,13 +45,13 @@ describe('web3mail.fetchMyContacts()', () => {
       const user1 = Wallet.createRandom().address;
       const user2 = Wallet.createRandom().address;
       await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        authorizedApp: getChainConfig(DEFAULT_CHAIN_ID).dappAddress,
         protectedData: protectedData1.address,
         authorizedUser: user1,
       });
 
       await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+        authorizedApp: getChainConfig(DEFAULT_CHAIN_ID).dappAddress,
         protectedData: protectedData2.address,
         authorizedUser: user2,
       });
@@ -71,12 +71,12 @@ describe('web3mail.fetchMyContacts()', () => {
     'Test that the protected data can be accessed by authorized user',
     async () => {
       const userWithAccess = Wallet.createRandom().address;
-      await dataProtector.grantAccess({
-        authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+      const res = await dataProtector.grantAccess({
+        authorizedApp: getChainConfig(DEFAULT_CHAIN_ID).dappAddress,
         protectedData: protectedData1.address,
         authorizedUser: userWithAccess,
       });
-
+      console.log("res", res);
       const contacts = await web3mail.fetchUserContacts({
         userAddress: userWithAccess,
       });

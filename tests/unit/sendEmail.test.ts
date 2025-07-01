@@ -2,11 +2,8 @@ import { expect, it, jest } from '@jest/globals';
 import { ValidationError } from 'yup';
 import { type SendEmail } from '../../src/web3mail/sendEmail.js';
 import { getRandomAddress, TEST_CHAIN } from '../test-utils.js';
-import {
-  WEB3_MAIL_DAPP_ADDRESS,
-  WHITELIST_SMART_CONTRACT_ADDRESS,
-} from '../../src/config/config.js';
 import { mockAllForSendEmail } from '../utils/mockAllForSendEmail.js';
+import { DEFAULT_CHAIN_ID, getChainConfig } from '../../src/config/config.js';
 
 jest.unstable_mockModule('../../src/utils/subgraphQuery.js', () => ({
   checkProtectedDataValidity: jest.fn(),
@@ -178,11 +175,11 @@ describe('sendEmail', () => {
         graphQLClient: {},
         // @ts-expect-error No need for iexec here
         iexec,
-        // // @ts-expect-error No need
-        // ipfsNode: "",
-        // ipfsGateway: this.ipfsGateway,
-        dappAddressOrENS: WEB3_MAIL_DAPP_ADDRESS,
-        dappWhitelistAddress: WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
+        ipfsGateway: getChainConfig(DEFAULT_CHAIN_ID).ipfsGateway,
+        ipfsNode: getChainConfig(DEFAULT_CHAIN_ID).ipfsUploadUrl,
+        workerpoolAddressOrEns: getChainConfig(DEFAULT_CHAIN_ID).prodWorkerpoolAddress,
+        dappAddressOrENS: getChainConfig(DEFAULT_CHAIN_ID).dappAddress,
+        dappWhitelistAddress: getChainConfig(DEFAULT_CHAIN_ID).whitelistSmartContract.toLowerCase(),
         emailSubject: 'e2e mail object for test',
         emailContent: OVERSIZED_CONTENT,
         protectedData,
@@ -193,7 +190,7 @@ describe('sendEmail', () => {
         1,
         {
           workerpool: TEST_CHAIN.prodWorkerpool,
-          app: WEB3_MAIL_DAPP_ADDRESS,
+          app: getChainConfig(DEFAULT_CHAIN_ID).dappAddress.toLowerCase(),
           dataset: protectedData,
           requester: userAddress,
           isRequesterStrict: false,
@@ -206,7 +203,7 @@ describe('sendEmail', () => {
         2,
         {
           workerpool: TEST_CHAIN.prodWorkerpool,
-          app: WHITELIST_SMART_CONTRACT_ADDRESS.toLowerCase(),
+          app: getChainConfig(DEFAULT_CHAIN_ID).whitelistSmartContract.toLowerCase(),
           dataset: protectedData,
           requester: userAddress,
           isRequesterStrict: false,

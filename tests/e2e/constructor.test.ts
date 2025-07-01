@@ -2,15 +2,12 @@
 // needed to access and assert IExecDataProtector's private properties
 import { describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
-import {
-  DATAPROTECTOR_SUBGRAPH_ENDPOINT,
-  DEFAULT_IPFS_GATEWAY,
-} from '../../src/config/config.js';
 import { IExecWeb3mail } from '../../src/index.js';
 import {
   getTestWeb3SignerProvider,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
 } from '../test-utils.js';
+import { DEFAULT_CHAIN_ID, getChainConfig } from '../../src/config/config.js';
 
 describe('IExecWeb3mail()', () => {
   it('instantiates with a valid ethProvider', async () => {
@@ -18,6 +15,7 @@ describe('IExecWeb3mail()', () => {
     const web3mail = new IExecWeb3mail(
       getTestWeb3SignerProvider(wallet.privateKey)
     );
+    await web3mail.init();
     expect(web3mail).toBeInstanceOf(IExecWeb3mail);
   });
 
@@ -26,8 +24,9 @@ describe('IExecWeb3mail()', () => {
     const web3mail = new IExecWeb3mail(
       getTestWeb3SignerProvider(wallet.privateKey)
     );
+    await web3mail.init();
     const ipfsGateway = web3mail['ipfsGateway'];
-    expect(ipfsGateway).toStrictEqual(DEFAULT_IPFS_GATEWAY);
+    expect(ipfsGateway).toStrictEqual(getChainConfig(DEFAULT_CHAIN_ID).ipfsGateway);
   });
 
   it('should use provided ipfs gateway url when ipfsGateway is provided', async () => {
@@ -39,6 +38,7 @@ describe('IExecWeb3mail()', () => {
         ipfsGateway: customIpfsGateway,
       }
     );
+    await web3mail.init();
     const ipfsGateway = web3mail['ipfsGateway'];
     expect(ipfsGateway).toStrictEqual(customIpfsGateway);
   });
@@ -48,8 +48,10 @@ describe('IExecWeb3mail()', () => {
     const web3mail = new IExecWeb3mail(
       getTestWeb3SignerProvider(wallet.privateKey)
     );
+    await web3mail.init();
     const graphQLClientUrl = web3mail['graphQLClient'];
-    expect(graphQLClientUrl['url']).toBe(DATAPROTECTOR_SUBGRAPH_ENDPOINT);
+    expect(graphQLClientUrl['url']).toBe(
+      getChainConfig(DEFAULT_CHAIN_ID).dataProtectorSubgraph);
   });
 
   it('should use provided data Protector Subgraph URL when subgraphUrl is provided', async () => {
@@ -61,6 +63,7 @@ describe('IExecWeb3mail()', () => {
         dataProtectorSubgraph: customSubgraphUrl,
       }
     );
+    await web3mail.init();
     const graphQLClient = web3mail['graphQLClient'];
     expect(graphQLClient['url']).toBe(customSubgraphUrl);
   });
@@ -89,6 +92,7 @@ describe('IExecWeb3mail()', () => {
         dappWhitelistAddress: customDappWhitelistAddress,
       }
     );
+    await web3mail.init();
     const graphQLClient = web3mail['graphQLClient'];
     const ipfsNode = web3mail['ipfsNode'];
     const ipfsGateway = web3mail['ipfsGateway'];
@@ -100,7 +104,7 @@ describe('IExecWeb3mail()', () => {
     expect(ipfsNode).toStrictEqual(customIpfsNode);
     expect(ipfsGateway).toStrictEqual(customIpfsGateway);
     expect(dappAddressOrENS).toStrictEqual(customDapp);
-    expect(whitelistAddress).toStrictEqual(customDappWhitelistAddress);
+    expect(whitelistAddress).toStrictEqual(customDappWhitelistAddress.toLowerCase());
     expect(await iexec.config.resolveSmsURL()).toBe(smsURL);
     expect(await iexec.config.resolveIexecGatewayURL()).toBe(iexecGatewayURL);
   });
@@ -110,6 +114,7 @@ describe('IExecWeb3mail()', () => {
     async () => {
       // --- GIVEN
       const web3mail = new IExecWeb3mail();
+      await web3mail.init();
       const wallet = Wallet.createRandom();
 
       // --- WHEN/THEN
