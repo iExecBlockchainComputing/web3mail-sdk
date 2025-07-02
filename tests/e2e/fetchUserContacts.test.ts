@@ -71,12 +71,11 @@ describe('web3mail.fetchMyContacts()', () => {
     'Test that the protected data can be accessed by authorized user',
     async () => {
       const userWithAccess = Wallet.createRandom().address;
-      const res = await dataProtector.grantAccess({
+      await dataProtector.grantAccess({
         authorizedApp: getChainConfig(DEFAULT_CHAIN_ID).dappAddress,
         protectedData: protectedData1.address,
         authorizedUser: userWithAccess,
       });
-      console.log("res", res);
       const contacts = await web3mail.fetchUserContacts({
         userAddress: userWithAccess,
       });

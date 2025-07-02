@@ -109,7 +109,7 @@ export class IExecWeb3mail {
     await isValidProvider(this.iexec);
     return sendEmail({
       ...args,
-      workerpoolAddressOrEns: this.defaultWorkerpool,
+      workerpoolAddressOrEns: args.workerpoolAddressOrEns || this.defaultWorkerpool,
       iexec: this.iexec,
       ipfsNode: this.ipfsNode,
       ipfsGateway: this.ipfsGateway,
