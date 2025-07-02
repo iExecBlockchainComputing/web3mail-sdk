@@ -52,7 +52,7 @@
     "buffer": "^6.0.3",
     "ethers": "^6.13.2",
     "graphql-request": "^6.1.0",
-    "iexec": "^8.13.1",
+    "iexec": "^8.16.0",
     "kubo-rpc-client": "^4.1.1",
     "yup": "^1.1.1"
   },

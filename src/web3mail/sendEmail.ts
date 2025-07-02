@@ -4,7 +4,6 @@ import {
   MAX_DESIRED_APP_ORDER_PRICE,
   MAX_DESIRED_DATA_ORDER_PRICE,
   MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
-  PROD_WORKERPOOL_ADDRESS,
 } from '../config/config.js';
 import { handleIfProtocolError, WorkflowError } from '../utils/errors.js';
 import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
@@ -42,7 +41,7 @@ export type SendEmail = typeof sendEmail;
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  workerpoolAddressOrEns = PROD_WORKERPOOL_ADDRESS,
+  workerpoolAddressOrEns,
   dappAddressOrENS,
   dappWhitelistAddress,
   ipfsNode,
