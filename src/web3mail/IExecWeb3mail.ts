@@ -117,7 +117,6 @@ export class IExecWeb3mail {
       dappAddressOrENS: this.dappAddressOrENS,
       dappWhitelistAddress: this.dappWhitelistAddress,
       graphQLClient: this.graphQLClient,
-      useVoucher: args?.useVoucher,
     });
   }
 
