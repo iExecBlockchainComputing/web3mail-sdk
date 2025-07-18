@@ -1,0 +1,152 @@
+name: deploy-dapp
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - bellecour-dev
+          - arbitrum-sepolia-dev
+          - arbitrum-mainnet-dev
+      price:
+        description: 'Sell order price (optionnel)'
+        type: string
+        required: false
+        default: ''
+      volume:
+        description: 'Sell order volume (optionnel)'
+        type: string
+        required: false
+        default: ''
+
+jobs:
+  extract-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      clean_tag: ${{ steps.tag.outputs.clean_tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract tag
+        id: tag
+        run: |
+          echo "clean_tag=dev-${GITHUB_SHA}" | tee -a $GITHUB_OUTPUT
+
+  docker-publish:
+    uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/docker-build.yml@docker-build-v2.3.1
+    needs: [extract-tag]
+    with:
+      image-name: 'iexechub/web3mail-dapp'
+      registry: 'docker.io'
+      dockerfile: 'dapp/Dockerfile'
+      context: 'dapp'
+      security-scan: true
+      security-report: 'sarif'
+      hadolint: true
+      push: true
+      image-tag: ${{ needs.extract-tag.outputs.clean_tag }}
+    secrets:
+      username: ${{ secrets.DOCKERHUB_USERNAME }}
+      password: ${{ secrets.DOCKERHUB_PAT }}
+
+  sconify:
+    uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/sconify.yml@sconify-v2.0.0
+    needs: [docker-publish, extract-tag]
+    with:
+      image-name: 'iexechub/web3mail-dapp'
+      image-tag: ${{ needs.extract-tag.outputs.clean_tag }}
+      sconify-debug: false
+      sconify-prod: true
+      docker-registry: docker.io
+      sconify-version: '5.9.0-v15'
+      binary: /usr/local/bin/node
+      command: node /app/src/app.js
+      host-path: |
+        /etc/hosts
+        /etc/resolv.conf
+      binary-fs: true
+      fs-dir: /app
+      heap: 1G
+      dlopen: 1
+      mprotect: 1
+    secrets:
+      docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker-password: ${{ secrets.DOCKERHUB_PAT }}
+      scontain-username: ${{ secrets.SCONTAIN_REGISTRY_USERNAME }}
+      scontain-password: ${{ secrets.SCONTAIN_REGISTRY_PAT }}
+      scone-signing-key: ${{ secrets.SCONIFY_SIGNING_PRIVATE_KEY }}
+
+  deploy-dapp:
+    needs: [extract-tag, sconify]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd node_modules/whitelist-smart-contract
+          npm install --save-dev ts-node
+          cd ../../deployment-dapp
+          npm ci
+
+      - name: Deploy dapp contract
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_DAPP_OWNER_PRIVATEKEY }}
+          DOCKER_IMAGE_TAG: ${{ needs.sconify.outputs.prod-image-tag }}
+          CHECKSUM: ${{  needs.sconify.outputs.prod-checksum }}
+          FINGERPRINT: ${{ needs.sconify.outputs.prod-mrenclave }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+        run: |
+          cd deployment-dapp
+          npm run deploy-dapp
+
+      - name: Push dapp secret
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_DAPP_OWNER_PRIVATEKEY }}
+          MJ_APIKEY_PUBLIC: ${{ secrets.MAILJET_APIKEY_PUBLIC }}
+          MJ_APIKEY_PRIVATE: ${{ secrets.MAILJET_APIKEY_PRIVATE }}
+          MJ_SENDER: ${{ secrets.MAILJET_SENDER }}
+          MAILGUN_APIKEY: ${{ secrets.MAILGUN_APIKEY }}
+          WEB3MAIL_WHITELISTED_APPS: ${{ vars.WEB3MAIL_WHITELISTED_APPS }}
+        run: |
+          cd deployment-dapp
+          npm run push-dapp-secret
+
+      - name: Publish free sell order
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_DAPP_OWNER_PRIVATEKEY }}
+          PRICE: ${{ inputs.price || vars.SELL_ORDER_PRICE }}
+          VOLUME: ${{ inputs.volume || vars.SELL_ORDER_VOLUME }}
+        run: |
+          cd deployment-dapp
+          npm run publish-sell-order
+
+      - name: Add resource to whitelist
+        env:
+          CONTRACT_ADDRESS: ${{ secrets.WEB3MAIL_WHITELIST_CONTRACT_ADDRESS }}
+          WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_DAPP_OWNER_PRIVATEKEY }}
+        run: |
+          cd node_modules/whitelist-smart-contract
+          export ADDRESS_TO_ADD=$(cat ../../deployment-dapp/.app-address) && npm run addResourceToWhitelist
+
+      - name: Configure ENS
+        if: ${{ vars.DAPP_ENS_NAME }}
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_DAPP_OWNER_PRIVATEKEY }}
+          DAPP_ENS_NAME: ${{ vars.DAPP_ENS_NAME }}
+        run: |
+          cd deployment-dapp
+          npm run configure-ens
