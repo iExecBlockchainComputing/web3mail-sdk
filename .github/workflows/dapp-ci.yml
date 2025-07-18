@@ -38,6 +38,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    environment: bellecour-dev
     defaults:
       run:
         working-directory: ${{ env.WORKING_DIRECTORY }}
@@ -46,7 +47,7 @@ jobs:
       MJ_APIKEY_PRIVATE: ${{ secrets.MAILJET_APIKEY_PRIVATE }}
       MJ_SENDER: ${{ secrets.MAILJET_SENDER }}
       MAILGUN_APIKEY: ${{ secrets.MAILGUN_APIKEY }}
-      WEB3MAIL_WHITELISTED_APPS: ${{ vars.WEB3MAIL_WHITELISTED_APPS }}
+      WEB3MAIL_WHITELISTED_APPS: ${{ secrets.WEB3MAIL_WHITELISTED_APPS }}
     steps:
       - uses: actions/checkout@v4
 
