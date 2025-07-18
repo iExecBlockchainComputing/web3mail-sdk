@@ -10,24 +10,16 @@ import { randomInt } from 'crypto';
 import { getSignerFromPrivateKey } from 'iexec/utils';
 
 export const TEST_CHAIN = {
-  rpcURL: process.env.DRONE
-    ? 'http://bellecour-fork:8545'
-    : 'http://127.0.0.1:8545',
+  rpcURL: 'http://127.0.0.1:8545',
   chainId: '134',
-  smsURL: process.env.DRONE ? 'http://sms:13300' : 'http://127.0.0.1:13300',
-  resultProxyURL: process.env.DRONE
-    ? 'http://result-proxy:13200'
-    : 'http://127.0.0.1:13200',
-  iexecGatewayURL: process.env.DRONE
-    ? 'http://market-api:3000'
-    : 'http://127.0.0.1:3000',
+  smsURL: 'http://127.0.0.1:13300',
+  resultProxyURL: 'http://127.0.0.1:13200',
+  iexecGatewayURL: 'http://127.0.0.1:3000',
   voucherHubAddress: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda',
   voucherManagerWallet: new Wallet(
     '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
   ),
-  voucherSubgraphURL: process.env.DRONE
-    ? 'http://graphnode:8000/subgraphs/name/bellecour/iexec-voucher'
-    : 'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
+  voucherSubgraphURL: 'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
   learnProdWorkerpool: 'prod-v8-learn.main.pools.iexec.eth',
   learnProdWorkerpoolOwnerWallet: new Wallet(
     '0x800e01919eadf36f110f733decb1cc0f82e7941a748e89d7a3f76157f6654bb3'
@@ -40,7 +32,7 @@ export const TEST_CHAIN = {
     '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
   ),
   provider: new JsonRpcProvider(
-    process.env.DRONE ? 'http://bellecour-fork:8545' : 'http://127.0.0.1:8545',
+    'http://127.0.0.1:8545',
     undefined,
     {
       pollingInterval: 1000, // speed up tests
@@ -94,13 +86,10 @@ export const getTestConfig = (
   const ethProvider = getTestWeb3SignerProvider(privateKey);
   const options = {
     iexecOptions: getTestIExecOption(),
-    ipfsGateway: process.env.DRONE
-      ? 'http://ipfs:8080'
-      : 'http://127.0.0.1:8080',
-    ipfsNode: process.env.DRONE ? 'http://ipfs:5001' : 'http://127.0.0.1:5001',
-    dataProtectorSubgraph: process.env.DRONE
-      ? 'http://graphnode:8000/subgraphs/name/DataProtector-v2'
-      : 'http://127.0.0.1:8000/subgraphs/name/DataProtector-v2',
+    ipfsGateway: 'http://127.0.0.1:8080',
+    ipfsNode: 'http://127.0.0.1:5001',
+    dataProtectorSubgraph:
+      'http://127.0.0.1:8000/subgraphs/name/DataProtector-v2',
   };
   return [ethProvider, options];
 };

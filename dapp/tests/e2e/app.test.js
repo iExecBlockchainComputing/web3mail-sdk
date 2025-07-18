@@ -316,7 +316,7 @@ describe('sendEmail', () => {
 
   if (
     // runs in CI with services credentials
-    process.env.DRONE ||
+    process.env.GITHUB_ACTIONS ||
     // or locally when all credentials are set
     (process.env.MJ_APIKEY_PUBLIC &&
       process.env.MJ_APIKEY_PRIVATE &&
@@ -343,7 +343,7 @@ describe('sendEmail', () => {
 
         // requester secret setup
         process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
-          emailSubject: `web3mail test ${process.env.DRONE_COMMIT}`,
+          emailSubject: `web3mail test ${process.env.GITHUB_SHA}`,
           emailContentMultiAddr:
             '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
           emailContentEncryptionKey:
