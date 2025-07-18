@@ -9,11 +9,14 @@ export const getIExec = (
     providers: {},
     allowExperimentalNetworks: true,
   });
-  return new IExec({
-    ethProvider,
-  }, {
-    allowExperimentalNetworks: true,
-  });
+  return new IExec(
+    {
+      ethProvider,
+    },
+    {
+      allowExperimentalNetworks: true,
+    }
+  );
 };
 
 const APP_ADDRESS_FILE = '.app-address';
