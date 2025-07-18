@@ -1,47 +1,30 @@
 import { deployApp } from './singleFunction/deployApp.js';
-import {
-  DOCKER_IMAGE_DEV_TAG,
-  DOCKER_IMAGE_PROD_TAG,
-  DRONE_TARGET_DEPLOY_DEV,
-  DRONE_TARGET_DEPLOY_PROD,
-} from './config/config.js';
 import { getIExec, saveAppAddress } from './utils/utils.js';
 
 const main = async () => {
-  // get env variables from drone
-  const { DRONE_DEPLOY_TO, WALLET_PRIVATE_KEY_DEV, WALLET_PRIVATE_KEY_PROD } =
-    process.env;
+  // get env variables from GitHub Actions
+  const {
+    RPC_URL,
+    WALLET_PRIVATE_KEY,
+    DOCKER_IMAGE_TAG,
+    CHECKSUM,
+    FINGERPRINT,
+  } = process.env;
 
-  if (
-    !DRONE_DEPLOY_TO ||
-    (DRONE_DEPLOY_TO !== DRONE_TARGET_DEPLOY_DEV &&
-      DRONE_DEPLOY_TO !== DRONE_TARGET_DEPLOY_PROD)
-  )
-    throw Error(`Invalid promote target ${DRONE_DEPLOY_TO}`);
+  if (!WALLET_PRIVATE_KEY)
+    throw Error(`Missing WALLET_PRIVATE_KEY environment variable`);
 
-  let privateKey;
-  if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_DEV) {
-    privateKey = WALLET_PRIVATE_KEY_DEV;
-  } else if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_PROD) {
-    privateKey = WALLET_PRIVATE_KEY_PROD;
+  const iexec = getIExec(WALLET_PRIVATE_KEY, RPC_URL);
+
+  if (!DOCKER_IMAGE_TAG) {
+    throw Error(`Missing DOCKER_IMAGE_TAG environment variable.`);
   }
 
-  if (!privateKey)
-    throw Error(`Failed to get privateKey for target ${DRONE_DEPLOY_TO}`);
-
-  const iexec = getIExec(privateKey);
-
-  let dockerImageTag;
-  if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_DEV) {
-    dockerImageTag = DOCKER_IMAGE_DEV_TAG;
-  } else if (DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_PROD) {
-    dockerImageTag = DOCKER_IMAGE_PROD_TAG;
-  }
-
-  //deploy app
   const address = await deployApp({
     iexec,
-    dockerTag: dockerImageTag,
+    dockerTag: DOCKER_IMAGE_TAG,
+    checksum: CHECKSUM,
+    fingerprint: FINGERPRINT,
   });
   await saveAppAddress(address);
 };
