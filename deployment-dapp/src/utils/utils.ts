@@ -11,6 +11,8 @@ export const getIExec = (
   });
   return new IExec({
     ethProvider,
+  }, {
+    allowExperimentalNetworks: true,
   });
 };
 
