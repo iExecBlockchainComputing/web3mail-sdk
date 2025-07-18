@@ -1070,7 +1070,7 @@ steps:
       - npm install --save-dev ts-node
 
   - name: add resource to whitelist dev
-    image: node:18.12.1
+    image: node:18.19
     params:
       - ADDRESS_TO_ADD
     environment:
@@ -1086,6 +1086,7 @@ steps:
         - add-resource-to-whitelist-dev
       branch:
         - develop
+        - draft/test-add-ressource-to-whitelist
 
   - name: add resource to whitelist prod
     image: node:18.12.1
