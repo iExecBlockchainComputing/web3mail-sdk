@@ -34,7 +34,7 @@ jobs:
       - name: Extract tag
         id: tag
         run: |
-          echo "clean_tag=dev-${GITHUB_SHA}" | tee -a $GITHUB_OUTPUT
+          echo "clean_tag=dev" | tee -a $GITHUB_OUTPUT
 
   docker-publish:
     uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/docker-build.yml@docker-build-v2.3.1
@@ -121,6 +121,7 @@ jobs:
           MJ_SENDER: ${{ secrets.MAILJET_SENDER }}
           MAILGUN_APIKEY: ${{ secrets.MAILGUN_APIKEY }}
           WEB3MAIL_WHITELISTED_APPS: ${{ vars.WEB3MAIL_WHITELISTED_APPS }}
+          RPC_URL: ${{ secrets.RPC_URL }}
         run: |
           cd deployment-dapp
           npm run push-dapp-secret
@@ -130,6 +131,7 @@ jobs:
           WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_DAPP_OWNER_PRIVATEKEY }}
           PRICE: ${{ inputs.price || vars.SELL_ORDER_PRICE }}
           VOLUME: ${{ inputs.volume || vars.SELL_ORDER_VOLUME }}
+          RPC_URL: ${{ secrets.RPC_URL }}
         run: |
           cd deployment-dapp
           npm run publish-sell-order
