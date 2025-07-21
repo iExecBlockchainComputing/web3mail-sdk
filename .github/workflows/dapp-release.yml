@@ -63,8 +63,8 @@ jobs:
   deploy-multi-env-prod:
     strategy:
       matrix:
-        environment:
-          [bellecour-prod, arbitrum-sepolia-prod, arbitrum-mainnet-prod]
+        # TODO: bellecour-prod already deployed add it back for next release
+        environment: [arbitrum-sepolia-prod, arbitrum-mainnet-prod]
     needs: [extract-tag, sconify]
     runs-on: ubuntu-latest
     environment: ${{ matrix.environment }}
