@@ -3,7 +3,7 @@ name: publish-npm-sdk-latest
 on:
   push:
     tags:
-      - 'sdk-v*'
+      - 'web3mail-v*'
 
 jobs:
   npm-publish:
