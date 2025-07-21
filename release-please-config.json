@@ -32,7 +32,8 @@
     "dapp": {
       "release-type": "node",
       "changelog-path": "dapp/CHANGELOG.md",
-      "include-v-in-tag": true
+      "include-v-in-tag": true,
+      "exclude-paths": ["deployment-dapp","tests"]
     }
   }
 }
