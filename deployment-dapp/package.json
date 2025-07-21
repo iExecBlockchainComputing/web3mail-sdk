@@ -18,7 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "iexec": "^8.15.0",
+    "iexec": "^8.16.1",
     "typescript": "^5.0.4",
     "yup": "^1.2.0"
   },

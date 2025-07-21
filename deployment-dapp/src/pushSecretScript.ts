@@ -1,86 +1,39 @@
-import {
-  DRONE_TARGET_DEPLOY_DEV,
-  DRONE_TARGET_DEPLOY_PROD,
-  DRONE_TARGET_PUSH_SECRET_DEV,
-  DRONE_TARGET_PUSH_SECRET_PROD,
-  WEB3_MAIL_ENS_NAME_DEV,
-  WEB3_MAIL_ENS_NAME_PROD,
-  WEB3MAIL_WHITELISTED_APPS_DEV,
-  WEB3MAIL_WHITELISTED_APPS_PROD,
-} from './config/config.js';
 import { pushSecret } from './singleFunction/pushSecret.js';
-import { resolveName } from './singleFunction/resolveName.js';
 import { getIExec, loadAppAddress } from './utils/utils.js';
 
 const main = async () => {
-  // get env variables from drone
   const {
-    DRONE_DEPLOY_TO,
-    WALLET_PRIVATE_KEY_DEV,
-    WALLET_PRIVATE_KEY_PROD,
+    RPC_URL,
+    WALLET_PRIVATE_KEY,
     MJ_APIKEY_PUBLIC,
     MJ_APIKEY_PRIVATE,
     MJ_SENDER,
     MAILGUN_APIKEY,
+    WEB3MAIL_WHITELISTED_APPS,
   } = process.env;
 
-  if (
-    !DRONE_DEPLOY_TO ||
-    ![
-      DRONE_TARGET_DEPLOY_DEV,
-      DRONE_TARGET_DEPLOY_PROD,
-      DRONE_TARGET_PUSH_SECRET_DEV,
-      DRONE_TARGET_PUSH_SECRET_PROD,
-    ].includes(DRONE_DEPLOY_TO)
-  )
-    throw Error(`Invalid promote target ${DRONE_DEPLOY_TO}`);
-
+  if (!WALLET_PRIVATE_KEY)
+    throw Error(`Missing WALLET_PRIVATE_KEY environment variable`);
   if (!MJ_APIKEY_PUBLIC) throw Error('Missing env MJ_APIKEY_PUBLIC');
   if (!MJ_APIKEY_PRIVATE) throw Error('Missing env MJ_APIKEY_PRIVATE');
   if (!MJ_SENDER) throw Error('Missing env MJ_SENDER');
   if (!MAILGUN_APIKEY) throw Error('Missing env MAILGUN_APIKEY');
+  if (WEB3MAIL_WHITELISTED_APPS === undefined)
+    throw Error('Missing env WEB3MAIL_WHITELISTED_APPS');
 
-  let privateKey;
-  let baseWhitelistedApps;
+  if (!WALLET_PRIVATE_KEY)
+    throw Error(`Missing WALLET_PRIVATE_KEY environment variable`);
 
-  if (
-    DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_DEV ||
-    DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_DEV
-  ) {
-    privateKey = WALLET_PRIVATE_KEY_DEV;
-    baseWhitelistedApps = JSON.parse(WEB3MAIL_WHITELISTED_APPS_DEV);
-  } else if (
-    DRONE_DEPLOY_TO === DRONE_TARGET_DEPLOY_PROD ||
-    DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_PROD
-  ) {
-    privateKey = WALLET_PRIVATE_KEY_PROD;
-    baseWhitelistedApps = JSON.parse(WEB3MAIL_WHITELISTED_APPS_PROD);
-  }
+  const iexec = getIExec(WALLET_PRIVATE_KEY, RPC_URL);
 
-  if (!privateKey)
-    throw Error(`Failed to get privateKey for target ${DRONE_DEPLOY_TO}`);
-
-  const iexec = getIExec(privateKey);
-
-  const appAddress = await loadAppAddress().catch(() => {
-    console.log('No app address found falling back to ENS');
-    let ensName;
-    if (DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_DEV) {
-      ensName = WEB3_MAIL_ENS_NAME_DEV;
-    } else if (DRONE_DEPLOY_TO === DRONE_TARGET_PUSH_SECRET_PROD) {
-      ensName = WEB3_MAIL_ENS_NAME_PROD;
-    }
-    if (!ensName)
-      throw Error(`Failed to get ens name for target ${DRONE_DEPLOY_TO}`);
-    return resolveName(iexec, ensName);
-  });
+  const appAddress = await loadAppAddress();
 
   if (!appAddress) throw Error('Failed to get app address'); // If the app was not deployed, do not continue
+
   const fullWhitelistedApps = [
-    ...new Set([...baseWhitelistedApps, appAddress]),
+    ...new Set([...JSON.parse(WEB3MAIL_WHITELISTED_APPS), appAddress]),
   ];
-  //deploy app
-  //push app secret to the secret management
+
   const jsonSecret = JSON.stringify({
     MJ_APIKEY_PUBLIC,
     MJ_APIKEY_PRIVATE,
