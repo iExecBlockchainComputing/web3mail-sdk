@@ -58,7 +58,9 @@ export const getChainConfig = (
   }
 
   if (config.isExperimental && !options?.allowExperimentalNetworks) {
-    throw new Error(`Experimental network ${chainId} is not allowed. Use allowExperimentalNetworks option to enable it.`);
+    throw new Error(
+      `Experimental network ${chainId} is not allowed. Use allowExperimentalNetworks option to enable it.`
+    );
   }
 
   return config;
