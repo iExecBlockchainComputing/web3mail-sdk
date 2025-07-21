@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
-  "include-component-in-tag": false,
+  "include-component-in-tag": true,
   "changelog-sections": [
-    { "type": "feat", "section": "Added", "hidden": false },
+  { "type": "feat", "section": "Added", "hidden": false },
 
     { "type": "fix", "section": "Changed", "hidden": false },
     { "type": "change", "section": "Changed", "hidden": false },
@@ -21,19 +21,18 @@
     { "type": "deps", "section": "Misc", "hidden": true },
     { "type": "ci", "section": "Misc", "hidden": true },
     { "type": "docs", "section": "Misc", "hidden": true }
-  ],
+ ],
   "packages": {
     ".": {
       "release-type": "node",
       "changelog-path": "CHANGELOG.md",
       "include-v-in-tag": true,
-      "tag-format": "sdk-v${version}"
+      "exclude-paths": ["dapp","deployment-dapp","tests"]
     },
     "dapp": {
       "release-type": "node",
       "changelog-path": "dapp/CHANGELOG.md",
-      "include-v-in-tag": true,
-      "tag-format": "dapp-v${version}"
+      "include-v-in-tag": true
     }
   }
 }
