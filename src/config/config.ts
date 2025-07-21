@@ -20,9 +20,10 @@ interface ChainConfig {
   ipfsUploadUrl: string;
   ipfsGateway: string;
   whitelistSmartContract: string;
+  isExperimental?: boolean;
 }
 
-export const CHAIN_CONFIG: Record<number, ChainConfig> = {
+const CHAIN_CONFIG: Record<number, ChainConfig> = {
   [CHAIN_IDS.BELLECOUR]: {
     name: 'bellecour',
     dappAddress: 'web3mail.apps.iexec.eth',
@@ -33,12 +34,32 @@ export const CHAIN_CONFIG: Record<number, ChainConfig> = {
     ipfsGateway: 'https://ipfs-gateway.v8-bellecour.iex.ec',
     whitelistSmartContract: '0x781482C39CcE25546583EaC4957Fb7Bf04C277D2',
   },
+  [CHAIN_IDS.ARBITRUM_SEPOLIA]: {
+    name: 'arbitrum-sepolia-testnet',
+    dappAddress: 'web3mail.apps.iexec.eth',
+    prodWorkerpoolAddress: '0x39c3cdd91a7f1c4ed59108a9da4e79de9a1c1b59',
+    dataProtectorSubgraph:
+      'https://thegraph.iex.ec/subgraphs/name/bellecour/dataprotector-v2',
+    ipfsGateway: 'https://ipfs-gateway.arbitrum-sepolia-testnet.iex.ec',
+    ipfsUploadUrl: 'https://ipfs-upload.arbitrum-sepolia-testnet.iex.ec',
+    whitelistSmartContract: '0x781482C39CcE25546583EaC4957Fb7Bf04C277D2', // TODO: add the correct address
+    isExperimental: true,
+  },
 };
 
-export function getChainConfig(chainId: number): ChainConfig {
+export const getChainConfig = (
+  chainId: number,
+  options?: { allowExperimentalNetworks?: boolean }
+): ChainConfig => {
   const config = CHAIN_CONFIG[chainId];
+
   if (!config) {
-    throw new Error(`Unsupported chain ID: ${chainId}`);
+    throw new Error(`Chain configuration not found for chainId: ${chainId}`);
   }
+
+  if (config.isExperimental && !options?.allowExperimentalNetworks) {
+    throw new Error(`Experimental network ${chainId} is not allowed. Use allowExperimentalNetworks option to enable it.`);
+  }
+
   return config;
-}
+};

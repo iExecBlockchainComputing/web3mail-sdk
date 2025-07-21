@@ -2,7 +2,7 @@
 // needed to access and assert IExecDataProtector's private properties
 import { describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
-import { IExecWeb3mail } from '../../src/index.js';
+import { getWeb3Provider, IExecWeb3mail } from '../../src/index.js';
 import {
   getTestWeb3SignerProvider,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
@@ -124,4 +124,34 @@ describe('IExecWeb3mail()', () => {
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
   );
+
+  describe('When instantiating SDK with an experimental network', () => {
+    const experimentalNetworkSigner = getWeb3Provider(
+      Wallet.createRandom().privateKey,
+      {
+        host: 421614,
+        allowExperimentalNetworks: true,
+      }
+    );
+
+    describe('Without allowExperimentalNetworks', () => {
+      it('should throw a configuration error', async () => {
+        const web3mail = new IExecWeb3mail(experimentalNetworkSigner);
+        await expect(web3mail.init()).rejects.toThrow(
+          'Experimental network 421614 is not allowed. Use allowExperimentalNetworks option to enable it.'
+        );
+      });
+    });
+
+    describe('With allowExperimentalNetworks: true', () => {
+      it('should resolve the configuration', async () => {
+        const web3mail = new IExecWeb3mail(
+          experimentalNetworkSigner,
+          { allowExperimentalNetworks: true }
+        );
+        await expect(web3mail.init()).resolves.toBeUndefined();
+        expect(web3mail).toBeInstanceOf(IExecWeb3mail);
+      });
+    });
+  });
 });
