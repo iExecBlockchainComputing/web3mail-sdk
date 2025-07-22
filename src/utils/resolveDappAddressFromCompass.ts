@@ -36,7 +36,8 @@ export async function resolveDappAddressFromCompass(
           `Failed to fetch dapp address from compass: ${response.statusText}`
         );
       }
-      if (response.headers.get('Content-Type') !== 'application/json') {
+      const contentType = response.headers.get('Content-Type');
+      if (!contentType || contentType.indexOf('application/json') === -1) {
         throw new Error(
           'Failed to fetch dapp address from compass: response is not JSON'
         );
