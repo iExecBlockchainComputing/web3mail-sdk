@@ -7,7 +7,7 @@ import {
   getTestWeb3SignerProvider,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
 } from '../test-utils.js';
-import { DEFAULT_CHAIN_ID, getChainConfig } from '../../src/config/config.js';
+import { DEFAULT_CHAIN_ID, getChainDefaultConfig } from '../../src/config/config.js';
 
 describe('IExecWeb3mail()', () => {
   it('instantiates with a valid ethProvider', async () => {
@@ -26,7 +26,9 @@ describe('IExecWeb3mail()', () => {
     );
     await web3mail.init();
     const ipfsGateway = web3mail['ipfsGateway'];
-    expect(ipfsGateway).toStrictEqual(getChainConfig(DEFAULT_CHAIN_ID).ipfsGateway);
+    const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+    expect(defaultConfig).not.toBeNull();
+    expect(ipfsGateway).toStrictEqual(defaultConfig!.ipfsGateway);
   });
 
   it('should use provided ipfs gateway url when ipfsGateway is provided', async () => {
@@ -49,9 +51,11 @@ describe('IExecWeb3mail()', () => {
       getTestWeb3SignerProvider(wallet.privateKey)
     );
     await web3mail.init();
-    const graphQLClientUrl = web3mail['graphQLClient'];
-    expect(graphQLClientUrl['url']).toBe(
-      getChainConfig(DEFAULT_CHAIN_ID).dataProtectorSubgraph);
+    const graphQLClient = web3mail['graphQLClient'];
+    const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+    expect(defaultConfig).not.toBeNull();
+    expect(graphQLClient['url']).toBe(
+      defaultConfig!.dataProtectorSubgraph);
   });
 
   it('should use provided data Protector Subgraph URL when subgraphUrl is provided', async () => {
@@ -138,7 +142,7 @@ describe('IExecWeb3mail()', () => {
       it('should throw a configuration error', async () => {
         const web3mail = new IExecWeb3mail(experimentalNetworkSigner);
         await expect(web3mail.init()).rejects.toThrow(
-          'Experimental network 421614 is not allowed. Use allowExperimentalNetworks option to enable it.'
+          'Missing required configuration for chainId 421614: dataProtectorSubgraph, dappAddress, whitelistSmartContract, ipfsGateway, prodWorkerpoolAddress, ipfsUploadUrl'
         );
       });
     });

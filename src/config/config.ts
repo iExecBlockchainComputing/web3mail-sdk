@@ -41,20 +41,18 @@ const CHAIN_CONFIG: Record<number, ChainConfig> = {
   },
 };
 
-export const getChainConfig = (
+export const getChainDefaultConfig = (
   chainId: number,
   options?: { allowExperimentalNetworks?: boolean }
-): ChainConfig => {
+): ChainConfig | null => {
   const config = CHAIN_CONFIG[chainId];
 
   if (!config) {
-    throw new Error(`Chain configuration not found for chainId: ${chainId}`);
+    return null;
   }
 
   if (config.isExperimental && !options?.allowExperimentalNetworks) {
-    throw new Error(
-      `Experimental network ${chainId} is not allowed. Use allowExperimentalNetworks option to enable it.`
-    );
+    return null;
   }
 
   return config;

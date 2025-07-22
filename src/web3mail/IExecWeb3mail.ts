@@ -16,7 +16,7 @@ import {
 } from './types.js';
 import { isValidProvider } from '../utils/validators.js';
 import { getChainIdFromProvider } from '../utils/getChainId.js';
-import { getChainConfig } from '../config/config.js';
+import { getChainDefaultConfig } from '../config/config.js';
 
 type EthersCompatibleProvider =
   | AbstractProvider
@@ -122,9 +122,11 @@ export class IExecWeb3mail {
 
   private async resolveConfig(): Promise<Web3mailResolvedConfig> {
     const chainId = await getChainIdFromProvider(this.ethProvider);
-    const chainDefaultConfig = getChainConfig(chainId, {
+    const chainDefaultConfig = getChainDefaultConfig(chainId, {
       allowExperimentalNetworks: this.options.allowExperimentalNetworks,
     });
+
+    // assigning config from options and fallback to default config
     const subgraphUrl =
       this.options?.dataProtectorSubgraph ||
       chainDefaultConfig?.dataProtectorSubgraph;
@@ -139,6 +141,7 @@ export class IExecWeb3mail {
     const ipfsNode =
       this.options?.ipfsNode || chainDefaultConfig?.ipfsUploadUrl;
 
+    // throw if any config field is missing
     const missing = [];
     if (!subgraphUrl) missing.push('dataProtectorSubgraph');
     if (!dappAddressOrENS) missing.push('dappAddress');

@@ -16,7 +16,7 @@ import {
   waitSubgraphIndexing,
 } from '../test-utils.js';
 import IExec from 'iexec/IExec';
-import { DEFAULT_CHAIN_ID, getChainConfig } from '../../src/config/config.js';
+import { DEFAULT_CHAIN_ID, getChainDefaultConfig } from '../../src/config/config.js';
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: HDNodeWallet;
@@ -41,7 +41,7 @@ describe('web3mail.fetchMyContacts()', () => {
     'pass with a granted access for a specific requester',
     async () => {
       await dataProtector.grantAccess({
-        authorizedApp: getChainConfig(DEFAULT_CHAIN_ID).dappAddress,
+        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
         protectedData: protectedData.address,
         authorizedUser: wallet.address,
       });
@@ -65,7 +65,7 @@ describe('web3mail.fetchMyContacts()', () => {
     'pass with a granted access for any requester',
     async () => {
       const grantedAccessForAnyRequester = await dataProtector.grantAccess({
-        authorizedApp: getChainConfig(DEFAULT_CHAIN_ID).dappAddress,
+        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
         protectedData: protectedData.address,
         authorizedUser: NULL_ADDRESS,
       });
@@ -104,7 +104,7 @@ describe('web3mail.fetchMyContacts()', () => {
       const encryptionKey = await iexec.dataset.generateEncryptionKey();
       await iexec.dataset.pushDatasetSecret(dataset.address, encryptionKey);
       await dataProtector.grantAccess({
-        authorizedApp: getChainConfig(DEFAULT_CHAIN_ID).dappAddress,
+        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
         protectedData: dataset.address,
         authorizedUser: wallet.address,
       });
@@ -126,7 +126,7 @@ describe('web3mail.fetchMyContacts()', () => {
       await waitSubgraphIndexing();
 
       await dataProtector.grantAccess({
-        authorizedApp: getChainConfig(DEFAULT_CHAIN_ID).dappAddress,
+        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
         protectedData: notValidProtectedData.address,
         authorizedUser: wallet.address,
       });
