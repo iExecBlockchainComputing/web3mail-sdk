@@ -10,7 +10,6 @@ on:
         options:
           - bellecour-dev
           - arbitrum-sepolia-dev
-          - arbitrum-mainnet-dev
       price:
         description: 'Sell order price (optionnel)'
         type: string
