@@ -28,8 +28,8 @@
     "test:e2e": "NODE_OPTIONS=--experimental-vm-modules jest --testMatch \"**/tests/**/*.test.ts\" --forceExit -b",
     "test:e2e:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --testMatch \"**/tests/**/*.test.ts\" --coverage",
     "lint": "eslint .",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "check-format": "prettier --check \"src/**/*.ts\"",
+    "format": "prettier --write \"(src|tests)/**/*.ts\"",
+    "check-format": "prettier --check \"(src|tests)/**/*.ts\"",
     "stop-test-stack": "cd tests && docker compose down --volumes --remove-orphans",
     "start-test-stack": "cd tests && npm run stop-test-stack && node scripts/prepare-test-env.js && docker compose build  &&  docker compose up -d && node scripts/prepare-bellecour-fork-for-tests.js"
   },

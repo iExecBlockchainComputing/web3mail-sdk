@@ -19,7 +19,8 @@ export const TEST_CHAIN = {
   voucherManagerWallet: new Wallet(
     '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
   ),
-  voucherSubgraphURL: 'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
+  voucherSubgraphURL:
+    'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
   learnProdWorkerpool: 'prod-v8-learn.main.pools.iexec.eth',
   learnProdWorkerpoolOwnerWallet: new Wallet(
     '0x800e01919eadf36f110f733decb1cc0f82e7941a748e89d7a3f76157f6654bb3'
@@ -31,13 +32,9 @@ export const TEST_CHAIN = {
   appOwnerWallet: new Wallet(
     '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
   ),
-  provider: new JsonRpcProvider(
-    'http://127.0.0.1:8545',
-    undefined,
-    {
-      pollingInterval: 1000, // speed up tests
-    }
-  ),
+  provider: new JsonRpcProvider('http://127.0.0.1:8545', undefined, {
+    pollingInterval: 1000, // speed up tests
+  }),
   hubAddress: '0x3eca1B216A7DF1C7689aEb259fFB83ADFB894E7f',
 };
 
