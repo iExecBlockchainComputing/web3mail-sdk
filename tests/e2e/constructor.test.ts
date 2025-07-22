@@ -175,9 +175,7 @@ describe('IExecWeb3mail()', () => {
           arbitrumSepoliaConfig!.ipfsGateway
         );
         expect(web3mail['ipfsNode']).toBe(arbitrumSepoliaConfig!.ipfsUploadUrl);
-        expect(web3mail['dappAddressOrENS']).toBe(
-          arbitrumSepoliaConfig!.dappAddress
-        );
+        expect(web3mail['dappAddressOrENS']).toMatch(/^0x[a-fA-F0-9]{40}$/); // resolved from Compass
         expect(web3mail['dappWhitelistAddress']).toBe(
           arbitrumSepoliaConfig!.whitelistSmartContract.toLowerCase()
         );
