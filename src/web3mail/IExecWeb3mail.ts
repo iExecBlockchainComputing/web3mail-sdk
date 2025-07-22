@@ -126,7 +126,6 @@ export class IExecWeb3mail {
       allowExperimentalNetworks: this.options.allowExperimentalNetworks,
     });
 
-    // assigning config from options and fallback to default config
     const subgraphUrl =
       this.options?.dataProtectorSubgraph ||
       chainDefaultConfig?.dataProtectorSubgraph;
@@ -141,7 +140,6 @@ export class IExecWeb3mail {
     const ipfsNode =
       this.options?.ipfsNode || chainDefaultConfig?.ipfsUploadUrl;
 
-    // throw if any config field is missing
     const missing = [];
     if (!subgraphUrl) missing.push('dataProtectorSubgraph');
     if (!dappAddressOrENS) missing.push('dappAddress');

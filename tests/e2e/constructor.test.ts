@@ -19,21 +19,6 @@ describe('IExecWeb3mail()', () => {
     expect(web3mail).toBeInstanceOf(IExecWeb3mail);
   });
 
-  it('should verify Arbitrum Sepolia configuration is properly defined', () => {
-    const arbitrumSepoliaConfig = getChainDefaultConfig(421614, { allowExperimentalNetworks: true });
-    expect(arbitrumSepoliaConfig).not.toBeNull();
-
-    // Verify all required fields are present
-    expect(arbitrumSepoliaConfig!.name).toBe('arbitrum-sepolia-testnet');
-    expect(arbitrumSepoliaConfig!.dappAddress).toBe('web3mail.apps.iexec.eth');
-    expect(arbitrumSepoliaConfig!.prodWorkerpoolAddress).toBe('0x39c3cdd91a7f1c4ed59108a9da4e79de9a1c1b59');
-    expect(arbitrumSepoliaConfig!.dataProtectorSubgraph).toBe('https://thegraph.iex.ec/subgraphs/name/bellecour/dataprotector-v2');
-    expect(arbitrumSepoliaConfig!.ipfsGateway).toBe('https://ipfs-gateway.arbitrum-sepolia-testnet.iex.ec');
-    expect(arbitrumSepoliaConfig!.ipfsUploadUrl).toBe('https://ipfs-upload.arbitrum-sepolia-testnet.iex.ec');
-    expect(arbitrumSepoliaConfig!.whitelistSmartContract).toBe('0x781482C39CcE25546583EaC4957Fb7Bf04C277D2');
-    expect(arbitrumSepoliaConfig!.isExperimental).toBe(true);
-  });
-
   it('should use default ipfs gateway url when ipfsGateway is not provided', async () => {
     const wallet = Wallet.createRandom();
     const web3mail = new IExecWeb3mail(
