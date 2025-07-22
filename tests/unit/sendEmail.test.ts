@@ -188,13 +188,6 @@ describe('sendEmail', () => {
       // --- THEN
       const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
       expect(defaultConfig).not.toBeNull();
-      const mockConfig = {
-        ipfsGateway: defaultConfig!.ipfsGateway,
-        ipfsNode: defaultConfig!.ipfsUploadUrl,
-        workerpoolAddressOrEns: defaultConfig!.prodWorkerpoolAddress,
-        dappAddressOrENS: defaultConfig!.dappAddress,
-        dappWhitelistAddress: defaultConfig!.whitelistSmartContract.toLowerCase(),
-      };
       expect(iexec.orderbook.fetchWorkerpoolOrderbook).toHaveBeenNthCalledWith(
         1,
         {

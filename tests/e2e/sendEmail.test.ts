@@ -63,7 +63,6 @@ describe('web3mail.sendEmail()', () => {
     );
     const resourceProvider = new IExec({ ethProvider }, iexecOptions);
     const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
-    expect(defaultConfig).not.toBeNull();
     await createAndPublishAppOrders(resourceProvider, defaultConfig!.dappAddress);
 
     learnProdWorkerpoolAddress = await resourceProvider.ens.resolveName(
