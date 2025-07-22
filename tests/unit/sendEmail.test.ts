@@ -3,7 +3,10 @@ import { ValidationError } from 'yup';
 import { type SendEmail } from '../../src/web3mail/sendEmail.js';
 import { getRandomAddress, TEST_CHAIN } from '../test-utils.js';
 import { mockAllForSendEmail } from '../utils/mockAllForSendEmail.js';
-import { DEFAULT_CHAIN_ID, getChainDefaultConfig } from '../../src/config/config.js';
+import {
+  DEFAULT_CHAIN_ID,
+  getChainDefaultConfig,
+} from '../../src/config/config.js';
 
 jest.unstable_mockModule('../../src/utils/subgraphQuery.js', () => ({
   checkProtectedDataValidity: jest.fn(),
@@ -177,9 +180,13 @@ describe('sendEmail', () => {
         iexec,
         ipfsGateway: getChainDefaultConfig(DEFAULT_CHAIN_ID)?.ipfsGateway,
         ipfsNode: getChainDefaultConfig(DEFAULT_CHAIN_ID)?.ipfsUploadUrl,
-        workerpoolAddressOrEns: getChainDefaultConfig(DEFAULT_CHAIN_ID)?.prodWorkerpoolAddress,
+        workerpoolAddressOrEns:
+          getChainDefaultConfig(DEFAULT_CHAIN_ID)?.prodWorkerpoolAddress,
         dappAddressOrENS: getChainDefaultConfig(DEFAULT_CHAIN_ID)?.dappAddress,
-        dappWhitelistAddress: getChainDefaultConfig(DEFAULT_CHAIN_ID)?.whitelistSmartContract.toLowerCase(),
+        dappWhitelistAddress:
+          getChainDefaultConfig(
+            DEFAULT_CHAIN_ID
+          )?.whitelistSmartContract.toLowerCase(),
         emailSubject: 'e2e mail object for test',
         emailContent: OVERSIZED_CONTENT,
         protectedData,

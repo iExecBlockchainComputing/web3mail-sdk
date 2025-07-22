@@ -24,7 +24,10 @@ import {
 } from '../test-utils.js';
 import { IExec } from 'iexec';
 import { NULL_ADDRESS } from 'iexec/utils';
-import { DEFAULT_CHAIN_ID, getChainDefaultConfig } from '../../src/config/config.js';
+import {
+  DEFAULT_CHAIN_ID,
+  getChainDefaultConfig,
+} from '../../src/config/config.js';
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: HDNodeWallet;
@@ -63,7 +66,10 @@ describe('web3mail.sendEmail()', () => {
     );
     const resourceProvider = new IExec({ ethProvider }, iexecOptions);
     const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
-    await createAndPublishAppOrders(resourceProvider, defaultConfig!.dappAddress);
+    await createAndPublishAppOrders(
+      resourceProvider,
+      defaultConfig!.dappAddress
+    );
 
     learnProdWorkerpoolAddress = await resourceProvider.ens.resolveName(
       TEST_CHAIN.learnProdWorkerpool
@@ -284,7 +290,8 @@ describe('web3mail.sendEmail()', () => {
 
       //grant access to whitelist
       await dataProtector.grantAccess({
-        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).whitelistSmartContract, //whitelist address
+        authorizedApp:
+          getChainDefaultConfig(DEFAULT_CHAIN_ID).whitelistSmartContract, //whitelist address
         protectedData: protectedDataForWhitelist.address,
         authorizedUser: consumerWallet.address, // consumer wallet
         numberOfAccess: 1000,
@@ -453,8 +460,8 @@ describe('web3mail.sendEmail()', () => {
           expect(sendEmailResponse.taskId).toBeDefined();
         },
         2 * MAX_EXPECTED_BLOCKTIME +
-        MAX_EXPECTED_WEB2_SERVICES_TIME +
-        MAX_EXPECTED_SUBGRAPH_INDEXING_TIME
+          MAX_EXPECTED_WEB2_SERVICES_TIME +
+          MAX_EXPECTED_SUBGRAPH_INDEXING_TIME
       );
     });
 
@@ -511,8 +518,8 @@ describe('web3mail.sendEmail()', () => {
             );
           },
           2 * MAX_EXPECTED_BLOCKTIME +
-          MAX_EXPECTED_WEB2_SERVICES_TIME +
-          MAX_EXPECTED_SUBGRAPH_INDEXING_TIME
+            MAX_EXPECTED_WEB2_SERVICES_TIME +
+            MAX_EXPECTED_SUBGRAPH_INDEXING_TIME
         );
         it(
           'should create task if user approves the non sponsored amount',
@@ -563,8 +570,8 @@ describe('web3mail.sendEmail()', () => {
             expect(sendEmailResponse.taskId).toBeDefined();
           },
           2 * MAX_EXPECTED_BLOCKTIME +
-          MAX_EXPECTED_WEB2_SERVICES_TIME +
-          MAX_EXPECTED_SUBGRAPH_INDEXING_TIME
+            MAX_EXPECTED_WEB2_SERVICES_TIME +
+            MAX_EXPECTED_SUBGRAPH_INDEXING_TIME
         );
       });
       describe('and workerpoolMaxPrice does NOT covers the non sponsored amount', () => {
@@ -617,8 +624,8 @@ describe('web3mail.sendEmail()', () => {
             );
           },
           2 * MAX_EXPECTED_BLOCKTIME +
-          MAX_EXPECTED_WEB2_SERVICES_TIME +
-          MAX_EXPECTED_SUBGRAPH_INDEXING_TIME
+            MAX_EXPECTED_WEB2_SERVICES_TIME +
+            MAX_EXPECTED_SUBGRAPH_INDEXING_TIME
         );
       });
     });

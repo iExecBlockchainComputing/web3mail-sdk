@@ -16,7 +16,10 @@ import {
   waitSubgraphIndexing,
 } from '../test-utils.js';
 import IExec from 'iexec/IExec';
-import { DEFAULT_CHAIN_ID, getChainDefaultConfig } from '../../src/config/config.js';
+import {
+  DEFAULT_CHAIN_ID,
+  getChainDefaultConfig,
+} from '../../src/config/config.js';
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: HDNodeWallet;
@@ -51,11 +54,11 @@ describe('web3mail.fetchMyContacts()', () => {
       });
       expect(
         foundContactForASpecificRequester &&
-        foundContactForASpecificRequester.address
+          foundContactForASpecificRequester.address
       ).toBeDefined();
       expect(
         foundContactForASpecificRequester &&
-        foundContactForASpecificRequester.address
+          foundContactForASpecificRequester.address
       ).toBe(protectedData.address.toLocaleLowerCase());
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
