@@ -8,7 +8,7 @@ export const DEFAULT_CHAIN_ID = 134;
 
 interface ChainConfig {
   name: string;
-  dappAddress: string;
+  dappAddress?: string;
   prodWorkerpoolAddress: string;
   dataProtectorSubgraph: string;
   ipfsUploadUrl: string;
@@ -30,7 +30,7 @@ const CHAIN_CONFIG: Record<number, ChainConfig> = {
   },
   421614: {
     name: 'arbitrum-sepolia-testnet',
-    dappAddress: 'web3mail.apps.iexec.eth',
+    dappAddress: undefined, // ENS not supported on this network, address will be resolved from Compass
     prodWorkerpoolAddress: '0x39c3cdd91a7f1c4ed59108a9da4e79de9a1c1b59',
     dataProtectorSubgraph:
       'https://thegraph.iex.ec/subgraphs/name/bellecour/dataprotector-v2',

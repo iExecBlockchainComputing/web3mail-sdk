@@ -220,4 +220,27 @@ describe('IExecWeb3mail()', () => {
       });
     });
   });
+
+  describe('When instantiating SDK with on a network backed by Compass', () => {
+    it('should resolve dapp address from Compass', async () => {
+      const chainId = 421614; // Arbitrum Sepolia Testnet ENS not supported
+      const chainConfig = getChainDefaultConfig(chainId, {
+        allowExperimentalNetworks: true,
+      });
+      expect(chainConfig.dappAddress).toBeUndefined(); // ENS not supported on this network
+
+      const web3mail = new IExecWeb3mail(
+        getWeb3Provider(Wallet.createRandom().privateKey, {
+          host: chainId,
+          allowExperimentalNetworks: true,
+        }),
+        { allowExperimentalNetworks: true }
+      );
+      await web3mail.init();
+
+      const dappAddressOrENS = web3mail['dappAddressOrENS'];
+      expect(typeof dappAddressOrENS).toBe('string');
+      expect(dappAddressOrENS).toMatch(/^0x[a-fA-F0-9]{40}$/);
+    });
+  });
 });
