@@ -105,6 +105,7 @@ jobs:
           MJ_SENDER: ${{ secrets.MAILJET_SENDER }}
           MAILGUN_APIKEY: ${{ secrets.MAILGUN_APIKEY }}
           WEB3MAIL_WHITELISTED_APPS: ${{ vars.WEB3MAIL_WHITELISTED_APPS }}
+          RPC_URL: ${{ secrets.RPC_URL }}
         run: |
           cd deployment-dapp
           npm run push-dapp-secret
@@ -114,6 +115,7 @@ jobs:
           WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_DAPP_OWNER_PRIVATEKEY }}
           PRICE: ${{ vars.SELL_ORDER_PRICE }}
           VOLUME: ${{ vars.SELL_ORDER_VOLUME }}
+          RPC_URL: ${{ secrets.RPC_URL }}
         run: |
           cd deployment-dapp
           npm run publish-sell-order
