@@ -122,8 +122,9 @@ jobs:
 
       - name: Add resource to whitelist
         env:
-          CONTRACT_ADDRESS: ${{ secrets.WEB3MAIL_WHITELIST_CONTRACT_ADDRESS }}
-          WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
+          CONTRACT_ADDRESS: ${{ vars.WEB3MAIL_WHITELIST_CONTRACT_ADDRESS }}
+          PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
+          RPC_URL: ${{ secrets.RPC_URL }}
         run: |
           cd node_modules/whitelist-smart-contract
           export ADDRESS_TO_ADD=$(cat ../../deployment-dapp/.app-address) && npm run addResourceToWhitelist
