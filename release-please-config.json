@@ -28,13 +28,19 @@
       "release-type": "node",
       "changelog-path": "CHANGELOG.md",
       "include-v-in-tag": true,
-      "exclude-paths": ["dapp", "deployment-dapp", "tests"]
+      "exclude-paths": [
+        ".github",
+        "dapp",
+        "deployment-dapp",
+        "tests",
+        "demo",
+        "technical-design"
+      ]
     },
     "dapp": {
       "release-type": "node",
       "changelog-path": "dapp/CHANGELOG.md",
-      "include-v-in-tag": true,
-      "exclude-paths": ["deployment-dapp", "tests"]
+      "include-v-in-tag": true
     }
   }
 }
