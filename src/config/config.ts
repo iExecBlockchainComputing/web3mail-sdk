@@ -33,7 +33,7 @@ const CHAIN_CONFIG: Record<number, ChainConfig> = {
     dappAddress: undefined, // ENS not supported on this network, address will be resolved from Compass
     prodWorkerpoolAddress: '0x39c3cdd91a7f1c4ed59108a9da4e79de9a1c1b59',
     dataProtectorSubgraph:
-      'https://thegraph.iex.ec/subgraphs/name/bellecour/dataprotector-v2',
+      'https://thegraph.arbitrum-sepolia-testnet.iex.ec/api/subgraphs/id/5YjRPLtjS6GH6bB4yY55Qg4HzwtRGQ8TaHtGf9UBWWd',
     ipfsGateway: 'https://ipfs-gateway.arbitrum-sepolia-testnet.iex.ec',
     ipfsUploadUrl: 'https://ipfs-upload.arbitrum-sepolia-testnet.iex.ec',
     whitelistSmartContract: '0x781482C39CcE25546583EaC4957Fb7Bf04C277D2', // TODO: add the correct address
