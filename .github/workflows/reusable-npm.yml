@@ -32,4 +32,4 @@ jobs:
       environment: ${{ (inputs.dry-run && '') || inputs.tag }}
       provenance: ${{ !inputs.dry-run }}
     secrets:
-      npm-token: ${{ secrets.NPM_TOKEN }}
+      npm-token: ${{ secrets.npm-token }}
