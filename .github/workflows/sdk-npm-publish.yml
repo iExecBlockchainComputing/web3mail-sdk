@@ -1,0 +1,47 @@
+name: Publish Package NPM - web3mail
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'NPM tag to publish (latest or nightly)'
+        required: true
+        type: choice
+        options:
+          - latest
+          - nightly
+        default: nightly
+
+jobs:
+  set-publish-version:
+    # Run only on main branch
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+      - name: Set publish version
+        id: set-publish-version
+        if: github.event.inputs.tag == 'nightly'
+        run: |
+          if [ "${{ github.event.inputs.tag }}" == "nightly" ]; then
+            CURRENT_VERSION=$(npm pkg get version | tr -d '"')
+            NIGHTLY_VERSION="${CURRENT_VERSION}-nightly-${GITHUB_SHA::7}"
+            echo "VERSION=${NIGHTLY_VERSION}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=$(npm pkg get version | tr -d '"')" >> $GITHUB_OUTPUT
+          fi
+    outputs:
+      VERSION: ${{ steps.set-publish-version.outputs.VERSION }}
+
+  publish-npm:
+    # Run only on main branch
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/reusable-sdk-npm.yml
+    needs: set-publish-version
+    with:
+      tag: ${{ github.event.inputs.tag }}
+      version: ${{ needs.set-publish-version.outputs.VERSION }}
+    secrets:
+      npm-token: ${{ secrets.NPM_TOKEN }}
