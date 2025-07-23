@@ -36,7 +36,7 @@ const CHAIN_CONFIG: Record<number, ChainConfig> = {
       'https://thegraph.arbitrum-sepolia-testnet.iex.ec/api/subgraphs/id/5YjRPLtjS6GH6bB4yY55Qg4HzwtRGQ8TaHtGf9UBWWd',
     ipfsGateway: 'https://ipfs-gateway.arbitrum-sepolia-testnet.iex.ec',
     ipfsUploadUrl: 'https://ipfs-upload.arbitrum-sepolia-testnet.iex.ec',
-    whitelistSmartContract: '0x8d46d40840f1Aa2264F96184Ffadf04e5D573B9B', // TODO: add the correct address
+    whitelistSmartContract: '0x8d46d40840f1Aa2264F96184Ffadf04e5D573B9B',
     isExperimental: true,
   },
 };
