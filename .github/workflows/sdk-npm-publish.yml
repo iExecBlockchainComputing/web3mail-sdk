@@ -28,14 +28,13 @@ jobs:
 
       - name: Set publish version
         id: set-publish-version
-        if: github.event.inputs.tag == 'nightly'
         run: |
+          CURRENT_VERSION=$(npm pkg get version | tr -d '"')
           if [ "${{ github.event.inputs.tag }}" == "nightly" ]; then
-            CURRENT_VERSION=$(npm pkg get version | tr -d '"')
-            NIGHTLY_VERSION="${CURRENT_VERSION}-nightly-${GITHUB_SHA::7}"
+            NIGHTLY_VERSION="${CURRENT_VERSION}-nightly-${GITHUB_SHA}"
             echo "VERSION=${NIGHTLY_VERSION}" >> $GITHUB_OUTPUT
           else
-            echo "VERSION=$(npm pkg get version | tr -d '"')" >> $GITHUB_OUTPUT
+            echo "VERSION=${CURRENT_VERSION}" >> $GITHUB_OUTPUT
           fi
     outputs:
       VERSION: ${{ steps.set-publish-version.outputs.VERSION }}
