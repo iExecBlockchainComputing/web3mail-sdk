@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.2.2...web3mail-v1.3.0) (2025-07-23)
+
+
+### Added
+
+* add multichain configuration support ([4b2de3a](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/4b2de3a014c97c00fa4ac64b759899fe598a9695))
+* add support for experimental networks ([#196](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/196)) ([887f97a](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/887f97aa4ae2a3f3c347806439d353347ce96bd7))
+* dapp address resolution from compass ([#200](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/200)) ([2216f3b](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/2216f3b6907b73b756b1a409c6d7c098b2b701b6))
+* remove arbitrum-mainnet-dev from supported environments ([#197](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/197)) ([3231966](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/3231966929d4bb87bf786d28d2a6614adf5b2c6f))
+
+
+### Changed
+
+* add missing RPC_URL ([#198](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/198)) ([cfd9547](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/cfd95473663b80628a50febd61e05b4946b7c0fd))
+* remove redundant useVoucher parameter in sendEmail method ([84f26de](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/84f26de7ab5bbb4c2b3b38a834b289bac8d19cdb))
+* remove redundant useVoucher parameter in sendEmail method ([34024fd](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/34024fddefdebba79f0861651741ba2915fea919))
+* **sendEmail:** use custom workerpool when provided ([f66c52a](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/f66c52abdd5a3e1b8fac07a934c8969b917f7a16))
+* update arbitrum-sepolia dataProtectorSubgraph URL ([#201](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/201)) ([74e3266](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/74e3266e49959e287638028fee8aa1617fa7a72a))
+
 ## [1.2.2]
 
 ### Added
