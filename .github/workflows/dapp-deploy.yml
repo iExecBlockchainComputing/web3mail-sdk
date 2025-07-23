@@ -137,7 +137,7 @@ jobs:
 
       - name: Add resource to whitelist
         env:
-          CONTRACT_ADDRESS: ${{ secrets.WEB3MAIL_WHITELIST_CONTRACT_ADDRESS }}
+          CONTRACT_ADDRESS: ${{ vars.WEB3MAIL_WHITELIST_CONTRACT_ADDRESS }}
           WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
         run: |
           cd node_modules/whitelist-smart-contract
