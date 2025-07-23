@@ -17,6 +17,7 @@ import {
 import { isValidProvider } from '../utils/validators.js';
 import { getChainIdFromProvider } from '../utils/getChainId.js';
 import { getChainDefaultConfig } from '../config/config.js';
+import { resolveDappAddressFromCompass } from '../utils/resolveDappAddressFromCompass.js';
 
 type EthersCompatibleProvider =
   | AbstractProvider
@@ -126,16 +127,37 @@ export class IExecWeb3mail {
       allowExperimentalNetworks: this.options.allowExperimentalNetworks,
     });
 
+    const ipfsGateway =
+      this.options?.ipfsGateway || chainDefaultConfig?.ipfsGateway;
+
+    let iexec: IExec, graphQLClient: GraphQLClient;
+
+    try {
+      iexec = new IExec(
+        { ethProvider: this.ethProvider },
+        {
+          ipfsGatewayURL: ipfsGateway,
+          ...this.options?.iexecOptions,
+          allowExperimentalNetworks: this.options.allowExperimentalNetworks,
+        }
+      );
+    } catch (e: any) {
+      throw new Error(`Unsupported ethProvider: ${e.message}`);
+    }
+
     const subgraphUrl =
       this.options?.dataProtectorSubgraph ||
       chainDefaultConfig?.dataProtectorSubgraph;
     const dappAddressOrENS =
-      this.options?.dappAddressOrENS || chainDefaultConfig?.dappAddress;
+      this.options?.dappAddressOrENS ||
+      chainDefaultConfig?.dappAddress ||
+      (await resolveDappAddressFromCompass(
+        await iexec.config.resolveCompassURL(),
+        chainId
+      ));
     const dappWhitelistAddress =
       this.options?.dappWhitelistAddress ||
       chainDefaultConfig?.whitelistSmartContract;
-    const ipfsGateway =
-      this.options?.ipfsGateway || chainDefaultConfig?.ipfsGateway;
     const defaultWorkerpool = chainDefaultConfig?.prodWorkerpoolAddress;
     const ipfsNode =
       this.options?.ipfsNode || chainDefaultConfig?.ipfsUploadUrl;
@@ -154,21 +176,6 @@ export class IExecWeb3mail {
           ', '
         )}`
       );
-    }
-
-    let iexec: IExec, graphQLClient: GraphQLClient;
-
-    try {
-      iexec = new IExec(
-        { ethProvider: this.ethProvider },
-        {
-          ipfsGatewayURL: ipfsGateway,
-          ...this.options?.iexecOptions,
-          allowExperimentalNetworks: this.options.allowExperimentalNetworks,
-        }
-      );
-    } catch (e: any) {
-      throw new Error(`Unsupported ethProvider: ${e.message}`);
     }
 
     try {
