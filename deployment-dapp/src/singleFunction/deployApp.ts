@@ -27,7 +27,7 @@ export const deployApp = async ({
   const mrenclave = {
     framework: 'SCONE' as any, // workaround framework not auto capitalized
     version: 'v5',
-    entrypoint: 'node /app/app.js',
+    entrypoint: 'node /app/app.js --disable-wasm-trap-handler',
     heapSize: 1073741824,
     fingerprint,
   };
