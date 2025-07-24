@@ -1,6 +1,6 @@
-const { Buffer } = require('buffer');
-const forge = require('node-forge');
-const fetch = require('node-fetch');
+import { Buffer } from 'buffer';
+import forge from 'node-forge';
+import fetch from 'node-fetch';
 
 const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
 
@@ -49,4 +49,4 @@ const decryptContent = (encryptedContent, encryptionKey) => {
 
   return decryptedBuffer.toString();
 };
-module.exports = { downloadEncryptedContent, decryptContent };
+export { downloadEncryptedContent, decryptContent };

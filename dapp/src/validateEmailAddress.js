@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 async function validateEmailAddress({ emailAddress, mailgunApiKey }) {
   const basicAuth = Buffer.from(`api:${mailgunApiKey}`).toString('base64');
@@ -29,6 +29,4 @@ async function validateEmailAddress({ emailAddress, mailgunApiKey }) {
   }
 }
 
-module.exports = {
-  validateEmailAddress,
-};
+export default validateEmailAddress;

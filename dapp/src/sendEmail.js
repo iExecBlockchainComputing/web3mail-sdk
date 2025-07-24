@@ -1,22 +1,18 @@
-const { promises: fs } = require('fs');
-const {
-  IExecDataProtectorDeserializer,
-} = require('@iexec/dataprotector-deserializer');
-const sendEmail = require('./emailService');
-const {
+import { promises as fs } from 'fs';
+import { IExecDataProtectorDeserializer } from '@iexec/dataprotector-deserializer';
+import sendEmail from './emailService';
+import {
   validateWorkerEnv,
   validateAppSecret,
   validateRequesterSecret,
   validateProtectedData,
-} = require('./validation');
-const {
+} from './validation';
+import {
   downloadEncryptedContent,
   decryptContent,
-} = require('./decryptEmailContent');
-const { validateEmailAddress } = require('./validateEmailAddress');
-const {
-  checkEmailPreviousValidation,
-} = require('./checkEmailPreviousValidation');
+} from './decryptEmailContent';
+import validateEmailAddress from './validateEmailAddress';
+import checkEmailPreviousValidation from './checkEmailPreviousValidation';
 
 async function writeTaskOutput(path, message) {
   try {
@@ -142,4 +138,4 @@ async function start() {
   );
 }
 
-module.exports = start;
+export default start;

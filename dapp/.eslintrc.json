@@ -2,14 +2,16 @@
   "root": true,
   "plugins": ["import", "sonarjs"],
   "parserOptions": {
-    "ecmaVersion": 2020
+    "ecmaVersion": 2022,
+    "sourceType": "module"
   },
   "extends": ["airbnb-base", "prettier", "plugin:sonarjs/recommended"],
   "rules": {
     "sonarjs/cognitive-complexity": "warn"
   },
   "env": {
-    "jest": true
+    "jest": true,
+    "es2022": true
   },
   "settings": {
     "import/resolver": {

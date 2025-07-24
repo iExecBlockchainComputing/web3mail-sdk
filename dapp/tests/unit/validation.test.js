@@ -1,9 +1,9 @@
-const {
+import {
   validateWorkerEnv,
   validateAppSecret,
   validateRequesterSecret,
   validateProtectedData,
-} = require('../../src/validation');
+} from '../../src/validation';
 
 describe('validateWorkerEnv function', () => {
   it('should not throw an error if all input values are valid', () => {

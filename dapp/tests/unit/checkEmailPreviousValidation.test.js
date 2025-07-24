@@ -1,12 +1,18 @@
-const { request } = require('graphql-request');
-const {
-  checkEmailPreviousValidation,
-} = require('../../src/checkEmailPreviousValidation');
+import { jest } from '@jest/globals';
 
-jest.mock('graphql-request', () => ({
-  gql: jest.fn((literals) => literals.join('')), // pass-through for query template
-  request: jest.fn(),
+// Mock graphql-request before importing the module under test
+const mockRequest = jest.fn();
+const mockGql = jest.fn((literals) => literals.join(''));
+
+jest.unstable_mockModule('graphql-request', () => ({
+  gql: mockGql,
+  request: mockRequest,
 }));
+
+// Import after mocking
+const { default: checkEmailPreviousValidation } = await import(
+  '../../src/checkEmailPreviousValidation'
+);
 
 describe('checkEmailPreviousValidation', () => {
   const datasetAddress = '0x9585b5427503e69d61b9db2adbc14e0853075ef0';
@@ -17,7 +23,7 @@ describe('checkEmailPreviousValidation', () => {
   });
 
   it('returns true if a valid email verification callback exists', async () => {
-    request.mockResolvedValue({
+    mockRequest.mockResolvedValue({
       tasks: [
         {
           resultsCallback:
@@ -34,7 +40,7 @@ describe('checkEmailPreviousValidation', () => {
   });
 
   it('returns false if no tasks are returned', async () => {
-    request.mockResolvedValue({ tasks: [] });
+    mockRequest.mockResolvedValue({ tasks: [] });
 
     const result = await checkEmailPreviousValidation({
       datasetAddress,
@@ -44,7 +50,7 @@ describe('checkEmailPreviousValidation', () => {
   });
 
   it('returns false if none of the callbacks indicate a valid verification', async () => {
-    request.mockResolvedValue({
+    mockRequest.mockResolvedValue({
       tasks: [
         {
           resultsCallback:
@@ -65,7 +71,7 @@ describe('checkEmailPreviousValidation', () => {
   });
 
   it('returns false if GraphQL query fails', async () => {
-    request.mockRejectedValue(new Error('GraphQL request failed'));
+    mockRequest.mockRejectedValue(new Error('GraphQL request failed'));
 
     const result = await checkEmailPreviousValidation({
       datasetAddress,

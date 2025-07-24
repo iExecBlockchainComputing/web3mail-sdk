@@ -1,5 +1,6 @@
-const Mailjet = require('node-mailjet');
-const sendEmail = require('../../src/emailService');
+import { jest } from '@jest/globals';
+import Mailjet from 'node-mailjet';
+import sendEmail from '../../src/emailService';
 
 describe('sendEmail', () => {
   it('sends an email successfully', async () => {

@@ -1,4 +1,4 @@
-const start = require('./sendEmail');
+import start from './sendEmail';
 
 start().catch((error) => {
   console.error(`Error: ${error.message}`);

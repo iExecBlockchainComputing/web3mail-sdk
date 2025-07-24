@@ -1,7 +1,7 @@
-const {
+import {
   decryptContent,
   downloadEncryptedContent,
-} = require('../../src/decryptEmailContent');
+} from '../../src/decryptEmailContent';
 
 describe('decryptContent', () => {
   it('should decrypt content correctly', async () => {

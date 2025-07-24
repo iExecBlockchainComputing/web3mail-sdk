@@ -1,6 +1,6 @@
-const path = require('path');
-const fsPromises = require('fs').promises;
-const start = require('../../src/sendEmail');
+import path from 'path';
+import fsPromises from 'fs/promises';
+import start from '../../src/sendEmail';
 
 describe('sendEmail', () => {
   beforeEach(async () => {

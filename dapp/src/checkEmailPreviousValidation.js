@@ -1,4 +1,4 @@
-const { request, gql } = require('graphql-request');
+import { request, gql } from 'graphql-request';
 
 async function checkEmailPreviousValidation({ datasetAddress, dappAddresses }) {
   const pocoSubgraphUrl =
@@ -46,6 +46,4 @@ async function checkEmailPreviousValidation({ datasetAddress, dappAddresses }) {
   }
 }
 
-module.exports = {
-  checkEmailPreviousValidation,
-};
+export default checkEmailPreviousValidation;

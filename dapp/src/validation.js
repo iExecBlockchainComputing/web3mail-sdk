@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const workerEnvSchema = Joi.object({
   IEXEC_OUT: Joi.string().required(),
@@ -72,7 +72,7 @@ function validateRequesterSecret(obj) {
   return value;
 }
 
-module.exports = {
+export {
   validateWorkerEnv,
   validateAppSecret,
   validateRequesterSecret,

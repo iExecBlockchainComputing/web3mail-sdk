@@ -1,4 +1,4 @@
-const Mailjet = require('node-mailjet');
+import Mailjet from 'node-mailjet';
 
 async function sendEmail({
   email,
@@ -45,4 +45,4 @@ async function sendEmail({
     status: 200,
   };
 }
-module.exports = sendEmail;
+export default sendEmail;
