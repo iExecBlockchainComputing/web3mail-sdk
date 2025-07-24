@@ -63,7 +63,7 @@ jobs:
       docker-registry: docker.io
       sconify-version: '5.9.0-v15'
       binary: /usr/local/bin/node
-      command: node /app/src/app.js
+      command: node
       host-path: |
         /etc/hosts
         /etc/resolv.conf
