@@ -142,7 +142,8 @@ jobs:
           RPC_URL: ${{ secrets.RPC_URL }}
         run: |
           cd node_modules/whitelist-smart-contract
-          export ADDRESS_TO_ADD=$(cat ../../deployment-dapp/.app-address) && npm run addResourceToWhitelist
+          export ADDRESS_TO_ADD=$(cat ../../deployment-dapp/.app-address)
+          npm run addResourceToWhitelist -- --network ${{ vars.WHITELIST_NETWORK_NAME }}
 
       - name: Configure ENS
         if: ${{ vars.DAPP_ENS_NAME }}
