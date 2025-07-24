@@ -1,4 +1,4 @@
-name: publish-npm-sdk
+name: reusable-npm-publish
 
 on:
   workflow_call:
