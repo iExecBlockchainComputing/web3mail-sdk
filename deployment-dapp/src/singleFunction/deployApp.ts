@@ -26,8 +26,13 @@ export const deployApp = async ({
 
   const mrenclave = {
     framework: 'SCONE' as any, // workaround framework not auto capitalized
+<<<<<<< HEAD
     version: 'v5',
     entrypoint: 'node --disable-wasm-trap-handler /app/app.js',
+=======
+    version: 'v5.9',
+    entrypoint: 'node /app/app.js',
+>>>>>>> b07b9b1 (fix: update scone version in dapp deployment)
     heapSize: 1073741824,
     fingerprint,
   };
