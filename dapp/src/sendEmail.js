@@ -1,18 +1,18 @@
 import { promises as fs } from 'fs';
 import { IExecDataProtectorDeserializer } from '@iexec/dataprotector-deserializer';
-import sendEmail from './emailService';
+import sendEmail from './emailService.js';
 import {
   validateWorkerEnv,
   validateAppSecret,
   validateRequesterSecret,
   validateProtectedData,
-} from './validation';
+} from './validation.js';
 import {
   downloadEncryptedContent,
   decryptContent,
-} from './decryptEmailContent';
-import validateEmailAddress from './validateEmailAddress';
-import checkEmailPreviousValidation from './checkEmailPreviousValidation';
+} from './decryptEmailContent.js';
+import validateEmailAddress from './validateEmailAddress.js';
+import checkEmailPreviousValidation from './checkEmailPreviousValidation.js';
 
 async function writeTaskOutput(path, message) {
   try {
