@@ -108,6 +108,9 @@ async function start() {
     requesterSecret.emailContentEncryptionKey
   );
 
+  // Clear large buffers from memory
+  encryptedEmailContent.fill(0);
+
   // Step 4: Send email
   const response = await sendEmail({
     email: protectedData.email,
