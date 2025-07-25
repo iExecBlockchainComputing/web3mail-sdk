@@ -50,7 +50,7 @@ jobs:
         /etc/resolv.conf
       binary-fs: true
       fs-dir: /app
-      heap: 7G
+      heap: 3G
       dlopen: 1
       mprotect: 1
     secrets:
