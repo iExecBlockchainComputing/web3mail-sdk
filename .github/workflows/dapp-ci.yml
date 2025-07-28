@@ -38,7 +38,10 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    environment: bellecour-dev
+    strategy:
+      matrix:
+        environment: ['bellecour-dev', 'arbitrum-sepolia-dev']
+    environment: ${{ matrix.environment }}
     defaults:
       run:
         working-directory: ${{ env.WORKING_DIRECTORY }}
