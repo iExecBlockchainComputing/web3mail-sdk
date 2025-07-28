@@ -10,16 +10,6 @@ on:
         options:
           - bellecour-dev
           - arbitrum-sepolia-dev
-      price:
-        description: 'Sell order price (optionnel)'
-        type: string
-        required: false
-        default: ''
-      volume:
-        description: 'Sell order volume (optionnel)'
-        type: string
-        required: false
-        default: ''
 
 jobs:
   extract-tag:
@@ -128,8 +118,8 @@ jobs:
       - name: Publish free sell order
         env:
           WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
-          PRICE: ${{ inputs.price || vars.SELL_ORDER_PRICE }}
-          VOLUME: ${{ inputs.volume || vars.SELL_ORDER_VOLUME }}
+          PRICE: ${{ vars.SELL_ORDER_PRICE }}
+          VOLUME: ${{ vars.SELL_ORDER_VOLUME }}
           RPC_URL: ${{ secrets.RPC_URL }}
         run: |
           cd deployment-dapp
