@@ -8,18 +8,13 @@ on:
         required: true
         type: choice
         options:
+          # dev environments
           - bellecour-dev
           - arbitrum-sepolia-dev
-      price:
-        description: 'Sell order price (optionnel)'
-        type: string
-        required: false
-        default: ''
-      volume:
-        description: 'Sell order volume (optionnel)'
-        type: string
-        required: false
-        default: ''
+          # prod environments (requires a tag starting with dapp-v)
+          - bellecour-prod
+          - arbitrum-sepolia-prod
+          - arbitrum-mainnet-prod
 
 jobs:
   extract-tag:
@@ -29,11 +24,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Extract tag
+        # if input environment ends with -prod
+        #   ref should be a tag beginning with dapp-v if not exit error
+        #   use unique clean-tag: <tag>-<timestamp>
+        # else
+        #   use rolling clean-tag: dev
+      - name: Check and extract tag
         id: tag
         run: |
-          echo "clean_tag=dev" | tee -a $GITHUB_OUTPUT
+          if [[ "${{ github.event.inputs.environment }}" == *-prod ]]; then
+            if [[ "${GITHUB_REF}" != refs/tags/dapp-v* ]]; then
+              echo "Error: The ref must be a tag starting with 'dapp-v' for production deployments."
+              exit 1
+            fi
+            TAG=${GITHUB_REF#refs/tags/dapp-v}-$(date +%s)
+            echo "clean_tag=${TAG}" | tee -a $GITHUB_OUTPUT
+          else
+            echo "clean_tag=dev" | tee -a $GITHUB_OUTPUT
+          fi
 
   docker-publish:
     uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/docker-build.yml@docker-build-v2.3.1
@@ -128,8 +136,8 @@ jobs:
       - name: Publish free sell order
         env:
           WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
-          PRICE: ${{ inputs.price || vars.SELL_ORDER_PRICE }}
-          VOLUME: ${{ inputs.volume || vars.SELL_ORDER_VOLUME }}
+          PRICE: ${{ vars.SELL_ORDER_PRICE }}
+          VOLUME: ${{ vars.SELL_ORDER_VOLUME }}
           RPC_URL: ${{ secrets.RPC_URL }}
         run: |
           cd deployment-dapp
