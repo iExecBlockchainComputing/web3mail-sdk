@@ -21,6 +21,7 @@ const appSecretSchema = Joi.object({
   MJ_SENDER: Joi.string().email().required(),
   MAILGUN_APIKEY: Joi.string().required(),
   WEB3MAIL_WHITELISTED_APPS: Joi.array().items(Joi.string()).required(),
+  POCO_SUBGRAPH_URL: Joi.string().uri().required(),
 });
 
 function validateAppSecret(obj) {

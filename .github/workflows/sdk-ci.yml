@@ -1,6 +1,13 @@
 name: web3mail-sdk-ci
 
-on: [pull_request]
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/**'
+      - 'dapp/**'
+      - 'demo/**'
+      - 'deployment-dapp/**'
+      - 'technical-design/**'
 
 concurrency:
   group: ${{ github.ref }}-pr-test
