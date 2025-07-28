@@ -76,6 +76,7 @@ async function start() {
   let isEmailValidated = await checkEmailPreviousValidation({
     datasetAddress: protectedData.email,
     dappAddresses: appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS,
+    pocoSubgraphUrl: appDeveloperSecret.POCO_SUBGRAPH_URL,
   });
 
   // Step 2: If not, try Mailgun

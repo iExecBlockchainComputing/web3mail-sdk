@@ -10,6 +10,7 @@ const main = async () => {
     MJ_SENDER,
     MAILGUN_APIKEY,
     WEB3MAIL_WHITELISTED_APPS,
+    POCO_SUBGRAPH_URL,
   } = process.env;
 
   if (!WALLET_PRIVATE_KEY)
@@ -20,6 +21,7 @@ const main = async () => {
   if (!MAILGUN_APIKEY) throw Error('Missing env MAILGUN_APIKEY');
   if (WEB3MAIL_WHITELISTED_APPS === undefined)
     throw Error('Missing env WEB3MAIL_WHITELISTED_APPS');
+  if (!POCO_SUBGRAPH_URL) throw Error('Missing env POCO_SUBGRAPH_URL');
 
   if (!WALLET_PRIVATE_KEY)
     throw Error(`Missing WALLET_PRIVATE_KEY environment variable`);
@@ -40,6 +42,7 @@ const main = async () => {
     MJ_SENDER,
     MAILGUN_APIKEY,
     WEB3MAIL_WHITELISTED_APPS: JSON.stringify(fullWhitelistedApps),
+    POCO_SUBGRAPH_URL,
   });
 
   await pushSecret(iexec, appAddress, jsonSecret);

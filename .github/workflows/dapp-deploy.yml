@@ -128,6 +128,7 @@ jobs:
           MJ_SENDER: ${{ secrets.MAILJET_SENDER }}
           MAILGUN_APIKEY: ${{ secrets.MAILGUN_APIKEY }}
           WEB3MAIL_WHITELISTED_APPS: ${{ vars.WEB3MAIL_WHITELISTED_APPS }}
+          POCO_SUBGRAPH_URL: ${{ vars.POCO_SUBGRAPH_URL }}
           RPC_URL: ${{ secrets.RPC_URL }}
         run: |
           cd deployment-dapp
