@@ -44,13 +44,13 @@ jobs:
       docker-registry: docker.io
       sconify-version: '5.9.0-v15'
       binary: /usr/local/bin/node
-      command: node /app/src/app.js
+      command: node
       host-path: |
         /etc/hosts
         /etc/resolv.conf
       binary-fs: true
       fs-dir: /app
-      heap: 1G
+      heap: 7G
       dlopen: 1
       mprotect: 1
     secrets:
