@@ -3,6 +3,7 @@ export const MAX_DESIRED_APP_ORDER_PRICE = 0;
 export const MAX_DESIRED_WORKERPOOL_ORDER_PRICE = 0;
 export const DEFAULT_CONTENT_TYPE = 'text/plain';
 export const ANY_DATASET_ADDRESS = 'any';
+export const CALLBACK_WEB3MAIL = '0x5f936db7ad6d29371808e42a87015595d90509ba';
 
 export const DEFAULT_CHAIN_ID = 134;
 

@@ -1,5 +1,6 @@
 import { Buffer } from 'buffer';
 import {
+  CALLBACK_WEB3MAIL,
   DEFAULT_CONTENT_TYPE,
   MAX_DESIRED_APP_ORDER_PRICE,
   MAX_DESIRED_DATA_ORDER_PRICE,
@@ -268,6 +269,7 @@ export const sendEmail = async ({
         contentType: vContentType,
         senderName: vSenderName,
         emailContentEncryptionKey,
+        useCallback: true,
       })
     );
 
@@ -280,6 +282,7 @@ export const sendEmail = async ({
       workerpoolmaxprice: workerpoolorder.workerpoolprice,
       tag: ['tee', 'scone'],
       workerpool: vWorkerpoolAddressOrEns,
+      callback: CALLBACK_WEB3MAIL,
       params: {
         iexec_secrets: {
           1: requesterSecretId,
