@@ -31,7 +31,7 @@ const CHAIN_CONFIG: Record<number, ChainConfig> = {
   421614: {
     name: 'arbitrum-sepolia-testnet',
     dappAddress: undefined, // ENS not supported on this network, address will be resolved from Compass
-    prodWorkerpoolAddress: '0x39c3cdd91a7f1c4ed59108a9da4e79de9a1c1b59',
+    prodWorkerpoolAddress: '0xB967057a21dc6A66A29721d96b8Aa7454B7c383F',
     dataProtectorSubgraph:
       'https://thegraph.arbitrum-sepolia-testnet.iex.ec/api/subgraphs/id/5YjRPLtjS6GH6bB4yY55Qg4HzwtRGQ8TaHtGf9UBWWd',
     ipfsGateway: 'https://ipfs-gateway.arbitrum-sepolia-testnet.iex.ec',
