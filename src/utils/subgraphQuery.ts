@@ -29,6 +29,9 @@ export const getValidContact = async (
   graphQLClient: GraphQLClient,
   contacts: Contact[]
 ): Promise<Contact[]> => {
+  if (contacts.length === 0) {
+    return [];
+  }
   try {
     // Contacts addresses
     const contactsAddresses = contacts.map((contact) => contact.address);
