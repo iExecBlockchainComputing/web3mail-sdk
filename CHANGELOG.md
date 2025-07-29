@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.2.2...web3mail-v1.3.0) (2025-07-29)
+
+
+### Added
+
+* add callback mechanisme ([#217](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/217)) ([f1f2866](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/f1f28669fa08a09fc9f7bd92fa379fbb56e689b8))
+* add multichain configuration support ([4b2de3a](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/4b2de3a014c97c00fa4ac64b759899fe598a9695))
+* add support for experimental networks ([#196](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/196)) ([887f97a](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/887f97aa4ae2a3f3c347806439d353347ce96bd7))
+* dapp address resolution from compass ([#200](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/200)) ([2216f3b](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/2216f3b6907b73b756b1a409c6d7c098b2b701b6))
+* update arbitrum sepolia whitelist smart contract address ([#207](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/207)) ([50965f6](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/50965f65690a5717686dfdd2392dede89142adff))
+
+
+### Changed
+
+* move to latest arbitrum-sepolia-testnet deployment ([#215](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/215)) ([dde03ce](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/dde03ce1223fc215eccf1a12467d3dd6b3e2b1be))
+* move to latest arbitrum-sepolia-testnet deployment ([#216](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/216)) ([3d5b39b](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/3d5b39bb877ffae92f2d6f0b762c5a2e2aabbce0))
+* remove redundant useVoucher parameter in sendEmail method ([84f26de](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/84f26de7ab5bbb4c2b3b38a834b289bac8d19cdb))
+* remove redundant useVoucher parameter in sendEmail method ([34024fd](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/34024fddefdebba79f0861651741ba2915fea919))
+* **sendEmail:** use custom workerpool when provided ([f66c52a](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/f66c52abdd5a3e1b8fac07a934c8969b917f7a16))
+* update arbitrum-sepolia dataProtectorSubgraph URL ([#201](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/201)) ([74e3266](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/74e3266e49959e287638028fee8aa1617fa7a72a))
+
 ## [1.2.2]
 
 ### Added
