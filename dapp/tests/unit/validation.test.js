@@ -32,6 +32,7 @@ describe('validateAppSecret function', () => {
         WEB3MAIL_WHITELISTED_APPS: JSON.parse(
           '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]'
         ),
+        POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
       })
     ).not.toThrow();
   });
@@ -94,10 +95,11 @@ describe('validateAppSecret function', () => {
         MJ_SENDER: 'foo',
         MAILGUN_APIKEY: '',
         WEB3MAIL_WHITELISTED_APPS: '[4]',
+        POCO_SUBGRAPH_URL: 'not-a-url',
       })
     ).toThrow(
       Error(
-        'App secret error: "MJ_APIKEY_PUBLIC" must be a string; "MJ_APIKEY_PRIVATE" is not allowed to be empty; "MJ_SENDER" must be a valid email; "MAILGUN_APIKEY" is not allowed to be empty; "WEB3MAIL_WHITELISTED_APPS" must be an array'
+        'App secret error: "MJ_APIKEY_PUBLIC" must be a string; "MJ_APIKEY_PRIVATE" is not allowed to be empty; "MJ_SENDER" must be a valid email; "MAILGUN_APIKEY" is not allowed to be empty; "WEB3MAIL_WHITELISTED_APPS" must be an array; "POCO_SUBGRAPH_URL" must be a valid uri'
       )
     );
   });

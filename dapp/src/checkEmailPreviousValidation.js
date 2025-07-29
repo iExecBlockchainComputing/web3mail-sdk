@@ -1,9 +1,10 @@
 const { request, gql } = require('graphql-request');
 
-async function checkEmailPreviousValidation({ datasetAddress, dappAddresses }) {
-  const pocoSubgraphUrl =
-    'https://thegraph.bellecour.iex.ec/subgraphs/name/bellecour/poco-v5';
-
+async function checkEmailPreviousValidation({
+  datasetAddress,
+  dappAddresses,
+  pocoSubgraphUrl,
+}) {
   const query = gql`
     query checkSuccessfulTaskQuery($apps: [String!], $dataset: String!) {
       tasks(

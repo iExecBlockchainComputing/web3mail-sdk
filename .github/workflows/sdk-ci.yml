@@ -1,0 +1,67 @@
+name: web3mail-sdk-ci
+
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/**'
+      - 'dapp/**'
+      - 'demo/**'
+      - 'deployment-dapp/**'
+      - 'technical-design/**'
+
+concurrency:
+  group: ${{ github.ref }}-pr-test
+  cancel-in-progress: true
+
+jobs:
+  check-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check format
+        run: npm run check-format
+
+      - name: Lint
+        run: npm run lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Start e2e test stack
+        run: npm run start-test-stack
+
+      - name: Test e2e
+        run: npm run test:e2e
+
+      - name: Stop e2e test stack
+        if: always()
+        run: npm run stop-test-stack
+
+  npm-dry-run:
+    uses: ./.github/workflows/reusable-npm.yml
+    with:
+      dry-run: true

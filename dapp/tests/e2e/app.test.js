@@ -26,6 +26,7 @@ describe('sendEmail', () => {
         MAILGUN_APIKEY: 'xxx',
         WEB3MAIL_WHITELISTED_APPS:
           '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
+        POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
       });
       // requester secret setup
       process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
@@ -54,6 +55,7 @@ describe('sendEmail', () => {
           MAILGUN_APIKEY: 'xxx',
           WEB3MAIL_WHITELISTED_APPS:
             '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
+          POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
         });
         await expect(() => start()).rejects.toThrow(
           Error('App secret error: "MJ_APIKEY_PUBLIC" is required')
@@ -69,6 +71,7 @@ describe('sendEmail', () => {
           MAILGUN_APIKEY: 'xxx',
           WEB3MAIL_WHITELISTED_APPS:
             '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
+          POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
         });
         await expect(() => start()).rejects.toThrow(
           Error('App secret error: "MJ_APIKEY_PRIVATE" is required')
@@ -84,6 +87,7 @@ describe('sendEmail', () => {
           MAILGUN_APIKEY: 'xxx',
           WEB3MAIL_WHITELISTED_APPS:
             '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
+          POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
         });
         await expect(() => start()).rejects.toThrow(
           Error('App secret error: "MJ_SENDER" is required')
@@ -99,6 +103,7 @@ describe('sendEmail', () => {
           MJ_SENDER: 'foo@bar.com',
           WEB3MAIL_WHITELISTED_APPS:
             '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
+          POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
         });
         await expect(() => start()).rejects.toThrow(
           Error('App secret error: "MAILGUN_APIKEY" is required')
@@ -113,9 +118,26 @@ describe('sendEmail', () => {
           MJ_APIKEY_PRIVATE: 'xxx',
           MAILGUN_APIKEY: 'xxx',
           MJ_SENDER: 'foo@bar.com',
+          POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
         });
         await expect(() => start()).rejects.toThrow(
           Error('App secret error: "WEB3MAIL_WHITELISTED_APPS" is required')
+        );
+        // output should be empty
+        const out = await fsPromises.readdir(process.env.IEXEC_OUT);
+        expect(out).toStrictEqual([]);
+      });
+      it('should fail if POCO_SUBGRAPH_URL in developer secret is missing', async () => {
+        process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
+          MJ_APIKEY_PUBLIC: 'xxx',
+          MJ_APIKEY_PRIVATE: 'xxx',
+          MAILGUN_APIKEY: 'xxx',
+          MJ_SENDER: 'foo@bar.com',
+          WEB3MAIL_WHITELISTED_APPS:
+            '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
+        });
+        await expect(() => start()).rejects.toThrow(
+          Error('App secret error: "POCO_SUBGRAPH_URL" is required')
         );
         // output should be empty
         const out = await fsPromises.readdir(process.env.IEXEC_OUT);
@@ -286,6 +308,7 @@ describe('sendEmail', () => {
           MAILGUN_APIKEY: 'fake',
           WEB3MAIL_WHITELISTED_APPS:
             '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
+          POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
         });
         // check the error is not an email validation error (mailgun validation is skipped, mailjet rejects)
         await expect(() => start()).rejects.toThrow(
@@ -303,6 +326,7 @@ describe('sendEmail', () => {
           MAILGUN_APIKEY: 'xxx',
           WEB3MAIL_WHITELISTED_APPS:
             '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
+          POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
         });
         await expect(() => start()).rejects.toThrow(
           Error('Failed to send email')
@@ -316,12 +340,13 @@ describe('sendEmail', () => {
 
   if (
     // runs in CI with services credentials
-    process.env.DRONE ||
+    process.env.GITHUB_ACTIONS ||
     // or locally when all credentials are set
     (process.env.MJ_APIKEY_PUBLIC &&
       process.env.MJ_APIKEY_PRIVATE &&
       process.env.MJ_SENDER &&
-      process.env.MAILGUN_APIKEY)
+      process.env.MAILGUN_APIKEY &&
+      process.env.POCO_SUBGRAPH_URL)
   ) {
     describe('with credentials', () => {
       beforeEach(() => {
@@ -332,6 +357,7 @@ describe('sendEmail', () => {
           MJ_SENDER,
           MAILGUN_APIKEY,
           WEB3MAIL_WHITELISTED_APPS,
+          POCO_SUBGRAPH_URL,
         } = process.env;
         process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
           MJ_APIKEY_PUBLIC,
@@ -339,11 +365,12 @@ describe('sendEmail', () => {
           MJ_SENDER,
           MAILGUN_APIKEY,
           WEB3MAIL_WHITELISTED_APPS,
+          POCO_SUBGRAPH_URL,
         });
 
         // requester secret setup
         process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
-          emailSubject: `web3mail test ${process.env.DRONE_COMMIT}`,
+          emailSubject: `web3mail test ${process.env.GITHUB_SHA}`,
           emailContentMultiAddr:
             '/ipfs/QmVodr1Bxa2bTiz1pLmWjDrCeTEdGPfe58qRMRwErJDcRu',
           emailContentEncryptionKey:

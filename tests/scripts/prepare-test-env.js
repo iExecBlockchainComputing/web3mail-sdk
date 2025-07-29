@@ -1,7 +1,6 @@
-import { mkdirSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { writeFileSync } from 'fs';
 
-const forkUrl = process.env.BELLECOUR_FORK_URL || 'https://bellecour.iex.ec';
+const forkUrl = 'https://bellecour.iex.ec';
 
 fetch(forkUrl, {
   method: 'POST',
@@ -15,22 +14,11 @@ fetch(forkUrl, {
   .then((res) => res.json())
   .then((jsonRes) => {
     const forkBlockNumber = parseInt(jsonRes.result.substring(2), 16);
-    if (process.env.DRONE) {
-      const LOCAL_STACK_ENV_DIR = 'local-stack-env';
-      console.log(
-        `Creating ${LOCAL_STACK_ENV_DIR} directory for drone test-stack`
-      );
-      mkdirSync(LOCAL_STACK_ENV_DIR, { recursive: true });
-      writeFileSync(join(LOCAL_STACK_ENV_DIR, 'BELLECOUR_FORK_URL'), forkUrl);
-      writeFileSync(
-        join(LOCAL_STACK_ENV_DIR, 'BELLECOUR_FORK_BLOCK'),
-        `${forkBlockNumber}`
-      );
-    } else {
-      console.log('Creating .env file for docker-compose test-stack');
-      writeFileSync(
-        '.env',
-        `############ THIS FILE IS GENERATED ############
+
+    console.log('Creating .env file for docker-compose test-stack');
+    writeFileSync(
+      '.env',
+      `############ THIS FILE IS GENERATED ############
 # run "node prepare-test-env.js" to regenerate #
 ################################################
 
@@ -38,8 +26,7 @@ fetch(forkUrl, {
 BELLECOUR_FORK_URL=${forkUrl}
 # block number to fork from
 BELLECOUR_FORK_BLOCK=${forkBlockNumber}`
-      );
-    }
+    );
   })
   .catch((e) => {
     throw Error(`Failed to get current block number from ${forkUrl}: ${e}`);

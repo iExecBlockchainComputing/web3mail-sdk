@@ -1,0 +1,68 @@
+name: web3mail-dapp-ci
+
+on:
+  pull_request:
+    paths:
+      - 'dapp/**'
+
+concurrency:
+  group: ${{ github.ref }}-dapp-ci
+  cancel-in-progress: true
+
+env:
+  WORKING_DIRECTORY: ./dapp
+
+jobs:
+  check-code:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: 'npm'
+          cache-dependency-path: dapp/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check format (prettier)
+        run: npm run check-format
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: ['bellecour-dev', 'arbitrum-sepolia-dev']
+    environment: ${{ matrix.environment }}
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+    env:
+      MJ_APIKEY_PUBLIC: ${{ secrets.MAILJET_APIKEY_PUBLIC }}
+      MJ_APIKEY_PRIVATE: ${{ secrets.MAILJET_APIKEY_PRIVATE }}
+      MJ_SENDER: ${{ secrets.MAILJET_SENDER }}
+      MAILGUN_APIKEY: ${{ secrets.MAILGUN_APIKEY }}
+      WEB3MAIL_WHITELISTED_APPS: ${{ vars.WEB3MAIL_WHITELISTED_APPS }}
+      POCO_SUBGRAPH_URL: ${{ vars.POCO_SUBGRAPH_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: 'npm'
+          cache-dependency-path: dapp/package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Test with coverage
+        run: npm run ctest

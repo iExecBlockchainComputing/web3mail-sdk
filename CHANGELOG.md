@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.2]
+
+### Added
+- Introduced callback parameter in the requestorder, enabling tasks to trigger result callbacks after execution.
+- Added useCallback flag to the requesterSecret to control whether the dApp should write callback-data in its output.
+
 ## [1.2.1]
 
 ### Changed

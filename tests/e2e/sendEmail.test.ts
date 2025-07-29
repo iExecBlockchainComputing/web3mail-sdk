@@ -4,10 +4,6 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet } from 'ethers';
-import {
-  WEB3_MAIL_DAPP_ADDRESS,
-  WHITELIST_SMART_CONTRACT_ADDRESS,
-} from '../../src/config/config.js';
 import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
@@ -28,6 +24,10 @@ import {
 } from '../test-utils.js';
 import { IExec } from 'iexec';
 import { NULL_ADDRESS } from 'iexec/utils';
+import {
+  DEFAULT_CHAIN_ID,
+  getChainDefaultConfig,
+} from '../../src/config/config.js';
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: HDNodeWallet;
@@ -65,7 +65,11 @@ describe('web3mail.sendEmail()', () => {
       TEST_CHAIN.appOwnerWallet.privateKey
     );
     const resourceProvider = new IExec({ ethProvider }, iexecOptions);
-    await createAndPublishAppOrders(resourceProvider, WEB3_MAIL_DAPP_ADDRESS);
+    const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+    await createAndPublishAppOrders(
+      resourceProvider,
+      defaultConfig!.dappAddress
+    );
 
     learnProdWorkerpoolAddress = await resourceProvider.ens.resolveName(
       TEST_CHAIN.learnProdWorkerpool
@@ -101,7 +105,7 @@ describe('web3mail.sendEmail()', () => {
       iexecOptions
     );
     await dataProtector.grantAccess({
-      authorizedApp: WEB3_MAIL_DAPP_ADDRESS,
+      authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
       protectedData: validProtectedData.address,
       authorizedUser: consumerWallet.address, // consumer wallet
       numberOfAccess: 1000,
@@ -286,7 +290,8 @@ describe('web3mail.sendEmail()', () => {
 
       //grant access to whitelist
       await dataProtector.grantAccess({
-        authorizedApp: WHITELIST_SMART_CONTRACT_ADDRESS, //whitelist address
+        authorizedApp:
+          getChainDefaultConfig(DEFAULT_CHAIN_ID).whitelistSmartContract, //whitelist address
         protectedData: protectedDataForWhitelist.address,
         authorizedUser: consumerWallet.address, // consumer wallet
         numberOfAccess: 1000,

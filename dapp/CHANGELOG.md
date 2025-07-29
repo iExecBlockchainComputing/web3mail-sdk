@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.10.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v0.9.0...dapp-v0.10.0) (2025-07-29)
+
+
+### Added
+
+* configure POCO_SUBGRAPH_URL by environment ([#214](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/214)) ([15b926c](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/15b926ca6acc4a959e62cd6ba9827b8fc5f9f694))
+
+
+### Changed
+
+* memory range error ([#211](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/211)) ([3c9c583](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/3c9c5839f9021643edb27708a6a0f8500d44f38e))
+
+## [0.9.0]
+
+### Added
+
+- Implemented a resultsCallback mechanism to persist email verification results on-chain.
+- Encoded email verification status (true or false) as 32-byte ABI-compliant binary data in the callback.
+- Wrote conditional callback-data to computed.json only when explicitly enabled by the requester.
+
+### Changed
+
+- Made the dApp backward-compatible with previous SDK versions by skipping callback-data when useCallback is not provided.
+- Improved email verification logic to reuse prior verification from the PoCo subgraph when available, reducing redundant Mailgun calls.
+
 ## [0.8.0]
 
 ### Changed
