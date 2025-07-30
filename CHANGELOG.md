@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.1](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.3.0...web3mail-v1.3.1) (2025-07-30)
+
+
+### Changed
+
+* prevent fetchUserContacts error when user has no contact ([#219](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/219)) ([339df22](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/339df222f8fcddc321e99d32928ea6bcd8a1cbd8))
+
 ## [1.3.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.2.2...web3mail-v1.3.0) (2025-07-29)
 
 
