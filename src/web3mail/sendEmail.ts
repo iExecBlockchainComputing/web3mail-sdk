@@ -26,16 +26,15 @@ import {
   checkUserVoucher,
   filterWorkerpoolOrders,
 } from './sendEmail.models.js';
+import { SendEmailParams, SendEmailResponse } from './types.js';
 import {
   DappAddressConsumer,
   DappWhitelistAddressConsumer,
   IExecConsumer,
   IpfsGatewayConfigConsumer,
   IpfsNodeConfigConsumer,
-  SendEmailParams,
-  SendEmailResponse,
   SubgraphConsumer,
-} from './types.js';
+} from './internalTypes.js';
 
 export type SendEmail = typeof sendEmail;
 

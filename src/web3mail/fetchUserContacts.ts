@@ -12,14 +12,13 @@ import {
   isEnsTest,
   throwIfMissing,
 } from '../utils/validators.js';
+import { Contact, FetchUserContactsParams } from './types.js';
 import {
-  Contact,
   DappAddressConsumer,
   DappWhitelistAddressConsumer,
-  FetchUserContactsParams,
   IExecConsumer,
   SubgraphConsumer,
-} from './types.js';
+} from './internalTypes.js';
 
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),

@@ -1,6 +1,10 @@
 import { GraphQLClient, gql } from 'graphql-request';
-import { Contact, GraphQLResponse, ProtectedDataQuery } from '../index.js';
+import { Contact } from '../index.js';
 import { WorkflowError } from './errors.js';
+import {
+  GraphQLResponse,
+  ProtectedDataQuery,
+} from '../web3mail/internalTypes.js';
 
 const checkProtectedDataQuery = gql`
   query GetValidContacts(
