@@ -1,6 +1,10 @@
 import { GraphQLClient, gql } from 'graphql-request';
-import { Contact, GraphQLResponse, ProtectedDataQuery } from '../index.js';
+import { Contact } from '../index.js';
 import { WorkflowError } from './errors.js';
+import {
+  GraphQLResponse,
+  ProtectedDataQuery,
+} from '../web3mail/internalTypes.js';
 
 const checkProtectedDataQuery = gql`
   query GetValidContacts(
@@ -21,13 +25,14 @@ const checkProtectedDataQuery = gql`
       orderDirection: desc
     ) {
       id
+      name
     }
   }
 `;
 
 export const getValidContact = async (
   graphQLClient: GraphQLClient,
-  contacts: Contact[]
+  contacts: Omit<Contact, 'name'>[]
 ): Promise<Contact[]> => {
   if (contacts.length === 0) {
     return [];
@@ -66,13 +71,17 @@ export const getValidContact = async (
     );
 
     // Convert protectedData[] into Contact[] using the map for constant time lookups
-    return protectedDataList.map(({ id }) => {
+    return protectedDataList.map(({ id, name }) => {
       const contact = contactsMap.get(id);
       if (contact) {
         return {
           address: id,
+          name: name,
+          remainingAccess: contact.remainingAccess,
+          accessPrice: contact.accessPrice,
           owner: contact.owner,
           accessGrantTimestamp: contact.accessGrantTimestamp,
+          isUserStrict: contact.isUserStrict,
         };
       }
     });

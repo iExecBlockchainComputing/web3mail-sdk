@@ -1,13 +1,12 @@
 import { booleanSchema, throwIfMissing } from '../utils/validators.js';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import {
-  Contact,
   DappAddressConsumer,
   DappWhitelistAddressConsumer,
-  FetchMyContactsParams,
   IExecConsumer,
   SubgraphConsumer,
-} from './types.js';
+} from './internalTypes.js';
+import { Contact, FetchMyContactsParams } from './types.js';
 
 export type FetchMyContacts = typeof fetchMyContacts;
 

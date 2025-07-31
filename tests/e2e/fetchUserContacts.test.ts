@@ -43,6 +43,33 @@ describe('web3mail.fetchMyContacts()', () => {
   }, 4 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
 
   describe('when no access is granted', () => {
+    it('contacts should contain name, accessPrice, remainingAccess, owner, accessGrantTimestamp, and isUserStrict', async () => {
+      const userWithAccess = Wallet.createRandom().address;
+
+      await web3mail.init();
+      // eslint-disable-next-line @typescript-eslint/dot-notation
+      const authorizedApp = web3mail['dappAddressOrENS'];
+
+      await dataProtector.grantAccess({
+        authorizedApp: authorizedApp,
+        protectedData: protectedData1.address,
+        authorizedUser: userWithAccess,
+      });
+
+      const contacts = await web3mail.fetchUserContacts({
+        userAddress: userWithAccess,
+        isUserStrict: true,
+      });
+      expect(contacts.length).toBe(1);
+      expect(contacts[0].address).toBe(protectedData1.address.toLowerCase());
+      expect(contacts[0].owner).toBeDefined();
+      expect(contacts[0].accessPrice).toBe(0);
+      expect(contacts[0].remainingAccess).toBe(1);
+      expect(contacts[0].accessGrantTimestamp).toBeDefined();
+      expect(contacts[0].isUserStrict).toBe(true);
+      expect(contacts[0].name).toBe('test do not use');
+    });
+
     it(
       'should return an empty contact array',
       async () => {
