@@ -20,6 +20,10 @@ export type Contact = {
   address: Address;
   owner: Address;
   accessGrantTimestamp: TimeStamp;
+  isUserStrict: boolean;
+  name: string;
+  remainingAccess: number;
+  accessPrice: number;
 };
 
 export type SendEmailParams = {
@@ -59,6 +63,7 @@ export type SendEmailResponse = {
  */
 export type ProtectedDataQuery = {
   id: string;
+  name: string;
 };
 
 export type GraphQLResponse = {

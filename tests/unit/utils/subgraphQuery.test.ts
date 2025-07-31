@@ -8,7 +8,7 @@ import type { Contact } from '../../../src/web3mail/types.js';
 
 describe('getValidContact', () => {
   // Define the variables in the outermost scope
-  let contacts: Contact[];
+  let contacts: Omit<Contact, 'name'>[];
   let graphQLClient: GraphQLClient;
 
   beforeAll(() => {
@@ -18,16 +18,25 @@ describe('getValidContact', () => {
         address: 'address1',
         owner: 'owner1',
         accessGrantTimestamp: '2023-06-08T09:32:29.761Z',
+        remainingAccess: 1,
+        accessPrice: 0,
+        isUserStrict: true,
       },
       {
         address: 'address2',
         owner: 'owner2',
         accessGrantTimestamp: '2023-06-09T14:21:17.231Z',
+        remainingAccess: 1,
+        accessPrice: 0,
+        isUserStrict: true,
       },
       {
         address: 'address3',
         owner: 'owner3',
         accessGrantTimestamp: '2023-06-10T14:21:17.231Z',
+        remainingAccess: 1,
+        accessPrice: 0,
+        isUserStrict: true,
       },
     ];
 
@@ -38,7 +47,10 @@ describe('getValidContact', () => {
   it('should fetch valid contacts', async () => {
     // Mock the request method of the GraphQLClient instance
     jest.spyOn(graphQLClient, 'request').mockResolvedValue({
-      protectedDatas: [{ id: 'address1' }, { id: 'address3' }],
+      protectedDatas: [
+        { id: 'address1', name: 'Contact 1' },
+        { id: 'address3', name: 'Contact 3' },
+      ],
     });
 
     const validContacts = await getValidContact(graphQLClient, contacts);
@@ -48,11 +60,19 @@ describe('getValidContact', () => {
         address: 'address1',
         owner: 'owner1',
         accessGrantTimestamp: '2023-06-08T09:32:29.761Z',
+        name: 'Contact 1',
+        remainingAccess: 1,
+        accessPrice: 0,
+        isUserStrict: true,
       },
       {
         address: 'address3',
         owner: 'owner3',
         accessGrantTimestamp: '2023-06-10T14:21:17.231Z',
+        name: 'Contact 3',
+        remainingAccess: 1,
+        accessPrice: 0,
+        isUserStrict: true,
       },
     ]);
 
