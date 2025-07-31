@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.3.1...web3mail-v1.4.0) (2025-07-31)
+
+
+### Added
+
+* add name, accessPrice, remainingAccess and isUserStrict properties to Contact ([#221](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/221)) ([b95e60a](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/b95e60ad9b5d1aa987cc2c1a2c136f6b784ddf60))
+
+
+### Changed
+
+* stop exporting internal types ([b95e60a](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/b95e60ad9b5d1aa987cc2c1a2c136f6b784ddf60))
+
 ## [1.3.1](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.3.0...web3mail-v1.3.1) (2025-07-30)
 
 
