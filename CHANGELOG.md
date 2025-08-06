@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.4.0...web3mail-v1.5.0) (2025-08-06)
+
+
+### Added
+
+* add support for arbitrum-mainnet ([#223](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/223)) ([a4715e2](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/a4715e28f8645515ecce630e809d37d19f26c771))
+
 ## [1.4.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.3.1...web3mail-v1.4.0) (2025-07-31)
 
 
