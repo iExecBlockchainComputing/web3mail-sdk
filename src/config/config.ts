@@ -40,6 +40,16 @@ const CHAIN_CONFIG: Record<number, ChainConfig> = {
     whitelistSmartContract: '0x8d46d40840f1Aa2264F96184Ffadf04e5D573B9B',
     isExperimental: true,
   },
+  42161: {
+    name: 'arbitrum-mainnet',
+    dappAddress: undefined, // ENS not supported on this network, address will be resolved from Compass
+    prodWorkerpoolAddress: '0x2C06263943180Cc024dAFfeEe15612DB6e5fD248',
+    dataProtectorSubgraph:
+      'https://thegraph.arbitrum.iex.ec/api/subgraphs/id/Ep5zs5zVr4tDiVuQJepUu51e5eWYJpka624X4DMBxe3u',
+    ipfsGateway: 'https://ipfs-gateway.arbitrum-mainnet.iex.ec',
+    ipfsUploadUrl: 'https://ipfs-upload.arbitrum-mainnet.iex.ec',
+    whitelistSmartContract: '0xD5054a18565c4a9E5c1aa3cEB53258bd59d4c78C',
+  },
 };
 
 export const getChainDefaultConfig = (
