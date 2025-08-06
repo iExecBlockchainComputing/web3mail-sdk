@@ -14,7 +14,7 @@ on:
           # prod environments (requires a tag starting with dapp-v)
           - bellecour-prod
           - arbitrum-sepolia-prod
-          - arbitrum-mainnet-prod
+          - arbitrum-prod
 
 jobs:
   extract-tag:
