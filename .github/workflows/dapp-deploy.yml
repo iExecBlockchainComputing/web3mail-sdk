@@ -69,7 +69,7 @@ jobs:
       sconify-debug: false
       sconify-prod: true
       docker-registry: docker.io
-      sconify-version: '5.9.0-v15'
+      sconify-version: ${{ vars.SCONIFY_VERSION }}
       binary: /usr/local/bin/node
       command: node
       host-path: |
@@ -116,6 +116,7 @@ jobs:
           CHECKSUM: ${{  needs.sconify.outputs.prod-checksum }}
           FINGERPRINT: ${{ needs.sconify.outputs.prod-mrenclave }}
           RPC_URL: ${{ secrets.RPC_URL }}
+          SCONIFY_VERSION: ${{ vars.SCONIFY_VERSION }}
         run: |
           cd deployment-dapp
           npm run deploy-dapp

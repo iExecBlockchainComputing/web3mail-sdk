@@ -9,6 +9,7 @@ const main = async () => {
     DOCKER_IMAGE_TAG,
     CHECKSUM,
     FINGERPRINT,
+    SCONIFY_VERSION,
   } = process.env;
 
   if (!WALLET_PRIVATE_KEY)
@@ -25,6 +26,7 @@ const main = async () => {
     dockerTag: DOCKER_IMAGE_TAG,
     checksum: CHECKSUM,
     fingerprint: FINGERPRINT,
+    sconifyVersion: SCONIFY_VERSION,
   });
   await saveAppAddress(address);
 };

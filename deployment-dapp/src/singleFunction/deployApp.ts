@@ -13,6 +13,7 @@ export const deployApp = async ({
   dockerTag,
   checksum,
   fingerprint,
+  sconifyVersion,
 }: {
   iexec: IExec;
   dockerNamespace?: string;
@@ -20,13 +21,16 @@ export const deployApp = async ({
   dockerTag: string;
   checksum?: string;
   fingerprint?: string;
+  sconifyVersion: string;
 }): Promise<string> => {
   const name = APP_NAME;
   const type = APP_TYPE;
 
+  console.log(`Using SCONIFY version: ${sconifyVersion}`);
+
   const mrenclave = {
     framework: 'SCONE' as any, // workaround framework not auto capitalized
-    version: 'v5.9',
+    version: `v${sconifyVersion.split('.').slice(0, 2).join('.')}`, // extracts "vX.Y" from "X.Y.Z-vN" format (e.g., "5.9.1-v16" → "v5.9")
     entrypoint: 'node --disable-wasm-trap-handler /app/app.js',
     heapSize: 7516192768,
     fingerprint,
