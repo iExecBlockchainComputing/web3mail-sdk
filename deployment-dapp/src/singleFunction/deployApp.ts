@@ -32,7 +32,7 @@ export const deployApp = async ({
     framework: 'SCONE' as any, // workaround framework not auto capitalized
     version: `v${sconifyVersion.split('.').slice(0, 2).join('.')}`, // extracts "vX.Y" from "X.Y.Z-vN" format (e.g., "5.9.1-v16" → "v5.9")
     entrypoint: 'node /app/app.js',
-    heapSize: 1073741824,
+    heapSize: 3221225472,
     fingerprint,
   };
   const app = {
