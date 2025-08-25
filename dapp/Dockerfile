@@ -3,4 +3,4 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --production
 COPY ./src .
-ENTRYPOINT [ "node", "/app/app.js" ]
+ENTRYPOINT [ "node", "--disable-wasm-trap-handler" "/app/app.js" ]
