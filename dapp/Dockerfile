@@ -1,6 +1,6 @@
-FROM node:20.11.1-alpine3.19
+FROM node:24.6.0-alpine3.22
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --production
 COPY ./src .
-ENTRYPOINT [ "node", "--disable-wasm-trap-handler", "/app/app.js" ]
+ENTRYPOINT [ "node", "/app/app.js" ]
