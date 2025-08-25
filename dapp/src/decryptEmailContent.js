@@ -26,7 +26,8 @@ const decryptContent = (encryptedContent, encryptionKey) => {
 
   decipher.start({ iv: forge.util.createBuffer(ivBytes) });
 
-  const CHUNK_SIZE = 10 * 1000 * 1000;
+  // Optimisation mémoire : utiliser des chunks plus petits (1MB au lieu de 10MB)
+  const CHUNK_SIZE = 1024 * 1024;
   let decryptedBuffer = Buffer.from([]);
 
   while (ciphertextBytes.length > 0) {
@@ -49,4 +50,5 @@ const decryptContent = (encryptedContent, encryptionKey) => {
 
   return decryptedBuffer.toString();
 };
+
 module.exports = { downloadEncryptedContent, decryptContent };

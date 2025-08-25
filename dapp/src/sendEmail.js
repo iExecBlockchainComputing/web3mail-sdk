@@ -34,20 +34,23 @@ async function start() {
 
   const workerEnv = validateWorkerEnv({ IEXEC_OUT });
 
-  // Parse and validate app secrets
+  // Parse and validate app secrets - optimisation mémoire
   let appDeveloperSecret;
   try {
     appDeveloperSecret = JSON.parse(IEXEC_APP_DEVELOPER_SECRET);
-    appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS =
-      appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS
-        ? JSON.parse(appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS)
-        : undefined;
+
+    // Optimisation : parser seulement si nécessaire
+    if (appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS) {
+      appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS = JSON.parse(
+        appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS
+      );
+    }
   } catch (e) {
     throw new Error('Failed to parse the developer secret');
   }
   appDeveloperSecret = validateAppSecret(appDeveloperSecret);
 
-  // Parse and validate requester secrets
+  // Parse and validate requester secrets - optimisation mémoire
   let requesterSecret;
   try {
     requesterSecret = IEXEC_REQUESTER_SECRET_1
@@ -58,13 +61,15 @@ async function start() {
   }
   requesterSecret = validateRequesterSecret(requesterSecret);
 
-  // Decrypt protected email
+  // Decrypt protected email - optimisation mémoire
   let protectedData;
   try {
-    const deserializer = new IExecDataProtectorDeserializer();
+    let deserializer = new IExecDataProtectorDeserializer();
     protectedData = {
       email: await deserializer.getValue('email', 'string'),
     };
+    // Libérer la mémoire du deserializer
+    deserializer = null;
   } catch (e) {
     throw Error(`Failed to parse ProtectedData: ${e.message}`);
   }
@@ -100,14 +105,18 @@ async function start() {
     console.log('Email already verified, skipping Mailgun check.');
   }
 
-  // Step 3: Decrypt email content
+  // Step 3: Decrypt email content - optimisation mémoire
   const encryptedEmailContent = await downloadEncryptedContent(
     requesterSecret.emailContentMultiAddr
   );
+
   const requesterEmailContent = decryptContent(
     encryptedEmailContent,
     requesterSecret.emailContentEncryptionKey
   );
+
+  // Libérer la mémoire du contenu chiffré
+  encryptedEmailContent.length = 0;
 
   // Step 4: Send email
   const response = await sendEmail({
@@ -141,6 +150,11 @@ async function start() {
       ...(requesterSecret.useCallback && { 'callback-data': callbackData }),
     })
   );
+
+  // Libérer la mémoire des objets volumineux
+  appDeveloperSecret = null;
+  requesterSecret = null;
+  protectedData = null;
 }
 
 module.exports = start;

@@ -32,7 +32,7 @@ export const deployApp = async ({
     framework: 'SCONE' as any, // workaround framework not auto capitalized
     version: `v${sconifyVersion.split('.').slice(0, 2).join('.')}`, // extracts "vX.Y" from "X.Y.Z-vN" format (e.g., "5.9.1-v16" → "v5.9")
     entrypoint: 'node --disable-wasm-trap-handler /app/app.js',
-    heapSize: 7516192768,
+    heapSize: 3221225472,
     fingerprint,
   };
   const app = {
