@@ -77,9 +77,8 @@ jobs:
         /etc/resolv.conf
       binary-fs: true
       fs-dir: /app
-      heap: 7G
+      heap: 1G
       dlopen: 1
-      mprotect: 1
     secrets:
       docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker-password: ${{ secrets.DOCKERHUB_PAT }}
