@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.10.1](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v0.10.0...dapp-v0.10.1) (2025-09-03)
+
+
+### Changed
+
+* remove mprotect option from sconification to reduce memory usage ([#228](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/228)) ([60cc042](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/60cc0428061c2fc85c353304a9d97a5a4bedafc0))
+
 ## [0.10.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v0.9.0...dapp-v0.10.0) (2025-07-29)
 
 
