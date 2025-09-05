@@ -79,6 +79,7 @@ jobs:
       fs-dir: /app
       heap: 1G
       dlopen: 1
+      mprotect: 0
     secrets:
       docker-username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker-password: ${{ secrets.DOCKERHUB_PAT }}
