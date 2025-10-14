@@ -38,7 +38,6 @@ const CHAIN_CONFIG: Record<number, ChainConfig> = {
     ipfsGateway: 'https://ipfs-gateway.arbitrum-sepolia-testnet.iex.ec',
     ipfsUploadUrl: 'https://ipfs-upload.arbitrum-sepolia-testnet.iex.ec',
     whitelistSmartContract: '0x8d46d40840f1Aa2264F96184Ffadf04e5D573B9B',
-    isExperimental: true,
   },
   42161: {
     name: 'arbitrum-mainnet',
