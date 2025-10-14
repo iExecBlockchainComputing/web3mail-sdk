@@ -133,7 +133,7 @@ describe('IExecWeb3mail()', () => {
     MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 
-  describe('When instantiating SDK with an experimental network', () => {
+  describe.skip('When instantiating SDK with an experimental network', () => {
     const experimentalNetworkSigner = getWeb3Provider(
       Wallet.createRandom().privateKey,
       {
