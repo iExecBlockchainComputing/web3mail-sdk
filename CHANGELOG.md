@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.6.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.5.0...web3mail-v1.6.0) (2025-10-14)
+
+
+### Added
+
+* Migrate `arbitrum-sepolia-testnet` from experimental to non-experimental network ([#230](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/230)) ([8a5ae6e](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/8a5ae6eb2d97c4224bec6e8f8483f36776dbd876))
+
 ## [1.5.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.4.0...web3mail-v1.5.0) (2025-08-06)
 
 
