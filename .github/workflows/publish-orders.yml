@@ -1,0 +1,51 @@
+name: publish-orders
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options:
+          # dev environments
+          - bellecour-dev
+          - arbitrum-sepolia-dev
+          # prod environments
+          - bellecour-prod
+          - arbitrum-sepolia-prod
+          - arbitrum-prod
+      action:
+        description: 'Order action'
+        required: true
+        type: choice
+        options:
+          - publish-sell-order
+          - revoke-sell-order
+
+jobs:
+  publish-order:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: 'npm'
+
+      - name: Install dependencies
+        working-directory: deployment-dapp
+        run: npm ci
+
+      - name: Execute order action
+        working-directory: deployment-dapp
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
+          PRICE: ${{ vars.SELL_ORDER_PRICE }}
+          VOLUME: ${{ vars.SELL_ORDER_VOLUME }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+        run: npm run ${{ github.event.inputs.action }}
