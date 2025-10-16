@@ -15,6 +15,10 @@ on:
           - bellecour-prod
           - arbitrum-sepolia-prod
           - arbitrum-prod
+      app_address:
+        description: 'App address to publish orders for'
+        required: true
+        type: string
 
 jobs:
   publish-order:
@@ -33,6 +37,10 @@ jobs:
       - name: Install dependencies
         working-directory: deployment-dapp
         run: npm ci
+
+      - name: Create app address file
+        working-directory: deployment-dapp
+        run: echo "${{ github.event.inputs.app_address }}" > .app-address
 
       - name: Execute order action
         working-directory: deployment-dapp
