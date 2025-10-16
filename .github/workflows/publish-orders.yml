@@ -37,7 +37,8 @@ jobs:
       - name: Install dependencies
         working-directory: deployment-dapp
         run: npm ci
-
+      
+      # TODO: Migrate to a github workflow using vars instead of app-address files
       - name: Create app address file
         working-directory: deployment-dapp
         run: echo "${{ github.event.inputs.app_address }}" > .app-address
