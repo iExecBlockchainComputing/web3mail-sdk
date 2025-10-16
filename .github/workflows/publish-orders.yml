@@ -42,6 +42,8 @@ jobs:
         working-directory: deployment-dapp
         run: echo "${{ github.event.inputs.app_address }}" > .app-address
 
+      
+      # TODO: Check WEB3MAIL_APP_OWNER_PRIVATEKEY is the owner of the app address set as input
       - name: Execute order action
         working-directory: deployment-dapp
         env:
