@@ -612,10 +612,10 @@ describe('sendEmail', () => {
           expect(result).toHaveProperty('protected-data-results');
           expect(result['protected-data-results']).toHaveLength(2);
 
-          // Verify each dataset result
+          // Verify each protected data result
           result['protected-data-results'].forEach((datasetResult, index) => {
             expect(datasetResult).toHaveProperty('index', index + 1);
-            expect(datasetResult).toHaveProperty('dataset');
+            expect(datasetResult).toHaveProperty('protectedData');
             expect(datasetResult).toHaveProperty('response');
             expect(datasetResult.response).toHaveProperty('status', 200);
             expect(datasetResult.response).toHaveProperty('message');
