@@ -214,11 +214,9 @@ async function start() {
       'total-processed': results.length,
       'success-count': successCount,
       'error-count': errorCount,
-      'dataset-results': results.map((r) => ({
+      'protected-data-results': results.map((r) => ({
         index: r.index,
-        dataset:
-          process.env[`IEXEC_DATASET_${r.index}_FILENAME`] ||
-          `dataset-${r.index}`,
+        protectedData: process.env[`IEXEC_DATASET_${r.index}_FILENAME`],
         response: r.response,
       })),
     };
@@ -229,7 +227,7 @@ async function start() {
     );
   }
 
-    const computedData = {
+  const computedData = {
     'deterministic-output-path': `${workerEnv.IEXEC_OUT}/result.txt`,
   };
 

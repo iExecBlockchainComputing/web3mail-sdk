@@ -487,8 +487,8 @@ describe('sendEmail', () => {
       expect(result).toHaveProperty('total-processed', 2);
       expect(result).toHaveProperty('success-count');
       expect(result).toHaveProperty('error-count');
-      expect(result).toHaveProperty('dataset-results');
-      expect(result['dataset-results']).toHaveLength(2);
+      expect(result).toHaveProperty('protected-data-results');
+      expect(result['protected-data-results']).toHaveLength(2);
     });
 
     it('should handle mixed valid and invalid datasets', async () => {
@@ -506,13 +506,13 @@ describe('sendEmail', () => {
       const result = JSON.parse(resultTxt);
 
       expect(result).toHaveProperty('total-processed', 2);
-      expect(result['dataset-results']).toHaveLength(2);
+      expect(result['protected-data-results']).toHaveLength(2);
 
       // Should have both successes and errors
-      const successResults = result['dataset-results'].filter(
+      const successResults = result['protected-data-results'].filter(
         (r) => r.response.status === 200
       );
-      const errorResults = result['dataset-results'].filter(
+      const errorResults = result['protected-data-results'].filter(
         (r) => r.response.status !== 200
       );
 
@@ -609,11 +609,11 @@ describe('sendEmail', () => {
           expect(result).toHaveProperty('total-processed', 2);
           expect(result).toHaveProperty('success-count', 2);
           expect(result).toHaveProperty('error-count', 0);
-          expect(result).toHaveProperty('dataset-results');
-          expect(result['dataset-results']).toHaveLength(2);
+          expect(result).toHaveProperty('protected-data-results');
+          expect(result['protected-data-results']).toHaveLength(2);
 
           // Verify each dataset result
-          result['dataset-results'].forEach((datasetResult, index) => {
+          result['protected-data-results'].forEach((datasetResult, index) => {
             expect(datasetResult).toHaveProperty('index', index + 1);
             expect(datasetResult).toHaveProperty('dataset');
             expect(datasetResult).toHaveProperty('response');
@@ -660,7 +660,7 @@ describe('sendEmail', () => {
           );
           expect(result).toHaveProperty('status', 200);
           expect(result).not.toHaveProperty('total-processed');
-          expect(result).not.toHaveProperty('dataset-results');
+          expect(result).not.toHaveProperty('protected-data-results');
 
           // Verify computed.json structure
           expect(computed).toHaveProperty('deterministic-output-path');
