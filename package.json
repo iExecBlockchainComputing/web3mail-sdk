@@ -49,6 +49,7 @@
   "dependencies": {
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/random": "^5.7.0",
+    "@iexec/dataprotector": "^2.0.0-beta.20-feat-add-bulk-processing-support-094df1e",
     "buffer": "^6.0.3",
     "ethers": "^6.13.2",
     "graphql-request": "^6.1.0",
