@@ -8,6 +8,7 @@ import { NULL_ADDRESS } from 'iexec/utils';
 import { IExecWeb3mail } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
+  MAX_EXPECTED_SUBGRAPH_INDEXING_TIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
   deployRandomDataset,
   getTestConfig,
@@ -144,4 +145,112 @@ describe('web3mail.fetchMyContacts()', () => {
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
+
+  describe('bulkOnly parameter', () => {
+    let protectedDataWithBulk: any;
+    let protectedDataWithoutBulk: any;
+    const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+
+    beforeAll(async () => {
+      protectedDataWithBulk = await dataProtector.protectData({
+        data: { email: 'bulk@test.com' },
+        name: 'test bulk access',
+      });
+      protectedDataWithoutBulk = await dataProtector.protectData({
+        data: { email: 'nobulk@test.com' },
+        name: 'test no bulk access',
+      });
+      await waitSubgraphIndexing();
+    }, 2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
+
+    it(
+      'should return only contacts with bulk access when bulkOnly is true',
+      async () => {
+        // Grant access with allowBulk: true
+        await dataProtector.grantAccess({
+          authorizedApp: defaultConfig.dappAddress,
+          protectedData: protectedDataWithBulk.address,
+          authorizedUser: wallet.address,
+          allowBulk: true,
+        });
+
+        // Grant access with allowBulk: false (or default)
+        await dataProtector.grantAccess({
+          authorizedApp: defaultConfig.dappAddress,
+          protectedData: protectedDataWithoutBulk.address,
+          authorizedUser: wallet.address,
+          allowBulk: false,
+        });
+
+        await waitSubgraphIndexing();
+
+        // Fetch contacts with bulkOnly: true
+        const contactsWithBulkOnly = await web3mail.fetchMyContacts({
+          bulkOnly: true,
+        });
+
+        // Should only include the contact with bulk access
+        const bulkContact = contactsWithBulkOnly.find(
+          (contact) =>
+            contact.address === protectedDataWithBulk.address.toLowerCase()
+        );
+        const noBulkContact = contactsWithBulkOnly.find(
+          (contact) =>
+            contact.address === protectedDataWithoutBulk.address.toLowerCase()
+        );
+
+        expect(bulkContact).toBeDefined();
+        expect(noBulkContact).toBeUndefined();
+      },
+      MAX_EXPECTED_BLOCKTIME +
+        MAX_EXPECTED_SUBGRAPH_INDEXING_TIME +
+        MAX_EXPECTED_WEB2_SERVICES_TIME
+    );
+
+    it(
+      'should return all contacts when bulkOnly is false',
+      async () => {
+        // Fetch contacts with bulkOnly: false (default)
+        const contactsWithoutBulkOnly = await web3mail.fetchMyContacts({
+          bulkOnly: false,
+        });
+
+        // Should include both contacts
+        const bulkContact = contactsWithoutBulkOnly.find(
+          (contact) =>
+            contact.address === protectedDataWithBulk.address.toLowerCase()
+        );
+        const noBulkContact = contactsWithoutBulkOnly.find(
+          (contact) =>
+            contact.address === protectedDataWithoutBulk.address.toLowerCase()
+        );
+
+        expect(bulkContact).toBeDefined();
+        expect(noBulkContact).toBeDefined();
+      },
+      MAX_EXPECTED_WEB2_SERVICES_TIME
+    );
+
+    it(
+      'should return all contacts when bulkOnly is not specified (default)',
+      async () => {
+        // Fetch contacts without specifying bulkOnly (defaults to false)
+        const contactsDefault = await web3mail.fetchMyContacts();
+
+        // Should include both contacts
+        const bulkContact = contactsDefault.find(
+          (contact) =>
+            contact.address === protectedDataWithBulk.address.toLowerCase()
+        );
+        const noBulkContact = contactsDefault.find(
+          (contact) =>
+            contact.address === protectedDataWithoutBulk.address.toLowerCase()
+        );
+
+        expect(bulkContact).toBeDefined();
+        expect(noBulkContact).toBeDefined();
+      },
+      MAX_EXPECTED_WEB2_SERVICES_TIME
+    );
+  });
 });
