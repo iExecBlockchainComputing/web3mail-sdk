@@ -1,6 +1,7 @@
 import { IExec } from 'iexec';
 import { AddressOrENS } from './types.js';
 import { GraphQLClient } from 'graphql-request';
+import { IExecDataProtectorCore } from '@iexec/dataprotector';
 
 export type ProtectedDataQuery = {
   id: string;
@@ -30,6 +31,8 @@ export type DappWhitelistAddressConsumer = {
 export type IExecConsumer = {
   iexec: IExec;
 };
+
+export type DataProtectorConsumer = { dataProtector: IExecDataProtectorCore };
 
 export type SubgraphConsumer = {
   graphQLClient: GraphQLClient;

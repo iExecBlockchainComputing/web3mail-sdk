@@ -11,20 +11,41 @@ export type Address = string;
 
 export type TimeStamp = string;
 
+export type GrantedAccess = {
+  dataset: string;
+  datasetprice: string;
+  volume: string;
+  tag: string;
+  apprestrict: string;
+  workerpoolrestrict: string;
+  requesterrestrict: string;
+  salt: string;
+  sign: string;
+  remainingAccess: number;
+};
+
 export type Contact = {
   address: Address;
   owner: Address;
   accessGrantTimestamp: TimeStamp;
   isUserStrict: boolean;
-  name: string;
+  name?: string;
   remainingAccess: number;
   accessPrice: number;
+  grantedAccess: GrantedAccess;
 };
 
 export type SendEmailParams = {
   emailSubject: string;
   emailContent: string;
-  protectedData: Address;
+  protectedData?: Address;
+  /**
+   * Granted access to process.
+   * use prepareBulkRequest of dataprotector to create a bulk request.
+   * if not provided, the single message will be processed.
+   */
+  grantedAccess?: GrantedAccess[];
+  maxProtectedDataPerTask?: number;
   contentType?: string;
   senderName?: string;
   label?: string;
@@ -40,6 +61,7 @@ export type FetchMyContactsParams = {
    * Get contacts for this specific user only
    */
   isUserStrict?: boolean;
+  bulkOnly?: boolean;
 };
 
 export type FetchUserContactsParams = {
@@ -49,7 +71,7 @@ export type FetchUserContactsParams = {
   userAddress: Address;
 } & FetchMyContactsParams;
 
-export type SendEmailResponse = {
+export type SendEmailSingleResponse = {
   taskId: string;
 };
 

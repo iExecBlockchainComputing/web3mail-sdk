@@ -16,6 +16,7 @@ export const fetchMyContacts = async ({
   dappAddressOrENS = throwIfMissing(),
   dappWhitelistAddress = throwIfMissing(),
   isUserStrict = false,
+  bulkOnly = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -33,5 +34,6 @@ export const fetchMyContacts = async ({
     dappWhitelistAddress,
     userAddress,
     isUserStrict: vIsUserStrict,
+    bulkOnly,
   });
 };

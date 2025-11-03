@@ -1,5 +1,9 @@
 import { AbstractProvider, AbstractSigner, Eip1193Provider } from 'ethers';
 import { IExec } from 'iexec';
+import {
+  IExecDataProtectorCore,
+  ProcessBulkRequestResponse,
+} from '@iexec/dataprotector';
 import { GraphQLClient } from 'graphql-request';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import { fetchMyContacts } from './fetchMyContacts.js';
@@ -10,7 +14,7 @@ import {
   SendEmailParams,
   AddressOrENS,
   Web3MailConfigOptions,
-  SendEmailResponse,
+  SendEmailSingleResponse,
   Web3SignerProvider,
   FetchMyContactsParams,
 } from './types.js';
@@ -34,6 +38,7 @@ interface Web3mailResolvedConfig {
   ipfsGateway: string;
   defaultWorkerpool: string;
   iexec: IExec;
+  dataProtector: IExecDataProtectorCore;
 }
 
 export class IExecWeb3mail {
@@ -50,6 +55,8 @@ export class IExecWeb3mail {
   private defaultWorkerpool!: string;
 
   private iexec!: IExec;
+
+  private dataProtector!: IExecDataProtectorCore;
 
   private initPromise: Promise<void> | null = null;
 
@@ -75,6 +82,7 @@ export class IExecWeb3mail {
         this.ipfsGateway = config.ipfsGateway;
         this.defaultWorkerpool = config.defaultWorkerpool;
         this.iexec = config.iexec;
+        this.dataProtector = config.dataProtector;
       });
     }
     return this.initPromise;
@@ -105,7 +113,9 @@ export class IExecWeb3mail {
     });
   }
 
-  async sendEmail(args: SendEmailParams): Promise<SendEmailResponse> {
+  async sendEmail(
+    args: SendEmailParams
+  ): Promise<ProcessBulkRequestResponse | SendEmailSingleResponse> {
     await this.init();
     await isValidProvider(this.iexec);
     return sendEmail({
@@ -113,6 +123,7 @@ export class IExecWeb3mail {
       workerpoolAddressOrEns:
         args.workerpoolAddressOrEns || this.defaultWorkerpool,
       iexec: this.iexec,
+      dataProtector: this.dataProtector,
       ipfsNode: this.ipfsNode,
       ipfsGateway: this.ipfsGateway,
       dappAddressOrENS: this.dappAddressOrENS,
@@ -184,6 +195,17 @@ export class IExecWeb3mail {
       throw new Error(`Failed to create GraphQLClient: ${error.message}`);
     }
 
+    const dataProtector = new IExecDataProtectorCore(this.ethProvider, {
+      iexecOptions: {
+        ipfsGatewayURL: ipfsGateway,
+        ...this.options?.iexecOptions,
+        allowExperimentalNetworks: this.options.allowExperimentalNetworks,
+      },
+      ipfsGateway,
+      ipfsNode,
+      subgraphUrl,
+    });
+
     return {
       dappAddressOrENS,
       dappWhitelistAddress: dappWhitelistAddress.toLowerCase(),
@@ -192,6 +214,7 @@ export class IExecWeb3mail {
       ipfsNode,
       ipfsGateway,
       iexec,
+      dataProtector,
     };
   }
 }

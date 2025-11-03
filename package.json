@@ -49,15 +49,15 @@
   "dependencies": {
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/random": "^5.7.0",
+    "@iexec/dataprotector": "2.0.0-beta.20-feat-add-bulk-processing-support-094df1e",
     "buffer": "^6.0.3",
     "ethers": "^6.13.2",
     "graphql-request": "^6.1.0",
-    "iexec": "^8.20.0",
+    "iexec": "8.20.0-feat-bulk-processing-62e7c5f",
     "kubo-rpc-client": "^4.1.1",
     "yup": "^1.1.1"
   },
   "devDependencies": {
-    "@iexec/dataprotector": "^2.0.0-beta.19",
     "@jest/globals": "^29.7.0",
     "@swc/core": "^1.3.96",
     "@swc/jest": "^0.2.29",
