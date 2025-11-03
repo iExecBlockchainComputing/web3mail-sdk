@@ -146,7 +146,7 @@ describe('IExecWeb3mail()', () => {
       it('should throw a configuration error', async () => {
         const web3mail = new IExecWeb3mail(experimentalNetworkSigner);
         await expect(web3mail.init()).rejects.toThrow(
-          'Missing required configuration for chainId 421614: dataProtectorSubgraph, dappAddress, whitelistSmartContract, ipfsGateway, prodWorkerpoolAddress, ipfsUploadUrl'
+          'Missing required configuration for chainId 421614: dataProtectorSubgraph, whitelistSmartContract, ipfsGateway, prodWorkerpoolAddress, ipfsUploadUrl'
         );
       });
     });
