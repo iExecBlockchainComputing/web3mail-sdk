@@ -15,8 +15,8 @@ permissions:
 
 jobs:
   set-staging-version:
-    # Only run for manual dispatch on main branch
-    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
+    # Run for manual dispatch on any branch (nightly releases)
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -33,8 +33,8 @@ jobs:
       VERSION: ${{ steps.set-staging-version.outputs.VERSION }}
 
   publish-npm-staging:
-    # Only run for manual dispatch on main branch
-    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
+    # Run for manual dispatch on any branch (nightly releases)
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     uses: ./.github/workflows/reusable-npm.yml
     needs: set-staging-version
     with:
