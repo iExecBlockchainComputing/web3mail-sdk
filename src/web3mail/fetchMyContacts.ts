@@ -16,6 +16,7 @@ export const fetchMyContacts = async ({
   dappAddressOrENS = throwIfMissing(),
   dappWhitelistAddress = throwIfMissing(),
   isUserStrict = false,
+  bulkOnly = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -24,6 +25,9 @@ export const fetchMyContacts = async ({
   const vIsUserStrict = booleanSchema()
     .label('isUserStrict')
     .validateSync(isUserStrict);
+  const vBulkOnly = booleanSchema()
+    .label('bulkOnly')
+    .validateSync(bulkOnly);
 
   const userAddress = await iexec.wallet.getAddress();
   return fetchUserContacts({
@@ -33,5 +37,6 @@ export const fetchMyContacts = async ({
     dappWhitelistAddress,
     userAddress,
     isUserStrict: vIsUserStrict,
+    bulkOnly: vBulkOnly,
   });
 };
