@@ -29,8 +29,15 @@ jobs:
           CURRENT_VERSION=$(npm pkg get version | tr -d '"')
           NIGHTLY_VERSION="${CURRENT_VERSION}-nightly-${GITHUB_SHA::7}"
           echo "VERSION=${NIGHTLY_VERSION}" >> $GITHUB_OUTPUT
+          # Set default tag to 'nightly' if not provided
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            TAG="nightly"
+          fi
+          echo "TAG=${TAG}" >> $GITHUB_OUTPUT
     outputs:
       VERSION: ${{ steps.set-staging-version.outputs.VERSION }}
+      TAG: ${{ steps.set-staging-version.outputs.TAG }}
 
   publish-npm-staging:
     # Run for manual dispatch on any branch (nightly releases)
@@ -38,7 +45,7 @@ jobs:
     uses: ./.github/workflows/reusable-npm.yml
     needs: set-staging-version
     with:
-      tag: ${{ github.event.inputs.tag }}
+      tag: ${{ needs.set-staging-version.outputs.TAG }}
       version: ${{ needs.set-staging-version.outputs.VERSION }}
 
   publish-npm-latest:
