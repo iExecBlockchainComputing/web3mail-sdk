@@ -13,6 +13,18 @@ describe('getValidContact', () => {
 
   beforeAll(() => {
     // Initialize the variables in the beforeAll hook
+    const mockGrantedAccess = {
+      dataset: '0x0000000000000000000000000000000000000000',
+      datasetprice: '0',
+      volume: '1',
+      tag: '0x0000000000000000000000000000000000000000000000000000000000000000',
+      apprestrict: '0x0000000000000000000000000000000000000000',
+      workerpoolrestrict: '0x0000000000000000000000000000000000000000',
+      requesterrestrict: '0x0000000000000000000000000000000000000000',
+      salt: '0x0000000000000000000000000000000000000000000000000000000000000000',
+      sign: '0x0000000000000000000000000000000000000000000000000000000000000000',
+      remainingAccess: 1,
+    };
     contacts = [
       {
         address: 'address1',
@@ -21,6 +33,7 @@ describe('getValidContact', () => {
         remainingAccess: 1,
         accessPrice: 0,
         isUserStrict: true,
+        grantedAccess: mockGrantedAccess,
       },
       {
         address: 'address2',
@@ -29,6 +42,7 @@ describe('getValidContact', () => {
         remainingAccess: 1,
         accessPrice: 0,
         isUserStrict: true,
+        grantedAccess: mockGrantedAccess,
       },
       {
         address: 'address3',
@@ -37,6 +51,7 @@ describe('getValidContact', () => {
         remainingAccess: 1,
         accessPrice: 0,
         isUserStrict: true,
+        grantedAccess: mockGrantedAccess,
       },
     ];
 
@@ -64,6 +79,7 @@ describe('getValidContact', () => {
         remainingAccess: 1,
         accessPrice: 0,
         isUserStrict: true,
+        grantedAccess: contacts[0].grantedAccess,
       },
       {
         address: 'address3',
@@ -73,6 +89,7 @@ describe('getValidContact', () => {
         remainingAccess: 1,
         accessPrice: 0,
         isUserStrict: true,
+        grantedAccess: contacts[2].grantedAccess,
       },
     ]);
 
