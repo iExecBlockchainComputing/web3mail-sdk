@@ -28,16 +28,15 @@ async function writeTaskOutput(path, message) {
   }
 }
 
-async function processProtectedData(
+async function processProtectedData({
   index,
-  {
-    IEXEC_IN,
-    IEXEC_OUT,
-    appDeveloperSecret,
-    requesterSecret,
-    datasetFilename = null,
-  }
-) {
+  IEXEC_IN,
+  appDeveloperSecret,
+  requesterSecret,
+}) {
+  const datasetFilename =
+    index > 0 ? process.env[`IEXEC_DATASET_${index}_FILENAME`] : null;
+
   // Parse the protected data
   let protectedData;
   try {
@@ -110,13 +109,6 @@ async function processProtectedData(
     senderName: requesterSecret.senderName,
   });
 
-  if (index === 0) {
-    await writeTaskOutput(
-      `${IEXEC_OUT}/result.txt`,
-      JSON.stringify(response, null, 2)
-    );
-  }
-
   return { index, response, isEmailValidated };
 }
 
@@ -159,50 +151,39 @@ async function start() {
   const bulkSize = parseInt(IEXEC_BULK_SLICE_SIZE, 10) || 0;
   const results = [];
 
+  // Process multiple protected data
   if (bulkSize > 0) {
-    // Process multiple protected data
     const promises = [];
-    for (let i = 1; i <= bulkSize; i += 1) {
-      const datasetFilename = process.env[`IEXEC_DATASET_${i}_FILENAME`];
-
-      const promise = processProtectedData(i, {
+    for (let index = 1; index <= bulkSize; index += 1) {
+      const promise = processProtectedData({
+        index,
         IEXEC_IN,
-        IEXEC_OUT: workerEnv.IEXEC_OUT,
         appDeveloperSecret,
         requesterSecret,
-        datasetFilename,
       })
         .then((result) => result)
-        .catch((error) => ({
-          index: i,
-          resultFileName: datasetFilename
-            ? `${datasetFilename}.txt`
-            : `dataset-${i}.txt`,
-          response: {
-            status: 500,
-            message: `Failed to process dataset ${i}: ${error.message}`,
-          },
-        }));
+        .catch((error) => {
+          const datasetFilename =
+            process.env[`IEXEC_DATASET_${index}_FILENAME`];
+          return {
+            index,
+            resultFileName: datasetFilename
+              ? `${datasetFilename}.txt`
+              : `dataset-${index}.txt`,
+            response: {
+              status: 500,
+              message: `Failed to process protected-data ${index}. Cause: ${error.message}`,
+            },
+          };
+        });
 
       promises.push(promise);
     }
 
     const bulkResults = await Promise.all(promises);
     results.push(...bulkResults);
-  } else {
-    // Process single protected data
-    const result = await processProtectedData(0, {
-      IEXEC_IN,
-      IEXEC_OUT: workerEnv.IEXEC_OUT,
-      appDeveloperSecret,
-      requesterSecret,
-    });
 
-    results.push(result);
-  }
-
-  // Create result.txt for bulk processing
-  if (bulkSize > 0) {
+    // Write result.json for bulk processing
     const successCount = results.filter(
       (r) => r.response.status === 200
     ).length;
@@ -210,25 +191,42 @@ async function start() {
 
     const bulkResult = {
       message: `Bulk processing completed: ${successCount} successful, ${errorCount} failed`,
-      status: 200,
-      'total-processed': results.length,
+      'total-count': results.length,
       'success-count': successCount,
       'error-count': errorCount,
-      'protected-data-results': results.map((r) => ({
+      results: results.map((r) => ({
         index: r.index,
-        protectedData: process.env[`IEXEC_DATASET_${r.index}_FILENAME`],
+        'protected-data':
+          process.env[`IEXEC_DATASET_${r.index}_FILENAME`] ||
+          `dataset-${r.index}`,
         response: r.response,
       })),
     };
 
     await writeTaskOutput(
-      `${workerEnv.IEXEC_OUT}/result.txt`,
+      `${workerEnv.IEXEC_OUT}/result.json`,
       JSON.stringify(bulkResult, null, 2)
+    );
+  } else {
+    // Process single protected data
+    const result = await processProtectedData({
+      index: 0,
+      IEXEC_IN,
+      appDeveloperSecret,
+      requesterSecret,
+    });
+
+    results.push(result);
+
+    await writeTaskOutput(
+      `${workerEnv.IEXEC_OUT}/result.json`,
+      JSON.stringify(result.response, null, 2)
     );
   }
 
+  // Generate computed.json - same format for both single and bulk
   const computedData = {
-    'deterministic-output-path': `${workerEnv.IEXEC_OUT}/result.txt`,
+    'deterministic-output-path': `${workerEnv.IEXEC_OUT}/result.json`,
   };
 
   // Add callback data for single processing if useCallback is enabled

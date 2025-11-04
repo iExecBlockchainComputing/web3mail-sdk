@@ -390,15 +390,15 @@ describe('sendEmail', () => {
         await expect(start()).resolves.toBeUndefined();
 
         const { IEXEC_OUT } = process.env;
-        const resultTxt = await fsPromises.readFile(
-          path.join(IEXEC_OUT, 'result.txt'),
+        const resultJson = await fsPromises.readFile(
+          path.join(IEXEC_OUT, 'result.json'),
           'utf-8'
         );
         const computedJson = await fsPromises.readFile(
           path.join(IEXEC_OUT, 'computed.json'),
           'utf-8'
         );
-        expect(JSON.parse(resultTxt)).toStrictEqual({
+        expect(JSON.parse(resultJson)).toStrictEqual({
           message: 'Your email has been sent successfully.',
           status: 200,
         });
@@ -406,11 +406,11 @@ describe('sendEmail', () => {
           expect(JSON.parse(computedJson)).toStrictEqual({
             'callback-data':
               '0x0000000000000000000000000000000000000000000000000000000000000001',
-            'deterministic-output-path': `${IEXEC_OUT}/result.txt`,
+            'deterministic-output-path': `${IEXEC_OUT}/result.json`,
           });
         } else {
           expect(JSON.parse(computedJson)).toStrictEqual({
-            'deterministic-output-path': `${IEXEC_OUT}/result.txt`,
+            'deterministic-output-path': `${IEXEC_OUT}/result.json`,
           });
         }
         // output should not contain extra files
@@ -478,17 +478,17 @@ describe('sendEmail', () => {
 
       // Check that bulk processing was attempted and completed
       const { IEXEC_OUT } = process.env;
-      const resultTxt = await fsPromises.readFile(
-        path.join(IEXEC_OUT, 'result.txt'),
+      const resultJson = await fsPromises.readFile(
+        path.join(IEXEC_OUT, 'result.json'),
         'utf-8'
       );
-      const result = JSON.parse(resultTxt);
+      const result = JSON.parse(resultJson);
 
-      expect(result).toHaveProperty('total-processed', 2);
+      expect(result).toHaveProperty('total-count', 2);
       expect(result).toHaveProperty('success-count');
       expect(result).toHaveProperty('error-count');
-      expect(result).toHaveProperty('protected-data-results');
-      expect(result['protected-data-results']).toHaveLength(2);
+      expect(result).toHaveProperty('results');
+      expect(result.results).toHaveLength(2);
     });
 
     it('should handle mixed valid and invalid datasets', async () => {
@@ -499,20 +499,20 @@ describe('sendEmail', () => {
       await expect(start()).resolves.toBeUndefined();
 
       const { IEXEC_OUT } = process.env;
-      const resultTxt = await fsPromises.readFile(
-        path.join(IEXEC_OUT, 'result.txt'),
+      const resultJson = await fsPromises.readFile(
+        path.join(IEXEC_OUT, 'result.json'),
         'utf-8'
       );
-      const result = JSON.parse(resultTxt);
+      const result = JSON.parse(resultJson);
 
-      expect(result).toHaveProperty('total-processed', 2);
-      expect(result['protected-data-results']).toHaveLength(2);
+      expect(result).toHaveProperty('total-count', 2);
+      expect(result.results).toHaveLength(2);
 
       // Should have both successes and errors
-      const successResults = result['protected-data-results'].filter(
+      const successResults = result.results.filter(
         (r) => r.response.status === 200
       );
-      const errorResults = result['protected-data-results'].filter(
+      const errorResults = result.results.filter(
         (r) => r.response.status !== 200
       );
 
@@ -591,8 +591,8 @@ describe('sendEmail', () => {
           await expect(start()).resolves.toBeUndefined();
 
           const { IEXEC_OUT } = process.env;
-          const resultTxt = await fsPromises.readFile(
-            path.join(IEXEC_OUT, 'result.txt'),
+          const resultJson = await fsPromises.readFile(
+            path.join(IEXEC_OUT, 'result.json'),
             'utf-8'
           );
           const computedJson = await fsPromises.readFile(
@@ -600,22 +600,21 @@ describe('sendEmail', () => {
             'utf-8'
           );
 
-          const result = JSON.parse(resultTxt);
+          const result = JSON.parse(resultJson);
           const computed = JSON.parse(computedJson);
 
           // Verify bulk processing result structure
           expect(result).toHaveProperty('message');
-          expect(result).toHaveProperty('status', 200);
-          expect(result).toHaveProperty('total-processed', 2);
+          expect(result).toHaveProperty('total-count', 2);
           expect(result).toHaveProperty('success-count', 2);
           expect(result).toHaveProperty('error-count', 0);
-          expect(result).toHaveProperty('protected-data-results');
-          expect(result['protected-data-results']).toHaveLength(2);
+          expect(result).toHaveProperty('results');
+          expect(result.results).toHaveLength(2);
 
           // Verify each protected data result
-          result['protected-data-results'].forEach((datasetResult, index) => {
+          result.results.forEach((datasetResult, index) => {
             expect(datasetResult).toHaveProperty('index', index + 1);
-            expect(datasetResult).toHaveProperty('protectedData');
+            expect(datasetResult).toHaveProperty('protected-data');
             expect(datasetResult).toHaveProperty('response');
             expect(datasetResult.response).toHaveProperty('status', 200);
             expect(datasetResult.response).toHaveProperty('message');
@@ -624,13 +623,13 @@ describe('sendEmail', () => {
           // Verify computed.json structure
           expect(computed).toHaveProperty('deterministic-output-path');
           expect(computed['deterministic-output-path']).toBe(
-            `${IEXEC_OUT}/result.txt`
+            `${IEXEC_OUT}/result.json`
           );
 
           // Verify no extra files were created
           const out = await fsPromises.readdir(IEXEC_OUT);
           expect(out.length).toBe(2);
-          expect(out).toContain('result.txt');
+          expect(out).toContain('result.json');
           expect(out).toContain('computed.json');
         });
 
@@ -641,8 +640,8 @@ describe('sendEmail', () => {
           await expect(start()).resolves.toBeUndefined();
 
           const { IEXEC_OUT } = process.env;
-          const resultTxt = await fsPromises.readFile(
-            path.join(IEXEC_OUT, 'result.txt'),
+          const resultJson = await fsPromises.readFile(
+            path.join(IEXEC_OUT, 'result.json'),
             'utf-8'
           );
           const computedJson = await fsPromises.readFile(
@@ -650,7 +649,7 @@ describe('sendEmail', () => {
             'utf-8'
           );
 
-          const result = JSON.parse(resultTxt);
+          const result = JSON.parse(resultJson);
           const computed = JSON.parse(computedJson);
 
           // Verify single processing result structure (not bulk)
@@ -659,13 +658,13 @@ describe('sendEmail', () => {
             'Your email has been sent successfully.'
           );
           expect(result).toHaveProperty('status', 200);
-          expect(result).not.toHaveProperty('total-processed');
-          expect(result).not.toHaveProperty('protected-data-results');
+          expect(result).not.toHaveProperty('total-count');
+          expect(result).not.toHaveProperty('results');
 
           // Verify computed.json structure
           expect(computed).toHaveProperty('deterministic-output-path');
           expect(computed['deterministic-output-path']).toBe(
-            `${IEXEC_OUT}/result.txt`
+            `${IEXEC_OUT}/result.json`
           );
         });
       });
