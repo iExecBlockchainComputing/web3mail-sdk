@@ -254,21 +254,18 @@ describe('web3mail.fetchMyContacts()', () => {
     let protectedDataWithoutBulk: ProtectedDataWithSecretProps;
     let userWithAccess: string;
 
-    beforeAll(
-      async () => {
-        userWithAccess = Wallet.createRandom().address;
-        protectedDataWithBulk = await dataProtector.protectData({
-          data: { email: 'bulk@test.com' },
-          name: 'test bulk access user',
-        });
-        protectedDataWithoutBulk = await dataProtector.protectData({
-          data: { email: 'nobulk@test.com' },
-          name: 'test no bulk access user',
-        });
-        await waitSubgraphIndexing();
-      },
-      2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
-    );
+    beforeAll(async () => {
+      userWithAccess = Wallet.createRandom().address;
+      protectedDataWithBulk = await dataProtector.protectData({
+        data: { email: 'bulk@test.com' },
+        name: 'test bulk access user',
+      });
+      protectedDataWithoutBulk = await dataProtector.protectData({
+        data: { email: 'nobulk@test.com' },
+        name: 'test no bulk access user',
+      });
+      await waitSubgraphIndexing();
+    }, 2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME);
 
     it(
       'should return only contacts with bulk access when bulkOnly is true',

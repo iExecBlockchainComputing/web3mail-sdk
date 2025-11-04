@@ -25,9 +25,7 @@ export const fetchMyContacts = async ({
   const vIsUserStrict = booleanSchema()
     .label('isUserStrict')
     .validateSync(isUserStrict);
-  const vBulkOnly = booleanSchema()
-    .label('bulkOnly')
-    .validateSync(bulkOnly);
+  const vBulkOnly = booleanSchema().label('bulkOnly').validateSync(bulkOnly);
 
   const userAddress = await iexec.wallet.getAddress();
   return fetchUserContacts({
