@@ -100,6 +100,9 @@ export const sendEmail = async ({
     const vAppMaxPrice = positiveNumberSchema()
       .label('appMaxPrice')
       .validateSync(appMaxPrice);
+    const vDataMaxPrice = positiveNumberSchema()
+      .label('dataMaxPrice')
+      .validateSync(dataMaxPrice);
     const vWorkerpoolMaxPrice = positiveNumberSchema()
       .label('workerpoolMaxPrice')
       .validateSync(workerpoolMaxPrice);
@@ -194,13 +197,19 @@ export const sendEmail = async ({
     // Use processProtectedData from dataprotector
     // Note: Some parameters may need to be adjusted based on actual dataprotector SDK API
     const result = await dataProtector.processProtectedData({
+      defaultWorkerpool: vWorkerpoolAddressOrEns,
       protectedData: vDatasetAddress,
       app: vDappAddressOrENS,
       // userWhitelist: vDappWhitelistAddress, // Removed due to bug in dataprotector v2.0.0-beta.20
       workerpool: vWorkerpoolAddressOrEns,
+      workerpoolMaxPrice: vWorkerpoolMaxPrice,
+      dataMaxPrice: vDataMaxPrice,
+      appMaxPrice: vAppMaxPrice,
       args: vLabel,
       inputFiles: [],
       secrets,
+      useVoucher: vUseVoucher,
+      waitForResult: false,
     });
 
     return {
@@ -216,8 +225,6 @@ export const sendEmail = async ({
     // handleIfProtocolError transforms ApiCallError into a WorkflowError with isProtocolError=true
     handleIfProtocolError(error);
 
-    // If we reach here, it's not a protocol error
-    // Check if it's a WorkflowError from processProtectedData by checking the message
     const isProcessProtectedDataError =
       error instanceof Error &&
       error.message === 'Failed to process protected data';
