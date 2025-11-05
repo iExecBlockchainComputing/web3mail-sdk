@@ -1,5 +1,6 @@
 import { EnhancedWallet } from 'iexec';
 import { IExecConfigOptions } from 'iexec/IExecConfig';
+import type { BulkRequest } from '@iexec/dataprotector';
 
 export type Web3SignerProvider = EnhancedWallet;
 
@@ -38,14 +39,7 @@ export type Contact = {
 export type SendEmailParams = {
   emailSubject: string;
   emailContent: string;
-  protectedData?: Address; // Made optional - required only for single processing
-  /**
-   * Granted access to process.
-   * use prepareBulkRequest of dataprotector to create a bulk request.
-   * if not provided, the single message will be processed.
-   */
-  grantedAccess?: GrantedAccess[];
-  maxProtectedDataPerTask?: number;
+  protectedData: Address;
   contentType?: string;
   senderName?: string;
   label?: string;
@@ -77,6 +71,8 @@ export type FetchUserContactsParams = {
 export type SendEmailSingleResponse = {
   taskId: string;
 };
+
+export type SendEmailResponse = SendEmailSingleResponse;
 
 /**
  * Configuration options for Web3Mail.
@@ -124,4 +120,53 @@ export type Web3MailConfigOptions = {
    * ⚠️ experimental networks are networks on which the iExec's stack is partially deployed, experimental networks can be subject to instabilities or discontinuity. Access is provided without warranties.
    */
   allowExperimentalNetworks?: boolean;
+};
+
+export type PrepareEmailCampaignParams = {
+  /**
+   * Granted access to process in bulk.
+   * use `fetchMyContacts({ bulkOnly: true })` to get granted accesses.
+   */
+  grantedAccess: GrantedAccess[];
+  maxProtectedDataPerTask?: number;
+  senderName?: string;
+  emailSubject: string;
+  emailContent: string;
+  contentType?: string;
+  label?: string;
+  workerpoolAddressOrEns?: AddressOrENS;
+  dataMaxPrice?: number;
+  appMaxPrice?: number;
+  workerpoolMaxPrice?: number;
+};
+
+export type PrepareEmailCampaignResponse = {
+  campaignRequest: BulkRequest;
+};
+
+export type SendEmailCampaignParams = {
+  /**
+   * The prepared campaign request from prepareEmailCampaign
+   */
+  campaignRequest: PrepareEmailCampaignResponse['campaignRequest'];
+  /**
+   * Workerpool address or ENS to use for processing
+   */
+  workerpoolAddressOrEns?: AddressOrENS;
+  /**
+   * Whether to use voucher for payment
+   */
+  useVoucher?: boolean;
+  /**
+   * Maximum price for workerpool order
+   */
+  workerpoolMaxPrice?: number;
+};
+
+export type ProcessBulkRequestResponse = {
+  tasks: Array<{
+    taskId: string;
+    dealId: string;
+    bulkIndex: number;
+  }>;
 };
