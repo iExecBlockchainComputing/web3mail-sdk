@@ -1,22 +1,25 @@
 import { AbstractProvider, AbstractSigner, Eip1193Provider } from 'ethers';
 import { IExec } from 'iexec';
-import {
-  IExecDataProtectorCore,
-  ProcessBulkRequestResponse,
-} from '@iexec/dataprotector';
+import { IExecDataProtectorCore } from '@iexec/dataprotector';
 import { GraphQLClient } from 'graphql-request';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import { fetchMyContacts } from './fetchMyContacts.js';
 import { sendEmail } from './sendEmail.js';
+import { prepareEmailCampaign } from './prepareEmailCampaign.js';
+import { sendEmailCampaign } from './sendEmailCampaign.js';
 import {
   Contact,
   FetchUserContactsParams,
   SendEmailParams,
   AddressOrENS,
   Web3MailConfigOptions,
-  SendEmailSingleResponse,
+  SendEmailResponse,
   Web3SignerProvider,
   FetchMyContactsParams,
+  PrepareEmailCampaignParams,
+  PrepareEmailCampaignResponse,
+  SendEmailCampaignParams,
+  ProcessBulkRequestResponse,
 } from './types.js';
 import { isValidProvider } from '../utils/validators.js';
 import { getChainIdFromProvider } from '../utils/getChainId.js';
@@ -113,12 +116,28 @@ export class IExecWeb3mail {
     });
   }
 
-  async sendEmail(
-    args: SendEmailParams
-  ): Promise<ProcessBulkRequestResponse | SendEmailSingleResponse> {
+  async sendEmail(args: SendEmailParams): Promise<SendEmailResponse> {
     await this.init();
     await isValidProvider(this.iexec);
     return sendEmail({
+      ...args,
+      workerpoolAddressOrEns:
+        args.workerpoolAddressOrEns || this.defaultWorkerpool,
+      iexec: this.iexec,
+      ipfsNode: this.ipfsNode,
+      ipfsGateway: this.ipfsGateway,
+      dappAddressOrENS: this.dappAddressOrENS,
+      dappWhitelistAddress: this.dappWhitelistAddress,
+      graphQLClient: this.graphQLClient,
+    });
+  }
+
+  async prepareEmailCampaign(
+    args: PrepareEmailCampaignParams
+  ): Promise<PrepareEmailCampaignResponse> {
+    await this.init();
+    await isValidProvider(this.iexec);
+    return prepareEmailCampaign({
       ...args,
       workerpoolAddressOrEns:
         args.workerpoolAddressOrEns || this.defaultWorkerpool,
@@ -127,8 +146,19 @@ export class IExecWeb3mail {
       ipfsNode: this.ipfsNode,
       ipfsGateway: this.ipfsGateway,
       dappAddressOrENS: this.dappAddressOrENS,
-      dappWhitelistAddress: this.dappWhitelistAddress,
-      graphQLClient: this.graphQLClient,
+    });
+  }
+
+  async sendEmailCampaign(
+    args: SendEmailCampaignParams
+  ): Promise<ProcessBulkRequestResponse> {
+    await this.init();
+    await isValidProvider(this.iexec);
+    return sendEmailCampaign({
+      ...args,
+      workerpoolAddressOrEns:
+        args.workerpoolAddressOrEns || this.defaultWorkerpool,
+      dataProtector: this.dataProtector,
     });
   }
 
