@@ -45,6 +45,13 @@ export type SendEmailParams = {
    * if not provided, the single message will be processed.
    */
   grantedAccess?: GrantedAccess[];
+  /**
+   * Maximum number of protected data to process per task (any protected data exceeding this number will be processed in another task)
+   *
+   * @default 100
+   *
+   * ⚠️ If you manually call prepareBulkRequest before sendEmail, the value passed here must be the same as the one passed to prepareBulkRequest.
+   */
   maxProtectedDataPerTask?: number;
   contentType?: string;
   senderName?: string;

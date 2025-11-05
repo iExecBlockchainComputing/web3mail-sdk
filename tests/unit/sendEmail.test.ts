@@ -421,6 +421,83 @@ describe('sendEmail', () => {
         });
       });
 
+      it('should use default value of 100 for maxProtectedDataPerTask when not provided', async () => {
+        // --- GIVEN
+        const mockBulkRequest = {
+          bulkRequest: {
+            orders: [],
+            tag: '0x0000000000000000000000000000000000000000000000000000000000000003',
+          },
+        };
+        const mockResponse = {
+          tasks: [
+            {
+              taskId: 'mock-task-id-1',
+              dealId: 'mock-deal-id-1',
+              bulkIndex: 0,
+            },
+          ],
+        };
+
+        const mockDataprotector = {
+          prepareBulkRequest: jest
+            .fn<() => Promise<any>>()
+            .mockResolvedValue(mockBulkRequest),
+          processBulkRequest: jest
+            .fn<() => Promise<any>>()
+            .mockResolvedValue(mockResponse),
+          processProtectedData: jest.fn(),
+        } as any;
+
+        const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+        const grantedAccess = [
+          {
+            dataset: getRandomAddress(),
+            datasetprice: '0',
+            volume: '1',
+            tag: '0x0000000000000000000000000000000000000000000000000000000000000000',
+            apprestrict: defaultConfig!.dappAddress,
+            workerpoolrestrict: '0x0000000000000000000000000000000000000000',
+            requesterrestrict: '0x0000000000000000000000000000000000000000',
+            salt: '0x0000000000000000000000000000000000000000000000000000000000000000',
+            sign: '0x0000000000000000000000000000000000000000000000000000000000000000',
+            remainingAccess: 1,
+          },
+        ];
+
+        // --- WHEN
+        const result = await sendEmail({
+          // @ts-expect-error No need for graphQLClient here
+          graphQLClient: {},
+          iexec: mockAllForSendEmail() as any,
+          dataProtector: mockDataprotector as any,
+          ipfsGateway: defaultConfig!.ipfsGateway,
+          ipfsNode: defaultConfig!.ipfsUploadUrl,
+          workerpoolAddressOrEns: defaultConfig!.prodWorkerpoolAddress,
+          dappAddressOrENS: defaultConfig!.dappAddress,
+          dappWhitelistAddress:
+            defaultConfig!.whitelistSmartContract.toLowerCase(),
+          emailSubject: 'e2e mail object for test',
+          emailContent: 'bulk test',
+          grantedAccess,
+          // maxProtectedDataPerTask is not provided, should default to 100
+        });
+
+        // --- THEN
+        expect(mockDataprotector.prepareBulkRequest).toHaveBeenCalledTimes(1);
+        expect(mockDataprotector.prepareBulkRequest).toHaveBeenCalledWith(
+          expect.objectContaining({
+            app: defaultConfig!.dappAddress,
+            workerpool: defaultConfig!.prodWorkerpoolAddress,
+            bulkAccesses: grantedAccess,
+            maxProtectedDataPerTask: 100, // Default value should be 100
+          })
+        );
+        expect(mockDataprotector.processBulkRequest).toHaveBeenCalledTimes(1);
+        expect(result).toEqual(mockResponse);
+        expect('tasks' in result).toBe(true);
+      });
+
       it('should use single processing when grantedAccess is not provided', async () => {
         // --- GIVEN
         const { checkProtectedDataValidity } = (await import(

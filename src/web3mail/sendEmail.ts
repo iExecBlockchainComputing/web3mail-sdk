@@ -50,7 +50,7 @@ export const sendEmail = async ({
   senderName,
   protectedData,
   grantedAccess,
-  maxProtectedDataPerTask,
+  maxProtectedDataPerTask = 100,
   useVoucher = false,
 }: IExecConsumer &
   SubgraphConsumer &
