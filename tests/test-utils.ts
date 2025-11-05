@@ -243,7 +243,58 @@ export const ensureSufficientStake = async (
 
   if (BigInt(account.stake.toString()) < BigInt(requiredStake.toString())) {
     await setNRlcBalance(walletAddress, requiredStake);
-    await iexec.account.deposit(requiredStake);
+    try {
+      await iexec.account.deposit(requiredStake);
+    } catch (error: any) {
+      // Handle "transaction already imported" error - this can happen when
+      // multiple tests run in parallel and try to deposit simultaneously.
+      // If the transaction is already submitted, we can check if the balance
+      // will be sufficient after it's mined, or just wait a bit and retry.
+      if (
+        error?.message?.includes('transaction already imported') ||
+        error?.code === -32003 ||
+        (error?.cause?.code === -32003 &&
+          error?.cause?.message?.includes('transaction already imported'))
+      ) {
+        // Wait a bit for the transaction to be mined
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Re-check balance - if it's now sufficient, we're good
+        const updatedAccount = await iexec.account.checkBalance(walletAddress);
+        if (
+          BigInt(updatedAccount.stake.toString()) >=
+          BigInt(requiredStake.toString())
+        ) {
+          // Balance is sufficient, transaction was already processed
+          return;
+        }
+        // If still insufficient, the transaction might be pending or failed
+        // Try one more time after waiting
+        try {
+          await iexec.account.deposit(requiredStake);
+        } catch (retryError: any) {
+          // If it still fails with the same error, check balance one more time
+          if (
+            retryError?.message?.includes('transaction already imported') ||
+            retryError?.code === -32003
+          ) {
+            const finalAccount = await iexec.account.checkBalance(
+              walletAddress
+            );
+            if (
+              BigInt(finalAccount.stake.toString()) >=
+              BigInt(requiredStake.toString())
+            ) {
+              return;
+            }
+          }
+          // If balance is still insufficient, throw the original error
+          throw retryError;
+        }
+      } else {
+        // For other errors, re-throw
+        throw error;
+      }
+    }
   }
 };
 
