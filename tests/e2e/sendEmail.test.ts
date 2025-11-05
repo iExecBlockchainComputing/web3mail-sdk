@@ -191,10 +191,24 @@ describe('web3mail.sendEmail()', () => {
           protectedData: invalidProtectedData.address,
           workerpoolAddressOrEns: learnProdWorkerpoolAddress,
         })
-      ).rejects.toThrow(
-        new Error(
-          'This protected data does not contain "email:string" in its schema.'
-        )
+      ).rejects.toThrow('Failed to sendEmail');
+
+      let error: WorkflowError | undefined;
+      try {
+        await web3mail.sendEmail({
+          emailSubject: 'e2e mail object for test',
+          emailContent: 'e2e mail content for test',
+          protectedData: invalidProtectedData.address,
+          workerpoolAddressOrEns: learnProdWorkerpoolAddress,
+        });
+      } catch (err) {
+        error = err as WorkflowError;
+      }
+      expect(error).toBeInstanceOf(WorkflowError);
+      expect(error?.message).toBe('Failed to sendEmail');
+      expect(error?.cause).toBeInstanceOf(Error);
+      expect((error?.cause as Error).message).toBe(
+        'This protected data does not contain "email:string" in its schema.'
       );
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -258,11 +272,12 @@ describe('web3mail.sendEmail()', () => {
         error = err as WorkflowError;
       }
 
-      expect(error).toBeInstanceOf(WorkflowError);
+      expect(error).toBeDefined();
+      expect(error).toBeInstanceOf(Error);
       expect(error?.message).toBe(
         "A service in the iExec protocol appears to be unavailable. You can retry later or contact iExec's technical support for help."
       );
-      expect(error?.isProtocolError).toBe(true);
+      expect((error as any)?.isProtocolError).toBe(true);
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -294,14 +309,15 @@ describe('web3mail.sendEmail()', () => {
       });
       await waitSubgraphIndexing();
 
-      //grant access to whitelist
+      //grant access to dapp
       await dataProtector.grantAccess({
-        authorizedApp:
-          getChainDefaultConfig(DEFAULT_CHAIN_ID).whitelistSmartContract, //whitelist address
+        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
         protectedData: protectedDataForWhitelist.address,
         authorizedUser: consumerWallet.address, // consumer wallet
         numberOfAccess: 1000,
       });
+
+      await waitSubgraphIndexing();
 
       const sendEmailResponse = await web3mail.sendEmail({
         emailSubject: 'e2e mail object for test',
@@ -399,7 +415,7 @@ describe('web3mail.sendEmail()', () => {
     it(
       'should throw error if no voucher available for the requester',
       async () => {
-        let error;
+        let error: WorkflowError;
         try {
           await web3mail.sendEmail({
             emailSubject: 'e2e mail object for test',
@@ -410,11 +426,14 @@ describe('web3mail.sendEmail()', () => {
             useVoucher: true,
           });
         } catch (err) {
-          error = err;
+          error = err as WorkflowError;
         }
         expect(error).toBeDefined();
-        expect(error.message).toBe(
-          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder.iex.ec/'
+        expect(error.message).toBe('Failed to sendEmail');
+        expect(error.cause).toStrictEqual(
+          Error(
+            'Oops, it seems your wallet is not associated with any voucher. Check on https://builder.iex.ec/'
+          )
         );
       },
       2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME

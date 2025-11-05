@@ -1,9 +1,6 @@
 import { AbstractProvider, AbstractSigner, Eip1193Provider } from 'ethers';
 import { IExec } from 'iexec';
-import {
-  IExecDataProtectorCore,
-  ProcessBulkRequestResponse,
-} from '@iexec/dataprotector';
+import { IExecDataProtectorCore } from '@iexec/dataprotector';
 import { GraphQLClient } from 'graphql-request';
 import { fetchUserContacts } from './fetchUserContacts.js';
 import { fetchMyContacts } from './fetchMyContacts.js';
@@ -14,7 +11,7 @@ import {
   SendEmailParams,
   AddressOrENS,
   Web3MailConfigOptions,
-  SendEmailSingleResponse,
+  SendEmailResponse,
   Web3SignerProvider,
   FetchMyContactsParams,
 } from './types.js';
@@ -113,9 +110,9 @@ export class IExecWeb3mail {
     });
   }
 
-  async sendEmail(
-    args: SendEmailParams
-  ): Promise<ProcessBulkRequestResponse | SendEmailSingleResponse> {
+  async sendEmail<Params extends SendEmailParams>(
+    args: Params
+  ): Promise<SendEmailResponse<Params>> {
     await this.init();
     await isValidProvider(this.iexec);
     return sendEmail({
@@ -129,7 +126,7 @@ export class IExecWeb3mail {
       dappAddressOrENS: this.dappAddressOrENS,
       dappWhitelistAddress: this.dappWhitelistAddress,
       graphQLClient: this.graphQLClient,
-    });
+    }) as Promise<SendEmailResponse<Params>>;
   }
 
   private async resolveConfig(): Promise<Web3mailResolvedConfig> {

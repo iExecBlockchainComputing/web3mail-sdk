@@ -1,5 +1,4 @@
 import { Buffer } from 'buffer';
-import { ProcessBulkRequestResponse } from '@iexec/dataprotector';
 import {
   DEFAULT_CONTENT_TYPE,
   MAX_DESIRED_APP_ORDER_PRICE,
@@ -20,7 +19,7 @@ import {
   senderNameSchema,
   throwIfMissing,
 } from '../utils/validators.js';
-import { SendEmailParams, SendEmailSingleResponse } from './types.js';
+import { SendEmailParams, SendEmailResponse } from './types.js';
 import {
   DappAddressConsumer,
   DappWhitelistAddressConsumer,
@@ -60,9 +59,7 @@ export const sendEmail = async ({
   IpfsNodeConfigConsumer &
   IpfsGatewayConfigConsumer &
   SendEmailParams &
-  DataProtectorConsumer): Promise<
-  ProcessBulkRequestResponse | SendEmailSingleResponse
-> => {
+  DataProtectorConsumer): Promise<SendEmailResponse<SendEmailParams>> => {
   try {
     const vUseVoucher = booleanSchema()
       .label('useVoucher')
@@ -159,16 +156,23 @@ export const sendEmail = async ({
         args: vLabel,
         inputFiles: [],
         secrets,
-        bulkOrders: grantedAccess,
+        bulkAccesses: grantedAccess,
         maxProtectedDataPerTask: vMaxProtectedDataPerTask,
       });
-      const processBulkRequestResponse: ProcessBulkRequestResponse =
-        await dataProtector.processBulkRequest({
+      const processBulkRequestResponse = await dataProtector.processBulkRequest(
+        {
           bulkRequest: bulkRequest.bulkRequest,
           useVoucher: vUseVoucher,
           workerpool: vWorkerpoolAddressOrEns,
-        });
-      return processBulkRequestResponse;
+        }
+      );
+      return {
+        tasks: processBulkRequestResponse.tasks.map((task) => ({
+          taskId: task.taskId,
+          dealId: task.dealId,
+          bulkIndex: task.bulkIndex,
+        })),
+      } as unknown as SendEmailResponse<SendEmailParams>;
     }
 
     // Single processing mode - protectedData is required
@@ -206,7 +210,7 @@ export const sendEmail = async ({
 
     return {
       taskId: result.taskId,
-    };
+    } as unknown as SendEmailResponse<SendEmailParams>;
   } catch (error) {
     //  Protocol error detected, re-throwing as-is
     if ((error as any)?.isProtocolError === true) {

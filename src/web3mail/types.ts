@@ -71,9 +71,26 @@ export type FetchUserContactsParams = {
   userAddress: Address;
 } & FetchMyContactsParams;
 
-export type SendEmailSingleResponse = {
+type SendEmailSingleResponse = {
   taskId: string;
 };
+
+type SendEmailBulkResponse = {
+  tasks: {
+    bulkIndex: number;
+    taskId: string;
+    dealId: string;
+  }[];
+};
+
+export type SendEmailResponse<Params = { protectedData: Address }> =
+  Params extends {
+    grantedAccess: GrantedAccess[];
+  }
+    ? SendEmailBulkResponse
+    : never & Params extends { protectedData: Address }
+    ? SendEmailSingleResponse
+    : never;
 
 /**
  * Configuration options for Web3Mail.

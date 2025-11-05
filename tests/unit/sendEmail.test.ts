@@ -357,7 +357,7 @@ describe('sendEmail', () => {
           expect.objectContaining({
             app: defaultConfig!.dappAddress,
             workerpool: defaultConfig!.prodWorkerpoolAddress,
-            bulkOrders: grantedAccess,
+            bulkAccesses: grantedAccess,
             maxProtectedDataPerTask: 2,
           })
         );

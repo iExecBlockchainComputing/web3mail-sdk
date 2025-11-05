@@ -10,6 +10,8 @@ import { randomInt } from 'crypto';
 import { getSignerFromPrivateKey } from 'iexec/utils';
 
 export const TEST_CHAIN = {
+  ipfsGateway: 'http://127.0.0.1:8080',
+  ipfsNode: 'http://127.0.0.1:5001',
   rpcURL: 'http://127.0.0.1:8545',
   chainId: '134',
   smsURL: 'http://127.0.0.1:13300',
