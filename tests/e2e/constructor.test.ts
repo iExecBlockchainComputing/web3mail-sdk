@@ -126,9 +126,17 @@ describe('IExecWeb3mail()', () => {
       const wallet = Wallet.createRandom();
 
       // --- WHEN/THEN
-      await expect(
-        web3mail.fetchUserContacts({ userAddress: wallet.address })
-      ).resolves.not.toThrow();
+      // fetchUserContacts should work without throwing
+      // With isUserStrict: true, a random wallet with no grants should return empty array
+      // With isUserStrict: false (default), it may return public orders
+      const contacts = await web3mail.fetchUserContacts({
+        userAddress: wallet.address,
+        isUserStrict: true, // Only get orders specific to this user
+      });
+      expect(contacts).toBeDefined();
+      expect(Array.isArray(contacts)).toBe(true);
+      // For a random wallet with no specific grants, we expect an empty array
+      expect(contacts.length).toBe(0);
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
   );
