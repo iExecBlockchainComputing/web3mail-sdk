@@ -1,14 +1,10 @@
 import {
   IExecDataProtectorCore,
   ProtectedDataWithSecretProps,
-  WorkflowError,
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet } from 'ethers';
-import {
-  IExecWeb3mail,
-  WorkflowError as Web3mailWorkflowError,
-} from '../../src/index.js';
+import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
   MAX_EXPECTED_SUBGRAPH_INDEXING_TIME,
@@ -152,7 +148,7 @@ describe('web3mail.sendEmail()', () => {
               workerpoolMaxPrice: prodWorkerpoolPublicPrice,
             })
             .catch((e) => (error = e));
-          expect(error).toBeInstanceOf(Web3mailWorkflowError);
+          expect(error).toBeInstanceOf(WorkflowError);
           expect(error.message).toBe('Failed to sendEmail');
           expect(error.cause).toStrictEqual(
             Error(
@@ -175,10 +171,7 @@ describe('web3mail.sendEmail()', () => {
             protectedData: validProtectedData.address,
             workerpoolMaxPrice: prodWorkerpoolPublicPrice,
           });
-          expect('taskId' in sendEmailResponse).toBe(true);
-          expect(
-            (sendEmailResponse as { taskId: string }).taskId
-          ).toBeDefined();
+          expect(sendEmailResponse.taskId).toBeDefined();
         },
         2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
       );
@@ -188,19 +181,15 @@ describe('web3mail.sendEmail()', () => {
   it(
     'should fail if the protected data is not valid',
     async () => {
-      let error: Error;
-      await web3mail
-        .sendEmail({
+      await expect(
+        web3mail.sendEmail({
           emailSubject: 'e2e mail object for test',
           emailContent: 'e2e mail content for test',
           protectedData: invalidProtectedData.address,
           workerpoolAddressOrEns: learnProdWorkerpoolAddress,
         })
-        .catch((e) => (error = e));
-      expect(error).toBeInstanceOf(Web3mailWorkflowError);
-      expect(error.message).toBe('Failed to sendEmail');
-      expect(error.cause).toStrictEqual(
-        Error(
+      ).rejects.toThrow(
+        new Error(
           'This protected data does not contain "email:string" in its schema.'
         )
       );
@@ -284,13 +273,12 @@ describe('web3mail.sendEmail()', () => {
         protectedData: validProtectedData.address,
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
       });
-      expect('taskId' in sendEmailResponse).toBe(true);
-      expect((sendEmailResponse as { taskId: string }).taskId).toBeDefined();
+      expect(sendEmailResponse.taskId).toBeDefined();
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
-  // TODO: wait until we have whitelist address supported in dataprotector processprotecteddata
-  it.skip(
+
+  it(
     'should successfully send email with granted access to whitelist address',
     async () => {
       //create valid protected data
@@ -301,22 +289,21 @@ describe('web3mail.sendEmail()', () => {
       await waitSubgraphIndexing();
 
       //grant access to whitelist
-      const grantedAccess = await dataProtector.grantAccess({
+      await dataProtector.grantAccess({
         authorizedApp:
           getChainDefaultConfig(DEFAULT_CHAIN_ID).whitelistSmartContract, //whitelist address
         protectedData: protectedDataForWhitelist.address,
         authorizedUser: consumerWallet.address, // consumer wallet
         numberOfAccess: 1000,
       });
-      console.log('grantedAccess', grantedAccess);
+
       const sendEmailResponse = await web3mail.sendEmail({
         emailSubject: 'e2e mail object for test',
         emailContent: 'e2e mail content for test',
         protectedData: protectedDataForWhitelist.address,
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
       });
-      expect('taskId' in sendEmailResponse).toBe(true);
-      expect((sendEmailResponse as { taskId: string }).taskId).toBeDefined();
+      expect(sendEmailResponse.taskId).toBeDefined();
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -332,8 +319,7 @@ describe('web3mail.sendEmail()', () => {
         contentType: 'text/html',
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
       });
-      expect('taskId' in sendEmailResponse).toBe(true);
-      expect((sendEmailResponse as { taskId: string }).taskId).toBeDefined();
+      expect(sendEmailResponse.taskId).toBeDefined();
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -348,8 +334,7 @@ describe('web3mail.sendEmail()', () => {
         senderName: 'Product Team',
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
       });
-      expect('taskId' in sendEmailResponse).toBe(true);
-      expect((sendEmailResponse as { taskId: string }).taskId).toBeDefined();
+      expect(sendEmailResponse.taskId).toBeDefined();
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -368,8 +353,7 @@ describe('web3mail.sendEmail()', () => {
         senderName: 'Product Team',
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
       });
-      expect('taskId' in sendEmailResponse).toBe(true);
-      expect((sendEmailResponse as { taskId: string }).taskId).toBeDefined();
+      expect(sendEmailResponse.taskId).toBeDefined();
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -384,8 +368,7 @@ describe('web3mail.sendEmail()', () => {
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
         label: 'ID1234678',
       });
-      expect('taskId' in sendEmailResponse).toBe(true);
-      expect((sendEmailResponse as { taskId: string }).taskId).toBeDefined();
+      expect(sendEmailResponse.taskId).toBeDefined();
       // TODO check label in created deal
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -409,15 +392,9 @@ describe('web3mail.sendEmail()', () => {
           error = err;
         }
         expect(error).toBeDefined();
-        // The error message might be in the cause when using processProtectedData
-        const errorMessage = error.message || error.cause?.message || '';
-        expect(
-          errorMessage.includes(
-            'Oops, it seems your wallet is not associated with any voucher'
-          ) ||
-            errorMessage.includes('voucher') ||
-            error.cause?.message?.includes('voucher')
-        ).toBe(true);
+        expect(error.message).toBe(
+          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder.iex.ec/'
+        );
       },
       2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
     );
@@ -480,10 +457,7 @@ describe('web3mail.sendEmail()', () => {
             // workerpoolAddressOrEns: prodWorkerpoolAddress, // default
             useVoucher: true,
           });
-          expect('taskId' in sendEmailResponse).toBe(true);
-          expect(
-            (sendEmailResponse as { taskId: string }).taskId
-          ).toBeDefined();
+          expect(sendEmailResponse.taskId).toBeDefined();
         },
         2 * MAX_EXPECTED_BLOCKTIME +
           MAX_EXPECTED_WEB2_SERVICES_TIME +
@@ -593,10 +567,7 @@ describe('web3mail.sendEmail()', () => {
               workerpoolMaxPrice: nonSponsoredAmount,
               useVoucher: true,
             });
-            expect('taskId' in sendEmailResponse).toBe(true);
-            expect(
-              (sendEmailResponse as { taskId: string }).taskId
-            ).toBeDefined();
+            expect(sendEmailResponse.taskId).toBeDefined();
           },
           2 * MAX_EXPECTED_BLOCKTIME +
             MAX_EXPECTED_WEB2_SERVICES_TIME +
