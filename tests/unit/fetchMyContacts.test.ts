@@ -83,30 +83,24 @@ describe('fetchMyContacts', () => {
       dappWhitelistAddress: defaultConfig.whitelistSmartContract,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
-    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      1,
-      'any',
-      {
-        app: defaultConfig.dappAddress.toLowerCase(),
-        requester: userAddress,
-        isAppStrict: true,
-        isRequesterStrict: false,
-        bulkOnly: false,
-        pageSize: 1000,
-      }
-    );
-    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      2,
-      'any',
-      {
-        app: defaultConfig.whitelistSmartContract.toLowerCase(),
-        requester: userAddress,
-        isAppStrict: true,
-        isRequesterStrict: false,
-        bulkOnly: false,
-        pageSize: 1000,
-      }
-    );
+    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
+      dataset: 'any',
+      app: defaultConfig.dappAddress.toLowerCase(),
+      requester: userAddress,
+      isAppStrict: true,
+      isRequesterStrict: false,
+      bulkOnly: false,
+      pageSize: 1000,
+    });
+    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(2, {
+      dataset: 'any',
+      app: defaultConfig.whitelistSmartContract.toLowerCase(),
+      requester: userAddress,
+      isAppStrict: true,
+      isRequesterStrict: false,
+      bulkOnly: false,
+      pageSize: 1000,
+    });
   });
 
   it('should fetch granted access with isRequesterStrict param equal to true', async () => {
@@ -151,30 +145,24 @@ describe('fetchMyContacts', () => {
       isUserStrict: true,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
-    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      1,
-      'any',
-      {
-        app: defaultConfig.dappAddress.toLowerCase(),
-        requester: userAddress,
-        isAppStrict: true,
-        isRequesterStrict: true,
-        bulkOnly: false,
-        pageSize: 1000,
-      }
-    );
-    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      2,
-      'any',
-      {
-        app: defaultConfig.whitelistSmartContract.toLowerCase(),
-        requester: userAddress,
-        isAppStrict: true,
-        isRequesterStrict: true,
-        bulkOnly: false,
-        pageSize: 1000,
-      }
-    );
+    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
+      dataset: 'any',
+      app: defaultConfig.dappAddress.toLowerCase(),
+      requester: userAddress,
+      isAppStrict: true,
+      isRequesterStrict: true,
+      bulkOnly: false,
+      pageSize: 1000,
+    });
+    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(2, {
+      dataset: 'any',
+      app: defaultConfig.whitelistSmartContract.toLowerCase(),
+      requester: userAddress,
+      isAppStrict: true,
+      isRequesterStrict: true,
+      bulkOnly: false,
+      pageSize: 1000,
+    });
   });
 
   it('should include grantedAccess property in returned contacts', async () => {
@@ -282,30 +270,24 @@ describe('fetchMyContacts', () => {
         bulkOnly: false,
       });
       const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
-      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-        1,
-        'any',
-        {
-          app: defaultConfig.dappAddress.toLowerCase(),
-          requester: userAddress,
-          isAppStrict: true,
-          isRequesterStrict: false,
-          bulkOnly: false,
-          pageSize: 1000,
-        }
-      );
-      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-        2,
-        'any',
-        {
-          app: defaultConfig.whitelistSmartContract.toLowerCase(),
-          requester: userAddress,
-          isAppStrict: true,
-          isRequesterStrict: false,
-          bulkOnly: false,
-          pageSize: 1000,
-        }
-      );
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
+        dataset: 'any',
+        app: defaultConfig.dappAddress.toLowerCase(),
+        requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: false,
+        bulkOnly: false,
+        pageSize: 1000,
+      });
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(2, {
+        dataset: 'any',
+        app: defaultConfig.whitelistSmartContract.toLowerCase(),
+        requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: false,
+        bulkOnly: false,
+        pageSize: 1000,
+      });
     });
 
     it('should pass bulkOnly=true when fetching contacts', async () => {
@@ -352,30 +334,24 @@ describe('fetchMyContacts', () => {
         bulkOnly: true,
       });
       const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
-      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-        1,
-        'any',
-        {
-          app: defaultConfig.dappAddress.toLowerCase(),
-          requester: userAddress,
-          isAppStrict: true,
-          isRequesterStrict: false,
-          bulkOnly: true,
-          pageSize: 1000,
-        }
-      );
-      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-        2,
-        'any',
-        {
-          app: defaultConfig.whitelistSmartContract.toLowerCase(),
-          requester: userAddress,
-          isAppStrict: true,
-          isRequesterStrict: false,
-          bulkOnly: true,
-          pageSize: 1000,
-        }
-      );
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
+        dataset: 'any',
+        app: defaultConfig.dappAddress.toLowerCase(),
+        requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: false,
+        bulkOnly: true,
+        pageSize: 1000,
+      });
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(2, {
+        dataset: 'any',
+        app: defaultConfig.whitelistSmartContract.toLowerCase(),
+        requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: false,
+        bulkOnly: true,
+        pageSize: 1000,
+      });
     });
 
     it('should work with both isUserStrict and bulkOnly parameters', async () => {
@@ -424,30 +400,24 @@ describe('fetchMyContacts', () => {
       });
 
       const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
-      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-        1,
-        'any',
-        {
-          app: defaultConfig.dappAddress.toLowerCase(),
-          requester: userAddress,
-          isAppStrict: true,
-          isRequesterStrict: true,
-          bulkOnly: true,
-          pageSize: 1000,
-        }
-      );
-      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-        2,
-        'any',
-        {
-          app: defaultConfig.whitelistSmartContract.toLowerCase(),
-          requester: userAddress,
-          isAppStrict: true,
-          isRequesterStrict: true,
-          bulkOnly: true,
-          pageSize: 1000,
-        }
-      );
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
+        dataset: 'any',
+        app: defaultConfig.dappAddress.toLowerCase(),
+        requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: true,
+        bulkOnly: true,
+        pageSize: 1000,
+      });
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(2, {
+        dataset: 'any',
+        app: defaultConfig.whitelistSmartContract.toLowerCase(),
+        requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: true,
+        bulkOnly: true,
+        pageSize: 1000,
+      });
     });
   });
 });
