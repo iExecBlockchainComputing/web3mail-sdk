@@ -98,7 +98,7 @@ describe('web3mail.prepareEmailCampaign()', () => {
     await waitSubgraphIndexing();
 
     web3mail = new IExecWeb3mail(...getTestConfig(consumerWallet.privateKey));
-  }, MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_SUBGRAPH_INDEXING_TIME);
+  }, 3 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_SUBGRAPH_INDEXING_TIME + 10_000);
 
   it(
     'should prepare an email campaignRequest',
