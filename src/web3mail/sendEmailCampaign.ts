@@ -1,9 +1,6 @@
 import { handleIfProtocolError, WorkflowError } from '../utils/errors.js';
 import { addressOrEnsSchema, throwIfMissing } from '../utils/validators.js';
-import {
-  SendEmailCampaignParams,
-  ProcessBulkRequestResponse,
-} from './types.js';
+import { SendEmailCampaignParams, SendEmailCampaignResponse } from './types.js';
 import { DataProtectorConsumer } from './internalTypes.js';
 
 export type SendEmailCampaign = typeof sendEmailCampaign;
@@ -13,14 +10,14 @@ export const sendEmailCampaign = async ({
   workerpoolAddressOrEns = throwIfMissing(),
   campaignRequest,
 }: DataProtectorConsumer &
-  SendEmailCampaignParams): Promise<ProcessBulkRequestResponse> => {
+  SendEmailCampaignParams): Promise<SendEmailCampaignResponse> => {
   try {
     const vWorkerpoolAddressOrEns = addressOrEnsSchema()
       .required()
       .label('WorkerpoolAddressOrEns')
       .validateSync(workerpoolAddressOrEns);
     // Process the prepared bulk request
-    const processBulkRequestResponse: ProcessBulkRequestResponse =
+    const processBulkRequestResponse: SendEmailCampaignResponse =
       await dataProtector.processBulkRequest({
         bulkRequest: campaignRequest,
         workerpool: vWorkerpoolAddressOrEns,

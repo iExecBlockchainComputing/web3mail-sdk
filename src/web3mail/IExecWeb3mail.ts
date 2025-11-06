@@ -19,7 +19,7 @@ import {
   PrepareEmailCampaignParams,
   PrepareEmailCampaignResponse,
   SendEmailCampaignParams,
-  ProcessBulkRequestResponse,
+  SendEmailCampaignResponse,
 } from './types.js';
 import { isValidProvider } from '../utils/validators.js';
 import { getChainIdFromProvider } from '../utils/getChainId.js';
@@ -151,7 +151,7 @@ export class IExecWeb3mail {
 
   async sendEmailCampaign(
     args: SendEmailCampaignParams
-  ): Promise<ProcessBulkRequestResponse> {
+  ): Promise<SendEmailCampaignResponse> {
     await this.init();
     await isValidProvider(this.iexec);
     return sendEmailCampaign({
