@@ -131,18 +131,16 @@ async function fetchAllOrdersByApp({
   isUserStrict: boolean;
   bulkOnly: boolean;
 }): Promise<PublishedDatasetorder[]> {
-  const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook(
-    ANY_DATASET_ADDRESS,
-    {
-      app: appAddress,
-      requester: userAddress,
-      isAppStrict: true,
-      isRequesterStrict: isUserStrict,
-      bulkOnly,
-      // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
-      pageSize: 1000,
-    }
-  );
+  const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook({
+    dataset: ANY_DATASET_ADDRESS,
+    app: appAddress,
+    requester: userAddress,
+    isAppStrict: true,
+    isRequesterStrict: isUserStrict,
+    bulkOnly,
+    // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
+    pageSize: 1000,
+  });
   const { orders: allOrders } = await autoPaginateRequest({
     request: ordersFirstPage,
   });
