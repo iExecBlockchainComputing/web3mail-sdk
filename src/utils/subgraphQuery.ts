@@ -86,9 +86,8 @@ export const getValidContact = async (
             grantedAccess: contact.grantedAccess,
           };
         }
-        return null;
       })
-      .filter((contact) => contact !== null && contact !== undefined);
+      .filter((contact) => !!contact);
   } catch (error) {
     throw new WorkflowError({
       message: 'Failed to fetch subgraph',
