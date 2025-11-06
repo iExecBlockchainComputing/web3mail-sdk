@@ -163,7 +163,7 @@ export class IExecWeb3mail {
   }
 
   private async resolveConfig(): Promise<Web3mailResolvedConfig> {
-    const chainId = await getChainIdFromProvider(this.ethProvider as any);
+    const chainId = await getChainIdFromProvider(this.ethProvider);
     const chainDefaultConfig = getChainDefaultConfig(chainId, {
       allowExperimentalNetworks: this.options.allowExperimentalNetworks,
     });
