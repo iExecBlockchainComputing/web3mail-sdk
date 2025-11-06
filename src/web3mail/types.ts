@@ -68,11 +68,9 @@ export type FetchUserContactsParams = {
   userAddress: Address;
 } & FetchMyContactsParams;
 
-export type SendEmailSingleResponse = {
+export type SendEmailResponse = {
   taskId: string;
 };
-
-export type SendEmailResponse = SendEmailSingleResponse;
 
 /**
  * Configuration options for Web3Mail.
@@ -163,7 +161,7 @@ export type SendEmailCampaignParams = {
   workerpoolMaxPrice?: number;
 };
 
-export type ProcessBulkRequestResponse = {
+export type SendEmailCampaignResponse = {
   tasks: Array<{
     taskId: string;
     dealId: string;
