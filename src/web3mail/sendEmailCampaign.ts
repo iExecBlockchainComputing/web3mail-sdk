@@ -33,6 +33,7 @@ export const sendEmailCampaign = async ({
       await dataProtector.processBulkRequest({
         bulkRequest: campaignRequest,
         workerpool: vWorkerpoolAddressOrEns,
+        waitForResult: false,
       });
 
     return processBulkRequestResponse;
