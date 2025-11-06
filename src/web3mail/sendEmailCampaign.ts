@@ -11,11 +11,21 @@ export const sendEmailCampaign = async ({
   campaignRequest,
 }: DataProtectorConsumer &
   SendEmailCampaignParams): Promise<SendEmailCampaignResponse> => {
+  const vWorkerpoolAddressOrEns = addressOrEnsSchema()
+    .required()
+    .label('workerpoolAddressOrEns')
+    .validateSync(workerpoolAddressOrEns);
+  if (
+    campaignRequest?.workerpool !== NULL_ADDRESS &&
+    vWorkerpoolAddressOrEns.toLowerCase() !==
+      campaignRequest.workerpool.toLowerCase()
+  ) {
+    throw new ValidationError(
+      "workerpoolAddressOrEns doesn't match campaignRequest workerpool"
+    );
+  }
+
   try {
-    const vWorkerpoolAddressOrEns = addressOrEnsSchema()
-      .required()
-      .label('WorkerpoolAddressOrEns')
-      .validateSync(workerpoolAddressOrEns);
     // Process the prepared bulk request
     const processBulkRequestResponse: SendEmailCampaignResponse =
       await dataProtector.processBulkRequest({
