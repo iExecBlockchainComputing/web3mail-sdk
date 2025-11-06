@@ -175,7 +175,7 @@ export class IExecWeb3mail {
 
     try {
       iexec = new IExec(
-        { ethProvider: this.ethProvider as any },
+        { ethProvider: this.ethProvider },
         {
           ipfsGatewayURL: ipfsGateway,
           ...this.options?.iexecOptions,
