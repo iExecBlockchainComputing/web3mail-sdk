@@ -1,3 +1,5 @@
+import { NULL_ADDRESS } from 'iexec/utils';
+import { ValidationError } from 'yup';
 import { handleIfProtocolError, WorkflowError } from '../utils/errors.js';
 import { addressOrEnsSchema, throwIfMissing } from '../utils/validators.js';
 import { SendEmailCampaignParams, SendEmailCampaignResponse } from './types.js';
