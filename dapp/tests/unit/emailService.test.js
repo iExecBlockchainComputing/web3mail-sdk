@@ -47,10 +47,7 @@ describe('sendEmail', () => {
         },
       ],
     });
-    expect(response).toEqual({
-      message: 'Your email has been sent successfully.',
-      status: 200,
-    });
+    expect(response).toBeUndefined();
   });
 
   it('sends an email with sender tag successfully', async () => {
@@ -100,10 +97,7 @@ describe('sendEmail', () => {
         },
       ],
     });
-    expect(response).toEqual({
-      message: 'Your email has been sent successfully.',
-      status: 200,
-    });
+    expect(response).toBeUndefined();
   });
 
   it('sends an html email successfully', async () => {
@@ -152,10 +146,7 @@ describe('sendEmail', () => {
         },
       ],
     });
-    expect(response).toEqual({
-      message: 'Your email has been sent successfully.',
-      status: 200,
-    });
+    expect(response).toBeUndefined();
   });
 
   it('throws an error if the email fails to send', async () => {

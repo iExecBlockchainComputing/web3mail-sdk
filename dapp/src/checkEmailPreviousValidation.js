@@ -1,10 +1,12 @@
 const { request, gql } = require('graphql-request');
 
+// TODO: the method could return true if valid, false if invalid, null if no prior validation or unable to check
 async function checkEmailPreviousValidation({
   datasetAddress,
   dappAddresses,
   pocoSubgraphUrl,
 }) {
+  // TODO: add check in bulk task
   const query = gql`
     query checkSuccessfulTaskQuery($apps: [String!], $dataset: String!) {
       tasks(
