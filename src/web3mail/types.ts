@@ -85,7 +85,14 @@ export type FetchUserContactsParams = {
 } & FetchMyContactsParams;
 
 export type SendEmailResponse = {
+  /**
+   * ID of the task
+   */
   taskId: string;
+  /**
+   * ID of the deal containing the task
+   */
+  dealId: string;
 };
 
 /**

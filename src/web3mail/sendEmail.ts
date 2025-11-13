@@ -316,7 +316,7 @@ export const sendEmail = async ({
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
 
     // Match orders and compute task ID
-    const { dealid } = await iexec.order.matchOrders(
+    const { dealid: dealId } = await iexec.order.matchOrders(
       {
         apporder: apporder,
         datasetorder: datasetorder,
@@ -326,10 +326,11 @@ export const sendEmail = async ({
       { useVoucher: vUseVoucher }
     );
 
-    const taskId = await iexec.deal.computeTaskId(dealid, 0);
+    const taskId = await iexec.deal.computeTaskId(dealId, 0);
 
     return {
       taskId,
+      dealId,
     };
   } catch (error) {
     handleIfProtocolError(error);

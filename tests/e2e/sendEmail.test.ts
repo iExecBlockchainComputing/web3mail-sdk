@@ -171,7 +171,10 @@ describe('web3mail.sendEmail()', () => {
             protectedData: validProtectedData.address,
             workerpoolMaxPrice: prodWorkerpoolPublicPrice,
           });
-          expect(sendEmailResponse.taskId).toBeDefined();
+          expect(sendEmailResponse).toStrictEqual({
+            taskId: expect.any(String),
+            dealId: expect.any(String),
+          });
         },
         2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
       );
@@ -273,7 +276,10 @@ describe('web3mail.sendEmail()', () => {
         protectedData: validProtectedData.address,
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
       });
-      expect(sendEmailResponse.taskId).toBeDefined();
+      expect(sendEmailResponse).toStrictEqual({
+        taskId: expect.any(String),
+        dealId: expect.any(String),
+      });
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -303,7 +309,10 @@ describe('web3mail.sendEmail()', () => {
         protectedData: protectedDataForWhitelist.address,
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
       });
-      expect(sendEmailResponse.taskId).toBeDefined();
+      expect(sendEmailResponse).toStrictEqual({
+        taskId: expect.any(String),
+        dealId: expect.any(String),
+      });
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -319,7 +328,10 @@ describe('web3mail.sendEmail()', () => {
         contentType: 'text/html',
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
       });
-      expect(sendEmailResponse.taskId).toBeDefined();
+      expect(sendEmailResponse).toStrictEqual({
+        taskId: expect.any(String),
+        dealId: expect.any(String),
+      });
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -334,7 +346,10 @@ describe('web3mail.sendEmail()', () => {
         senderName: 'Product Team',
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
       });
-      expect(sendEmailResponse.taskId).toBeDefined();
+      expect(sendEmailResponse).toStrictEqual({
+        taskId: expect.any(String),
+        dealId: expect.any(String),
+      });
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -353,7 +368,10 @@ describe('web3mail.sendEmail()', () => {
         senderName: 'Product Team',
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
       });
-      expect(sendEmailResponse.taskId).toBeDefined();
+      expect(sendEmailResponse).toStrictEqual({
+        taskId: expect.any(String),
+        dealId: expect.any(String),
+      });
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -368,7 +386,10 @@ describe('web3mail.sendEmail()', () => {
         workerpoolAddressOrEns: learnProdWorkerpoolAddress,
         label: 'ID1234678',
       });
-      expect(sendEmailResponse.taskId).toBeDefined();
+      expect(sendEmailResponse).toStrictEqual({
+        taskId: expect.any(String),
+        dealId: expect.any(String),
+      });
       // TODO check label in created deal
     },
     2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -457,7 +478,10 @@ describe('web3mail.sendEmail()', () => {
             // workerpoolAddressOrEns: prodWorkerpoolAddress, // default
             useVoucher: true,
           });
-          expect(sendEmailResponse.taskId).toBeDefined();
+          expect(sendEmailResponse).toStrictEqual({
+            taskId: expect.any(String),
+            dealId: expect.any(String),
+          });
         },
         2 * MAX_EXPECTED_BLOCKTIME +
           MAX_EXPECTED_WEB2_SERVICES_TIME +
@@ -567,7 +591,10 @@ describe('web3mail.sendEmail()', () => {
               workerpoolMaxPrice: nonSponsoredAmount,
               useVoucher: true,
             });
-            expect(sendEmailResponse.taskId).toBeDefined();
+            expect(sendEmailResponse).toStrictEqual({
+              taskId: expect.any(String),
+              dealId: expect.any(String),
+            });
           },
           2 * MAX_EXPECTED_BLOCKTIME +
             MAX_EXPECTED_WEB2_SERVICES_TIME +
