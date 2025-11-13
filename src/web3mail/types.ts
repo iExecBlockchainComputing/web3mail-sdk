@@ -166,21 +166,13 @@ export type PrepareEmailCampaignResponse = {
 
 export type SendEmailCampaignParams = {
   /**
-   * The prepared campaign request from prepareEmailCampaign
+   * The prepared campaign request from `prepareEmailCampaign()`
    */
   campaignRequest: CampaignRequest;
   /**
    * Workerpool address or ENS to use for processing
    */
   workerpoolAddressOrEns?: AddressOrENS;
-  /**
-   * Whether to use voucher for payment
-   */
-  useVoucher?: boolean;
-  /**
-   * Maximum price for workerpool order
-   */
-  workerpoolMaxPrice?: number;
 };
 
 export type SendEmailCampaignResponse = {

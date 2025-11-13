@@ -169,7 +169,6 @@ describe('web3mail.sendEmailCampaign()', () => {
           .sendEmailCampaign({
             campaignRequest: campaignRequest.campaignRequest,
             workerpoolAddressOrEns: workerpoolToUse,
-            workerpoolMaxPrice: prodWorkerpoolPublicPrice,
           })
           .catch((e) => (error = e));
 
@@ -240,7 +239,6 @@ describe('web3mail.sendEmailCampaign()', () => {
         // Send campaign
         const result = await web3mail.sendEmailCampaign({
           campaignRequest: campaignRequest.campaignRequest,
-          workerpoolMaxPrice: prodWorkerpoolPublicPrice,
           workerpoolAddressOrEns: prodWorkerpoolAddress,
         });
 
