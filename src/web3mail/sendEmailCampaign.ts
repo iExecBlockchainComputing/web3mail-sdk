@@ -1,8 +1,16 @@
 import { NULL_ADDRESS } from 'iexec/utils';
 import { ValidationError } from 'yup';
 import { handleIfProtocolError, WorkflowError } from '../utils/errors.js';
-import { addressOrEnsSchema, throwIfMissing } from '../utils/validators.js';
-import { SendEmailCampaignParams, SendEmailCampaignResponse } from './types.js';
+import {
+  addressOrEnsSchema,
+  campaignRequestSchema,
+  throwIfMissing,
+} from '../utils/validators.js';
+import {
+  CampaignRequest,
+  SendEmailCampaignParams,
+  SendEmailCampaignResponse,
+} from './types.js';
 import { DataProtectorConsumer } from './internalTypes.js';
 
 export type SendEmailCampaign = typeof sendEmailCampaign;
@@ -13,14 +21,20 @@ export const sendEmailCampaign = async ({
   campaignRequest,
 }: DataProtectorConsumer &
   SendEmailCampaignParams): Promise<SendEmailCampaignResponse> => {
+  const vCampaignRequest = campaignRequestSchema()
+    .required()
+    .label('campaignRequest')
+    .validateSync(campaignRequest) as CampaignRequest;
+
   const vWorkerpoolAddressOrEns = addressOrEnsSchema()
     .required()
     .label('workerpoolAddressOrEns')
     .validateSync(workerpoolAddressOrEns);
+
   if (
-    campaignRequest?.workerpool !== NULL_ADDRESS &&
-    vWorkerpoolAddressOrEns.toLowerCase() !==
-      campaignRequest.workerpool.toLowerCase()
+    vCampaignRequest.workerpool !== NULL_ADDRESS &&
+    vCampaignRequest.workerpool.toLowerCase() !==
+      vWorkerpoolAddressOrEns.toLowerCase()
   ) {
     throw new ValidationError(
       "workerpoolAddressOrEns doesn't match campaignRequest workerpool"
@@ -29,12 +43,11 @@ export const sendEmailCampaign = async ({
 
   try {
     // Process the prepared bulk request
-    const processBulkRequestResponse: SendEmailCampaignResponse =
-      await dataProtector.processBulkRequest({
-        bulkRequest: campaignRequest,
-        workerpool: vWorkerpoolAddressOrEns,
-        waitForResult: false,
-      });
+    const processBulkRequestResponse = await dataProtector.processBulkRequest({
+      bulkRequest: vCampaignRequest,
+      workerpool: vWorkerpoolAddressOrEns,
+      waitForResult: false,
+    });
 
     return processBulkRequestResponse;
   } catch (error) {
