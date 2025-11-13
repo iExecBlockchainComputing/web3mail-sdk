@@ -157,7 +157,7 @@ describe('web3mail.sendEmailCampaign()', () => {
           emailSubject: 'Bulk test subject',
           emailContent: 'Bulk test message',
           senderName: 'Bulk test sender',
-          grantedAccess: bulkOrders,
+          grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 3,
           workerpoolMaxPrice: prodWorkerpoolPublicPrice,
         });
@@ -231,7 +231,7 @@ describe('web3mail.sendEmailCampaign()', () => {
           emailSubject: 'Bulk test subject',
           emailContent: 'Bulk test message',
           senderName: 'Bulk test sender',
-          grantedAccess: bulkOrders,
+          grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 3,
           workerpoolMaxPrice: prodWorkerpoolPublicPrice,
           workerpoolAddressOrEns: prodWorkerpoolAddress,
@@ -276,7 +276,7 @@ describe('web3mail.sendEmailCampaign()', () => {
           emailSubject: 'Bulk test subject',
           emailContent: 'Bulk test message',
           senderName: 'Bulk test sender',
-          grantedAccess: bulkOrders,
+          grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 3,
           workerpoolAddressOrEns: learnProdWorkerpoolAddress,
         });
@@ -341,7 +341,7 @@ describe('web3mail.sendEmailCampaign()', () => {
         const campaignRequest = await web3mail.prepareEmailCampaign({
           emailSubject: 'Bulk test subject',
           emailContent: 'Bulk test message',
-          grantedAccess: bulkOrders,
+          grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 3,
           workerpoolAddressOrEns: learnProdWorkerpoolAddress,
         });
@@ -397,7 +397,7 @@ describe('web3mail.sendEmailCampaign()', () => {
           const campaignRequest = await invalidWeb3mail.prepareEmailCampaign({
             emailSubject: 'Bulk test subject',
             emailContent: 'Bulk test message',
-            grantedAccess: bulkOrders,
+            grantedAccesses: bulkOrders,
             maxProtectedDataPerTask: 3,
             workerpoolAddressOrEns: learnProdWorkerpoolAddress,
           });
@@ -437,7 +437,7 @@ describe('web3mail.sendEmailCampaign()', () => {
           emailSubject: 'Integration test subject',
           emailContent: 'Integration test message',
           senderName: 'Integration Test',
-          grantedAccess: bulkOrders,
+          grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 3,
           workerpoolAddressOrEns: learnProdWorkerpoolAddress,
         });
@@ -477,7 +477,7 @@ describe('web3mail.sendEmailCampaign()', () => {
         const campaignRequest = await web3mail.prepareEmailCampaign({
           emailSubject: 'Bulk test subject',
           emailContent: 'Bulk test message',
-          grantedAccess: bulkOrders,
+          grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 2, // Process 2 emails per task
           workerpoolAddressOrEns: learnProdWorkerpoolAddress,
         });

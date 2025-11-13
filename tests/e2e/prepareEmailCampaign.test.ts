@@ -116,7 +116,7 @@ describe('web3mail.prepareEmailCampaign()', () => {
         emailSubject: 'Bulk test subject',
         emailContent: 'Bulk test message',
         senderName: 'Bulk test sender',
-        grantedAccess: bulkOrders,
+        grantedAccesses: bulkOrders,
         maxProtectedDataPerTask: 3,
         workerpoolMaxPrice: prodWorkerpoolPublicPrice,
       });

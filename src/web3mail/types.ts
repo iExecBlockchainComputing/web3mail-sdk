@@ -138,10 +138,11 @@ export type Web3MailConfigOptions = {
 
 export type PrepareEmailCampaignParams = {
   /**
-   * Granted access to process in bulk.
+   * List of `GrantedAccess` to contacts to send emails to in bulk.
+   *
    * use `fetchMyContacts({ bulkOnly: true })` to get granted accesses.
    */
-  grantedAccess: GrantedAccess[];
+  grantedAccesses: GrantedAccess[];
   maxProtectedDataPerTask?: number;
   senderName?: string;
   emailSubject: string;
