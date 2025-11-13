@@ -12,6 +12,22 @@ export type Address = string;
 
 export type TimeStamp = string;
 
+/**
+ * request to send email in bulk
+ *
+ * use `prepareEmailCampaign()` to create a `CampaignRequest`
+ *
+ * then use `sendEmailCampaign()` to send the campaign
+ */
+export type CampaignRequest = BulkRequest;
+
+/**
+ * authorization signed by the data owner granting access to this contact
+ *
+ * `GrantedAccess` are obtained by fetching contacts (e.g. `fetchMyContacts()` or `fetchUserContacts()`)
+ *
+ * `GrantedAccess` can be consumed for email campaigns (e.g. `prepareEmailCampaign()` then `sendEmailCampaign()`)
+ */
 export type GrantedAccess = {
   dataset: string;
   datasetprice: string;
@@ -139,14 +155,19 @@ export type PrepareEmailCampaignParams = {
 };
 
 export type PrepareEmailCampaignResponse = {
-  campaignRequest: BulkRequest;
+  /**
+   * The prepared campaign request
+   *
+   * Use this in `sendEmailCampaign()` to start or continue sending the campaign
+   */
+  campaignRequest: CampaignRequest;
 };
 
 export type SendEmailCampaignParams = {
   /**
    * The prepared campaign request from prepareEmailCampaign
    */
-  campaignRequest: PrepareEmailCampaignResponse['campaignRequest'];
+  campaignRequest: CampaignRequest;
   /**
    * Workerpool address or ENS to use for processing
    */
@@ -162,9 +183,21 @@ export type SendEmailCampaignParams = {
 };
 
 export type SendEmailCampaignResponse = {
+  /**
+   * List of tasks created for the campaign
+   */
   tasks: Array<{
+    /**
+     * ID of the task
+     */
     taskId: string;
+    /**
+     * ID of the deal containing the task
+     */
     dealId: string;
+    /**
+     * Index of the task in the bulk request
+     */
     bulkIndex: number;
   }>;
 };
