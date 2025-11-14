@@ -314,15 +314,12 @@ describe('web3mail.sendEmailCampaign()', () => {
           .catch((e) => (error = e));
 
         expect(error).toBeDefined();
-        // campaignRequest is undefined, so accessing campaignRequest.workerpool throws TypeError
-        // which gets wrapped in WorkflowError
-        const isWorkflowError = error instanceof Web3mailWorkflowError;
-        const isTypeError = error instanceof TypeError;
-        expect(isWorkflowError || isTypeError).toBe(true);
-        // Check message only if it's a WorkflowError
-        expect(
-          !isWorkflowError || error.message === 'Failed to sendEmailCampaign'
-        ).toBe(true);
+
+        const isValidationrror = error instanceof ValidationError;
+        expect(isValidationrror).toBe(true);
+        expect(error.message === 'campaignRequest is a required field').toBe(
+          true
+        );
       },
       MAX_EXPECTED_WEB2_SERVICES_TIME
     );

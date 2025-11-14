@@ -117,4 +117,14 @@ export const campaignRequestSchema = () =>
     trust: positiveIntegerStringSchema().required(),
     salt: stringSchema().required(),
     sign: stringSchema().required(),
-  }).typeError('${path} should be a BulkRequest object');
+  })
+    .strict()
+    .typeError('${path} should be a BulkRequest object')
+    .test('is-defined', '${path} is required', (value) => {
+      // Check if value is undefined, null, or an empty object (which would be coerced from undefined)
+      return (
+        value !== undefined &&
+        value !== null &&
+        !(typeof value === 'object' && Object.keys(value).length === 0)
+      );
+    });
