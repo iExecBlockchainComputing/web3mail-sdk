@@ -561,88 +561,114 @@ describe('sendEmail', () => {
         });
       });
 
-      it('should send an email successfully', async () => {
-        // protected data setup
-        process.env.IEXEC_DATASET_FILENAME = 'data.zip';
+      describe('with valid email protectedData', () => {
+        it('should send an email successfully', async () => {
+          // protected data setup
+          process.env.IEXEC_DATASET_FILENAME = 'data.zip';
 
-        await expect(start()).resolves.toBeUndefined();
+          await expect(start()).resolves.toBeUndefined();
 
-        const { result, computed, files } = await readOutputs(
-          process.env.IEXEC_OUT
-        );
-        expect(result).toStrictEqual({
-          success: true,
-          protectedData: process.env.IEXEC_DATASET_FILENAME,
+          const { result, computed, files } = await readOutputs(
+            process.env.IEXEC_OUT
+          );
+          expect(result).toStrictEqual({
+            success: true,
+            protectedData: process.env.IEXEC_DATASET_FILENAME,
+          });
+          expect(computed).toStrictEqual({
+            'deterministic-output-path': `${process.env.IEXEC_OUT}/result.json`,
+          });
+          expect(files.length).toBe(2);
         });
-        expect(computed).toStrictEqual({
-          'deterministic-output-path': `${process.env.IEXEC_OUT}/result.json`,
+
+        it('should send an email successfully and set the valid email callback when requested', async () => {
+          // protected data setup
+          process.env.IEXEC_DATASET_FILENAME = 'data.zip';
+          process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
+            ...JSON.parse(process.env.IEXEC_REQUESTER_SECRET_1),
+            useCallback: true,
+          });
+
+          await expect(start()).resolves.toBeUndefined();
+
+          const { result, computed, files } = await readOutputs(
+            process.env.IEXEC_OUT
+          );
+          expect(result).toStrictEqual({
+            success: true,
+            protectedData: process.env.IEXEC_DATASET_FILENAME,
+          });
+          expect(computed).toStrictEqual({
+            'deterministic-output-path': `${process.env.IEXEC_OUT}/result.json`,
+            'callback-data':
+              '0x0000000000000000000000000000000000000000000000000000000000000003',
+          });
+          expect(files.length).toBe(2);
         });
-        expect(files.length).toBe(2);
       });
 
-      it('should send an email successfully and set the callback when requested', async () => {
-        // protected data setup
-        process.env.IEXEC_DATASET_FILENAME = 'data.zip';
-        process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
-          ...JSON.parse(process.env.IEXEC_REQUESTER_SECRET_1),
-          useCallback: true,
+      describe('with invalid email protectedData', () => {
+        it('should output an error if email address does not exist', async () => {
+          // protected data setup
+          process.env.IEXEC_DATASET_FILENAME = 'dataEmailUserDoesNotExist.zip';
+
+          await expect(start()).resolves.toBeUndefined();
+
+          const { result, computed, files } = await readOutputs(
+            process.env.IEXEC_OUT
+          );
+          expect(result).toStrictEqual({
+            success: false,
+            protectedData: process.env.IEXEC_DATASET_FILENAME,
+            error: 'The protected email address seems to be invalid.',
+          });
+          expect(computed).toStrictEqual({
+            'deterministic-output-path': `${process.env.IEXEC_OUT}/result.json`,
+          });
+          expect(files.length).toBe(2);
         });
 
-        await expect(start()).resolves.toBeUndefined();
+        it('should output an error if email address is disposable', async () => {
+          // protected data setup
+          process.env.IEXEC_DATASET_FILENAME = 'dataDisposableEmail.zip';
 
-        const { result, computed, files } = await readOutputs(
-          process.env.IEXEC_OUT
-        );
-        expect(result).toStrictEqual({
-          success: true,
-          protectedData: process.env.IEXEC_DATASET_FILENAME,
+          await expect(start()).resolves.toBeUndefined();
+
+          const { result, computed, files } = await readOutputs(
+            process.env.IEXEC_OUT
+          );
+          expect(result).toStrictEqual({
+            success: false,
+            protectedData: process.env.IEXEC_DATASET_FILENAME,
+            error: 'The protected email address seems to be invalid.',
+          });
+          expect(computed).toStrictEqual({
+            'deterministic-output-path': `${process.env.IEXEC_OUT}/result.json`,
+          });
+          expect(files.length).toBe(2);
         });
-        expect(computed).toStrictEqual({
-          'deterministic-output-path': `${process.env.IEXEC_OUT}/result.json`,
-          'callback-data':
-            '0x0000000000000000000000000000000000000000000000000000000000000001',
+
+        it('should set the invalid email callback when requested', async () => {
+          // protected data setup
+          process.env.IEXEC_DATASET_FILENAME = 'dataEmailUserDoesNotExist.zip';
+
+          await expect(start()).resolves.toBeUndefined();
+
+          const { result, computed, files } = await readOutputs(
+            process.env.IEXEC_OUT
+          );
+          expect(result).toStrictEqual({
+            success: false,
+            protectedData: process.env.IEXEC_DATASET_FILENAME,
+            error: 'The protected email address seems to be invalid.',
+          });
+          expect(computed).toStrictEqual({
+            'deterministic-output-path': `${process.env.IEXEC_OUT}/result.json`,
+            'callback-data':
+              '0x0000000000000000000000000000000000000000000000000000000000000002',
+          });
+          expect(files.length).toBe(2);
         });
-        expect(files.length).toBe(2);
-      });
-
-      it('should output an error if email address does not exist', async () => {
-        // protected data setup
-        process.env.IEXEC_DATASET_FILENAME = 'dataEmailUserDoesNotExist.zip';
-
-        await expect(start()).resolves.toBeUndefined();
-
-        const { result, computed, files } = await readOutputs(
-          process.env.IEXEC_OUT
-        );
-        expect(result).toStrictEqual({
-          success: false,
-          protectedData: process.env.IEXEC_DATASET_FILENAME,
-          error: 'The protected email address seems to be invalid.',
-        });
-        expect(computed).toStrictEqual({
-          'deterministic-output-path': `${process.env.IEXEC_OUT}/result.json`,
-        });
-        expect(files.length).toBe(2);
-      });
-
-      it('should output an error if email address is disposable', async () => {
-        // protected data setup
-        process.env.IEXEC_DATASET_FILENAME = 'dataDisposableEmail.zip';
-
-        await expect(start()).resolves.toBeUndefined();
-
-        const { result, computed, files } = await readOutputs(
-          process.env.IEXEC_OUT
-        );
-        expect(result).toStrictEqual({
-          success: false,
-          protectedData: process.env.IEXEC_DATASET_FILENAME,
-          error: 'The protected email address seems to be invalid.',
-        });
-        expect(computed).toStrictEqual({
-          'deterministic-output-path': `${process.env.IEXEC_OUT}/result.json`,
-        });
-        expect(files.length).toBe(2);
       });
     });
   }

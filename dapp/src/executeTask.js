@@ -49,33 +49,25 @@ async function processProtectedData({
     validateProtectedData(protectedData);
 
     // Step 1: Check if email was already validated
-    const isEmailValid = await checkEmailPreviousValidation({
+    result.isEmailValid = await checkEmailPreviousValidation({
       datasetAddress: protectedData.email,
       dappAddresses: appDeveloperSecret.WEB3MAIL_WHITELISTED_APPS,
       pocoSubgraphUrl: appDeveloperSecret.POCO_SUBGRAPH_URL,
     });
 
     // Step 2: If not, try Mailgun
-    if (!isEmailValid) {
+    if (result.isEmailValid === undefined) {
       console.log('No prior verification found. Trying Mailgun...');
-      const mailgunResult = await validateEmailAddress({
+      result.isEmailValid = await validateEmailAddress({
         emailAddress: protectedData.email,
         mailgunApiKey: appDeveloperSecret.MAILGUN_APIKEY,
       });
-
-      if (mailgunResult === true) {
-        result.isEmailValid = true;
-      } else if (mailgunResult === false) {
-        result.isEmailValid = false;
-        throw Error('The protected email address seems to be invalid.');
-      } else {
-        console.warn(
-          'Mailgun verification failed or was unreachable. Proceeding without check.'
-        );
-      }
     } else {
-      result.isEmailValid = true;
       console.log('Email already verified, skipping Mailgun check.');
+    }
+
+    if (result.isEmailValid === false) {
+      throw Error('The protected email address seems to be invalid.');
     }
 
     // Step 3: Decrypt email content
@@ -184,10 +176,17 @@ async function start() {
         });
 
       // Add callback data for single processing if useCallback is enabled
-      if (requesterSecret.useCallback && isEmailValid !== undefined) {
+      if (requesterSecret.useCallback) {
         const bool32Bytes = Buffer.alloc(32);
-        if (isEmailValid) {
-          bool32Bytes[31] = 1; // set last byte to 1 for true
+        // Encode 2 bits:
+        // - Bit 1: Email validation was performed (1 = yes, 0 = no)
+        // - Bit 0: Email is valid (1 = yes, 0 = no)
+        if (isEmailValid === true) {
+          // eslint-disable-next-line no-bitwise
+          bool32Bytes[31] |= 0b11;
+        } else if (isEmailValid === false) {
+          // eslint-disable-next-line no-bitwise
+          bool32Bytes[31] |= 0b10;
         }
         callbackData = `0x${bool32Bytes.toString('hex')}`;
       }
