@@ -145,15 +145,22 @@ async function start() {
     // Process multiple protected data
     if (bulkSize > 0) {
       console.log(`Processing ${bulkSize} protected data...`);
-      const processPromises = new Array(bulkSize).fill(null).map((_, index) =>
-        processProtectedData({
-          index: index + 1,
+      const results = [];
+      // Process each protected data one by one to avoid rate limiting issues
+      for (let index = 1; index <= bulkSize; index += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        const protectedDataResult = await processProtectedData({
+          index,
           IEXEC_IN,
           appDeveloperSecret,
           requesterSecret,
-        })
-      );
-      const results = await Promise.all(processPromises);
+        });
+        results.push(protectedDataResult);
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((res) => {
+          setTimeout(res, 1000);
+        }); // Add a delay to avoid rate limiting
+      }
       const successCount = results.filter((r) => r.success === true).length;
       const errorCount = results.filter((r) => r.success !== true).length;
       result = {

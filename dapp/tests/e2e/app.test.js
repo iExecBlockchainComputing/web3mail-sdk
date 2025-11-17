@@ -875,26 +875,29 @@ describe('sendEmail', () => {
           await expect(start()).resolves.toBeUndefined();
           const { result, computed, files } = await readOutputs(IEXEC_OUT);
           // Verify bulk processing result structure
-          expect(result).toStrictEqual({
-            success: true,
-            totalCount: 2,
-            successCount: 2,
-            errorCount: 0,
-            results: [
-              {
-                index: 1,
-                protectedData: process.env.IEXEC_DATASET_1_FILENAME,
-                isEmailValid: true,
-                success: true,
-              },
-              {
-                index: 2,
-                protectedData: process.env.IEXEC_DATASET_2_FILENAME,
-                isEmailValid: true,
-                success: true,
-              },
-            ],
-          });
+          expect(result).toStrictEqual(
+            {
+              success: true,
+              totalCount: 2,
+              successCount: 2,
+              errorCount: 0,
+              results: [
+                {
+                  index: 1,
+                  protectedData: process.env.IEXEC_DATASET_1_FILENAME,
+                  isEmailValid: true,
+                  success: true,
+                },
+                {
+                  index: 2,
+                  protectedData: process.env.IEXEC_DATASET_2_FILENAME,
+                  isEmailValid: true,
+                  success: true,
+                },
+              ],
+            },
+            10000
+          );
           // Verify computed.json structure
           expect(computed).toStrictEqual({
             'deterministic-output-path': `${IEXEC_OUT}/result.json`,
@@ -921,7 +924,7 @@ describe('sendEmail', () => {
           });
           // Verify no extra files were created
           expect(files.length).toBe(2);
-        });
+        }, 10000);
       });
     }
   });
