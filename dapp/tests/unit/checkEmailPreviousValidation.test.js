@@ -16,7 +16,7 @@ describe('checkEmailPreviousValidation', () => {
     jest.clearAllMocks();
   });
 
-  it('returns true if a valid email verification callback exists', async () => {
+  it('returns true if a valid email verification callback exists (1 bit format)', async () => {
     request.mockResolvedValue({
       tasks: [
         {
@@ -33,8 +33,32 @@ describe('checkEmailPreviousValidation', () => {
     expect(result).toBe(true);
   });
 
-  it('returns false if no tasks are returned', async () => {
-    request.mockResolvedValue({ tasks: [] });
+  it('returns true if a valid email verification callback exists (2 bits format)', async () => {
+    request.mockResolvedValue({
+      tasks: [
+        {
+          resultsCallback:
+            '0x0000000000000000000000000000000000000000000000000000000000000003',
+        },
+      ],
+    });
+
+    const result = await checkEmailPreviousValidation({
+      datasetAddress,
+      dappAddresses,
+    });
+    expect(result).toBe(true);
+  });
+
+  it('returns false if a invalid email verification callback exists (2 bits format)', async () => {
+    request.mockResolvedValue({
+      tasks: [
+        {
+          resultsCallback:
+            '0x0000000000000000000000000000000000000000000000000000000000000002',
+        },
+      ],
+    });
 
     const result = await checkEmailPreviousValidation({
       datasetAddress,
@@ -43,7 +67,17 @@ describe('checkEmailPreviousValidation', () => {
     expect(result).toBe(false);
   });
 
-  it('returns false if none of the callbacks indicate a valid verification', async () => {
+  it('returns undefined if no tasks are returned', async () => {
+    request.mockResolvedValue({ tasks: [] });
+
+    const result = await checkEmailPreviousValidation({
+      datasetAddress,
+      dappAddresses,
+    });
+    expect(result).toBe(undefined);
+  });
+
+  it('returns undefined if none of the callbacks indicate a valid or invalid verification', async () => {
     request.mockResolvedValue({
       tasks: [
         {
@@ -61,16 +95,16 @@ describe('checkEmailPreviousValidation', () => {
       datasetAddress,
       dappAddresses,
     });
-    expect(result).toBe(false);
+    expect(result).toBe(undefined);
   });
 
-  it('returns false if GraphQL query fails', async () => {
+  it('returns undefined if GraphQL query fails', async () => {
     request.mockRejectedValue(new Error('GraphQL request failed'));
 
     const result = await checkEmailPreviousValidation({
       datasetAddress,
       dappAddresses,
     });
-    expect(result).toBe(false);
+    expect(result).toBe(undefined);
   });
 });
