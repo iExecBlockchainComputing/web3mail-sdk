@@ -28,7 +28,11 @@ async function processProtectedData({
     index > 0
       ? process.env[`IEXEC_DATASET_${index}_FILENAME`]
       : process.env.IEXEC_DATASET_FILENAME;
-  const result = { index, protectedData: datasetFilename };
+  const result = {
+    index,
+    protectedData: datasetFilename,
+    isEmailValid: undefined,
+  };
   try {
     let protectedData;
     try {
@@ -161,6 +165,7 @@ async function start() {
         results: results.map((r) => ({
           index: r.index,
           protectedData: r.protectedData,
+          // isEmailValid: r.isEmailValid,
           success: r.success,
           error: r.error,
         })),

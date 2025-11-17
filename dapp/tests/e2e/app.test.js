@@ -651,6 +651,10 @@ describe('sendEmail', () => {
         it('should set the invalid email callback when requested', async () => {
           // protected data setup
           process.env.IEXEC_DATASET_FILENAME = 'dataEmailUserDoesNotExist.zip';
+          process.env.IEXEC_REQUESTER_SECRET_1 = JSON.stringify({
+            ...JSON.parse(process.env.IEXEC_REQUESTER_SECRET_1),
+            useCallback: true,
+          });
 
           await expect(start()).resolves.toBeUndefined();
 
