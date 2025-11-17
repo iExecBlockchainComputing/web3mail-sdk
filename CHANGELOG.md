@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.6.0...web3mail-v1.7.0) (2025-11-17)
+
+
+### Added
+
+* **sdk:** add bulk processing support for email sending ([#235](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/235)) ([ec61f9f](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/ec61f9fb7ffbc5235084985fcbf0dff5046f4bbe))
+
 ## [1.6.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.5.0...web3mail-v1.6.0) (2025-10-14)
 
 
