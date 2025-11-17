@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v0.10.1...dapp-v1.0.0) (2025-11-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **iapp:** result file renamed to `result.json`; single protectedData result file now contains `{"success": boolean, "protectedData"?: address, "isEmailValid"?: boolean, "error"?: string }`; upon error, the iapp will now exit 0 and output `"success": false` and `"error": string` rather than falling the task.
+
+### Added
+
+* **iapp:** add bulk processing support ([#234](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/234)) ([3458c95](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/3458c95fbe88556d70dfc81fda20186041a1817e))
+
 ## [0.10.1](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v0.10.0...dapp-v0.10.1) (2025-09-03)
 
 
