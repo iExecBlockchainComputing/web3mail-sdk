@@ -1,11 +1,11 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { Address } from 'iexec';
-import { type FetchMyContacts } from '../../src/web3mail/fetchMyContacts.js';
-import { getRandomAddress } from '../test-utils.js';
 import {
   DEFAULT_CHAIN_ID,
   getChainDefaultConfig,
 } from '../../src/config/config.js';
+import { type FetchMyContacts } from '../../src/web3mail/fetchMyContacts.js';
+import { getRandomAddress } from '../test-utils.js';
 
 jest.unstable_mockModule('../../src/utils/subgraphQuery.js', () => ({
   getValidContact: jest.fn(),
@@ -14,6 +14,7 @@ jest.unstable_mockModule('../../src/utils/subgraphQuery.js', () => ({
 describe('fetchMyContacts', () => {
   let testedModule: any;
   let fetchMyContacts: FetchMyContacts;
+  const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
 
   beforeAll(async () => {
     // import tested module after all mocked modules
@@ -45,7 +46,7 @@ describe('fetchMyContacts', () => {
     // --- GIVEN
     const { getValidContact } = (await import(
       '../../src/utils/subgraphQuery.js'
-    )) as unknown as { getValidContact: jest.Mock<() => Promise<[]>> };
+    )) as unknown as { getValidContact: jest.Mock<() => Promise<any[]>> };
     getValidContact.mockResolvedValue([]);
 
     const mockFetchDatasetOrderbook: any = jest.fn().mockImplementation(() => {
@@ -78,43 +79,35 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
-      dappWhitelistAddress:
-        getChainDefaultConfig(DEFAULT_CHAIN_ID).whitelistSmartContract,
-      isUserStrict: false,
+      dappAddressOrENS: defaultConfig.dappAddress,
+      dappWhitelistAddress: defaultConfig.whitelistSmartContract,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
-    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      1,
-      'any',
-      {
-        app: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress.toLowerCase(),
-        requester: userAddress,
-        isAppStrict: true,
-        isRequesterStrict: false,
-        pageSize: 1000,
-      }
-    );
-    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      2,
-      'any',
-      {
-        app: getChainDefaultConfig(
-          DEFAULT_CHAIN_ID
-        ).whitelistSmartContract.toLowerCase(),
-        requester: userAddress,
-        isAppStrict: true,
-        isRequesterStrict: false,
-        pageSize: 1000,
-      }
-    );
+    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
+      dataset: 'any',
+      app: defaultConfig.dappAddress.toLowerCase(),
+      requester: userAddress,
+      isAppStrict: true,
+      isRequesterStrict: false,
+      bulkOnly: false,
+      pageSize: 1000,
+    });
+    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(2, {
+      dataset: 'any',
+      app: defaultConfig.whitelistSmartContract.toLowerCase(),
+      requester: userAddress,
+      isAppStrict: true,
+      isRequesterStrict: false,
+      bulkOnly: false,
+      pageSize: 1000,
+    });
   });
 
   it('should fetch granted access with isRequesterStrict param equal to true', async () => {
     // --- GIVEN
     const { getValidContact } = (await import(
       '../../src/utils/subgraphQuery.js'
-    )) as unknown as { getValidContact: jest.Mock<() => Promise<[]>> };
+    )) as unknown as { getValidContact: jest.Mock<() => Promise<any[]>> };
     getValidContact.mockResolvedValue([]);
 
     const mockFetchDatasetOrderbook: any = jest.fn().mockImplementation(() => {
@@ -147,37 +140,284 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
-      dappWhitelistAddress:
-        getChainDefaultConfig(
-          DEFAULT_CHAIN_ID
-        ).whitelistSmartContract.toLowerCase(),
+      dappAddressOrENS: defaultConfig.dappAddress,
+      dappWhitelistAddress: defaultConfig.whitelistSmartContract,
       isUserStrict: true,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
-    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      1,
-      'any',
+    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
+      dataset: 'any',
+      app: defaultConfig.dappAddress.toLowerCase(),
+      requester: userAddress,
+      isAppStrict: true,
+      isRequesterStrict: true,
+      bulkOnly: false,
+      pageSize: 1000,
+    });
+    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(2, {
+      dataset: 'any',
+      app: defaultConfig.whitelistSmartContract.toLowerCase(),
+      requester: userAddress,
+      isAppStrict: true,
+      isRequesterStrict: true,
+      bulkOnly: false,
+      pageSize: 1000,
+    });
+  });
+
+  it('should include grantedAccess property in returned contacts', async () => {
+    // --- GIVEN
+    const { getValidContact } = (await import(
+      '../../src/utils/subgraphQuery.js'
+    )) as unknown as { getValidContact: jest.Mock<() => Promise<any[]>> };
+
+    const mockContacts = [
       {
-        app: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress.toLowerCase(),
+        address: '0x35396912Db97ff130411301Ec722Fc92Ac37B00d',
+        owner: '0xD52C27CC2c7D3fb5BA4440ffa825c12EA5658D60',
+        remainingAccess: 10,
+        accessPrice: 0,
+        accessGrantTimestamp: '2023-06-15T16:39:22.713Z',
+        isUserStrict: false,
+        grantedAccess: MOCK_ORDER.order,
+      },
+    ];
+    getValidContact.mockResolvedValue(mockContacts);
+
+    const mockFetchDatasetOrderbook: any = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        ok: true,
+        count: 1,
+        nextPage: 1,
+        orders: [MOCK_ORDER],
+      });
+    });
+
+    const iexec = {
+      wallet: {
+        getAddress: jest
+          .fn<() => Promise<Address>>()
+          .mockResolvedValue(getRandomAddress()),
+      },
+      ens: {
+        resolveName: jest
+          .fn<() => Promise<Address>>()
+          .mockResolvedValue(getRandomAddress()),
+      },
+      orderbook: {
+        fetchDatasetOrderbook: mockFetchDatasetOrderbook,
+      },
+    };
+
+    // --- WHEN
+    const result = await fetchMyContacts({
+      // @ts-expect-error Minimal iexec implementation with only what's necessary for this test
+      iexec: iexec,
+      // @ts-expect-error No need for graphQLClient here
+      graphQLClient: {},
+      dappAddressOrENS: defaultConfig.dappAddress,
+      dappWhitelistAddress: defaultConfig.whitelistSmartContract,
+    });
+
+    // --- THEN
+    expect(result).toEqual(mockContacts);
+    expect(result[0]).toHaveProperty('grantedAccess');
+    expect(result[0].grantedAccess).toEqual(MOCK_ORDER.order);
+  });
+
+  describe('bulkOnly parameter', () => {
+    it('should pass bulkOnly=false (default) when fetching contacts', async () => {
+      // --- GIVEN
+      const { getValidContact } = (await import(
+        '../../src/utils/subgraphQuery.js'
+      )) as unknown as { getValidContact: jest.Mock<() => Promise<any[]>> };
+      getValidContact.mockResolvedValue([]);
+
+      const mockFetchDatasetOrderbook: any = jest
+        .fn()
+        .mockImplementation(() => {
+          return Promise.resolve({
+            ok: true,
+            count: 1,
+            nextPage: 1,
+            orders: [MOCK_ORDER],
+          });
+        });
+
+      const iexec = {
+        wallet: {
+          getAddress: jest
+            .fn<() => Promise<Address>>()
+            .mockResolvedValue(getRandomAddress()),
+        },
+        ens: {
+          resolveName: jest
+            .fn<() => Promise<Address>>()
+            .mockResolvedValue(getRandomAddress()),
+        },
+        orderbook: {
+          fetchDatasetOrderbook: mockFetchDatasetOrderbook,
+        },
+      };
+
+      await fetchMyContacts({
+        // @ts-expect-error Minimal iexec implementation with only what's necessary for this test
+        iexec: iexec,
+        // @ts-expect-error No need for graphQLClient here
+        graphQLClient: {},
+        dappAddressOrENS: defaultConfig.dappAddress,
+        dappWhitelistAddress: defaultConfig.whitelistSmartContract,
+        bulkOnly: false,
+      });
+      const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
+        dataset: 'any',
+        app: defaultConfig.dappAddress.toLowerCase(),
+        requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: false,
+        bulkOnly: false,
+        pageSize: 1000,
+      });
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(2, {
+        dataset: 'any',
+        app: defaultConfig.whitelistSmartContract.toLowerCase(),
+        requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: false,
+        bulkOnly: false,
+        pageSize: 1000,
+      });
+    });
+
+    it('should pass bulkOnly=true when fetching contacts', async () => {
+      // --- GIVEN
+      const { getValidContact } = (await import(
+        '../../src/utils/subgraphQuery.js'
+      )) as unknown as { getValidContact: jest.Mock<() => Promise<any[]>> };
+      getValidContact.mockResolvedValue([]);
+
+      const mockFetchDatasetOrderbook: any = jest
+        .fn()
+        .mockImplementation(() => {
+          return Promise.resolve({
+            ok: true,
+            count: 1,
+            nextPage: 1,
+            orders: [MOCK_ORDER],
+          });
+        });
+
+      const iexec = {
+        wallet: {
+          getAddress: jest
+            .fn<() => Promise<Address>>()
+            .mockResolvedValue(getRandomAddress()),
+        },
+        ens: {
+          resolveName: jest
+            .fn<() => Promise<Address>>()
+            .mockResolvedValue(getRandomAddress()),
+        },
+        orderbook: {
+          fetchDatasetOrderbook: mockFetchDatasetOrderbook,
+        },
+      };
+
+      await fetchMyContacts({
+        // @ts-expect-error Minimal iexec implementation with only what's necessary for this test
+        iexec: iexec,
+        // @ts-expect-error No need for graphQLClient here
+        graphQLClient: {},
+        dappAddressOrENS: defaultConfig.dappAddress,
+        dappWhitelistAddress: defaultConfig.whitelistSmartContract,
+        bulkOnly: true,
+      });
+      const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
+        dataset: 'any',
+        app: defaultConfig.dappAddress.toLowerCase(),
+        requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: false,
+        bulkOnly: true,
+        pageSize: 1000,
+      });
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(2, {
+        dataset: 'any',
+        app: defaultConfig.whitelistSmartContract.toLowerCase(),
+        requester: userAddress,
+        isAppStrict: true,
+        isRequesterStrict: false,
+        bulkOnly: true,
+        pageSize: 1000,
+      });
+    });
+
+    it('should work with both isUserStrict and bulkOnly parameters', async () => {
+      // --- GIVEN
+      const { getValidContact } = (await import(
+        '../../src/utils/subgraphQuery.js'
+      )) as unknown as { getValidContact: jest.Mock<() => Promise<any[]>> };
+      getValidContact.mockResolvedValue([]);
+
+      const mockFetchDatasetOrderbook: any = jest
+        .fn()
+        .mockImplementation(() => {
+          return Promise.resolve({
+            ok: true,
+            count: 1,
+            nextPage: 1,
+            orders: [MOCK_ORDER],
+          });
+        });
+
+      const iexec = {
+        wallet: {
+          getAddress: jest
+            .fn<() => Promise<Address>>()
+            .mockResolvedValue(getRandomAddress()),
+        },
+        ens: {
+          resolveName: jest
+            .fn<() => Promise<Address>>()
+            .mockResolvedValue(getRandomAddress()),
+        },
+        orderbook: {
+          fetchDatasetOrderbook: mockFetchDatasetOrderbook,
+        },
+      };
+
+      await fetchMyContacts({
+        // @ts-expect-error Minimal iexec implementation with only what's necessary for this test
+        iexec: iexec,
+        // @ts-expect-error No need for graphQLClient here
+        graphQLClient: {},
+        dappAddressOrENS: defaultConfig.dappAddress,
+        dappWhitelistAddress: defaultConfig.whitelistSmartContract,
+        isUserStrict: true,
+        bulkOnly: true,
+      });
+
+      const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
+        dataset: 'any',
+        app: defaultConfig.dappAddress.toLowerCase(),
         requester: userAddress,
         isAppStrict: true,
         isRequesterStrict: true,
+        bulkOnly: true,
         pageSize: 1000,
-      }
-    );
-    expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(
-      2,
-      'any',
-      {
-        app: getChainDefaultConfig(
-          DEFAULT_CHAIN_ID
-        ).whitelistSmartContract.toLowerCase(),
+      });
+      expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(2, {
+        dataset: 'any',
+        app: defaultConfig.whitelistSmartContract.toLowerCase(),
         requester: userAddress,
         isAppStrict: true,
         isRequesterStrict: true,
+        bulkOnly: true,
         pageSize: 1000,
-      }
-    );
+      });
+    });
   });
 });

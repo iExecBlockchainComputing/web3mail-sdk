@@ -67,43 +67,55 @@ export const sendEmail = async ({
     .required()
     .label('protectedData')
     .validateSync(protectedData);
+
   const vEmailSubject = emailSubjectSchema()
     .required()
     .label('emailSubject')
     .validateSync(emailSubject);
+
   const vEmailContent = emailContentSchema()
     .required()
     .label('emailContent')
     .validateSync(emailContent);
+
   const vContentType = contentTypeSchema()
     .required()
     .label('contentType')
     .validateSync(contentType);
+
   const vSenderName = senderNameSchema()
     .label('senderName')
     .validateSync(senderName);
+
   const vLabel = labelSchema().label('label').validateSync(label);
+
   const vWorkerpoolAddressOrEns = addressOrEnsSchema()
     .required()
     .label('WorkerpoolAddressOrEns')
     .validateSync(workerpoolAddressOrEns);
+
   const vDappAddressOrENS = addressOrEnsSchema()
     .required()
     .label('dappAddressOrENS')
     .validateSync(dappAddressOrENS);
+
   const vDappWhitelistAddress = addressSchema()
     .required()
     .label('dappWhitelistAddress')
     .validateSync(dappWhitelistAddress);
+
   const vDataMaxPrice = positiveNumberSchema()
     .label('dataMaxPrice')
     .validateSync(dataMaxPrice);
+
   const vAppMaxPrice = positiveNumberSchema()
     .label('appMaxPrice')
     .validateSync(appMaxPrice);
+
   const vWorkerpoolMaxPrice = positiveNumberSchema()
     .label('workerpoolMaxPrice')
     .validateSync(workerpoolMaxPrice);
+
   const vUseVoucher = booleanSchema()
     .label('useVoucher')
     .validateSync(useVoucher);
@@ -113,6 +125,7 @@ export const sendEmail = async ({
     graphQLClient,
     vDatasetAddress
   );
+
   if (!isValidProtectedData) {
     throw new Error(
       'This protected data does not contain "email:string" in its schema.'
@@ -145,7 +158,8 @@ export const sendEmail = async ({
     ] = await Promise.all([
       // Fetch dataset order for web3mail app
       iexec.orderbook
-        .fetchDatasetOrderbook(vDatasetAddress, {
+        .fetchDatasetOrderbook({
+          dataset: vDatasetAddress,
           app: dappAddressOrENS,
           requester: requesterAddress,
         })
@@ -155,9 +169,11 @@ export const sendEmail = async ({
           );
           return desiredPriceDataOrderbook[0]?.order; // may be undefined
         }),
+
       // Fetch dataset order for web3mail whitelist
       iexec.orderbook
-        .fetchDatasetOrderbook(vDatasetAddress, {
+        .fetchDatasetOrderbook({
+          dataset: vDatasetAddress,
           app: vDappWhitelistAddress,
           requester: requesterAddress,
         })
@@ -167,9 +183,11 @@ export const sendEmail = async ({
           );
           return desiredPriceDataOrderbook[0]?.order; // may be undefined
         }),
+
       // Fetch app order
       iexec.orderbook
-        .fetchAppOrderbook(dappAddressOrENS, {
+        .fetchAppOrderbook({
+          app: dappAddressOrENS,
           minTag: ['tee', 'scone'],
           maxTag: ['tee', 'scone'],
           workerpool: workerpoolAddressOrEns,
@@ -184,6 +202,7 @@ export const sendEmail = async ({
           }
           return desiredPriceAppOrder;
         }),
+
       // Fetch workerpool order for App or AppWhitelist
       Promise.all([
         // for app
@@ -219,9 +238,11 @@ export const sendEmail = async ({
             useVoucher: vUseVoucher,
             userVoucher,
           });
+
           if (!desiredPriceWorkerpoolOrder) {
             throw new Error('No Workerpool order found for the desired price');
           }
+
           return desiredPriceWorkerpoolOrder;
         }
       ),
@@ -247,6 +268,7 @@ export const sendEmail = async ({
           errorCause: e,
         });
       });
+
     const cid = await ipfs
       .add(encryptedFile, {
         ipfsNode: ipfsNode,
@@ -258,6 +280,7 @@ export const sendEmail = async ({
           errorCause: e,
         });
       });
+
     const multiaddr = `/ipfs/${cid}`;
 
     await iexec.secrets.pushRequesterSecret(
@@ -289,10 +312,11 @@ export const sendEmail = async ({
         iexec_args: vLabel,
       },
     });
+
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
 
     // Match orders and compute task ID
-    const { dealid } = await iexec.order.matchOrders(
+    const { dealid: dealId } = await iexec.order.matchOrders(
       {
         apporder: apporder,
         datasetorder: datasetorder,
@@ -301,10 +325,12 @@ export const sendEmail = async ({
       },
       { useVoucher: vUseVoucher }
     );
-    const taskId = await iexec.deal.computeTaskId(dealid, 0);
+
+    const taskId = await iexec.deal.computeTaskId(dealId, 0);
 
     return {
       taskId,
+      dealId,
     };
   } catch (error) {
     handleIfProtocolError(error);

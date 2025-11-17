@@ -27,6 +27,7 @@ export const fetchUserContacts = async ({
   dappWhitelistAddress = throwIfMissing(),
   userAddress,
   isUserStrict = false,
+  bulkOnly = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -47,6 +48,7 @@ export const fetchUserContacts = async ({
   const vIsUserStrict = booleanSchema()
     .label('isUserStrict')
     .validateSync(isUserStrict);
+  const vBulkOnly = booleanSchema().label('bulkOnly').validateSync(bulkOnly);
 
   try {
     const [dappOrders, whitelistOrders] = await Promise.all([
@@ -55,12 +57,14 @@ export const fetchUserContacts = async ({
         userAddress: vUserAddress,
         appAddress: vDappAddressOrENS,
         isUserStrict: vIsUserStrict,
+        bulkOnly: vBulkOnly,
       }),
       fetchAllOrdersByApp({
         iexec,
         userAddress: vUserAddress,
         appAddress: vDappWhitelistAddress,
         isUserStrict: vIsUserStrict,
+        bulkOnly: vBulkOnly,
       }),
     ]);
 
@@ -84,6 +88,18 @@ export const fetchUserContacts = async ({
           accessPrice: order.order.datasetprice,
           accessGrantTimestamp: order.publicationTimestamp,
           isUserStrict: order.order.requesterrestrict !== ZeroAddress,
+          grantedAccess: {
+            dataset: order.order.dataset,
+            datasetprice: order.order.datasetprice.toString(),
+            volume: order.order.volume.toString(),
+            tag: order.order.tag.toString(),
+            apprestrict: order.order.apprestrict,
+            workerpoolrestrict: order.order.workerpoolrestrict,
+            requesterrestrict: order.order.requesterrestrict,
+            salt: order.order.salt,
+            sign: order.order.sign,
+            remainingAccess: order.remaining,
+          },
         };
         myContacts.push(contact);
       }
@@ -107,23 +123,24 @@ async function fetchAllOrdersByApp({
   userAddress,
   appAddress,
   isUserStrict,
+  bulkOnly,
 }: {
   iexec: IExec;
   userAddress: string;
   appAddress: string;
   isUserStrict: boolean;
+  bulkOnly: boolean;
 }): Promise<PublishedDatasetorder[]> {
-  const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook(
-    ANY_DATASET_ADDRESS,
-    {
-      app: appAddress,
-      requester: userAddress,
-      isAppStrict: true,
-      isRequesterStrict: isUserStrict,
-      // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
-      pageSize: 1000,
-    }
-  );
+  const ordersFirstPage = iexec.orderbook.fetchDatasetOrderbook({
+    dataset: ANY_DATASET_ADDRESS,
+    app: appAddress,
+    requester: userAddress,
+    isAppStrict: true,
+    isRequesterStrict: isUserStrict,
+    bulkOnly,
+    // Use maxPageSize here to avoid too many round-trips (we want everything anyway)
+    pageSize: 1000,
+  });
   const { orders: allOrders } = await autoPaginateRequest({
     request: ordersFirstPage,
   });

@@ -1,5 +1,6 @@
 import { EnhancedWallet } from 'iexec';
 import { IExecConfigOptions } from 'iexec/IExecConfig';
+import type { BulkRequest } from '@iexec/dataprotector';
 
 export type Web3SignerProvider = EnhancedWallet;
 
@@ -11,14 +12,44 @@ export type Address = string;
 
 export type TimeStamp = string;
 
+/**
+ * request to send email in bulk
+ *
+ * use `prepareEmailCampaign()` to create a `CampaignRequest`
+ *
+ * then use `sendEmailCampaign()` to send the campaign
+ */
+export type CampaignRequest = BulkRequest;
+
+/**
+ * authorization signed by the data owner granting access to this contact
+ *
+ * `GrantedAccess` are obtained by fetching contacts (e.g. `fetchMyContacts()` or `fetchUserContacts()`)
+ *
+ * `GrantedAccess` can be consumed for email campaigns (e.g. `prepareEmailCampaign()` then `sendEmailCampaign()`)
+ */
+export type GrantedAccess = {
+  dataset: string;
+  datasetprice: string;
+  volume: string;
+  tag: string;
+  apprestrict: string;
+  workerpoolrestrict: string;
+  requesterrestrict: string;
+  salt: string;
+  sign: string;
+  remainingAccess: number;
+};
+
 export type Contact = {
   address: Address;
   owner: Address;
   accessGrantTimestamp: TimeStamp;
   isUserStrict: boolean;
-  name: string;
+  name?: string;
   remainingAccess: number;
   accessPrice: number;
+  grantedAccess: GrantedAccess;
 };
 
 export type SendEmailParams = {
@@ -40,6 +71,10 @@ export type FetchMyContactsParams = {
    * Get contacts for this specific user only
    */
   isUserStrict?: boolean;
+  /**
+   * If true, returns only contacts with bulk processing access grants
+   */
+  bulkOnly?: boolean;
 };
 
 export type FetchUserContactsParams = {
@@ -50,7 +85,14 @@ export type FetchUserContactsParams = {
 } & FetchMyContactsParams;
 
 export type SendEmailResponse = {
+  /**
+   * ID of the task
+   */
   taskId: string;
+  /**
+   * ID of the deal containing the task
+   */
+  dealId: string;
 };
 
 /**
@@ -99,4 +141,63 @@ export type Web3MailConfigOptions = {
    * ⚠️ experimental networks are networks on which the iExec's stack is partially deployed, experimental networks can be subject to instabilities or discontinuity. Access is provided without warranties.
    */
   allowExperimentalNetworks?: boolean;
+};
+
+export type PrepareEmailCampaignParams = {
+  /**
+   * List of `GrantedAccess` to contacts to send emails to in bulk.
+   *
+   * use `fetchMyContacts({ bulkOnly: true })` to get granted accesses.
+   */
+  grantedAccesses: GrantedAccess[];
+  maxProtectedDataPerTask?: number;
+  senderName?: string;
+  emailSubject: string;
+  emailContent: string;
+  contentType?: string;
+  label?: string;
+  workerpoolAddressOrEns?: AddressOrENS;
+  dataMaxPrice?: number;
+  appMaxPrice?: number;
+  workerpoolMaxPrice?: number;
+};
+
+export type PrepareEmailCampaignResponse = {
+  /**
+   * The prepared campaign request
+   *
+   * Use this in `sendEmailCampaign()` to start or continue sending the campaign
+   */
+  campaignRequest: CampaignRequest;
+};
+
+export type SendEmailCampaignParams = {
+  /**
+   * The prepared campaign request from `prepareEmailCampaign()`
+   */
+  campaignRequest: CampaignRequest;
+  /**
+   * Workerpool address or ENS to use for processing
+   */
+  workerpoolAddressOrEns?: AddressOrENS;
+};
+
+export type SendEmailCampaignResponse = {
+  /**
+   * List of tasks created for the campaign
+   */
+  tasks: Array<{
+    /**
+     * ID of the task
+     */
+    taskId: string;
+    /**
+     * ID of the deal containing the task
+     */
+    dealId: string;
+    /**
+     * Index of the task in the bulk request
+     */
+    bulkIndex: number;
+  }>;
 };

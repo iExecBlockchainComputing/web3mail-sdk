@@ -71,20 +71,23 @@ export const getValidContact = async (
     );
 
     // Convert protectedData[] into Contact[] using the map for constant time lookups
-    return protectedDataList.map(({ id, name }) => {
-      const contact = contactsMap.get(id);
-      if (contact) {
-        return {
-          address: id,
-          name: name,
-          remainingAccess: contact.remainingAccess,
-          accessPrice: contact.accessPrice,
-          owner: contact.owner,
-          accessGrantTimestamp: contact.accessGrantTimestamp,
-          isUserStrict: contact.isUserStrict,
-        };
-      }
-    });
+    return protectedDataList
+      .map(({ id, name }) => {
+        const contact = contactsMap.get(id);
+        if (contact) {
+          return {
+            address: id,
+            name: name,
+            remainingAccess: contact.remainingAccess,
+            accessPrice: contact.accessPrice,
+            owner: contact.owner,
+            accessGrantTimestamp: contact.accessGrantTimestamp,
+            isUserStrict: contact.isUserStrict,
+            grantedAccess: contact.grantedAccess,
+          };
+        }
+      })
+      .filter((contact) => !!contact);
   } catch (error) {
     throw new WorkflowError({
       message: 'Failed to fetch subgraph',
