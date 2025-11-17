@@ -165,8 +165,8 @@ async function start() {
         results: results.map((r) => ({
           index: r.index,
           protectedData: r.protectedData,
-          // isEmailValid: r.isEmailValid,
           success: r.success,
+          isEmailValid: r.isEmailValid,
           error: r.error,
         })),
       };
@@ -179,7 +179,8 @@ async function start() {
           appDeveloperSecret,
           requesterSecret,
         });
-
+      // set result json
+      result = { protectedData, success, isEmailValid, error };
       // Add callback data for single processing if useCallback is enabled
       if (requesterSecret.useCallback) {
         const bool32Bytes = Buffer.alloc(32);
@@ -195,7 +196,6 @@ async function start() {
         }
         callbackData = `0x${bool32Bytes.toString('hex')}`;
       }
-      result = { protectedData, success, error };
     }
   } catch (e) {
     console.error('Something went wrong:', e.message);
