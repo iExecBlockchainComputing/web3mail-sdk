@@ -1,6 +1,6 @@
 {
   "name": "@iexec/web3mail",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "This product enables users to confidentially store data–such as mail address, documents, personal information ...",
   "main": "./dist/index.js",
   "type": "module",
