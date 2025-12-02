@@ -1,5 +1,4 @@
-import { randomBytes } from '@ethersproject/random';
-import { hexlify } from '@ethersproject/bytes';
+import { randomBytes, hexlify } from 'ethers';
 
 export function generateSecureUniqueId(length) {
   return hexlify(randomBytes(length));

@@ -46,8 +46,6 @@
   },
   "homepage": "https://github.com/iExecBlockchainComputing/web3mail-sdk#readme",
   "dependencies": {
-    "@ethersproject/bytes": "^5.7.0",
-    "@ethersproject/random": "^5.7.0",
     "@iexec/dataprotector": "^2.0.0-beta.23",
     "buffer": "^6.0.3",
     "ethers": "^6.15.0",
