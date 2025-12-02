@@ -48,12 +48,12 @@
   "dependencies": {
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/random": "^5.7.0",
-    "@iexec/dataprotector": "^2.0.0-beta.21",
+    "@iexec/dataprotector": "^2.0.0-beta.23",
     "buffer": "^6.0.3",
-    "ethers": "^6.13.2",
+    "ethers": "^6.15.0",
     "graphql-request": "^6.1.0",
-    "iexec": "^8.22.2",
-    "kubo-rpc-client": "^4.1.1",
+    "iexec": "^8.22.4",
+    "kubo-rpc-client": "^5.4.1",
     "yup": "^1.1.1"
   },
   "devDependencies": {
