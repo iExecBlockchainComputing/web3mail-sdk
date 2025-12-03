@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.2](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.7.1...web3mail-v1.7.2) (2025-12-03)
+
+
+### Changed
+
+* disable lifecycle scripts for contributors and CI ([90d1c69](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/90d1c6910708da284e17cbff60f228b8e976bff3))
+* security hardening ([#241](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/241)) ([90d1c69](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/90d1c6910708da284e17cbff60f228b8e976bff3))
+* update dependencies ([90d1c69](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/90d1c6910708da284e17cbff60f228b8e976bff3))
+* use ethers methods from umbrella ([90d1c69](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/90d1c6910708da284e17cbff60f228b8e976bff3))
+
 ## [1.7.1](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.7.0...web3mail-v1.7.1) (2025-11-20)
 
 
