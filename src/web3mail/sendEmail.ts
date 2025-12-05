@@ -331,6 +331,9 @@ export const sendEmail = async ({
         workerpoolorder: workerpoolorder,
         requestorder: requestorder,
       },
+      // TODO: Remove @ts-ignore once iexec SDK is updated to a version that includes allowDeposit in matchOrders types
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - allowDeposit is supported at runtime but not yet in TypeScript types
       { useVoucher: vUseVoucher, allowDeposit: vAllowDeposit }
     );
 

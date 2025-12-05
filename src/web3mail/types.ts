@@ -181,6 +181,11 @@ export type SendEmailCampaignParams = {
    * Workerpool address or ENS to use for processing
    */
   workerpoolAddressOrEns?: AddressOrENS;
+  /**
+   * If true, allows automatic deposit of funds when balance is insufficient
+   * @default false
+   */
+  allowDeposit?: boolean;
 };
 
 export type SendEmailCampaignResponse = {
