@@ -1,6 +1,6 @@
+import type { BulkRequest } from '@iexec/dataprotector';
 import { EnhancedWallet } from 'iexec';
 import { IExecConfigOptions } from 'iexec/IExecConfig';
-import type { BulkRequest } from '@iexec/dataprotector';
 
 export type Web3SignerProvider = EnhancedWallet;
 
@@ -64,6 +64,7 @@ export type SendEmailParams = {
   appMaxPrice?: number;
   workerpoolMaxPrice?: number;
   useVoucher?: boolean;
+  allowDeposit?: boolean;
 };
 
 export type FetchMyContactsParams = {
