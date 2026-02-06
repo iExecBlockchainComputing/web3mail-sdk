@@ -204,7 +204,6 @@ describe('sendEmail', () => {
           requester: userAddress,
           isRequesterStrict: false,
           minTag: ['tee', 'scone'],
-          maxTag: ['tee', 'scone'],
           category: 0,
         }
       );
@@ -217,7 +216,6 @@ describe('sendEmail', () => {
           requester: userAddress,
           isRequesterStrict: false,
           minTag: ['tee', 'scone'],
-          maxTag: ['tee', 'scone'],
           category: 0,
         }
       );

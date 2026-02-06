@@ -150,103 +150,99 @@ export const sendEmail = async ({
   }
 
   try {
-    const [
-      datasetorderForApp,
-      datasetorderForWhitelist,
-      apporder,
-      workerpoolorder,
-    ] = await Promise.all([
-      // Fetch dataset order for web3mail app
-      iexec.orderbook
-        .fetchDatasetOrderbook({
-          dataset: vDatasetAddress,
-          app: dappAddressOrENS,
-          requester: requesterAddress,
-        })
-        .then((datasetOrderbook) => {
-          const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
-            (order) => order.order.datasetprice <= vDataMaxPrice
-          );
-          return desiredPriceDataOrderbook[0]?.order; // may be undefined
-        }),
-
-      // Fetch dataset order for web3mail whitelist
-      iexec.orderbook
-        .fetchDatasetOrderbook({
-          dataset: vDatasetAddress,
-          app: vDappWhitelistAddress,
-          requester: requesterAddress,
-        })
-        .then((datasetOrderbook) => {
-          const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
-            (order) => order.order.datasetprice <= vDataMaxPrice
-          );
-          return desiredPriceDataOrderbook[0]?.order; // may be undefined
-        }),
-
-      // Fetch app order
-      iexec.orderbook
-        .fetchAppOrderbook({
-          app: dappAddressOrENS,
-          minTag: ['tee', 'scone'],
-          maxTag: ['tee', 'scone'],
-          workerpool: workerpoolAddressOrEns,
-        })
-        .then((appOrderbook) => {
-          const desiredPriceAppOrderbook = appOrderbook.orders.filter(
-            (order) => order.order.appprice <= vAppMaxPrice
-          );
-          const desiredPriceAppOrder = desiredPriceAppOrderbook[0]?.order;
-          if (!desiredPriceAppOrder) {
-            throw new Error('No App order found for the desired price');
-          }
-          return desiredPriceAppOrder;
-        }),
-
-      // Fetch workerpool order for App or AppWhitelist
-      Promise.all([
-        // for app
-        iexec.orderbook.fetchWorkerpoolOrderbook({
-          workerpool: workerpoolAddressOrEns,
-          app: vDappAddressOrENS,
-          dataset: vDatasetAddress,
-          requester: requesterAddress, // public orders + user specific orders
-          isRequesterStrict: useVoucher, // If voucher, we only want user specific orders
-          minTag: ['tee', 'scone'],
-          maxTag: ['tee', 'scone'],
-          category: 0,
-        }),
-        // for app whitelist
-        iexec.orderbook.fetchWorkerpoolOrderbook({
-          workerpool: workerpoolAddressOrEns,
-          app: vDappWhitelistAddress,
-          dataset: vDatasetAddress,
-          requester: requesterAddress, // public orders + user specific orders
-          isRequesterStrict: useVoucher, // If voucher, we only want user specific orders
-          minTag: ['tee', 'scone'],
-          maxTag: ['tee', 'scone'],
-          category: 0,
-        }),
-      ]).then(
-        ([workerpoolOrderbookForApp, workerpoolOrderbookForAppWhitelist]) => {
-          const desiredPriceWorkerpoolOrder = filterWorkerpoolOrders({
-            workerpoolOrders: [
-              ...workerpoolOrderbookForApp.orders,
-              ...workerpoolOrderbookForAppWhitelist.orders,
-            ],
-            workerpoolMaxPrice: vWorkerpoolMaxPrice,
-            useVoucher: vUseVoucher,
-            userVoucher,
-          });
-
-          if (!desiredPriceWorkerpoolOrder) {
-            throw new Error('No Workerpool order found for the desired price');
-          }
-
-          return desiredPriceWorkerpoolOrder;
+    // Fetch app order first to determine TEE framework
+    const apporder = await iexec.orderbook
+      .fetchAppOrderbook({
+        app: dappAddressOrENS,
+        minTag: ['tee'],
+        workerpool: workerpoolAddressOrEns,
+      })
+      .then((appOrderbook) => {
+        const desiredPriceAppOrderbook = appOrderbook.orders.filter(
+          (order) => order.order.appprice <= vAppMaxPrice
+        );
+        const desiredPriceAppOrder = desiredPriceAppOrderbook[0]?.order;
+        if (!desiredPriceAppOrder) {
+          throw new Error('No App order found for the desired price');
         }
-      ),
-    ]);
+        return desiredPriceAppOrder;
+      });
+
+    const workerpoolMinTag = apporder.tag;
+
+    const [datasetorderForApp, datasetorderForWhitelist, workerpoolorder] =
+      await Promise.all([
+        // Fetch dataset order for web3mail app
+        iexec.orderbook
+          .fetchDatasetOrderbook({
+            dataset: vDatasetAddress,
+            app: dappAddressOrENS,
+            requester: requesterAddress,
+          })
+          .then((datasetOrderbook) => {
+            const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
+              (order) => order.order.datasetprice <= vDataMaxPrice
+            );
+            return desiredPriceDataOrderbook[0]?.order; // may be undefined
+          }),
+
+        // Fetch dataset order for web3mail whitelist
+        iexec.orderbook
+          .fetchDatasetOrderbook({
+            dataset: vDatasetAddress,
+            app: vDappWhitelistAddress,
+            requester: requesterAddress,
+          })
+          .then((datasetOrderbook) => {
+            const desiredPriceDataOrderbook = datasetOrderbook.orders.filter(
+              (order) => order.order.datasetprice <= vDataMaxPrice
+            );
+            return desiredPriceDataOrderbook[0]?.order; // may be undefined
+          }),
+        // Fetch workerpool order for App or AppWhitelist
+        Promise.all([
+          // for app
+          iexec.orderbook.fetchWorkerpoolOrderbook({
+            workerpool: workerpoolAddressOrEns,
+            app: vDappAddressOrENS,
+            dataset: vDatasetAddress,
+            requester: requesterAddress, // public orders + user specific orders
+            isRequesterStrict: useVoucher, // If voucher, we only want user specific orders
+            minTag: workerpoolMinTag,
+            category: 0,
+          }),
+          // for app whitelist
+          iexec.orderbook.fetchWorkerpoolOrderbook({
+            workerpool: workerpoolAddressOrEns,
+            app: vDappWhitelistAddress,
+            dataset: vDatasetAddress,
+            requester: requesterAddress, // public orders + user specific orders
+            isRequesterStrict: useVoucher, // If voucher, we only want user specific orders
+            minTag: workerpoolMinTag,
+            category: 0,
+          }),
+        ]).then(
+          ([workerpoolOrderbookForApp, workerpoolOrderbookForAppWhitelist]) => {
+            const desiredPriceWorkerpoolOrder = filterWorkerpoolOrders({
+              workerpoolOrders: [
+                ...workerpoolOrderbookForApp.orders,
+                ...workerpoolOrderbookForAppWhitelist.orders,
+              ],
+              workerpoolMaxPrice: vWorkerpoolMaxPrice,
+              useVoucher: vUseVoucher,
+              userVoucher,
+            });
+
+            if (!desiredPriceWorkerpoolOrder) {
+              throw new Error(
+                'No Workerpool order found for the desired price'
+              );
+            }
+
+            return desiredPriceWorkerpoolOrder;
+          }
+        ),
+      ]);
 
     if (!workerpoolorder) {
       throw new Error('No Workerpool order found for the desired price');
@@ -302,7 +298,7 @@ export const sendEmail = async ({
       datasetmaxprice: datasetorder.datasetprice,
       appmaxprice: apporder.appprice,
       workerpoolmaxprice: workerpoolorder.workerpoolprice,
-      tag: ['tee', 'scone'],
+      tag: ['tee'],
       workerpool: vWorkerpoolAddressOrEns,
       callback: CALLBACK_WEB3MAIL,
       params: {
