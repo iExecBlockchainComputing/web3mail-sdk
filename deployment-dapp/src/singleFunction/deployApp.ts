@@ -12,6 +12,7 @@ export const deployApp = async ({
   dockerRepository = DOCKER_IMAGE_REPOSITORY,
   dockerTag,
   checksum,
+  // TODO: to be deleted after migration to TDX
   fingerprint,
   sconifyVersion,
 }: {
@@ -20,27 +21,36 @@ export const deployApp = async ({
   dockerRepository?: string;
   dockerTag: string;
   checksum?: string;
+  // TODO: to be deleted after migration to TDX
   fingerprint?: string;
-  sconifyVersion: string;
+  sconifyVersion?: string;
 }): Promise<string> => {
   const name = APP_NAME;
   const type = APP_TYPE;
 
-  console.log(`Using SCONIFY version: ${sconifyVersion}`);
+  let mrenclave;
 
-  const mrenclave = {
-    framework: 'SCONE' as any, // workaround framework not auto capitalized
-    version: `v${sconifyVersion.split('.').slice(0, 2).join('.')}`, // extracts "vX.Y" from "X.Y.Z-vN" format (e.g., "5.9.1-v16" → "v5.9")
-    entrypoint: 'node --disable-wasm-trap-handler /app/app.js',
-    heapSize: 1073741824, // 1GB
-    fingerprint,
-  };
+  // TODO: to be deleted after migration to TDX
+  if (sconifyVersion) {
+    console.log(
+      `Using SCONE framework with SCONIFY version: ${sconifyVersion}`
+    );
+    mrenclave = {
+      framework: 'SCONE', // workaround framework not auto capitalized
+      version: `v${sconifyVersion.split('.').slice(0, 2).join('.')}`, // extracts "vX.Y" from "X.Y.Z-vN" format (e.g., "5.9.1-v16" → "v5.9")
+      entrypoint: 'node --disable-wasm-trap-handler /app/app.js',
+      heapSize: 1073741824, // 1GB
+      fingerprint,
+    };
+  }
+
   const app = {
     owner: await iexec.wallet.getAddress(),
     name,
     type,
     multiaddr: `${dockerNamespace}/${dockerRepository}:${dockerTag}`,
     checksum,
+    // TODO: to be deleted after migration to TDX
     mrenclave,
   };
   console.log(`Deploying app:\n${JSON.stringify(app, undefined, 2)}`);

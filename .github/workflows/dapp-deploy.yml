@@ -61,6 +61,7 @@ jobs:
       password: ${{ secrets.DOCKERHUB_PAT }}
 
   sconify:
+    if: startsWith(github.event.inputs.environment, 'bellecour-')
     uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/sconify.yml@sconify-v2.0.0
     needs: [docker-publish, extract-tag]
     with:
@@ -87,8 +88,9 @@ jobs:
       scontain-password: ${{ secrets.SCONTAIN_REGISTRY_PAT }}
       scone-signing-key: ${{ secrets.SCONIFY_SIGNING_PRIVATE_KEY }}
 
-  deploy-dapp:
-    needs: [extract-tag, sconify]
+  deploy-tdx-dapp:
+    if: startsWith(github.event.inputs.environment, 'arbitrum-')
+    needs: [extract-tag, docker-publish]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
@@ -109,14 +111,11 @@ jobs:
           cd ../../deployment-dapp
           npm ci
 
-      - name: Deploy dapp contract
+      - name: Deploy TDX dapp contract
         env:
           WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
-          DOCKER_IMAGE_TAG: ${{ needs.sconify.outputs.prod-image-tag }}
-          CHECKSUM: ${{  needs.sconify.outputs.prod-checksum }}
-          FINGERPRINT: ${{ needs.sconify.outputs.prod-mrenclave }}
+          DOCKER_IMAGE_TAG: ${{ needs.extract-tag.outputs.clean_tag }}
           RPC_URL: ${{ secrets.RPC_URL }}
-          SCONIFY_VERSION: ${{ vars.SCONIFY_VERSION }}
         run: |
           cd deployment-dapp
           npm run deploy-dapp
@@ -141,6 +140,77 @@ jobs:
           PRICE: ${{ vars.SELL_ORDER_PRICE }}
           VOLUME: ${{ vars.SELL_ORDER_VOLUME }}
           RPC_URL: ${{ secrets.RPC_URL }}
+        run: |
+          cd deployment-dapp
+          npm run publish-sell-order
+
+      - name: Add resource to whitelist
+        env:
+          CONTRACT_ADDRESS: ${{ vars.WEB3MAIL_WHITELIST_CONTRACT_ADDRESS }}
+          PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+        run: |
+          cd node_modules/whitelist-smart-contract
+          export ADDRESS_TO_ADD=$(cat ../../deployment-dapp/.app-address)
+          npm run addResourceToWhitelist -- --network ${{ vars.WHITELIST_NETWORK_NAME }}
+
+  deploy-scone-dapp:
+    if: startsWith(github.event.inputs.environment, 'bellecour-')
+    needs: [extract-tag, sconify]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd node_modules/whitelist-smart-contract
+          npm install --save-dev ts-node
+          cd ../../deployment-dapp
+          npm ci
+
+      - name: Deploy SCONE dapp contract
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
+          DOCKER_IMAGE_TAG: ${{ needs.sconify.outputs.prod-image-tag }}
+          CHECKSUM: ${{  needs.sconify.outputs.prod-checksum }}
+          FINGERPRINT: ${{ needs.sconify.outputs.prod-mrenclave }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+          SCONIFY_VERSION: ${{ vars.SCONIFY_VERSION }}
+        run: |
+          cd deployment-dapp
+          npm run deploy-dapp
+
+      - name: Push dapp secret
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
+          MJ_APIKEY_PUBLIC: ${{ secrets.MAILJET_APIKEY_PUBLIC }}
+          MJ_APIKEY_PRIVATE: ${{ secrets.MAILJET_APIKEY_PRIVATE }}
+          MJ_SENDER: ${{ secrets.MAILJET_SENDER }}
+          MAILGUN_APIKEY: ${{ secrets.MAILGUN_APIKEY }}
+          WEB3MAIL_WHITELISTED_APPS: ${{ vars.WEB3MAIL_WHITELISTED_APPS }}
+          POCO_SUBGRAPH_URL: ${{ vars.POCO_SUBGRAPH_URL }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+          SCONIFY_VERSION: ${{ vars.SCONIFY_VERSION }}
+        run: |
+          cd deployment-dapp
+          npm run push-dapp-secret
+
+      - name: Publish free sell order
+        env:
+          WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
+          PRICE: ${{ vars.SELL_ORDER_PRICE }}
+          VOLUME: ${{ vars.SELL_ORDER_VOLUME }}
+          RPC_URL: ${{ secrets.RPC_URL }}
+          SCONIFY_VERSION: ${{ vars.SCONIFY_VERSION }}
         run: |
           cd deployment-dapp
           npm run publish-sell-order

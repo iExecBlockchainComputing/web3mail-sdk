@@ -28,7 +28,7 @@ const main = async () => {
   console.log(`Volume is ${volume}`);
 
   try {
-    //publish sell order for Tee app (scone)
+    // Publish sell order for TEE app
     await publishSellOrder(iexec, appAddress, price, volume);
   } catch (e) {
     throw Error(`Failed to publish app sell order: ${e}`);

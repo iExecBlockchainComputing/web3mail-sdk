@@ -137,7 +137,7 @@ describe('web3mail.prepareEmailCampaign()', () => {
         requester: consumerWallet.address,
         salt: expect.any(String),
         sign: expect.any(String),
-        tag: '0x0000000000000000000000000000000000000000000000000000000000000003',
+        tag: '0x0000000000000000000000000000000000000000000000000000000000000001',
         trust: '0',
         volume: '1',
       });

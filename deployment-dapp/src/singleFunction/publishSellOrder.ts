@@ -7,16 +7,24 @@ export const publishSellOrder = async (
   price?: number,
   volume?: number
 ): Promise<string> => {
-  const sconeTeeTag = APP_TAG;
+  let teeTag = APP_TAG;
+  // TODO: to be deleted after migration to TDX
+  const sconifyVersion = process.env.SCONIFY_VERSION;
+  if (sconifyVersion) {
+    console.log(
+      `Using SCONE framework with SCONIFY version: ${sconifyVersion}`
+    );
+    teeTag = ['tee', 'scone'];
+  }
   console.log(
-    `Publishing apporder for app ${appAddress} with price ${price} xRLC and volume ${volume}`
+    `Publishing apporder for app ${appAddress} with price ${price} xRLC and volume ${volume} on ${teeTag}`
   );
 
   const apporderTemplate = await iexec.order.createApporder({
     app: appAddress,
     appprice: price.toFixed(9) + ' RLC',
     volume: volume,
-    tag: sconeTeeTag,
+    tag: teeTag,
   });
   const apporder = await iexec.order.signApporder(apporderTemplate);
   const orderHash = await iexec.order.publishApporder(apporder);

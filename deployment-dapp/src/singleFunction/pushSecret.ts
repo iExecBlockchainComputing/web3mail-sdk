@@ -5,7 +5,15 @@ export const pushSecret = async (
   appAddress: string,
   secret: string
 ): Promise<boolean> => {
-  const teeFramework = 'scone';
+  // TODO: to be deleted after migration to TDX
+  const sconifyVersion = process.env.SCONIFY_VERSION;
+  let teeFramework = 'tdx';
+  if (sconifyVersion) {
+    console.log(
+      `Using SCONE framework with SCONIFY version: ${sconifyVersion}`
+    );
+    teeFramework = 'scone';
+  }
   console.log(
     `Pushing app secret for app ${appAddress} on SMS ${teeFramework}`
   );
