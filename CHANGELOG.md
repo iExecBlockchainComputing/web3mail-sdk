@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.3](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.7.2...web3mail-v1.7.3) (2026-02-16)
+
+
+### Changed
+
+* stop enforcing SCONE as unique TEE framework for orders ([#244](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/244)) ([3d27a13](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/3d27a13907000df79eabc835d423df085027c912))
+
 ## [1.7.2](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.7.1...web3mail-v1.7.2) (2025-12-03)
 
 
