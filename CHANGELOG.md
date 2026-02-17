@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.4](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.7.3...web3mail-v1.7.4) (2026-02-17)
+
+
+### Changed
+
+* prepare migration to TDX ([#247](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/247)) ([12a82cf](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/12a82cfdad65c9ac9b21804f064e022c2933501f))
+
 ## [1.7.3](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.7.2...web3mail-v1.7.3) (2026-02-16)
 
 
