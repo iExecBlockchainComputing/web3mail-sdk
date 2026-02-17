@@ -18,7 +18,7 @@ on:
 
 jobs:
   extract-tag:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       clean_tag: ${{ steps.tag.outputs.clean_tag }}
     steps:
@@ -91,7 +91,7 @@ jobs:
   deploy-tdx-dapp:
     if: startsWith(github.event.inputs.environment, 'arbitrum-')
     needs: [extract-tag, docker-publish]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout code
@@ -157,7 +157,7 @@ jobs:
   deploy-scone-dapp:
     if: startsWith(github.event.inputs.environment, 'bellecour-')
     needs: [extract-tag, sconify]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout code
