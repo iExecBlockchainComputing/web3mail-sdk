@@ -140,6 +140,7 @@ jobs:
           PRICE: ${{ vars.SELL_ORDER_PRICE }}
           VOLUME: ${{ vars.SELL_ORDER_VOLUME }}
           RPC_URL: ${{ secrets.RPC_URL }}
+          TEE_FRAMEWORK: ${{ vars.TEE_FRAMEWORK }}
         run: |
           cd deployment-dapp
           npm run publish-sell-order
@@ -210,7 +211,7 @@ jobs:
           PRICE: ${{ vars.SELL_ORDER_PRICE }}
           VOLUME: ${{ vars.SELL_ORDER_VOLUME }}
           RPC_URL: ${{ secrets.RPC_URL }}
-          SCONIFY_VERSION: ${{ vars.SCONIFY_VERSION }}
+          TEE_FRAMEWORK: ${{ vars.TEE_FRAMEWORK }}
         run: |
           cd deployment-dapp
           npm run publish-sell-order
