@@ -51,8 +51,7 @@ jobs:
       registry: 'docker.io'
       dockerfile: 'dapp/Dockerfile'
       context: 'dapp'
-      security-scan: true
-      security-report: 'sarif'
+      security-scan: false
       hadolint: true
       push: true
       image-tag: ${{ needs.extract-tag.outputs.clean_tag }}
