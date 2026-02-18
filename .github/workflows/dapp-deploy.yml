@@ -44,7 +44,7 @@ jobs:
           fi
 
   docker-publish:
-    uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/docker-build.yml@docker-build-v2.3.1
+    uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/docker-build.yml@docker-build-v3.1.1
     needs: [extract-tag]
     with:
       image-name: 'iexechub/web3mail-dapp'
@@ -115,6 +115,7 @@ jobs:
         env:
           WALLET_PRIVATE_KEY: ${{ secrets.WEB3MAIL_APP_OWNER_PRIVATEKEY }}
           DOCKER_IMAGE_TAG: ${{ needs.extract-tag.outputs.clean_tag }}
+          CHECKSUM: ${{ needs.docker-publish.outputs.checksum }}
           RPC_URL: ${{ secrets.RPC_URL }}
         run: |
           cd deployment-dapp
