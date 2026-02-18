@@ -1,22 +1,22 @@
-import { IExec } from 'iexec';
-import { APP_TAG } from '../config/config.js';
+import { IExec, TeeFramework } from 'iexec';
 
 export const publishSellOrder = async (
   iexec: IExec,
   appAddress: string,
   price?: number,
-  volume?: number
+  volume?: number,
+  teeFramework: TeeFramework = 'tdx'
 ): Promise<string> => {
-  const sconeTeeTag = APP_TAG;
+  const teeTag = ['tee', teeFramework];
   console.log(
-    `Publishing apporder for app ${appAddress} with price ${price} xRLC and volume ${volume}`
+    `Publishing apporder for app ${appAddress} with price ${price} xRLC and volume ${volume} on ${teeTag}`
   );
 
   const apporderTemplate = await iexec.order.createApporder({
     app: appAddress,
     appprice: price.toFixed(9) + ' RLC',
     volume: volume,
-    tag: sconeTeeTag,
+    tag: teeTag,
   });
   const apporder = await iexec.order.signApporder(apporderTemplate);
   const orderHash = await iexec.order.publishApporder(apporder);

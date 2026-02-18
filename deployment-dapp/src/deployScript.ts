@@ -25,6 +25,7 @@ const main = async () => {
     iexec,
     dockerTag: DOCKER_IMAGE_TAG,
     checksum: CHECKSUM,
+    // TODO: to be deleted after migration to TDX
     fingerprint: FINGERPRINT,
     sconifyVersion: SCONIFY_VERSION,
   });
