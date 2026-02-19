@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.8.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.7.4...web3mail-v1.8.0) (2026-02-19)
+
+
+### Added
+
+* feat(deployment): add TDX app deployment pipeline for Arbitrum ([#246](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/246)) ([7794a30](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/7794a3010bebc8e3f0b160be6b5569dc079274ab))
+
 ## [1.7.4](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.7.3...web3mail-v1.7.4) (2026-02-17)
 
 
