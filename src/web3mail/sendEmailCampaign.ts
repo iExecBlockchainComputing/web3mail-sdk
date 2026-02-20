@@ -5,6 +5,7 @@ import {
   addressOrEnsSchema,
   campaignRequestSchema,
   throwIfMissing,
+  booleanSchema,
 } from '../utils/validators.js';
 import {
   CampaignRequest,
@@ -19,6 +20,7 @@ export const sendEmailCampaign = async ({
   dataProtector = throwIfMissing(),
   workerpoolAddressOrEns = throwIfMissing(),
   campaignRequest,
+  allowDeposit = false,
 }: DataProtectorConsumer &
   SendEmailCampaignParams): Promise<SendEmailCampaignResponse> => {
   const vCampaignRequest = campaignRequestSchema()
@@ -30,6 +32,10 @@ export const sendEmailCampaign = async ({
     .required()
     .label('workerpoolAddressOrEns')
     .validateSync(workerpoolAddressOrEns);
+
+  const vAllowDeposit = booleanSchema()
+    .label('allowDeposit')
+    .validateSync(allowDeposit);
 
   if (
     vCampaignRequest.workerpool !== NULL_ADDRESS &&
@@ -43,10 +49,14 @@ export const sendEmailCampaign = async ({
 
   try {
     // Process the prepared bulk request
+    // TODO: Remove @ts-ignore once @iexec/dataprotector is updated to a version that includes allowDeposit in ProcessBulkRequestParams types
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - allowDeposit is supported at runtime but not yet in TypeScript types
     const processBulkRequestResponse = await dataProtector.processBulkRequest({
       bulkRequest: vCampaignRequest,
       workerpool: vWorkerpoolAddressOrEns,
       waitForResult: false,
+      allowDeposit: vAllowDeposit,
     });
 
     return processBulkRequestResponse;

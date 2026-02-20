@@ -23,11 +23,6 @@ import {
   throwIfMissing,
 } from '../utils/validators.js';
 import {
-  checkUserVoucher,
-  filterWorkerpoolOrders,
-} from './sendEmail.models.js';
-import { SendEmailParams, SendEmailResponse } from './types.js';
-import {
   DappAddressConsumer,
   DappWhitelistAddressConsumer,
   IExecConsumer,
@@ -35,6 +30,11 @@ import {
   IpfsNodeConfigConsumer,
   SubgraphConsumer,
 } from './internalTypes.js';
+import {
+  checkUserVoucher,
+  filterWorkerpoolOrders,
+} from './sendEmail.models.js';
+import { SendEmailParams, SendEmailResponse } from './types.js';
 
 export type SendEmail = typeof sendEmail;
 
@@ -56,6 +56,7 @@ export const sendEmail = async ({
   senderName,
   protectedData,
   useVoucher = false,
+  allowDeposit = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -119,6 +120,10 @@ export const sendEmail = async ({
   const vUseVoucher = booleanSchema()
     .label('useVoucher')
     .validateSync(useVoucher);
+
+  const vAllowDeposit = booleanSchema()
+    .label('allowDeposit')
+    .validateSync(allowDeposit);
 
   // Check protected data schema through subgraph
   const isValidProtectedData = await checkProtectedDataValidity(
@@ -312,6 +317,9 @@ export const sendEmail = async ({
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
 
     // Match orders and compute task ID
+    // TODO: Remove @ts-ignore once iexec SDK is updated to a version that includes allowDeposit in matchOrders types
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - allowDeposit is supported at runtime but not yet in TypeScript types
     const { dealid: dealId } = await iexec.order.matchOrders(
       {
         apporder: apporder,
@@ -319,7 +327,10 @@ export const sendEmail = async ({
         workerpoolorder: workerpoolorder,
         requestorder: requestorder,
       },
-      { useVoucher: vUseVoucher }
+      // TODO: Remove @ts-ignore once iexec SDK is updated to a version that includes allowDeposit in matchOrders types
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - allowDeposit is supported at runtime but not yet in TypeScript types
+      { useVoucher: vUseVoucher, allowDeposit: vAllowDeposit }
     );
 
     const taskId = await iexec.deal.computeTaskId(dealId, 0);
