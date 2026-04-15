@@ -44,7 +44,7 @@ jobs:
           fi
 
   docker-publish:
-    uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/docker-build.yml@docker-build-v3.1.1
+    uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/docker-build.yml@docker-build-v3.3.0
     needs: [extract-tag]
     with:
       image-name: 'iexechub/web3mail-dapp'
@@ -58,6 +58,9 @@ jobs:
     secrets:
       username: ${{ secrets.DOCKERHUB_USERNAME }}
       password: ${{ secrets.DOCKERHUB_PAT }}
+      dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
+      dockerhub-password: ${{ secrets.DOCKERHUB_PAT }}
+
 
   sconify:
     if: startsWith(github.event.inputs.environment, 'bellecour-')
