@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v1.0.0...dapp-v1.1.0) (2026-04-16)
+
+
+### Added
+
+* **dapp:** inject WEB3MAIL_IPFS_GATEWAY from GitHub Environment into image ([#255](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/255)) ([9bde470](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/9bde470151094baa433e7b204e927696919033c7))
+
 ## [1.0.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v0.10.1...dapp-v1.0.0) (2025-11-17)
 
 
