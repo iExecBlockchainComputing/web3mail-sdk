@@ -43,14 +43,26 @@ jobs:
             echo "clean_tag=dev" | tee -a $GITHUB_OUTPUT
           fi
 
+  read-ipfs-gateway:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    outputs:
+      web3mail_ipfs_gateway: ${{ vars.WEB3MAIL_IPFS_GATEWAY }}
+    steps:
+      - name: WEB3MAIL_IPFS_GATEWAY
+        run: echo "WEB3MAIL_IPFS_GATEWAY=$WEB3MAIL_IPFS_GATEWAY"
+        env:
+          WEB3MAIL_IPFS_GATEWAY: ${{ vars.WEB3MAIL_IPFS_GATEWAY }}
+
   docker-publish:
     uses: iExecBlockchainComputing/github-actions-workflows/.github/workflows/docker-build.yml@docker-build-v3.3.0
-    needs: [extract-tag]
+    needs: [extract-tag, read-ipfs-gateway]
     with:
       image-name: 'iexechub/web3mail-dapp'
       registry: 'docker.io'
       dockerfile: 'dapp/Dockerfile'
       context: 'dapp'
+      build-args: WEB3MAIL_IPFS_GATEWAY=${{ needs.read-ipfs-gateway.outputs.web3mail_ipfs_gateway }}
       security-scan: false
       hadolint: true
       push: true
@@ -60,7 +72,6 @@ jobs:
       password: ${{ secrets.DOCKERHUB_PAT }}
       dockerhub-username: ${{ secrets.DOCKERHUB_USERNAME }}
       dockerhub-password: ${{ secrets.DOCKERHUB_PAT }}
-
 
   sconify:
     if: startsWith(github.event.inputs.environment, 'bellecour-')
