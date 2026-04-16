@@ -24,9 +24,14 @@ describe('decryptContent', () => {
     expect(decryptedEmailContent).toEqual(emailContent);
   });
 });
-const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
 
 describe('downloadEncryptedContent', () => {
+  const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
+
+  beforeEach(() => {
+    process.env.WEB3MAIL_IPFS_GATEWAY = DEFAULT_IPFS_GATEWAY;
+  });
+
   it('should return the encrypted content', async () => {
     const content = `{"JSONPath":"$['rates']['GBP']","body":"","dataType":"number","dataset":"0x0000000000000000000000000000000000000000","headers":{},"method":"GET","url":"https://api.exchangerate.host/latest?base=USD&symbols=GBP"}`;
     const textEncoder = new TextEncoder();

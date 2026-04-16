@@ -2,17 +2,23 @@ const { Buffer } = require('buffer');
 const forge = require('node-forge');
 const fetch = require('node-fetch');
 
-const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
+const resolveIpfsGatewayUrl = () => {
+  const url = process.env.WEB3MAIL_IPFS_GATEWAY;
+  if (url == null || String(url).trim() === '') {
+    throw new Error('WEB3MAIL_IPFS_GATEWAY environment variable is not set.');
+  }
+  return String(url).trim();
+};
 
 const downloadEncryptedContent = async (
   multiaddr,
-  { ipfsGateway = DEFAULT_IPFS_GATEWAY } = {}
+  { ipfsGateway = resolveIpfsGatewayUrl() } = {}
 ) => {
   const publicUrl = `${ipfsGateway}${multiaddr}`;
   const modifiedMultiaddr = publicUrl.replace('/p2p/', '/ipfs/');
   const res = await fetch(modifiedMultiaddr);
   if (!res.ok) {
-    throw Error(`Failed to load content from ${publicUrl}`);
+    throw new Error(`Failed to load content from ${publicUrl}`);
   }
   const arrayBuffer = await res.arrayBuffer();
   return new Uint8Array(arrayBuffer);
