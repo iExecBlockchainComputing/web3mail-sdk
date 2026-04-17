@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v1.0.0...dapp-v1.0.1) (2026-04-17)
+
+
+### Changed
+
+* **dapp:** make IPFS gateway URL configurable via WEB3MAIL_IPFS_GATEWAY ([28393a4](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/28393a49b183c168acf90ce9d033f53e1b2174ae))
+
 ## [1.0.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v0.10.1...dapp-v1.0.0) (2025-11-17)
 
 
