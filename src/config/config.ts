@@ -32,7 +32,7 @@ const CHAIN_CONFIG: Record<number, ChainConfig> = {
   421614: {
     name: 'arbitrum-sepolia-testnet',
     dappAddress: undefined, // ENS not supported on this network, address will be resolved from Compass
-    prodWorkerpoolAddress: '0xB967057a21dc6A66A29721d96b8Aa7454B7c383F',
+    prodWorkerpoolAddress: '0x2956f0cb779904795a5f30d3b3ea88b714c3123f', // TDX workerpool
     dataProtectorSubgraph:
       'https://thegraph.arbitrum-sepolia-testnet.iex.ec/api/subgraphs/id/5YjRPLtjS6GH6bB4yY55Qg4HzwtRGQ8TaHtGf9UBWWd',
     ipfsGateway: 'https://ipfs-gateway.arbitrum-sepolia-testnet.iex.ec',
@@ -42,7 +42,7 @@ const CHAIN_CONFIG: Record<number, ChainConfig> = {
   42161: {
     name: 'arbitrum-mainnet',
     dappAddress: undefined, // ENS not supported on this network, address will be resolved from Compass
-    prodWorkerpoolAddress: '0x2C06263943180Cc024dAFfeEe15612DB6e5fD248',
+    prodWorkerpoolAddress: '0x8ef2ec3ef9535d4b4349bfec7d8b31a580e60244', // TDX workerpool
     dataProtectorSubgraph:
       'https://thegraph.arbitrum.iex.ec/api/subgraphs/id/Ep5zs5zVr4tDiVuQJepUu51e5eWYJpka624X4DMBxe3u',
     ipfsGateway: 'https://ipfs-gateway.arbitrum-mainnet.iex.ec',

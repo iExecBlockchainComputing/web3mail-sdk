@@ -9,7 +9,7 @@ export async function resolveDappAddressFromCompass(
     return undefined;
   }
 
-  const address = await fetch(`${compassUrl}/${chainId}/iapps/web3mail`)
+  const address = await fetch(`${compassUrl}/${chainId}/iapps/web3mail-tdx`)
     // Handle network errors
     .catch((error) => {
       throw new CompassCallError(
