@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.9.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.8.0...web3mail-v1.9.0) (2026-04-20)
+
+
+### Added
+
+* use tdx as default ([#257](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/257)) ([24a3f90](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/24a3f90b378c9c542408a39647e138a2f042797d))
+
 ## [1.8.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.7.4...web3mail-v1.8.0) (2026-04-15)
 
 
