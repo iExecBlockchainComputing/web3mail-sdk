@@ -4,6 +4,12 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet } from 'ethers';
+import { IExec } from 'iexec';
+import { NULL_ADDRESS } from 'iexec/utils';
+import {
+  DEFAULT_CHAIN_ID,
+  getChainDefaultConfig,
+} from '../../src/config/config.js';
 import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
@@ -22,12 +28,6 @@ import {
   getTestWeb3SignerProvider,
   waitSubgraphIndexing,
 } from '../test-utils.js';
-import { IExec } from 'iexec';
-import { NULL_ADDRESS } from 'iexec/utils';
-import {
-  DEFAULT_CHAIN_ID,
-  getChainDefaultConfig,
-} from '../../src/config/config.js';
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: HDNodeWallet;
@@ -41,14 +41,14 @@ describe('web3mail.sendEmail()', () => {
   let learnProdWorkerpoolAddress: string;
   const iexecOptions = getTestIExecOption();
   const prodWorkerpoolPublicPrice = 1000;
-
+  const workerpoolprice = 1_000;
   beforeAll(async () => {
     // (default) prod workerpool (not free) always available
     await createAndPublishWorkerpoolOrder(
       TEST_CHAIN.prodWorkerpool,
       TEST_CHAIN.prodWorkerpoolOwnerWallet,
       NULL_ADDRESS,
-      1_000,
+      workerpoolprice,
       prodWorkerpoolPublicPrice
     );
     // learn prod pool (free) assumed always available
@@ -656,5 +656,77 @@ describe('web3mail.sendEmail()', () => {
         );
       });
     });
+  });
+
+  describe('allowDeposit', () => {
+    let protectData: ProtectedDataWithSecretProps;
+    consumerWallet = getRandomWallet();
+    const dataPricePerAccess = 1000;
+    let web3mailConsumerInstance: IExecWeb3mail;
+    beforeAll(async () => {
+      protectData = await dataProtector.protectData({
+        data: { email: 'example@test.com' },
+        name: 'test do not use',
+      });
+      await dataProtector.grantAccess({
+        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
+        protectedData: protectData.address,
+        authorizedUser: consumerWallet.address, // consumer wallet
+        numberOfAccess: 1000,
+        pricePerAccess: dataPricePerAccess,
+      });
+      await waitSubgraphIndexing();
+      web3mailConsumerInstance = new IExecWeb3mail(
+        ...getTestConfig(consumerWallet.privateKey)
+      );
+    }, 2 * MAX_EXPECTED_BLOCKTIME);
+    it(
+      'should throw error if insufficient total balance to cover task cost and allowDeposit is false',
+      async () => {
+        let error;
+        try {
+          await web3mailConsumerInstance.sendEmail({
+            emailSubject: 'e2e mail object for test',
+            emailContent: 'e2e mail content for test',
+            protectedData: protectData.address,
+            dataMaxPrice: dataPricePerAccess,
+            workerpoolMaxPrice: workerpoolprice,
+            allowDeposit: false,
+          });
+        } catch (err) {
+          error = err;
+        }
+        expect(error).toBeInstanceOf(WorkflowError);
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toBe('Failed to sendEmail');
+        const causeMsg =
+          error.errorCause?.message ||
+          error.cause?.message ||
+          error.cause ||
+          error.errorCause;
+        expect(String(causeMsg)).toContain(
+          "is greater than requester account stake (0). Orders can't be matched. If you are the requester, you should deposit to top up your account"
+        );
+      },
+      3 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+    );
+
+    it.skip(
+      'should send email after depositing sufficient funds to cover task cost when allowDeposit is true',
+      async () => {
+        const result = await web3mailConsumerInstance.sendEmail({
+          emailSubject: 'e2e mail object for test',
+          emailContent: 'e2e mail content for test',
+          protectedData: protectData.address,
+          dataMaxPrice: dataPricePerAccess,
+          workerpoolMaxPrice: workerpoolprice,
+          allowDeposit: true,
+        });
+        expect(result).toBeDefined();
+        expect(result).toHaveProperty('taskId');
+        expect(result).toHaveProperty('dealId');
+      },
+      3 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
+    );
   });
 });
