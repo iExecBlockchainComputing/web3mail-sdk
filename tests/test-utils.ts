@@ -280,7 +280,6 @@ export const setEthForGas = async (
   }
 };
 
-
 export const ensureSufficientStake = async (
   iexec: IExec,
   requiredStake: ethers.BigNumberish
@@ -376,4 +375,3 @@ export const createAndPublishWorkerpoolOrder = async (
     .signWorkerpoolorder(workerpoolorder)
     .then((o) => iexec.order.publishWorkerpoolorder(o));
 };
-

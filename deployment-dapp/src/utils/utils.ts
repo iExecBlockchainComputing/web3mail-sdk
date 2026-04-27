@@ -3,7 +3,7 @@ import { IExec, utils } from 'iexec';
 
 export const getIExec = (
   privateKey: string,
-  host: string = 'bellecour'
+  host: string = 'arbitrum-sepolia-testnet'
 ): IExec => {
   const ethProvider = utils.getSignerFromPrivateKey(host, privateKey, {
     providers: {},

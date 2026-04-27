@@ -69,12 +69,11 @@ export const fetchUserContacts = async ({
 
     const orders = dappOrders.concat(whitelistOrders);
     const myContacts: Omit<Contact, 'name'>[] = [];
-    const web3DappResolvedAddress = vDappAddressOrENS;
 
     orders.forEach((order) => {
       if (
         order.order.apprestrict.toLowerCase() ===
-          web3DappResolvedAddress.toLowerCase() ||
+          vDappAddressOrENS.toLowerCase() ||
         order.order.apprestrict.toLowerCase() ===
           vDappWhitelistAddress.toLowerCase()
       ) {

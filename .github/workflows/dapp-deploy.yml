@@ -9,10 +9,8 @@ on:
         type: choice
         options:
           # dev environments
-          - bellecour-dev
           - arbitrum-sepolia-dev
           # prod environments (requires a tag starting with dapp-v)
-          - bellecour-prod
           - arbitrum-sepolia-prod
           - arbitrum-prod
 

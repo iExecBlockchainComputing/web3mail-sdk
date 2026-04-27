@@ -100,7 +100,6 @@ async function processProtectedData({
     result.success = false;
     result.error = e.message;
   }
-  console.log(`Protected data ${index} processed:`, result);
   return result;
 }
 

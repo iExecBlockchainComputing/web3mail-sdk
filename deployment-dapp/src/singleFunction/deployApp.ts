@@ -12,18 +12,12 @@ export const deployApp = async ({
   dockerRepository = DOCKER_IMAGE_REPOSITORY,
   dockerTag,
   checksum,
-  // TODO: to be deleted after migration to TDX
-  fingerprint,
-  sconifyVersion,
 }: {
   iexec: IExec;
   dockerNamespace?: string;
   dockerRepository?: string;
   dockerTag: string;
   checksum?: string;
-  // TODO: to be deleted after migration to TDX
-  fingerprint?: string;
-  sconifyVersion?: string;
 }): Promise<string> => {
   const name = APP_NAME;
   const type = APP_TYPE;

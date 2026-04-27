@@ -179,6 +179,9 @@ export class IExecWeb3mail {
         {
           ipfsGatewayURL: ipfsGateway,
           ...this.options?.iexecOptions,
+          ...(this.options?.compassUrl
+            ? { compassURL: this.options.compassUrl }
+            : {}),
           allowExperimentalNetworks: this.options.allowExperimentalNetworks,
         }
       );
@@ -189,13 +192,24 @@ export class IExecWeb3mail {
     const subgraphUrl =
       this.options?.dataProtectorSubgraph ||
       chainDefaultConfig?.dataProtectorSubgraph;
-    const dappAddressOrENS =
-      this.options?.dappAddressOrENS ||
-      chainDefaultConfig?.dappAddress ||
-      (await resolveDappAddressFromCompass(
-        this.options?.compassUrl ?? chainDefaultConfig?.compassUrl ?? '',
+    const compassUrl = await iexec.config.resolveCompassURL();
+    const optionsDappAddress = this.options?.dappAddressOrENS;
+    const configDappAddress = chainDefaultConfig?.dappAddress;
+    let dappAddressOrENS: string;
+    if (optionsDappAddress) {
+      dappAddressOrENS = optionsDappAddress;
+    } else if (configDappAddress) {
+      dappAddressOrENS = configDappAddress;
+    } else if (compassUrl) {
+      dappAddressOrENS = await resolveDappAddressFromCompass(
+        compassUrl,
         chainId
-      ));
+      );
+    } else {
+      throw new Error(
+        `No Compass URL available for chain ${chainId}. Provide a compassUrl in options or a dappAddressOrENS.`
+      );
+    }
     const dappWhitelistAddress =
       this.options?.dappWhitelistAddress ||
       chainDefaultConfig?.whitelistSmartContract;

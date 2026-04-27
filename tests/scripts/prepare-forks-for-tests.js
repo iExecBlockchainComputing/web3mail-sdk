@@ -125,8 +125,8 @@ const getIExecHubOwnership =
   };
 
 /**
- * prepare-bellecour-fork-for-tests.js: IExec v8 resource = ERC-721 in `registry()`.
- * Transfer the token to the test wallet (same as Bellecour learn/prod + web3mail app).
+ * IExec v8 resource = ERC-721 in `registry()`.
+ * Transfer the token to the test wallet (same as Arbitrum Sepolia learn/prod + web3mail app).
  * Arbitrum Sepolia: fixed `resourceAddress`, gasLimit for the fork.
  */
 const getIExecResourceOwnership =
