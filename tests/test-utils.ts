@@ -15,7 +15,6 @@ import {
 } from '../src/web3mail/types.js';
 import { IExec, utils } from 'iexec';
 import { randomInt } from 'crypto';
-import { getSignerFromPrivateKey } from 'iexec/utils';
 
 export const TEST_COMPASS_URL = 'http://127.0.0.1:8069';
 
@@ -37,12 +36,6 @@ export const TEST_CHAIN = {
   resultProxyURL: 'http://127.0.0.1:13250',
   iexecGatewayURL: 'http://127.0.0.1:3050',
   compassUrl: TEST_COMPASS_URL,
-  voucherHubAddress: '0x3137B6DF4f36D338b82260eDBB2E7bab034AFEda',
-  voucherManagerWallet: new Wallet(
-    '0x2c906d4022cace2b3ee6c8b596564c26c4dcadddf1e949b769bcb0ad75c40c33'
-  ),
-  voucherSubgraphURL:
-    'http://127.0.0.1:8000/subgraphs/name/bellecour/iexec-voucher',
   prodWorkerpool: '0x2956f0cb779904795a5f30d3b3ea88b714c3123f',
   prodWorkerpoolOwnerWallet: TEST_POOL_SIGNER,
   // Used exclusively for tests that require NO free orders to be present.
@@ -159,11 +152,7 @@ export const MAX_EXPECTED_WEB2_SERVICES_TIME = 80_000;
 
 export const MARKET_API_CALL_TIMEOUT = 2_000;
 
-export const timeouts = {
-  // utils
-  createVoucherType: MAX_EXPECTED_BLOCKTIME * 2,
-  createVoucher: MAX_EXPECTED_BLOCKTIME * 4 + MARKET_API_CALL_TIMEOUT * 2,
-};
+export const timeouts = {};
 
 export const getTestWeb3SignerProvider = (
   privateKey: string = Wallet.createRandom().privateKey
@@ -174,8 +163,6 @@ export const getTestIExecOption = () => ({
   smsURL: TEST_CHAIN.smsURL,
   resultProxyURL: TEST_CHAIN.resultProxyURL,
   iexecGatewayURL: TEST_CHAIN.iexecGatewayURL,
-  voucherHubAddress: TEST_CHAIN.voucherHubAddress,
-  voucherSubgraphURL: TEST_CHAIN.voucherSubgraphURL,
   ipfsGateway: TEST_CHAIN.ipfsGateway,
   ipfsNode: TEST_CHAIN.ipfsNode,
 });
@@ -293,72 +280,6 @@ export const setEthForGas = async (
   }
 };
 
-export const createVoucherType = async ({
-  description = 'test',
-  duration = 1000,
-} = {}) => {
-  await setEthForGas(TEST_CHAIN.voucherManagerWallet.address);
-  const VOUCHER_HUB_ABI = [
-    {
-      inputs: [
-        {
-          internalType: 'string',
-          name: 'description',
-          type: 'string',
-        },
-        {
-          internalType: 'uint256',
-          name: 'duration',
-          type: 'uint256',
-        },
-      ],
-      name: 'createVoucherType',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
-    },
-    {
-      anonymous: false,
-      inputs: [
-        {
-          indexed: true,
-          internalType: 'uint256',
-          name: 'id',
-          type: 'uint256',
-        },
-        {
-          indexed: false,
-          internalType: 'string',
-          name: 'description',
-          type: 'string',
-        },
-        {
-          indexed: false,
-          internalType: 'uint256',
-          name: 'duration',
-          type: 'uint256',
-        },
-      ],
-      name: 'VoucherTypeCreated',
-      type: 'event',
-    },
-  ];
-  const voucherHubContract = new Contract(
-    TEST_CHAIN.voucherHubAddress,
-    VOUCHER_HUB_ABI,
-    TEST_CHAIN.provider
-  );
-  const signer = TEST_CHAIN.voucherManagerWallet.connect(TEST_CHAIN.provider);
-  const createVoucherTypeTxHash = await voucherHubContract
-    .connect(signer)
-    .createVoucherType(description, duration);
-  const txReceipt = await createVoucherTypeTxHash.wait();
-  const { id } = getEventFromLogs('VoucherTypeCreated', txReceipt.logs, {
-    strict: true,
-  }).args;
-
-  return id as bigint;
-};
 
 export const ensureSufficientStake = async (
   iexec: IExec,
@@ -456,195 +377,3 @@ export const createAndPublishWorkerpoolOrder = async (
     .then((o) => iexec.order.publishWorkerpoolorder(o));
 };
 
-export const WORKERPOOL_ORDER_PER_VOUCHER = 1000;
-
-export const createVoucher = async ({
-  owner,
-  voucherType,
-  value,
-  skipOrders = false,
-}: {
-  owner: string;
-  voucherType: ethers.BigNumberish;
-  value: ethers.BigNumberish;
-  skipOrders?: boolean;
-}) => {
-  const VOUCHER_HUB_ABI = [
-    {
-      inputs: [
-        {
-          internalType: 'address',
-          name: 'owner',
-          type: 'address',
-        },
-        {
-          internalType: 'uint256',
-          name: 'voucherType',
-          type: 'uint256',
-        },
-        {
-          internalType: 'uint256',
-          name: 'value',
-          type: 'uint256',
-        },
-      ],
-      name: 'createVoucher',
-      outputs: [
-        {
-          internalType: 'address',
-          name: 'voucherAddress',
-          type: 'address',
-        },
-      ],
-      stateMutability: 'nonpayable',
-      type: 'function',
-    },
-    {
-      inputs: [
-        {
-          internalType: 'address',
-          name: 'account',
-          type: 'address',
-        },
-      ],
-      name: 'getVoucher',
-      outputs: [
-        {
-          internalType: 'address',
-          name: '',
-          type: 'address',
-        },
-      ],
-      stateMutability: 'view',
-      type: 'function',
-    },
-  ];
-
-  const iexec = new IExec(
-    {
-      ethProvider: getSignerFromPrivateKey(
-        TEST_CHAIN.rpcURL,
-        TEST_CHAIN.voucherManagerWallet.privateKey
-      ),
-    },
-    { hubAddress: TEST_CHAIN.hubAddress }
-  );
-
-  const voucherManagerAddress = await iexec.wallet.getAddress();
-  await setEthForGas(voucherManagerAddress);
-
-  await setNRlcBalance(voucherManagerAddress, value);
-
-  const contractClient = await iexec.config.resolveContractsClient();
-  const iexecContract = contractClient.getIExecContract();
-  const nRlc = BigInt(value);
-
-  try {
-    if (TEST_CHAIN.isNative) {
-      await iexecContract.depositFor(TEST_CHAIN.voucherHubAddress, {
-        value: nRlc * 10n ** 9n,
-        gasPrice: 0,
-      });
-    } else {
-      const tx = await iexecContract.depositFor(
-        nRlc,
-        TEST_CHAIN.voucherHubAddress
-      );
-      await tx.wait();
-    }
-  } catch (error) {
-    console.error('Error depositing RLC:', error);
-    throw error;
-  }
-
-  const voucherHubContract = new Contract(
-    TEST_CHAIN.voucherHubAddress,
-    VOUCHER_HUB_ABI,
-    TEST_CHAIN.provider
-  );
-
-  const signer = TEST_CHAIN.voucherManagerWallet.connect(TEST_CHAIN.provider);
-
-  try {
-    const createVoucherTxHash = await voucherHubContract
-      .connect(signer)
-      .createVoucher(owner, voucherType, value);
-
-    await createVoucherTxHash.wait();
-  } catch (error) {
-    console.error('Error creating voucher:', error);
-    throw error;
-  }
-
-  if (!skipOrders) {
-    try {
-      const workerpoolprice = Math.floor(value / WORKERPOOL_ORDER_PER_VOUCHER);
-      await createAndPublishWorkerpoolOrder(
-        TEST_CHAIN.prodWorkerpool,
-        TEST_CHAIN.prodWorkerpoolOwnerWallet,
-        owner,
-        workerpoolprice,
-        WORKERPOOL_ORDER_PER_VOUCHER
-      );
-    } catch (error) {
-      console.error('Error publishing workerpoolorder:', error);
-      throw error;
-    }
-  }
-
-  try {
-    return await voucherHubContract.getVoucher(owner);
-  } catch (error) {
-    console.error('Error getting voucher:', error);
-    throw error;
-  }
-};
-
-export const addVoucherEligibleAsset = async (assetAddress, voucherTypeId) => {
-  const voucherHubContract = new Contract(TEST_CHAIN.voucherHubAddress, [
-    {
-      inputs: [
-        {
-          internalType: 'uint256',
-          name: 'voucherTypeId',
-          type: 'uint256',
-        },
-        {
-          internalType: 'address',
-          name: 'asset',
-          type: 'address',
-        },
-      ],
-      name: 'addEligibleAsset',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
-    },
-  ]);
-
-  const signer = TEST_CHAIN.voucherManagerWallet.connect(TEST_CHAIN.provider);
-  await setEthForGas(signer.address);
-
-  const retryableAddEligibleAsset = async (tryCount = 1) => {
-    try {
-      const tx = await voucherHubContract
-        .connect(signer)
-        .addEligibleAsset(voucherTypeId, assetAddress);
-      await tx.wait();
-    } catch (error) {
-      console.warn(
-        `Error adding eligible asset to voucher (try count ${tryCount}):`,
-        error
-      );
-      if (tryCount < 3) {
-        await sleep(3000 * tryCount);
-        await retryableAddEligibleAsset(tryCount + 1);
-      } else {
-        throw new Error(
-          `Failed to add eligible asset to voucher after ${tryCount} attempts`
-        );
-      }
-    }
-  };
-  await retryableAddEligibleAsset();
-};

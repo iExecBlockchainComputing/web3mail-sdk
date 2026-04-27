@@ -201,7 +201,6 @@ describe('sendEmail', () => {
           app: mockDappAddress,
           dataset: protectedData,
           requester: userAddress,
-          isRequesterStrict: false,
           minTag: ['tee', 'tdx'],
           category: 0,
         }
@@ -213,7 +212,6 @@ describe('sendEmail', () => {
           app: defaultConfig!.whitelistSmartContract.toLowerCase(),
           dataset: protectedData,
           requester: userAddress,
-          isRequesterStrict: false,
           minTag: ['tee', 'tdx'],
           category: 0,
         }

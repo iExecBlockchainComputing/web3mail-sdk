@@ -63,7 +63,6 @@ export type SendEmailParams = {
   dataMaxPrice?: number;
   appMaxPrice?: number;
   workerpoolMaxPrice?: number;
-  useVoucher?: boolean;
 };
 
 export type FetchMyContactsParams = {

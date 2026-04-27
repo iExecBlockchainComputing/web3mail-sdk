@@ -13,7 +13,6 @@ import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
   addressOrEnsSchema,
   addressSchema,
-  booleanSchema,
   contentTypeSchema,
   emailContentSchema,
   emailSubjectSchema,
@@ -22,10 +21,7 @@ import {
   senderNameSchema,
   throwIfMissing,
 } from '../utils/validators.js';
-import {
-  checkUserVoucher,
-  filterWorkerpoolOrders,
-} from './sendEmail.models.js';
+import { filterWorkerpoolOrders } from './sendEmail.models.js';
 import { SendEmailParams, SendEmailResponse } from './types.js';
 import {
   DappAddressConsumer,
@@ -55,7 +51,6 @@ export const sendEmail = async ({
   workerpoolMaxPrice = MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   senderName,
   protectedData,
-  useVoucher = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -116,10 +111,6 @@ export const sendEmail = async ({
     .label('workerpoolMaxPrice')
     .validateSync(workerpoolMaxPrice);
 
-  const vUseVoucher = booleanSchema()
-    .label('useVoucher')
-    .validateSync(useVoucher);
-
   // Check protected data schema through subgraph
   const isValidProtectedData = await checkProtectedDataValidity(
     graphQLClient,
@@ -133,21 +124,6 @@ export const sendEmail = async ({
   }
 
   const requesterAddress = await iexec.wallet.getAddress();
-
-  let userVoucher;
-  if (vUseVoucher) {
-    try {
-      userVoucher = await iexec.voucher.showUserVoucher(requesterAddress);
-      checkUserVoucher({ userVoucher });
-    } catch (err) {
-      if (err?.message?.startsWith('No Voucher found for address')) {
-        throw new Error(
-          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder.iex.ec/'
-        );
-      }
-      throw err;
-    }
-  }
 
   try {
     // Fetch app order first to determine TEE framework
@@ -206,8 +182,7 @@ export const sendEmail = async ({
             workerpool: workerpoolAddressOrEns,
             app: vDappAddressOrENS,
             dataset: vDatasetAddress,
-            requester: requesterAddress, // public orders + user specific orders
-            isRequesterStrict: useVoucher, // If voucher, we only want user specific orders
+            requester: requesterAddress,
             minTag: workerpoolMinTag,
             category: 0,
           }),
@@ -216,8 +191,7 @@ export const sendEmail = async ({
             workerpool: workerpoolAddressOrEns,
             app: vDappWhitelistAddress,
             dataset: vDatasetAddress,
-            requester: requesterAddress, // public orders + user specific orders
-            isRequesterStrict: useVoucher, // If voucher, we only want user specific orders
+            requester: requesterAddress,
             minTag: workerpoolMinTag,
             category: 0,
           }),
@@ -229,8 +203,6 @@ export const sendEmail = async ({
                 ...workerpoolOrderbookForAppWhitelist.orders,
               ],
               workerpoolMaxPrice: vWorkerpoolMaxPrice,
-              useVoucher: vUseVoucher,
-              userVoucher,
             });
 
             if (!desiredPriceWorkerpoolOrder) {
@@ -312,15 +284,12 @@ export const sendEmail = async ({
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
 
     // Match orders and compute task ID
-    const { dealid: dealId } = await iexec.order.matchOrders(
-      {
-        apporder: apporder,
-        datasetorder: datasetorder,
-        workerpoolorder: workerpoolorder,
-        requestorder: requestorder,
-      },
-      { useVoucher: vUseVoucher }
-    );
+    const { dealid: dealId } = await iexec.order.matchOrders({
+      apporder: apporder,
+      datasetorder: datasetorder,
+      workerpoolorder: workerpoolorder,
+      requestorder: requestorder,
+    });
 
     const taskId = await iexec.deal.computeTaskId(dealId, 0);
 
