@@ -37,19 +37,16 @@ describe('web3mail.sendEmail()', () => {
   let invalidProtectedData: ProtectedDataWithSecretProps;
   let consumerIExecInstance: IExec;
   let prodWorkerpoolAddress: string;
-  let paidOnlyWorkerpoolAddress: string;
   let dappAddress: string;
   const iexecOptions = getTestIExecOption();
-  const prodWorkerpoolPublicPrice = 1000;
 
   beforeAll(async () => {
-    // paid workerpool order for the "not free" tests
     await createAndPublishWorkerpoolOrder(
       TEST_CHAIN.prodWorkerpool,
       TEST_CHAIN.prodWorkerpoolOwnerWallet,
       NULL_ADDRESS,
-      1_000,
-      1_000_000
+      0,
+      1_000
     );
 
     // apporder always available
@@ -62,18 +59,6 @@ describe('web3mail.sendEmail()', () => {
     await createAndPublishAppOrders(resourceProvider, dappAddress);
 
     prodWorkerpoolAddress = TEST_CHAIN.prodWorkerpool;
-    paidOnlyWorkerpoolAddress = TEST_CHAIN.paidOnlyWorkerpool;
-
-    // paid-only workerpool: never publish free orders here so negative tests
-    // that expect "no workerpool order" or "insufficient stake" stay reliable
-    // across repeated test:e2e runs (market orders persist in MongoDB).
-    await createAndPublishWorkerpoolOrder(
-      TEST_CHAIN.paidOnlyWorkerpool,
-      TEST_CHAIN.paidOnlyWorkerpoolOwnerWallet,
-      NULL_ADDRESS,
-      1_000,
-      1_000_000
-    );
 
     //create valid protected data
     dataProtector = new IExecDataProtectorCore(
@@ -95,7 +80,6 @@ describe('web3mail.sendEmail()', () => {
   beforeEach(async () => {
     // use a fresh wallet for calling sendEmail
     consumerWallet = getRandomWallet();
-    // matchOrders pays gas in ETH; free workerpool (0 nRLC stake) never hits ensureSufficientStake deposit path
     await setEthForGas(consumerWallet.address);
     const consumerEthProvider = getTestWeb3SignerProvider(
       consumerWallet.privateKey
@@ -114,23 +98,50 @@ describe('web3mail.sendEmail()', () => {
   });
 
   describe('when using the default (not free) prod workerpool', () => {
+    let paidWorkerpoolAddress: string;
+    const prodWorkerpoolPublicPrice = 1000;
+
+    beforeAll(async () => {
+      await setEthForGas(TEST_CHAIN.prodWorkerpoolOwnerWallet.address);
+      const workerpoolOwnerEthProvider = getTestWeb3SignerProvider(
+        TEST_CHAIN.prodWorkerpoolOwnerWallet.privateKey
+      );
+      const workerpoolOwnerIexec = new IExec(
+        { ethProvider: workerpoolOwnerEthProvider },
+        iexecOptions
+      );
+      const { address } =
+        await workerpoolOwnerIexec.workerpool.deployWorkerpool({
+          owner: TEST_CHAIN.prodWorkerpoolOwnerWallet.address,
+          description: 'paid test workerpool',
+        });
+      paidWorkerpoolAddress = address;
+      await createAndPublishWorkerpoolOrder(
+        paidWorkerpoolAddress,
+        TEST_CHAIN.prodWorkerpoolOwnerWallet,
+        NULL_ADDRESS,
+        prodWorkerpoolPublicPrice,
+        10
+      );
+    }, 3 * MAX_EXPECTED_BLOCKTIME);
+
     describe('when using the user does not set the workerpoolMaxPrice', () => {
       it(
         'should throw an error No Workerpool order found for the desired price',
         async () => {
-          let error: Error;
+          let error!: Error;
           await web3mail
             .sendEmail({
               emailSubject: 'e2e mail object for test',
               emailContent: 'e2e mail content for test',
               protectedData: validProtectedData.address,
-              workerpoolAddressOrEns: paidOnlyWorkerpoolAddress,
+              workerpoolAddressOrEns: paidWorkerpoolAddress,
             })
             .catch((e) => (error = e));
           expect(error).toBeDefined();
           expect(error.message).toBe('Failed to sendEmail');
           expect(error.cause).toStrictEqual(
-            Error(`No Workerpool order found for the desired price`)
+            new Error(`No Workerpool order found for the desired price`)
           );
         },
         2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -140,20 +151,20 @@ describe('web3mail.sendEmail()', () => {
       it(
         `should throw an error if the user can't pay with its account`,
         async () => {
-          let error: Error;
+          let error!: WorkflowError;
           await web3mail
             .sendEmail({
               emailSubject: 'e2e mail object for test',
               emailContent: 'e2e mail content for test',
               protectedData: validProtectedData.address,
-              workerpoolAddressOrEns: paidOnlyWorkerpoolAddress,
+              workerpoolAddressOrEns: paidWorkerpoolAddress,
               workerpoolMaxPrice: prodWorkerpoolPublicPrice,
             })
             .catch((e) => (error = e));
           expect(error).toBeInstanceOf(WorkflowError);
           expect(error.message).toBe('Failed to sendEmail');
           expect(error.cause).toStrictEqual(
-            Error(
+            new Error(
               `Cost per task (${prodWorkerpoolPublicPrice}) is greater than requester account stake (0). Orders can't be matched. If you are the requester, you should deposit to top up your account`
             )
           );
@@ -171,6 +182,7 @@ describe('web3mail.sendEmail()', () => {
             emailSubject: 'e2e mail object for test',
             emailContent: 'e2e mail content for test',
             protectedData: validProtectedData.address,
+            workerpoolAddressOrEns: paidWorkerpoolAddress,
             workerpoolMaxPrice: prodWorkerpoolPublicPrice,
           });
           expect(sendEmailResponse).toStrictEqual({
@@ -218,7 +230,6 @@ describe('web3mail.sendEmail()', () => {
           emailContent: 'e2e mail content for test',
           protectedData: protectedData.address,
           workerpoolAddressOrEns: prodWorkerpoolAddress,
-          workerpoolMaxPrice: prodWorkerpoolPublicPrice,
         })
       ).rejects.toThrow(
         new WorkflowError({
@@ -271,16 +282,6 @@ describe('web3mail.sendEmail()', () => {
   );
 
   describe('when using the free prod workerpool', () => {
-    beforeAll(async () => {
-      await createAndPublishWorkerpoolOrder(
-        TEST_CHAIN.prodWorkerpool,
-        TEST_CHAIN.prodWorkerpoolOwnerWallet,
-        NULL_ADDRESS,
-        0,
-        1_000
-      );
-    }, MAX_EXPECTED_BLOCKTIME);
-
     it(
       'should successfully send email when using a free prod workerpool',
       async () => {

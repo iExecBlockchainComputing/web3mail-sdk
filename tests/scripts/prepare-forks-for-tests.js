@@ -19,12 +19,8 @@ const DAPP_ADDRESS = '0x09d59e1B696D0cb69f46bf762412636E8652aB58';
 
 // Must match TEST_CHAIN.prodWorkerpool
 const PROD_WORKERPOOL_ADDRESS = '0x2956f0cb779904795a5f30d3b3ea88b714c3123f';
-// Must match TEST_CHAIN.paidOnlyWorkerpool — never gets free orders published
-const PAID_ONLY_WORKERPOOL_ADDRESS = '0xB967057a21dc6A66A29721d96b8Aa7454B7c383F';
-// Default Arbitrum Sepolia pool (e2e "learn" / free) — same TEST_CHAIN.learnProdWorkerpool
-// const LEARN_WORKERPOOL_ADDRESS =
-//   '0xB967057a21dc6A66A29721d96b8Aa7454B7c383F';
-// Must match TEST_CHAIN.prodWorkerpoolOwnerWallet
+
+// Must match TEST_CHAIN.prodWorkerpoolOwner
 const PROD_WORKERPOOL_OWNER_TEST = new Wallet(
   '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
 ).address;
@@ -219,10 +215,6 @@ const main = async () => {
   );
   await getIExecResourceOwnership(arbitrumSepoliaForkRpcUrl)(
     PROD_WORKERPOOL_ADDRESS,
-    PROD_WORKERPOOL_OWNER_TEST
-  );
-  await getIExecResourceOwnership(arbitrumSepoliaForkRpcUrl)(
-    PAID_ONLY_WORKERPOOL_ADDRESS,
     PROD_WORKERPOOL_OWNER_TEST
   );
 };

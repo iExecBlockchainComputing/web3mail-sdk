@@ -4,6 +4,7 @@ import { describe, expect, it } from '@jest/globals';
 import { Wallet } from 'ethers';
 import { getWeb3Provider, IExecWeb3mail } from '../../src/index.js';
 import {
+  getTestConfig,
   getTestWeb3SignerProvider,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
 } from '../test-utils.js';
@@ -123,9 +124,9 @@ describe('IExecWeb3mail()', () => {
     'When calling a read method should work as expected',
     async () => {
       // --- GIVEN
-      const web3mail = new IExecWeb3mail();
-      await web3mail.init();
       const wallet = Wallet.createRandom();
+      const web3mail = new IExecWeb3mail(...getTestConfig(wallet.privateKey));
+      await web3mail.init();
 
       // --- WHEN/THEN
       // fetchUserContacts should work without throwing

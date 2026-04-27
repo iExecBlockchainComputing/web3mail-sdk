@@ -5,7 +5,9 @@ export const getWeb3Provider = (
   privateKey: string,
   options: { allowExperimentalNetworks?: boolean; host?: number | string } = {}
 ): Web3SignerProvider => {
-  const chainHost = options?.host ? `${options.host}` : 'arbitrum-sepolia-testnet';
+  const chainHost = options?.host
+    ? `${options.host}`
+    : 'arbitrum-sepolia-testnet';
   return getSignerFromPrivateKey(chainHost, privateKey, {
     allowExperimentalNetworks: options?.allowExperimentalNetworks,
     providers: {},

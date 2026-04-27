@@ -12,7 +12,7 @@
       {
         "name": "unreachable-workerpool",
         "apiUrl": "https://unreachable-workerpool.iex.ec",
-        "address": "0xB967057a21dc6A66A29721d96b8Aa7454B7c383F"
+        "address": "0x2956f0cb779904795a5f30d3b3ea88b714c3123f"
       },
       {
         "name": "workerpool-http-500",

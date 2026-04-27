@@ -38,10 +38,6 @@ export const TEST_CHAIN = {
   compassUrl: TEST_COMPASS_URL,
   prodWorkerpool: '0x2956f0cb779904795a5f30d3b3ea88b714c3123f',
   prodWorkerpoolOwnerWallet: TEST_POOL_SIGNER,
-  // Used exclusively for tests that require NO free orders to be present.
-  // Never publish price=0 orders against this address.
-  paidOnlyWorkerpool: '0xB967057a21dc6A66A29721d96b8Aa7454B7c383F',
-  paidOnlyWorkerpoolOwnerWallet: TEST_POOL_SIGNER,
   appOwnerWallet: new Wallet(
     '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
   ),

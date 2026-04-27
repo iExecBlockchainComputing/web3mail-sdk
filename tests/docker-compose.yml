@@ -37,6 +37,7 @@ services:
 
   service-internal-error:
     image: nginx:alpine
+    platform: linux/amd64
     volumes:
       - $PWD/mock/server/http500.nginx.conf:/etc/nginx/conf.d/default.conf:ro
     expose:
@@ -94,6 +95,7 @@ services:
   result-proxy-mongo:
     restart: unless-stopped
     image: library/mongo:4.2
+    platform: linux/amd64
     entrypoint: '/bin/bash'
     command: -c "mongod --bind_ip_all --port 13202"
     expose:
@@ -104,6 +106,7 @@ services:
   ipfs:
     restart: unless-stopped
     image: ipfs/go-ipfs:v0.9.1
+    platform: linux/amd64
     expose:
       - 8080
       - 5001
@@ -120,6 +123,7 @@ services:
   market-mongo:
     image: mongo:6.0.3
     restart: unless-stopped
+    platform: linux/amd64
     expose:
       - 27017
     ports:
@@ -127,6 +131,7 @@ services:
 
   market-redis:
     image: redis:7.0.7-alpine
+    platform: linux/amd64
     restart: unless-stopped
     command: redis-server --appendonly yes
     expose:
@@ -204,6 +209,7 @@ services:
 
   graphnode-postgres:
     image: postgres:12
+    platform: linux/amd64
     restart: unless-stopped
     command:
       - 'postgres'
@@ -268,7 +274,7 @@ services:
         condition: service_started
     environment:
       ENV: prod
-      START_BLOCK: $ARBITRUM_SEPOLIA_FORK_BLOCK
+      START_BLOCK: $ARBITRUM_SEPOLIA_INDEX_BLOCK
       DATAPROTECTOR_ADDRESS: '0x168eAF6C33a77E3caD9db892452f51a5D91df621'
       APP_REGISTRY_ADDRESS: '0x9950D94FB074182eE93fF79a50CD698C4983281F'
       DATASET_REGISTRY_ADDRESS: '0x07cc4E1Ea30dD02796795876509a3bfC5053128d'
@@ -277,6 +283,7 @@ services:
 
   stack-ready:
     image: bash
+    platform: linux/amd64
     command:
       - echo "all services ready"
     depends_on:
