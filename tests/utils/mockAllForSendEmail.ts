@@ -25,7 +25,7 @@ export function mockAllForSendEmail() {
       fetchAppOrderbook: jest
         .fn<() => Promise<{ orders: any[] }>>()
         .mockResolvedValue({
-          orders: [{ order: { appprice: 0, tag: ['tee', 'scone'] } }],
+          orders: [{ order: { appprice: 0, tag: ['tee', 'tdx'] } }],
         }),
       fetchWorkerpoolOrderbook: jest.fn().mockImplementation(() => {
         return Promise.resolve({

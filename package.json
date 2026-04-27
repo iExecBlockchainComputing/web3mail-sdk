@@ -20,7 +20,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc --project tsconfig.build.json",
     "check-types": "tsc --noEmit",
-    "test:prepare": "node tests/scripts/prepare-bellecour-fork-for-tests.js && node tests/scripts/prepare-iexec.js",
+    "test:prepare": "node tests/scripts/prepare-forks-for-tests.js",
     "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --testMatch \"**/tests/**/*.test.ts\" --forceExit --coverage",
     "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --testMatch \"**/tests/unit/**/*.test.ts\" -b",
     "test:unit:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --testMatch \"**/tests/unit/**/*.unit.ts\" --coverage",

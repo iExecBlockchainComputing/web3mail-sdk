@@ -1,6 +1,5 @@
 import { Address, BN } from 'iexec';
 import { PublishedWorkerpoolorder } from 'iexec/IExecOrderbookModule';
-// import { VoucherInfo } from 'iexec/IExecVoucherModule';
 
 // To import from 'iexec' once exported
 type VoucherInfo = {

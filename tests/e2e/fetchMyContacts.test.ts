@@ -12,24 +12,25 @@ import {
   MAX_EXPECTED_WEB2_SERVICES_TIME,
   deployRandomDataset,
   getTestConfig,
+  getTestDappAddress,
   getTestWeb3SignerProvider,
   getTestIExecOption,
+  setBalance,
   waitSubgraphIndexing,
 } from '../test-utils.js';
 import IExec from 'iexec/IExec';
-import {
-  DEFAULT_CHAIN_ID,
-  getChainDefaultConfig,
-} from '../../src/config/config.js';
 
 describe('web3mail.fetchMyContacts()', () => {
   let wallet: HDNodeWallet;
   let web3mail: IExecWeb3mail;
   let dataProtector: IExecDataProtectorCore;
   let protectedData: ProtectedDataWithSecretProps;
+  let dappAddress: string;
 
   beforeAll(async () => {
     wallet = Wallet.createRandom();
+    await setBalance(wallet.address, 10n ** 18n);
+    dappAddress = await getTestDappAddress();
     dataProtector = new IExecDataProtectorCore(
       ...getTestConfig(wallet.privateKey)
     );
@@ -45,22 +46,17 @@ describe('web3mail.fetchMyContacts()', () => {
     'pass with a granted access for a specific requester',
     async () => {
       await dataProtector.grantAccess({
-        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
+        authorizedApp: dappAddress,
         protectedData: protectedData.address,
         authorizedUser: wallet.address,
       });
+      await waitSubgraphIndexing();
       const res = await web3mail.fetchMyContacts();
-      const foundContactForASpecificRequester = res.find((obj) => {
-        return obj.address === protectedData.address.toLocaleLowerCase();
-      });
-      expect(
-        foundContactForASpecificRequester &&
-          foundContactForASpecificRequester.address
-      ).toBeDefined();
-      expect(
-        foundContactForASpecificRequester &&
-          foundContactForASpecificRequester.address
-      ).toBe(protectedData.address.toLocaleLowerCase());
+      const foundContact = res.find(
+        (obj) => obj.address === protectedData.address.toLowerCase()
+      );
+      expect(foundContact?.address).toBeDefined();
+      expect(foundContact?.address).toBe(protectedData.address.toLowerCase());
     },
     MAX_EXPECTED_WEB2_SERVICES_TIME
   );
@@ -69,22 +65,19 @@ describe('web3mail.fetchMyContacts()', () => {
     'pass with a granted access for any requester',
     async () => {
       const grantedAccessForAnyRequester = await dataProtector.grantAccess({
-        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
+        authorizedApp: dappAddress,
         protectedData: protectedData.address,
         authorizedUser: NULL_ADDRESS,
       });
+      await waitSubgraphIndexing();
 
       const res = await web3mail.fetchMyContacts();
 
-      const foundContactForAnyRequester = res.find(
+      const foundContact = res.find(
         (obj) => obj.address === protectedData.address.toLowerCase()
       );
-      expect(
-        foundContactForAnyRequester && foundContactForAnyRequester.address
-      ).toBeDefined();
-      expect(
-        foundContactForAnyRequester && foundContactForAnyRequester.address
-      ).toBe(protectedData.address.toLocaleLowerCase());
+      expect(foundContact?.address).toBeDefined();
+      expect(foundContact?.address).toBe(protectedData.address.toLowerCase());
 
       //revoke access to not appear as contact for anyone
       const revoke = await dataProtector.revokeOneAccess(
@@ -105,10 +98,10 @@ describe('web3mail.fetchMyContacts()', () => {
         iexecOptions
       );
       const dataset = await deployRandomDataset(iexec);
-      const encryptionKey = await iexec.dataset.generateEncryptionKey();
+      const encryptionKey = iexec.dataset.generateEncryptionKey();
       await iexec.dataset.pushDatasetSecret(dataset.address, encryptionKey);
       await dataProtector.grantAccess({
-        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
+        authorizedApp: dappAddress,
         protectedData: dataset.address,
         authorizedUser: wallet.address,
       });
@@ -130,7 +123,7 @@ describe('web3mail.fetchMyContacts()', () => {
       await waitSubgraphIndexing();
 
       await dataProtector.grantAccess({
-        authorizedApp: getChainDefaultConfig(DEFAULT_CHAIN_ID).dappAddress,
+        authorizedApp: dappAddress,
         protectedData: notValidProtectedData.address,
         authorizedUser: wallet.address,
       });
@@ -149,7 +142,6 @@ describe('web3mail.fetchMyContacts()', () => {
   describe('bulkOnly parameter', () => {
     let protectedDataWithBulk: any;
     let protectedDataWithoutBulk: any;
-    const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
 
     beforeAll(async () => {
       protectedDataWithBulk = await dataProtector.protectData({
@@ -166,17 +158,15 @@ describe('web3mail.fetchMyContacts()', () => {
     it(
       'should return only contacts with bulk access when bulkOnly is true',
       async () => {
-        // Grant access with allowBulk: true
         await dataProtector.grantAccess({
-          authorizedApp: defaultConfig.dappAddress,
+          authorizedApp: dappAddress,
           protectedData: protectedDataWithBulk.address,
           authorizedUser: wallet.address,
           allowBulk: true,
         });
 
-        // Grant access with allowBulk: false (or default)
         await dataProtector.grantAccess({
-          authorizedApp: defaultConfig.dappAddress,
+          authorizedApp: dappAddress,
           protectedData: protectedDataWithoutBulk.address,
           authorizedUser: wallet.address,
           allowBulk: false,
@@ -184,12 +174,10 @@ describe('web3mail.fetchMyContacts()', () => {
 
         await waitSubgraphIndexing();
 
-        // Fetch contacts with bulkOnly: true
         const contactsWithBulkOnly = await web3mail.fetchMyContacts({
           bulkOnly: true,
         });
 
-        // Should only include the contact with bulk access
         const bulkContact = contactsWithBulkOnly.find(
           (contact) =>
             contact.address === protectedDataWithBulk.address.toLowerCase()
@@ -210,12 +198,10 @@ describe('web3mail.fetchMyContacts()', () => {
     it(
       'should return all contacts when bulkOnly is false',
       async () => {
-        // Fetch contacts with bulkOnly: false (default)
         const contactsWithoutBulkOnly = await web3mail.fetchMyContacts({
           bulkOnly: false,
         });
 
-        // Should include both contacts
         const bulkContact = contactsWithoutBulkOnly.find(
           (contact) =>
             contact.address === protectedDataWithBulk.address.toLowerCase()
@@ -234,10 +220,8 @@ describe('web3mail.fetchMyContacts()', () => {
     it(
       'should return all contacts when bulkOnly is not specified (default)',
       async () => {
-        // Fetch contacts without specifying bulkOnly (defaults to false)
         const contactsDefault = await web3mail.fetchMyContacts();
 
-        // Should include both contacts
         const bulkContact = contactsDefault.find(
           (contact) =>
             contact.address === protectedDataWithBulk.address.toLowerCase()

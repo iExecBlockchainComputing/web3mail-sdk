@@ -71,7 +71,7 @@ export class IExecWeb3mail {
     ethProvider?: EthersCompatibleProvider,
     options?: Web3MailConfigOptions
   ) {
-    this.ethProvider = ethProvider || 'bellecour';
+    this.ethProvider = ethProvider || 'arbitrum-sepolia-testnet';
     this.options = options || {};
   }
 
@@ -193,7 +193,7 @@ export class IExecWeb3mail {
       this.options?.dappAddressOrENS ||
       chainDefaultConfig?.dappAddress ||
       (await resolveDappAddressFromCompass(
-        await iexec.config.resolveCompassURL(),
+        this.options?.compassUrl ?? chainDefaultConfig?.compassUrl ?? '',
         chainId
       ));
     const dappWhitelistAddress =

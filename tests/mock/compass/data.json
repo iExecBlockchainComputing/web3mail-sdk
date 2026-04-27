@@ -1,0 +1,24 @@
+[
+  {
+    "chainId": "421614",
+    "description": "arbitrum-sepolia-fork",
+    "iapps": [
+      {
+        "key": "web3mail-tdx",
+        "address": "0x09d59e1B696D0cb69f46bf762412636E8652aB58"
+      }
+    ],
+    "workerpools": [
+      {
+        "name": "unreachable-workerpool",
+        "apiUrl": "https://unreachable-workerpool.iex.ec",
+        "address": "0xB967057a21dc6A66A29721d96b8Aa7454B7c383F"
+      },
+      {
+        "name": "workerpool-http-500",
+        "apiUrl": "http://localhost:5500",
+        "address": "0x2956f0cb779904795a5f30d3b3ea88b714c3123f"
+      }
+    ]
+  }
+]

@@ -57,13 +57,12 @@ export const sendEmailCampaign = async ({
     }
 
     // Handle protocol errors - this will throw if it's an ApiCallError
-    // handleIfProtocolError transforms ApiCallError into a WorkflowError with isProtocolError=true
-    handleIfProtocolError(error);
+    handleIfProtocolError(error as Error);
 
     // For all other errors
     throw new WorkflowError({
       message: 'Failed to sendEmailCampaign',
-      errorCause: error,
+      errorCause: error as Error,
     });
   }
 };

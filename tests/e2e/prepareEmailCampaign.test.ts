@@ -4,10 +4,6 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, beforeEach, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet } from 'ethers';
-import {
-  DEFAULT_CHAIN_ID,
-  getChainDefaultConfig,
-} from '../../src/config/config.js';
 import { Contact, IExecWeb3mail } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
@@ -17,8 +13,10 @@ import {
   createAndPublishAppOrders,
   getRandomWallet,
   getTestConfig,
+  getTestDappAddress,
   getTestIExecOption,
   getTestWeb3SignerProvider,
+  setBalance,
   waitSubgraphIndexing,
 } from '../test-utils.js';
 import { IExec } from 'iexec';
@@ -33,23 +31,22 @@ describe('web3mail.prepareEmailCampaign()', () => {
   let validProtectedData3: ProtectedDataWithSecretProps;
   const iexecOptions = getTestIExecOption();
   const prodWorkerpoolPublicPrice = 1000;
-  const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+  let dappAddress: string;
 
   beforeAll(async () => {
     // Create app orders
     providerWallet = getRandomWallet();
+    dappAddress = await getTestDappAddress();
     const ethProvider = getTestWeb3SignerProvider(
       TEST_CHAIN.appOwnerWallet.privateKey
     );
     const resourceProvider = new IExec({ ethProvider }, iexecOptions);
-    await createAndPublishAppOrders(
-      resourceProvider,
-      defaultConfig!.dappAddress
-    );
+    await createAndPublishAppOrders(resourceProvider, dappAddress);
 
     dataProtector = new IExecDataProtectorCore(
       ...getTestConfig(providerWallet.privateKey)
     );
+    await setBalance(providerWallet.address, 10n ** 18n);
 
     // create valid protected data
     validProtectedData1 = await dataProtector.protectData({
@@ -75,21 +72,21 @@ describe('web3mail.prepareEmailCampaign()', () => {
 
     // Grant access with allowBulk for bulk processing
     await dataProtector.grantAccess({
-      authorizedApp: defaultConfig.dappAddress,
+      authorizedApp: dappAddress,
       protectedData: validProtectedData1.address,
       authorizedUser: consumerWallet.address,
       allowBulk: true,
     });
 
     await dataProtector.grantAccess({
-      authorizedApp: defaultConfig.dappAddress,
+      authorizedApp: dappAddress,
       protectedData: validProtectedData2.address,
       authorizedUser: consumerWallet.address,
       allowBulk: true,
     });
 
     await dataProtector.grantAccess({
-      authorizedApp: defaultConfig.dappAddress,
+      authorizedApp: dappAddress,
       protectedData: validProtectedData3.address,
       authorizedUser: consumerWallet.address,
       allowBulk: true,

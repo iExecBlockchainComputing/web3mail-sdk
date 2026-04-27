@@ -5,11 +5,12 @@ export const DEFAULT_CONTENT_TYPE = 'text/plain';
 export const ANY_DATASET_ADDRESS = 'any';
 export const CALLBACK_WEB3MAIL = '0x5f936db7ad6d29371808e42a87015595d90509ba';
 
-export const DEFAULT_CHAIN_ID = 134;
+export const DEFAULT_CHAIN_ID = 421614;
 
 interface ChainConfig {
   name: string;
   dappAddress?: string;
+  compassUrl?: string;
   prodWorkerpoolAddress: string;
   dataProtectorSubgraph: string;
   ipfsUploadUrl: string;
@@ -19,19 +20,10 @@ interface ChainConfig {
 }
 
 const CHAIN_CONFIG: Record<number, ChainConfig> = {
-  134: {
-    name: 'bellecour',
-    dappAddress: 'web3mail.apps.iexec.eth',
-    prodWorkerpoolAddress: 'prod-v8-bellecour.main.pools.iexec.eth',
-    dataProtectorSubgraph:
-      'https://thegraph.iex.ec/subgraphs/name/bellecour/dataprotector-v2',
-    ipfsUploadUrl: '/dns4/ipfs-upload.v8-bellecour.iex.ec/https',
-    ipfsGateway: 'https://ipfs-gateway.v8-bellecour.iex.ec',
-    whitelistSmartContract: '0x781482C39CcE25546583EaC4957Fb7Bf04C277D2',
-  },
   421614: {
     name: 'arbitrum-sepolia-testnet',
     dappAddress: undefined, // ENS not supported on this network, address will be resolved from Compass
+    compassUrl: 'https://compass.arbitrum-sepolia-testnet.iex.ec',
     prodWorkerpoolAddress: '0x2956f0cb779904795a5f30d3b3ea88b714c3123f', // TDX workerpool
     dataProtectorSubgraph:
       'https://thegraph.arbitrum-sepolia-testnet.iex.ec/api/subgraphs/id/5YjRPLtjS6GH6bB4yY55Qg4HzwtRGQ8TaHtGf9UBWWd',
@@ -42,6 +34,7 @@ const CHAIN_CONFIG: Record<number, ChainConfig> = {
   42161: {
     name: 'arbitrum-mainnet',
     dappAddress: undefined, // ENS not supported on this network, address will be resolved from Compass
+    compassUrl: 'https://compass.arbitrum-mainnet.iex.ec',
     prodWorkerpoolAddress: '0x8ef2ec3ef9535d4b4349bfec7d8b31a580e60244', // TDX workerpool
     dataProtectorSubgraph:
       'https://thegraph.arbitrum.iex.ec/api/subgraphs/id/Ep5zs5zVr4tDiVuQJepUu51e5eWYJpka624X4DMBxe3u',

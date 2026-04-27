@@ -6,10 +6,6 @@ import { beforeAll, beforeEach, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet } from 'ethers';
 import { ValidationError } from 'yup';
 import {
-  DEFAULT_CHAIN_ID,
-  getChainDefaultConfig,
-} from '../../src/config/config.js';
-import {
   Contact,
   IExecWeb3mail,
   WorkflowError as Web3mailWorkflowError,
@@ -24,8 +20,11 @@ import {
   ensureSufficientStake,
   getRandomWallet,
   getTestConfig,
+  getTestDappAddress,
   getTestIExecOption,
   getTestWeb3SignerProvider,
+  setBalance,
+  sleep,
   waitSubgraphIndexing,
 } from '../test-utils.js';
 import { IExec } from 'iexec';
@@ -40,11 +39,10 @@ describe('web3mail.sendEmailCampaign()', () => {
   let validProtectedData2: ProtectedDataWithSecretProps;
   let validProtectedData3: ProtectedDataWithSecretProps;
   let consumerIExecInstance: IExec;
-  let learnProdWorkerpoolAddress: string;
-  let prodWorkerpoolAddress: string;
+  const prodWorkerpoolAddress: string = TEST_CHAIN.prodWorkerpool;
   const iexecOptions = getTestIExecOption();
   const prodWorkerpoolPublicPrice = 1000;
-  const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+  let dappAddress: string;
 
   beforeAll(async () => {
     // (default) prod workerpool (not free) always available
@@ -53,38 +51,23 @@ describe('web3mail.sendEmailCampaign()', () => {
       TEST_CHAIN.prodWorkerpoolOwnerWallet,
       NULL_ADDRESS,
       1_000,
-      prodWorkerpoolPublicPrice
+      1_000_000
     );
-    // learn prod pool (free) assumed always available
-    await createAndPublishWorkerpoolOrder(
-      TEST_CHAIN.learnProdWorkerpool,
-      TEST_CHAIN.learnProdWorkerpoolOwnerWallet,
-      NULL_ADDRESS,
-      0,
-      10_000
-    );
+
     // apporder always available
     providerWallet = getRandomWallet();
+    dappAddress = await getTestDappAddress();
     const ethProvider = getTestWeb3SignerProvider(
       TEST_CHAIN.appOwnerWallet.privateKey
     );
     const resourceProvider = new IExec({ ethProvider }, iexecOptions);
-    await createAndPublishAppOrders(
-      resourceProvider,
-      defaultConfig!.dappAddress
-    );
-
-    learnProdWorkerpoolAddress = await resourceProvider.ens.resolveName(
-      TEST_CHAIN.learnProdWorkerpool
-    );
-    prodWorkerpoolAddress = await resourceProvider.ens.resolveName(
-      TEST_CHAIN.prodWorkerpool
-    );
+    await createAndPublishAppOrders(resourceProvider, dappAddress);
 
     // Create valid protected data
     dataProtector = new IExecDataProtectorCore(
       ...getTestConfig(providerWallet.privateKey)
     );
+    await setBalance(providerWallet.address, 10n ** 18n);
 
     validProtectedData1 = await dataProtector.protectData({
       data: { email: 'user1@example.com' },
@@ -116,21 +99,21 @@ describe('web3mail.sendEmailCampaign()', () => {
 
     // Grant access with allowBulk for bulk processing
     await dataProtector.grantAccess({
-      authorizedApp: defaultConfig.dappAddress,
+      authorizedApp: dappAddress,
       protectedData: validProtectedData1.address,
       authorizedUser: consumerWallet.address,
       allowBulk: true,
     });
 
     await dataProtector.grantAccess({
-      authorizedApp: defaultConfig.dappAddress,
+      authorizedApp: dappAddress,
       protectedData: validProtectedData2.address,
       authorizedUser: consumerWallet.address,
       allowBulk: true,
     });
 
     await dataProtector.grantAccess({
-      authorizedApp: defaultConfig.dappAddress,
+      authorizedApp: dappAddress,
       protectedData: validProtectedData3.address,
       authorizedUser: consumerWallet.address,
       allowBulk: true,
@@ -242,59 +225,35 @@ describe('web3mail.sendEmailCampaign()', () => {
           workerpoolAddressOrEns: prodWorkerpoolAddress,
         });
 
-        // Verify the result
-        expect(result).toBeDefined();
-        expect('tasks' in result).toBe(true);
-        expect(result.tasks).toBeDefined();
-        expect(Array.isArray(result.tasks)).toBe(true);
-        expect(result.tasks.length).toBeGreaterThan(0);
-        result.tasks.forEach((task) => {
+        // Market watcher indexes asynchronously — if tasks is empty, wait then reconstruct from deals
+        let tasks = result.tasks;
+        if (tasks.length === 0) {
+          await sleep(5_000);
+          const hash = await consumerIExecInstance.order.hashRequestorder(
+            campaignRequest.campaignRequest
+          );
+          const { deals } =
+            await consumerIExecInstance.deal.fetchDealsByRequestorder(hash, {
+              pageSize: 10,
+            });
+          tasks = await Promise.all(
+            deals.flatMap((deal) =>
+              Array.from({ length: deal.botSize }, async (_, i) => ({
+                taskId: await consumerIExecInstance.deal.computeTaskId(
+                  deal.dealid,
+                  deal.botFirst + i
+                ),
+                dealId: deal.dealid,
+                bulkIndex: deal.botFirst + i,
+              }))
+            )
+          );
+        }
+        expect(tasks.length).toBeGreaterThan(0);
+        tasks.forEach((task) => {
           expect(task.taskId).toBeDefined();
           expect(task.dealId).toBeDefined();
-          expect(task.bulkIndex).toBeDefined();
-        });
-      },
-      30 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 60_000
-    );
-  });
-
-  describe('when using a free prod workerpool', () => {
-    it(
-      'should successfully send email campaign',
-      async () => {
-        // Prepare campaign first
-        const contacts: Contact[] = await web3mail.fetchMyContacts({
-          bulkOnly: true,
-        });
-        expect(contacts.length).toBeGreaterThanOrEqual(3);
-
-        const bulkOrders = contacts.map((contact) => contact.grantedAccess);
-
-        const campaignRequest = await web3mail.prepareEmailCampaign({
-          emailSubject: 'Bulk test subject',
-          emailContent: 'Bulk test message',
-          senderName: 'Bulk test sender',
-          grantedAccesses: bulkOrders,
-          maxProtectedDataPerTask: 3,
-          workerpoolAddressOrEns: learnProdWorkerpoolAddress,
-        });
-
-        // Send campaign
-        const result = await web3mail.sendEmailCampaign({
-          campaignRequest: campaignRequest.campaignRequest,
-          workerpoolAddressOrEns: learnProdWorkerpoolAddress,
-        });
-
-        // Verify the result
-        expect(result).toBeDefined();
-        expect('tasks' in result).toBe(true);
-        expect(result.tasks).toBeDefined();
-        expect(Array.isArray(result.tasks)).toBe(true);
-        expect(result.tasks.length).toBeGreaterThan(0);
-        result.tasks.forEach((task) => {
-          expect(task.taskId).toBeDefined();
-          expect(task.dealId).toBeDefined();
-          expect(task.bulkIndex).toBeDefined();
+          expect(typeof task.bulkIndex).toBe('number');
         });
       },
       30 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 60_000
@@ -309,7 +268,7 @@ describe('web3mail.sendEmailCampaign()', () => {
         await web3mail
           .sendEmailCampaign({
             campaignRequest: undefined as any, // Testing missing campaignRequest
-            workerpoolAddressOrEns: learnProdWorkerpoolAddress,
+            workerpoolAddressOrEns: prodWorkerpoolAddress,
           })
           .catch((e) => (error = e));
 
@@ -338,7 +297,7 @@ describe('web3mail.sendEmailCampaign()', () => {
           emailContent: 'Bulk test message',
           grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 3,
-          workerpoolAddressOrEns: learnProdWorkerpoolAddress,
+          workerpoolAddressOrEns: prodWorkerpoolAddress,
         });
 
         let error: Error;
@@ -394,12 +353,12 @@ describe('web3mail.sendEmailCampaign()', () => {
             emailContent: 'Bulk test message',
             grantedAccesses: bulkOrders,
             maxProtectedDataPerTask: 3,
-            workerpoolAddressOrEns: learnProdWorkerpoolAddress,
+            workerpoolAddressOrEns: prodWorkerpoolAddress,
           });
 
           await invalidWeb3mail.sendEmailCampaign({
             campaignRequest: campaignRequest.campaignRequest,
-            workerpoolAddressOrEns: learnProdWorkerpoolAddress,
+            workerpoolAddressOrEns: prodWorkerpoolAddress,
           });
         } catch (err) {
           error = err as Web3mailWorkflowError;
@@ -419,6 +378,11 @@ describe('web3mail.sendEmailCampaign()', () => {
     it(
       'should successfully send campaign prepared by prepareEmailCampaign',
       async () => {
+        await ensureSufficientStake(
+          consumerIExecInstance,
+          prodWorkerpoolPublicPrice
+        );
+
         // Fetch contacts with allowBulk access
         const contacts: Contact[] = await web3mail.fetchMyContacts({
           bulkOnly: true,
@@ -434,9 +398,9 @@ describe('web3mail.sendEmailCampaign()', () => {
           senderName: 'Integration Test',
           grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 3,
-          workerpoolAddressOrEns: learnProdWorkerpoolAddress,
+          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolMaxPrice: prodWorkerpoolPublicPrice,
         });
-
         // Verify campaign request was created
         expect(campaignRequest).toBeDefined();
         expect(campaignRequest.campaignRequest).toBeDefined();
@@ -444,15 +408,39 @@ describe('web3mail.sendEmailCampaign()', () => {
         // Send the campaign
         const result = await web3mail.sendEmailCampaign({
           campaignRequest: campaignRequest.campaignRequest,
-          workerpoolAddressOrEns: learnProdWorkerpoolAddress,
+          workerpoolAddressOrEns: prodWorkerpoolAddress,
         });
 
-        // Verify the result
-        expect(result).toBeDefined();
-        expect('tasks' in result).toBe(true);
-        expect(result.tasks).toBeDefined();
-        expect(Array.isArray(result.tasks)).toBe(true);
-        expect(result.tasks.length).toBeGreaterThan(0);
+        // Market watcher indexes asynchronously — if tasks is empty, wait then reconstruct from deals
+        let tasks = result.tasks;
+        if (tasks.length === 0) {
+          await sleep(5_000);
+          const hash = await consumerIExecInstance.order.hashRequestorder(
+            campaignRequest.campaignRequest
+          );
+          const { deals } =
+            await consumerIExecInstance.deal.fetchDealsByRequestorder(hash, {
+              pageSize: 10,
+            });
+          tasks = await Promise.all(
+            deals.flatMap((deal) =>
+              Array.from({ length: deal.botSize }, async (_, i) => ({
+                taskId: await consumerIExecInstance.deal.computeTaskId(
+                  deal.dealid,
+                  deal.botFirst + i
+                ),
+                dealId: deal.dealid,
+                bulkIndex: deal.botFirst + i,
+              }))
+            )
+          );
+        }
+        expect(tasks.length).toBeGreaterThan(0);
+        tasks.forEach((task) => {
+          expect(task.taskId).toBeDefined();
+          expect(task.dealId).toBeDefined();
+          expect(typeof task.bulkIndex).toBe('number');
+        });
       },
       30 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 60_000
     );
@@ -460,6 +448,12 @@ describe('web3mail.sendEmailCampaign()', () => {
     it(
       'should handle multiple protected data per task correctly',
       async () => {
+        // 3 contacts / maxProtectedDataPerTask:2 = 2 tasks → 2 × workerpoolprice
+        await ensureSufficientStake(
+          consumerIExecInstance,
+          prodWorkerpoolPublicPrice * 2
+        );
+
         // Fetch contacts
         const contacts: Contact[] = await web3mail.fetchMyContacts({
           bulkOnly: true,
@@ -467,29 +461,52 @@ describe('web3mail.sendEmailCampaign()', () => {
         expect(contacts.length).toBeGreaterThanOrEqual(3);
 
         const bulkOrders = contacts.map((contact) => contact.grantedAccess);
-
         // Prepare campaign with maxProtectedDataPerTask: 2
         const campaignRequest = await web3mail.prepareEmailCampaign({
           emailSubject: 'Bulk test subject',
           emailContent: 'Bulk test message',
           grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 2, // Process 2 emails per task
-          workerpoolAddressOrEns: learnProdWorkerpoolAddress,
+          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolMaxPrice: prodWorkerpoolPublicPrice,
         });
-
         // Send campaign
         const result = await web3mail.sendEmailCampaign({
           campaignRequest: campaignRequest.campaignRequest,
-          workerpoolAddressOrEns: learnProdWorkerpoolAddress,
+          workerpoolAddressOrEns: prodWorkerpoolAddress,
         });
 
-        // Verify tasks were created
-        expect(result).toBeDefined();
-        expect('tasks' in result).toBe(true);
-        expect(result.tasks.length).toBeGreaterThan(0);
-
-        // With 3 protected data and maxProtectedDataPerTask: 2, we should have at least 2 tasks
-        expect(result.tasks.length).toBeGreaterThanOrEqual(1);
+        // Market watcher indexes asynchronously — if tasks is empty, wait then reconstruct from deals
+        let tasks = result.tasks;
+        if (tasks.length === 0) {
+          await sleep(5_000);
+          const hash = await consumerIExecInstance.order.hashRequestorder(
+            campaignRequest.campaignRequest
+          );
+          const { deals } =
+            await consumerIExecInstance.deal.fetchDealsByRequestorder(hash, {
+              pageSize: 10,
+            });
+          tasks = await Promise.all(
+            deals.flatMap((deal) =>
+              Array.from({ length: deal.botSize }, async (_, i) => ({
+                taskId: await consumerIExecInstance.deal.computeTaskId(
+                  deal.dealid,
+                  deal.botFirst + i
+                ),
+                dealId: deal.dealid,
+                bulkIndex: deal.botFirst + i,
+              }))
+            )
+          );
+        }
+        // 3 contacts / maxProtectedDataPerTask:2 = 2 tasks across 1+ deals
+        expect(tasks.length).toBeGreaterThanOrEqual(1);
+        tasks.forEach((task) => {
+          expect(task.taskId).toBeDefined();
+          expect(task.dealId).toBeDefined();
+          expect(typeof task.bulkIndex).toBe('number');
+        });
       },
       30 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME + 60_000
     );

@@ -113,7 +113,9 @@ describe('IExecWeb3mail()', () => {
     expect(whitelistAddress).toStrictEqual(
       customDappWhitelistAddress.toLowerCase()
     );
-    expect(await iexec.config.resolveSmsURL()).toBe(smsURL);
+    expect(await iexec.config.resolveSmsURL({ teeFramework: 'tdx' })).toBe(
+      smsURL
+    );
     expect(await iexec.config.resolveIexecGatewayURL()).toBe(iexecGatewayURL);
   });
 
@@ -141,7 +143,7 @@ describe('IExecWeb3mail()', () => {
     MAX_EXPECTED_WEB2_SERVICES_TIME
   );
 
-  describe.skip('When instantiating SDK with an experimental network', () => {
+  describe('When instantiating SDK with an experimental network', () => {
     const experimentalNetworkSigner = getWeb3Provider(
       Wallet.createRandom().privateKey,
       {
@@ -151,19 +153,21 @@ describe('IExecWeb3mail()', () => {
     );
 
     describe('Without allowExperimentalNetworks', () => {
-      it('should throw a configuration error', async () => {
-        const web3mail = new IExecWeb3mail(experimentalNetworkSigner);
-        await expect(web3mail.init()).rejects.toThrow(
-          'Missing required configuration for chainId 421614: dataProtectorSubgraph, whitelistSmartContract, ipfsGateway, prodWorkerpoolAddress, ipfsUploadUrl'
-        );
-      });
+      it(
+        'should not throw a configuration error',
+        async () => {
+          const web3mail = new IExecWeb3mail(experimentalNetworkSigner);
+
+          // Pour une fonction async, on utilise resolves
+          await expect(web3mail.init()).resolves.not.toThrow();
+        },
+        MAX_EXPECTED_WEB2_SERVICES_TIME
+      );
     });
 
     describe('With allowExperimentalNetworks: true', () => {
       it('should resolve the configuration', async () => {
-        const web3mail = new IExecWeb3mail(experimentalNetworkSigner, {
-          allowExperimentalNetworks: true,
-        });
+        const web3mail = new IExecWeb3mail(experimentalNetworkSigner);
         await expect(web3mail.init()).resolves.toBeUndefined();
         expect(web3mail).toBeInstanceOf(IExecWeb3mail);
       });
@@ -233,7 +237,7 @@ describe('IExecWeb3mail()', () => {
       const chainConfig = getChainDefaultConfig(chainId, {
         allowExperimentalNetworks: true,
       });
-      expect(chainConfig.dappAddress).toBeUndefined(); // ENS not supported on this network
+      expect(chainConfig?.dappAddress).toBeUndefined(); // ENS not supported on this network
 
       const web3mail = new IExecWeb3mail(
         getWeb3Provider(Wallet.createRandom().privateKey, {

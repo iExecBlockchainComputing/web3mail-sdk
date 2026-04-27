@@ -15,6 +15,7 @@ describe('fetchMyContacts', () => {
   let testedModule: any;
   let fetchMyContacts: FetchMyContacts;
   const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+  const mockDappAddress = getRandomAddress().toLowerCase();
 
   beforeAll(async () => {
     // import tested module after all mocked modules
@@ -79,13 +80,13 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: defaultConfig.dappAddress,
+      dappAddressOrENS: mockDappAddress,
       dappWhitelistAddress: defaultConfig.whitelistSmartContract,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
       dataset: 'any',
-      app: defaultConfig.dappAddress.toLowerCase(),
+      app: mockDappAddress,
       requester: userAddress,
       isAppStrict: true,
       isRequesterStrict: false,
@@ -140,14 +141,14 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: defaultConfig.dappAddress,
+      dappAddressOrENS: mockDappAddress,
       dappWhitelistAddress: defaultConfig.whitelistSmartContract,
       isUserStrict: true,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
       dataset: 'any',
-      app: defaultConfig.dappAddress.toLowerCase(),
+      app: mockDappAddress,
       requester: userAddress,
       isAppStrict: true,
       isRequesterStrict: true,
@@ -215,7 +216,7 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: defaultConfig.dappAddress,
+      dappAddressOrENS: mockDappAddress,
       dappWhitelistAddress: defaultConfig.whitelistSmartContract,
     });
 
@@ -265,14 +266,14 @@ describe('fetchMyContacts', () => {
         iexec: iexec,
         // @ts-expect-error No need for graphQLClient here
         graphQLClient: {},
-        dappAddressOrENS: defaultConfig.dappAddress,
+        dappAddressOrENS: mockDappAddress,
         dappWhitelistAddress: defaultConfig.whitelistSmartContract,
         bulkOnly: false,
       });
       const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
       expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
         dataset: 'any',
-        app: defaultConfig.dappAddress.toLowerCase(),
+        app: mockDappAddress,
         requester: userAddress,
         isAppStrict: true,
         isRequesterStrict: false,
@@ -329,14 +330,14 @@ describe('fetchMyContacts', () => {
         iexec: iexec,
         // @ts-expect-error No need for graphQLClient here
         graphQLClient: {},
-        dappAddressOrENS: defaultConfig.dappAddress,
+        dappAddressOrENS: mockDappAddress,
         dappWhitelistAddress: defaultConfig.whitelistSmartContract,
         bulkOnly: true,
       });
       const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
       expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
         dataset: 'any',
-        app: defaultConfig.dappAddress.toLowerCase(),
+        app: mockDappAddress,
         requester: userAddress,
         isAppStrict: true,
         isRequesterStrict: false,
@@ -393,7 +394,7 @@ describe('fetchMyContacts', () => {
         iexec: iexec,
         // @ts-expect-error No need for graphQLClient here
         graphQLClient: {},
-        dappAddressOrENS: defaultConfig.dappAddress,
+        dappAddressOrENS: mockDappAddress,
         dappWhitelistAddress: defaultConfig.whitelistSmartContract,
         isUserStrict: true,
         bulkOnly: true,
@@ -402,7 +403,7 @@ describe('fetchMyContacts', () => {
       const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
       expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
         dataset: 'any',
-        app: defaultConfig.dappAddress.toLowerCase(),
+        app: mockDappAddress,
         requester: userAddress,
         isAppStrict: true,
         isRequesterStrict: true,

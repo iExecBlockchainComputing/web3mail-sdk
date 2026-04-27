@@ -1,7 +1,7 @@
 import { expect, it, jest } from '@jest/globals';
 import { ValidationError } from 'yup';
 import { type SendEmail } from '../../src/web3mail/sendEmail.js';
-import { getRandomAddress, TEST_CHAIN } from '../test-utils.js';
+import { getRandomAddress } from '../test-utils.js';
 import { mockAllForSendEmail } from '../utils/mockAllForSendEmail.js';
 import {
   DEFAULT_CHAIN_ID,
@@ -168,9 +168,13 @@ describe('sendEmail', () => {
 
       const OVERSIZED_CONTENT = 'Test';
       const protectedData = getRandomAddress().toLowerCase();
+      const mockDappAddress = getRandomAddress().toLowerCase();
       const iexec = mockAllForSendEmail();
 
       const userAddress = await iexec.wallet.getAddress();
+
+      const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+      expect(defaultConfig).not.toBeNull();
 
       // --- WHEN
       await sendEmail({
@@ -178,44 +182,39 @@ describe('sendEmail', () => {
         graphQLClient: {},
         // @ts-expect-error No need for iexec here
         iexec,
-        ipfsGateway: getChainDefaultConfig(DEFAULT_CHAIN_ID)?.ipfsGateway,
-        ipfsNode: getChainDefaultConfig(DEFAULT_CHAIN_ID)?.ipfsUploadUrl,
-        workerpoolAddressOrEns:
-          getChainDefaultConfig(DEFAULT_CHAIN_ID)?.prodWorkerpoolAddress,
-        dappAddressOrENS: getChainDefaultConfig(DEFAULT_CHAIN_ID)?.dappAddress,
+        ipfsGateway: defaultConfig!.ipfsGateway,
+        ipfsNode: defaultConfig!.ipfsUploadUrl,
+        workerpoolAddressOrEns: defaultConfig!.prodWorkerpoolAddress,
+        dappAddressOrENS: mockDappAddress,
         dappWhitelistAddress:
-          getChainDefaultConfig(
-            DEFAULT_CHAIN_ID
-          )?.whitelistSmartContract.toLowerCase(),
+          defaultConfig!.whitelistSmartContract.toLowerCase(),
         emailSubject: 'e2e mail object for test',
         emailContent: OVERSIZED_CONTENT,
         protectedData,
       });
 
       // --- THEN
-      const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
-      expect(defaultConfig).not.toBeNull();
       expect(iexec.orderbook.fetchWorkerpoolOrderbook).toHaveBeenNthCalledWith(
         1,
         {
-          workerpool: TEST_CHAIN.prodWorkerpool,
-          app: defaultConfig!.dappAddress.toLowerCase(),
+          workerpool: defaultConfig!.prodWorkerpoolAddress,
+          app: mockDappAddress,
           dataset: protectedData,
           requester: userAddress,
           isRequesterStrict: false,
-          minTag: ['tee', 'scone'],
+          minTag: ['tee', 'tdx'],
           category: 0,
         }
       );
       expect(iexec.orderbook.fetchWorkerpoolOrderbook).toHaveBeenNthCalledWith(
         2,
         {
-          workerpool: TEST_CHAIN.prodWorkerpool,
+          workerpool: defaultConfig!.prodWorkerpoolAddress,
           app: defaultConfig!.whitelistSmartContract.toLowerCase(),
           dataset: protectedData,
           requester: userAddress,
           isRequesterStrict: false,
-          minTag: ['tee', 'scone'],
+          minTag: ['tee', 'tdx'],
           category: 0,
         }
       );

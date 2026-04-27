@@ -9,7 +9,6 @@ import {
   addressOrEnsSchema,
   addressSchema,
   booleanSchema,
-  isEnsTest,
   throwIfMissing,
 } from '../utils/validators.js';
 import { Contact, FetchUserContactsParams } from './types.js';
@@ -70,10 +69,8 @@ export const fetchUserContacts = async ({
 
     const orders = dappOrders.concat(whitelistOrders);
     const myContacts: Omit<Contact, 'name'>[] = [];
-    let web3DappResolvedAddress = vDappAddressOrENS;
-    if (isEnsTest(vDappAddressOrENS)) {
-      web3DappResolvedAddress = await iexec.ens.resolveName(vDappAddressOrENS);
-    }
+    const web3DappResolvedAddress = vDappAddressOrENS;
+
     orders.forEach((order) => {
       if (
         order.order.apprestrict.toLowerCase() ===
