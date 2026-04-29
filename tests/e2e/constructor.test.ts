@@ -159,7 +159,6 @@ describe('IExecWeb3mail()', () => {
         async () => {
           const web3mail = new IExecWeb3mail(experimentalNetworkSigner);
 
-          // Pour une fonction async, on utilise resolves
           await expect(web3mail.init()).resolves.not.toThrow();
         },
         MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -168,7 +167,9 @@ describe('IExecWeb3mail()', () => {
 
     describe('With allowExperimentalNetworks: true', () => {
       it('should resolve the configuration', async () => {
-        const web3mail = new IExecWeb3mail(experimentalNetworkSigner);
+        const web3mail = new IExecWeb3mail(experimentalNetworkSigner, {
+          allowExperimentalNetworks: true,
+        });
         await expect(web3mail.init()).resolves.toBeUndefined();
         expect(web3mail).toBeInstanceOf(IExecWeb3mail);
       });
@@ -238,7 +239,7 @@ describe('IExecWeb3mail()', () => {
       const chainConfig = getChainDefaultConfig(chainId, {
         allowExperimentalNetworks: true,
       });
-      expect(chainConfig?.dappAddress).toBeUndefined(); // ENS not supported on this network
+      expect(chainConfig.dappAddress).toBeUndefined(); // ENS not supported on this network
 
       const web3mail = new IExecWeb3mail(
         getWeb3Provider(Wallet.createRandom().privateKey, {

@@ -135,12 +135,6 @@ export type Web3MailConfigOptions = {
   ipfsGateway?: string;
 
   /**
-   * Override the Compass URL used to resolve the dapp address.
-   * If not provided, the default Compass URL for the chain will be used.
-   */
-  compassUrl?: string;
-
-  /**
    * if true allows using a provider connected to an experimental networks (default false)
    *
    * ⚠️ experimental networks are networks on which the iExec's stack is partially deployed, experimental networks can be subject to instabilities or discontinuity. Access is provided without warranties.

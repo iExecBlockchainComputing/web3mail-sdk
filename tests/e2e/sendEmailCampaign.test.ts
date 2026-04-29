@@ -225,7 +225,6 @@ describe('web3mail.sendEmailCampaign()', () => {
           workerpoolAddressOrEns: prodWorkerpoolAddress,
         });
 
-        // Market watcher indexes asynchronously — if tasks is empty, wait then reconstruct from deals
         let tasks = result.tasks;
         if (tasks.length === 0) {
           await sleep(5_000);
@@ -411,7 +410,6 @@ describe('web3mail.sendEmailCampaign()', () => {
           workerpoolAddressOrEns: prodWorkerpoolAddress,
         });
 
-        // Market watcher indexes asynchronously — if tasks is empty, wait then reconstruct from deals
         let tasks = result.tasks;
         if (tasks.length === 0) {
           await sleep(5_000);
@@ -448,7 +446,6 @@ describe('web3mail.sendEmailCampaign()', () => {
     it(
       'should handle multiple protected data per task correctly',
       async () => {
-        // 3 contacts / maxProtectedDataPerTask:2 = 2 tasks → 2 × workerpoolprice
         await ensureSufficientStake(
           consumerIExecInstance,
           prodWorkerpoolPublicPrice * 2
@@ -476,7 +473,6 @@ describe('web3mail.sendEmailCampaign()', () => {
           workerpoolAddressOrEns: prodWorkerpoolAddress,
         });
 
-        // Market watcher indexes asynchronously — if tasks is empty, wait then reconstruct from deals
         let tasks = result.tasks;
         if (tasks.length === 0) {
           await sleep(5_000);
@@ -500,7 +496,6 @@ describe('web3mail.sendEmailCampaign()', () => {
             )
           );
         }
-        // 3 contacts / maxProtectedDataPerTask:2 = 2 tasks across 1+ deals
         expect(tasks.length).toBeGreaterThanOrEqual(1);
         tasks.forEach((task) => {
           expect(task.taskId).toBeDefined();
