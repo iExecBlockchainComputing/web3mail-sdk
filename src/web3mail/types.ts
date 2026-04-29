@@ -1,12 +1,8 @@
-import { EnhancedWallet } from 'iexec';
+import type { AbstractSigner } from 'ethers';
 import { IExecConfigOptions } from 'iexec/IExecConfig';
 import type { BulkRequest } from '@iexec/dataprotector';
 
-export type Web3SignerProvider = EnhancedWallet;
-
-export type ENS = string;
-
-export type AddressOrENS = Address | ENS;
+export type Web3SignerProvider = AbstractSigner;
 
 export type Address = string;
 
@@ -59,7 +55,7 @@ export type SendEmailParams = {
   contentType?: string;
   senderName?: string;
   label?: string;
-  workerpoolAddressOrEns?: AddressOrENS;
+  workerpoolAddress?: Address;
   dataMaxPrice?: number;
   appMaxPrice?: number;
   workerpoolMaxPrice?: number;
@@ -99,10 +95,10 @@ export type SendEmailResponse = {
  */
 export type Web3MailConfigOptions = {
   /**
-   * The Ethereum contract address or ENS (Ethereum Name Service) for the email sender dapp.
+   * Ethereum contract address for the email sender dapp.
    * If not provided, the default web3mail address will be used.
    */
-  dappAddressOrENS?: AddressOrENS;
+  dappAddress?: Address;
 
   /**
    * The Ethereum contract address for the whitelist.
@@ -155,7 +151,7 @@ export type PrepareEmailCampaignParams = {
   emailContent: string;
   contentType?: string;
   label?: string;
-  workerpoolAddressOrEns?: AddressOrENS;
+  workerpoolAddress?: Address;
   dataMaxPrice?: number;
   appMaxPrice?: number;
   workerpoolMaxPrice?: number;
@@ -176,9 +172,9 @@ export type SendEmailCampaignParams = {
    */
   campaignRequest: CampaignRequest;
   /**
-   * Workerpool address or ENS to use for processing
+   * Workerpool contract address used for processing
    */
-  workerpoolAddressOrEns?: AddressOrENS;
+  workerpoolAddress?: string;
 };
 
 export type SendEmailCampaignResponse = {

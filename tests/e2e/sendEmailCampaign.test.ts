@@ -151,7 +151,7 @@ describe('web3mail.sendEmailCampaign()', () => {
         await web3mail
           .sendEmailCampaign({
             campaignRequest: campaignRequest.campaignRequest,
-            workerpoolAddressOrEns: workerpoolToUse,
+            workerpoolAddress: workerpoolToUse,
           })
           .catch((e) => (error = e));
 
@@ -216,13 +216,13 @@ describe('web3mail.sendEmailCampaign()', () => {
           grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 3,
           workerpoolMaxPrice: prodWorkerpoolPublicPrice,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         });
 
         // Send campaign
         const result = await web3mail.sendEmailCampaign({
           campaignRequest: campaignRequest.campaignRequest,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         });
 
         let tasks = result.tasks;
@@ -267,7 +267,7 @@ describe('web3mail.sendEmailCampaign()', () => {
         await web3mail
           .sendEmailCampaign({
             campaignRequest: undefined as any, // Testing missing campaignRequest
-            workerpoolAddressOrEns: prodWorkerpoolAddress,
+            workerpoolAddress: prodWorkerpoolAddress,
           })
           .catch((e) => (error = e));
 
@@ -283,7 +283,7 @@ describe('web3mail.sendEmailCampaign()', () => {
     );
 
     it(
-      'should throw an error if workerpoolAddressOrEns is invalid',
+      'should throw an error if workerpoolAddress is invalid',
       async () => {
         // Prepare campaign first
         const contacts: Contact[] = await web3mail.fetchMyContacts({
@@ -296,24 +296,23 @@ describe('web3mail.sendEmailCampaign()', () => {
           emailContent: 'Bulk test message',
           grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 3,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         });
 
         let error: Error;
         await web3mail
           .sendEmailCampaign({
             campaignRequest: campaignRequest.campaignRequest,
-            workerpoolAddressOrEns: 'invalid-address',
+            workerpoolAddress: 'invalid-address',
           })
           .catch((e) => (error = e));
 
         expect(error).toBeDefined();
-        // Invalid address throws ValidationError from addressOrEnsSchema validation
+        // Invalid address throws ValidationError from addressSchema validation
         const isValidationError = error instanceof ValidationError;
         expect(isValidationError).toBe(true);
         expect(
-          error.message ===
-            'workerpoolAddressOrEns should be an ethereum address or a ENS name'
+          error.message === 'workerpoolAddress should be an ethereum address'
         ).toBe(true);
       },
       2 * MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_WEB2_SERVICES_TIME
@@ -352,12 +351,12 @@ describe('web3mail.sendEmailCampaign()', () => {
             emailContent: 'Bulk test message',
             grantedAccesses: bulkOrders,
             maxProtectedDataPerTask: 3,
-            workerpoolAddressOrEns: prodWorkerpoolAddress,
+            workerpoolAddress: prodWorkerpoolAddress,
           });
 
           await invalidWeb3mail.sendEmailCampaign({
             campaignRequest: campaignRequest.campaignRequest,
-            workerpoolAddressOrEns: prodWorkerpoolAddress,
+            workerpoolAddress: prodWorkerpoolAddress,
           });
         } catch (err) {
           error = err as Web3mailWorkflowError;
@@ -397,7 +396,7 @@ describe('web3mail.sendEmailCampaign()', () => {
           senderName: 'Integration Test',
           grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 3,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
           workerpoolMaxPrice: prodWorkerpoolPublicPrice,
         });
         // Verify campaign request was created
@@ -407,7 +406,7 @@ describe('web3mail.sendEmailCampaign()', () => {
         // Send the campaign
         const result = await web3mail.sendEmailCampaign({
           campaignRequest: campaignRequest.campaignRequest,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         });
 
         let tasks = result.tasks;
@@ -464,13 +463,13 @@ describe('web3mail.sendEmailCampaign()', () => {
           emailContent: 'Bulk test message',
           grantedAccesses: bulkOrders,
           maxProtectedDataPerTask: 2, // Process 2 emails per task
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
           workerpoolMaxPrice: prodWorkerpoolPublicPrice,
         });
         // Send campaign
         const result = await web3mail.sendEmailCampaign({
           campaignRequest: campaignRequest.campaignRequest,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         });
 
         let tasks = result.tasks;

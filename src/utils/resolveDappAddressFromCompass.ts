@@ -1,10 +1,10 @@
 import { CompassCallError } from 'iexec/errors';
-import { AddressOrENS } from '../web3mail/types.js';
+import { Address } from '../web3mail/types.js';
 
 export async function resolveDappAddressFromCompass(
   compassUrl: string,
   chainId: number
-): Promise<AddressOrENS | undefined> {
+): Promise<Address | undefined> {
   if (!compassUrl) {
     return undefined;
   }

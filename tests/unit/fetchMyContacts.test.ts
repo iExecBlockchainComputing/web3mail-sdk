@@ -80,7 +80,7 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: mockDappAddress,
+      dappAddress: mockDappAddress,
       dappWhitelistAddress: defaultConfig.whitelistSmartContract,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
@@ -141,7 +141,7 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: mockDappAddress,
+      dappAddress: mockDappAddress,
       dappWhitelistAddress: defaultConfig.whitelistSmartContract,
       isUserStrict: true,
     });
@@ -216,7 +216,7 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: mockDappAddress,
+      dappAddress: mockDappAddress,
       dappWhitelistAddress: defaultConfig.whitelistSmartContract,
     });
 
@@ -266,7 +266,7 @@ describe('fetchMyContacts', () => {
         iexec: iexec,
         // @ts-expect-error No need for graphQLClient here
         graphQLClient: {},
-        dappAddressOrENS: mockDappAddress,
+        dappAddress: mockDappAddress,
         dappWhitelistAddress: defaultConfig.whitelistSmartContract,
         bulkOnly: false,
       });
@@ -330,7 +330,7 @@ describe('fetchMyContacts', () => {
         iexec: iexec,
         // @ts-expect-error No need for graphQLClient here
         graphQLClient: {},
-        dappAddressOrENS: mockDappAddress,
+        dappAddress: mockDappAddress,
         dappWhitelistAddress: defaultConfig.whitelistSmartContract,
         bulkOnly: true,
       });
@@ -394,7 +394,7 @@ describe('fetchMyContacts', () => {
         iexec: iexec,
         // @ts-expect-error No need for graphQLClient here
         graphQLClient: {},
-        dappAddressOrENS: mockDappAddress,
+        dappAddress: mockDappAddress,
         dappWhitelistAddress: defaultConfig.whitelistSmartContract,
         isUserStrict: true,
         bulkOnly: true,

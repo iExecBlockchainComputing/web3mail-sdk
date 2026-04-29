@@ -184,8 +184,8 @@ describe('sendEmail', () => {
         iexec,
         ipfsGateway: defaultConfig!.ipfsGateway,
         ipfsNode: defaultConfig!.ipfsUploadUrl,
-        workerpoolAddressOrEns: defaultConfig!.prodWorkerpoolAddress,
-        dappAddressOrENS: mockDappAddress,
+        workerpoolAddress: defaultConfig!.prodWorkerpoolAddress,
+        dappAddress: mockDappAddress,
         dappWhitelistAddress:
           defaultConfig!.whitelistSmartContract.toLowerCase(),
         emailSubject: 'e2e mail object for test',

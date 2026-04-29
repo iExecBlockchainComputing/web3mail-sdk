@@ -54,7 +54,7 @@ describe('web3mail.fetchMyContacts()', () => {
 
       await web3mail.init();
       // eslint-disable-next-line @typescript-eslint/dot-notation
-      const authorizedApp = web3mail['dappAddressOrENS'];
+      const authorizedApp = web3mail['dappAddress'];
 
       await dataProtector.grantAccess({
         authorizedApp: authorizedApp,
@@ -223,7 +223,7 @@ describe('web3mail.fetchMyContacts()', () => {
         await dataProtector.grantAccess({
           authorizedApp: dappAddress,
           protectedData: protectedData1.address,
-          authorizedUser: ethProvider.address,
+          authorizedUser: await ethProvider.getAddress(),
         });
 
         const options = {

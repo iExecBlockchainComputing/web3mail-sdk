@@ -13,7 +13,7 @@ export type FetchMyContacts = typeof fetchMyContacts;
 export const fetchMyContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  dappAddressOrENS = throwIfMissing(),
+  dappAddress = throwIfMissing(),
   dappWhitelistAddress = throwIfMissing(),
   isUserStrict = false,
   bulkOnly = false,
@@ -31,7 +31,7 @@ export const fetchMyContacts = async ({
   return fetchUserContacts({
     iexec,
     graphQLClient,
-    dappAddressOrENS,
+    dappAddress,
     dappWhitelistAddress,
     userAddress,
     isUserStrict: vIsUserStrict,

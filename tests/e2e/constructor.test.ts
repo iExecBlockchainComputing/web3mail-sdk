@@ -79,7 +79,7 @@ describe('IExecWeb3mail()', () => {
     const wallet = Wallet.createRandom();
     const customSubgraphUrl = 'https://example.com/custom-subgraph';
     const customIpfsGateway = 'https://example.com/ipfs_gateway';
-    const customDapp = 'web3mailstg.apps.iexec.eth';
+    const customDapp = '0x1111111111111111111111111111111111111111';
     const customIpfsNode = 'https://example.com/node';
     const smsURL = 'https://custom-sms-url.com';
     const iexecGatewayURL = 'https://custom-market-api-url.com';
@@ -95,7 +95,7 @@ describe('IExecWeb3mail()', () => {
         ipfsNode: customIpfsNode,
         ipfsGateway: customIpfsGateway,
         dataProtectorSubgraph: customSubgraphUrl,
-        dappAddressOrENS: customDapp,
+        dappAddress: customDapp,
         dappWhitelistAddress: customDappWhitelistAddress,
       }
     );
@@ -103,20 +103,18 @@ describe('IExecWeb3mail()', () => {
     const graphQLClient = web3mail['graphQLClient'];
     const ipfsNode = web3mail['ipfsNode'];
     const ipfsGateway = web3mail['ipfsGateway'];
-    const dappAddressOrENS = web3mail['dappAddressOrENS'];
+    const dappAddress = web3mail['dappAddress'];
     const iexec = web3mail['iexec'];
     const whitelistAddress = web3mail['dappWhitelistAddress'];
 
     expect(graphQLClient['url']).toBe(customSubgraphUrl);
     expect(ipfsNode).toStrictEqual(customIpfsNode);
     expect(ipfsGateway).toStrictEqual(customIpfsGateway);
-    expect(dappAddressOrENS).toStrictEqual(customDapp);
+    expect(dappAddress).toStrictEqual(customDapp);
     expect(whitelistAddress).toStrictEqual(
       customDappWhitelistAddress.toLowerCase()
     );
-    expect(await iexec.config.resolveSmsURL({ teeFramework: 'tdx' })).toBe(
-      smsURL
-    );
+    expect(await iexec.config.resolveSmsURL()).toBe(smsURL);
     expect(await iexec.config.resolveIexecGatewayURL()).toBe(iexecGatewayURL);
   });
 
@@ -189,7 +187,7 @@ describe('IExecWeb3mail()', () => {
           arbitrumSepoliaConfig!.ipfsGateway
         );
         expect(web3mail['ipfsNode']).toBe(arbitrumSepoliaConfig!.ipfsUploadUrl);
-        expect(web3mail['dappAddressOrENS']).toMatch(/^0x[a-fA-F0-9]{40}$/); // resolved from Compass
+        expect(web3mail['dappAddress']).toMatch(/^0x[a-fA-F0-9]{40}$/); // resolved from Compass
         expect(web3mail['dappWhitelistAddress']).toBe(
           arbitrumSepoliaConfig!.whitelistSmartContract.toLowerCase()
         );
@@ -203,17 +201,17 @@ describe('IExecWeb3mail()', () => {
 
       it('should allow custom configuration override for Arbitrum Sepolia', async () => {
         const customIpfsGateway = 'https://custom-arbitrum-ipfs.com';
-        const customDappAddress = 'custom.arbitrum.app.eth';
+        const customDappAddress = '0x2222222222222222222222222222222222222222';
 
         const web3mail = new IExecWeb3mail(experimentalNetworkSigner, {
           allowExperimentalNetworks: true,
           ipfsGateway: customIpfsGateway,
-          dappAddressOrENS: customDappAddress,
+          dappAddress: customDappAddress,
         });
         await web3mail.init();
 
         expect(web3mail['ipfsGateway']).toBe(customIpfsGateway);
-        expect(web3mail['dappAddressOrENS']).toBe(customDappAddress);
+        expect(web3mail['dappAddress']).toBe(customDappAddress);
 
         const arbitrumSepoliaConfig = getChainDefaultConfig(421614, {
           allowExperimentalNetworks: true,
@@ -250,9 +248,9 @@ describe('IExecWeb3mail()', () => {
       );
       await web3mail.init();
 
-      const dappAddressOrENS = web3mail['dappAddressOrENS'];
-      expect(typeof dappAddressOrENS).toBe('string');
-      expect(dappAddressOrENS).toMatch(/^0x[a-fA-F0-9]{40}$/);
+      const dappAddress = web3mail['dappAddress'];
+      expect(typeof dappAddress).toBe('string');
+      expect(dappAddress).toMatch(/^0x[a-fA-F0-9]{40}$/);
     });
   });
 });

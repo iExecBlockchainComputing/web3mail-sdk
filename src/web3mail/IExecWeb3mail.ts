@@ -11,7 +11,7 @@ import {
   Contact,
   FetchUserContactsParams,
   SendEmailParams,
-  AddressOrENS,
+  Address,
   Web3MailConfigOptions,
   SendEmailResponse,
   Web3SignerProvider,
@@ -34,8 +34,8 @@ type EthersCompatibleProvider =
   | string;
 
 interface Web3mailResolvedConfig {
-  dappAddressOrENS: AddressOrENS;
-  dappWhitelistAddress: AddressOrENS;
+  dappAddress: Address;
+  dappWhitelistAddress: Address;
   graphQLClient: GraphQLClient;
   ipfsNode: string;
   ipfsGateway: string;
@@ -45,9 +45,9 @@ interface Web3mailResolvedConfig {
 }
 
 export class IExecWeb3mail {
-  private dappAddressOrENS!: AddressOrENS;
+  private dappAddress!: Address;
 
-  private dappWhitelistAddress!: AddressOrENS;
+  private dappWhitelistAddress!: Address;
 
   private graphQLClient!: GraphQLClient;
 
@@ -78,7 +78,7 @@ export class IExecWeb3mail {
   async init(): Promise<void> {
     if (!this.initPromise) {
       this.initPromise = this.resolveConfig().then((config) => {
-        this.dappAddressOrENS = config.dappAddressOrENS;
+        this.dappAddress = config.dappAddress;
         this.dappWhitelistAddress = config.dappWhitelistAddress;
         this.graphQLClient = config.graphQLClient;
         this.ipfsNode = config.ipfsNode;
@@ -99,7 +99,7 @@ export class IExecWeb3mail {
       ...args,
       iexec: this.iexec,
       graphQLClient: this.graphQLClient,
-      dappAddressOrENS: this.dappAddressOrENS,
+      dappAddress: this.dappAddress,
       dappWhitelistAddress: this.dappWhitelistAddress,
     });
   }
@@ -111,7 +111,7 @@ export class IExecWeb3mail {
       ...args,
       iexec: this.iexec,
       graphQLClient: this.graphQLClient,
-      dappAddressOrENS: this.dappAddressOrENS,
+      dappAddress: this.dappAddress,
       dappWhitelistAddress: this.dappWhitelistAddress,
     });
   }
@@ -121,12 +121,11 @@ export class IExecWeb3mail {
     await isValidProvider(this.iexec);
     return sendEmail({
       ...args,
-      workerpoolAddressOrEns:
-        args.workerpoolAddressOrEns || this.defaultWorkerpool,
+      workerpoolAddress: args.workerpoolAddress || this.defaultWorkerpool,
       iexec: this.iexec,
       ipfsNode: this.ipfsNode,
       ipfsGateway: this.ipfsGateway,
-      dappAddressOrENS: this.dappAddressOrENS,
+      dappAddress: this.dappAddress,
       dappWhitelistAddress: this.dappWhitelistAddress,
       graphQLClient: this.graphQLClient,
     });
@@ -136,16 +135,15 @@ export class IExecWeb3mail {
     args: PrepareEmailCampaignParams
   ): Promise<PrepareEmailCampaignResponse> {
     await this.init();
-    await isValidProvider(this.iexec);
+
     return prepareEmailCampaign({
       ...args,
-      workerpoolAddressOrEns:
-        args.workerpoolAddressOrEns || this.defaultWorkerpool,
+      workerpoolAddress: args.workerpoolAddress || this.defaultWorkerpool,
       iexec: this.iexec,
       dataProtector: this.dataProtector,
       ipfsNode: this.ipfsNode,
       ipfsGateway: this.ipfsGateway,
-      dappAddressOrENS: this.dappAddressOrENS,
+      dappAddress: this.dappAddress,
     });
   }
 
@@ -156,8 +154,7 @@ export class IExecWeb3mail {
     await isValidProvider(this.iexec);
     return sendEmailCampaign({
       ...args,
-      workerpoolAddressOrEns:
-        args.workerpoolAddressOrEns || this.defaultWorkerpool,
+      workerpoolAddress: args.workerpoolAddress || this.defaultWorkerpool,
       dataProtector: this.dataProtector,
     });
   }
@@ -189,8 +186,8 @@ export class IExecWeb3mail {
     const subgraphUrl =
       this.options?.dataProtectorSubgraph ||
       chainDefaultConfig?.dataProtectorSubgraph;
-    const dappAddressOrENS =
-      this.options?.dappAddressOrENS ||
+    const dappAddress =
+      this.options?.dappAddress ||
       chainDefaultConfig?.dappAddress ||
       (await resolveDappAddressFromCompass(
         await iexec.config.resolveCompassURL(),
@@ -205,7 +202,7 @@ export class IExecWeb3mail {
 
     const missing = [];
     if (!subgraphUrl) missing.push('dataProtectorSubgraph');
-    if (!dappAddressOrENS) missing.push('dappAddress');
+    if (!dappAddress) missing.push('dappAddress');
     if (!dappWhitelistAddress) missing.push('whitelistSmartContract');
     if (!ipfsGateway) missing.push('ipfsGateway');
     if (!defaultWorkerpool) missing.push('prodWorkerpoolAddress');
@@ -237,7 +234,7 @@ export class IExecWeb3mail {
     });
 
     return {
-      dappAddressOrENS,
+      dappAddress,
       dappWhitelistAddress: dappWhitelistAddress.toLowerCase(),
       defaultWorkerpool,
       graphQLClient,

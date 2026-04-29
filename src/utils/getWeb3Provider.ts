@@ -10,6 +10,5 @@ export const getWeb3Provider = (
     : 'arbitrum-sepolia-testnet';
   return getSignerFromPrivateKey(chainHost, privateKey, {
     allowExperimentalNetworks: options?.allowExperimentalNetworks,
-    providers: {},
   });
 };

@@ -135,7 +135,7 @@ describe('web3mail.sendEmail()', () => {
               emailSubject: 'e2e mail object for test',
               emailContent: 'e2e mail content for test',
               protectedData: validProtectedData.address,
-              workerpoolAddressOrEns: paidWorkerpoolAddress,
+              workerpoolAddress: paidWorkerpoolAddress,
             })
             .catch((e) => (error = e));
           expect(error).toBeDefined();
@@ -157,7 +157,7 @@ describe('web3mail.sendEmail()', () => {
               emailSubject: 'e2e mail object for test',
               emailContent: 'e2e mail content for test',
               protectedData: validProtectedData.address,
-              workerpoolAddressOrEns: paidWorkerpoolAddress,
+              workerpoolAddress: paidWorkerpoolAddress,
               workerpoolMaxPrice: prodWorkerpoolPublicPrice,
             })
             .catch((e) => (error = e));
@@ -182,7 +182,7 @@ describe('web3mail.sendEmail()', () => {
             emailSubject: 'e2e mail object for test',
             emailContent: 'e2e mail content for test',
             protectedData: validProtectedData.address,
-            workerpoolAddressOrEns: paidWorkerpoolAddress,
+            workerpoolAddress: paidWorkerpoolAddress,
             workerpoolMaxPrice: prodWorkerpoolPublicPrice,
           });
           expect(sendEmailResponse).toStrictEqual({
@@ -203,7 +203,7 @@ describe('web3mail.sendEmail()', () => {
           emailSubject: 'e2e mail object for test',
           emailContent: 'e2e mail content for test',
           protectedData: invalidProtectedData.address,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         })
       ).rejects.toThrow(
         new Error(
@@ -229,7 +229,7 @@ describe('web3mail.sendEmail()', () => {
           emailSubject: 'e2e mail object for test',
           emailContent: 'e2e mail content for test',
           protectedData: protectedData.address,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         })
       ).rejects.toThrow(
         new WorkflowError({
@@ -264,7 +264,7 @@ describe('web3mail.sendEmail()', () => {
       try {
         await invalidWeb3mail.sendEmail({
           protectedData: validProtectedData.address,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
           emailSubject: 'My email subject',
           emailContent: 'My email content',
         });
@@ -289,7 +289,7 @@ describe('web3mail.sendEmail()', () => {
           emailSubject: 'e2e mail object for test',
           emailContent: 'e2e mail content for test',
           protectedData: validProtectedData.address,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         });
         expect(sendEmailResponse).toStrictEqual({
           taskId: expect.any(String),
@@ -322,7 +322,7 @@ describe('web3mail.sendEmail()', () => {
           emailSubject: 'e2e mail object for test',
           emailContent: 'e2e mail content for test',
           protectedData: protectedDataForWhitelist.address,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         });
         expect(sendEmailResponse).toStrictEqual({
           taskId: expect.any(String),
@@ -341,7 +341,7 @@ describe('web3mail.sendEmail()', () => {
             '<html><body><h1>Test html</h1> <p>test paragraph </p></body></html>',
           protectedData: validProtectedData.address,
           contentType: 'text/html',
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         });
         expect(sendEmailResponse).toStrictEqual({
           taskId: expect.any(String),
@@ -359,7 +359,7 @@ describe('web3mail.sendEmail()', () => {
           emailContent: 'e2e mail content for test',
           protectedData: validProtectedData.address,
           senderName: 'Product Team',
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         });
         expect(sendEmailResponse).toStrictEqual({
           taskId: expect.any(String),
@@ -381,7 +381,7 @@ describe('web3mail.sendEmail()', () => {
           emailContent: LARGE_CONTENT,
           protectedData: validProtectedData.address,
           senderName: 'Product Team',
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
         });
         expect(sendEmailResponse).toStrictEqual({
           taskId: expect.any(String),
@@ -398,7 +398,7 @@ describe('web3mail.sendEmail()', () => {
           emailSubject: 'e2e mail object for test',
           emailContent: 'e2e mail content for test',
           protectedData: validProtectedData.address,
-          workerpoolAddressOrEns: prodWorkerpoolAddress,
+          workerpoolAddress: prodWorkerpoolAddress,
           label: 'ID1234678',
         });
         expect(sendEmailResponse).toStrictEqual({

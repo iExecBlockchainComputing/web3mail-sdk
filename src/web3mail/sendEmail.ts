@@ -11,7 +11,6 @@ import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
 import * as ipfs from '../utils/ipfs-service.js';
 import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
-  addressOrEnsSchema,
   addressSchema,
   contentTypeSchema,
   emailContentSchema,
@@ -37,8 +36,8 @@ export type SendEmail = typeof sendEmail;
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  workerpoolAddressOrEns,
-  dappAddressOrENS,
+  workerpoolAddress,
+  dappAddress,
   dappWhitelistAddress,
   ipfsNode,
   ipfsGateway,
@@ -58,7 +57,7 @@ export const sendEmail = async ({
   IpfsNodeConfigConsumer &
   IpfsGatewayConfigConsumer &
   SendEmailParams): Promise<SendEmailResponse> => {
-  const vDatasetAddress = addressOrEnsSchema()
+  const vDatasetAddress = addressSchema()
     .required()
     .label('protectedData')
     .validateSync(protectedData);
@@ -84,15 +83,15 @@ export const sendEmail = async ({
 
   const vLabel = labelSchema().label('label').validateSync(label);
 
-  const vWorkerpoolAddressOrEns = addressOrEnsSchema()
+  const vWorkerpoolAddress = addressSchema()
     .required()
-    .label('WorkerpoolAddressOrEns')
-    .validateSync(workerpoolAddressOrEns);
+    .label('workerpoolAddress')
+    .validateSync(workerpoolAddress);
 
-  const vDappAddressOrENS = addressOrEnsSchema()
+  const vDappAddress = addressSchema()
     .required()
-    .label('dappAddressOrENS')
-    .validateSync(dappAddressOrENS);
+    .label('dappAddress')
+    .validateSync(dappAddress);
 
   const vDappWhitelistAddress = addressSchema()
     .required()
@@ -129,9 +128,9 @@ export const sendEmail = async ({
     // Fetch app order first to determine TEE framework
     const apporder = await iexec.orderbook
       .fetchAppOrderbook({
-        app: dappAddressOrENS,
+        app: vDappAddress,
         minTag: ['tee'],
-        workerpool: workerpoolAddressOrEns,
+        workerpool: vWorkerpoolAddress,
       })
       .then((appOrderbook) => {
         const desiredPriceAppOrderbook = appOrderbook.orders.filter(
@@ -152,7 +151,7 @@ export const sendEmail = async ({
         iexec.orderbook
           .fetchDatasetOrderbook({
             dataset: vDatasetAddress,
-            app: dappAddressOrENS,
+            app: vDappAddress,
             requester: requesterAddress,
           })
           .then((datasetOrderbook) => {
@@ -179,8 +178,8 @@ export const sendEmail = async ({
         Promise.all([
           // for app
           iexec.orderbook.fetchWorkerpoolOrderbook({
-            workerpool: workerpoolAddressOrEns,
-            app: vDappAddressOrENS,
+            workerpool: vWorkerpoolAddress,
+            app: vDappAddress,
             dataset: vDatasetAddress,
             requester: requesterAddress,
             minTag: workerpoolMinTag,
@@ -188,7 +187,7 @@ export const sendEmail = async ({
           }),
           // for app whitelist
           iexec.orderbook.fetchWorkerpoolOrderbook({
-            workerpool: workerpoolAddressOrEns,
+            workerpool: vWorkerpoolAddress,
             app: vDappWhitelistAddress,
             dataset: vDatasetAddress,
             requester: requesterAddress,
@@ -264,14 +263,14 @@ export const sendEmail = async ({
     );
 
     const requestorderToSign = await iexec.order.createRequestorder({
-      app: vDappAddressOrENS,
+      app: vDappAddress,
       category: workerpoolorder.category,
       dataset: vDatasetAddress,
       datasetmaxprice: datasetorder.datasetprice,
       appmaxprice: apporder.appprice,
       workerpoolmaxprice: workerpoolorder.workerpoolprice,
       tag: ['tee'],
-      workerpool: vWorkerpoolAddressOrEns,
+      workerpool: vWorkerpoolAddress,
       callback: CALLBACK_WEB3MAIL,
       params: {
         iexec_secrets: {

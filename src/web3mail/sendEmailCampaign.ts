@@ -2,7 +2,7 @@ import { NULL_ADDRESS } from 'iexec/utils';
 import { ValidationError } from 'yup';
 import { handleIfProtocolError, WorkflowError } from '../utils/errors.js';
 import {
-  addressOrEnsSchema,
+  addressSchema,
   campaignRequestSchema,
   throwIfMissing,
 } from '../utils/validators.js';
@@ -17,7 +17,7 @@ export type SendEmailCampaign = typeof sendEmailCampaign;
 
 export const sendEmailCampaign = async ({
   dataProtector = throwIfMissing(),
-  workerpoolAddressOrEns = throwIfMissing(),
+  workerpoolAddress = throwIfMissing(),
   campaignRequest,
 }: DataProtectorConsumer &
   SendEmailCampaignParams): Promise<SendEmailCampaignResponse> => {
@@ -26,18 +26,18 @@ export const sendEmailCampaign = async ({
     .label('campaignRequest')
     .validateSync(campaignRequest) as CampaignRequest;
 
-  const vWorkerpoolAddressOrEns = addressOrEnsSchema()
+  const vWorkerpoolAddress = addressSchema()
     .required()
-    .label('workerpoolAddressOrEns')
-    .validateSync(workerpoolAddressOrEns);
+    .label('workerpoolAddress')
+    .validateSync(workerpoolAddress);
 
   if (
     vCampaignRequest.workerpool !== NULL_ADDRESS &&
     vCampaignRequest.workerpool.toLowerCase() !==
-      vWorkerpoolAddressOrEns.toLowerCase()
+      vWorkerpoolAddress.toLowerCase()
   ) {
     throw new ValidationError(
-      "workerpoolAddressOrEns doesn't match campaignRequest workerpool"
+      "workerpoolAddress doesn't match campaignRequest workerpool"
     );
   }
 
@@ -45,7 +45,7 @@ export const sendEmailCampaign = async ({
     // Process the prepared bulk request
     const processBulkRequestResponse = await dataProtector.processBulkRequest({
       bulkRequest: vCampaignRequest,
-      workerpool: vWorkerpoolAddressOrEns,
+      workerpool: vWorkerpoolAddress,
       waitForResult: false,
     });
 
