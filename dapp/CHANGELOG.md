@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v1.0.1...dapp-v2.0.0) (2026-04-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove bellecour and SGX Scone support ([#260](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/260))
+
+### Changed
+
+* remove bellecour and SGX Scone support ([#260](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/260)) ([713762b](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/713762b1a17367c849243ab2877f061e48a4ff05))
+
 ## [1.0.1](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v1.0.0...dapp-v1.0.1) (2026-04-17)
 
 
