@@ -3,10 +3,7 @@ import { ValidationError } from 'yup';
 import { type SendEmail } from '../../src/web3mail/sendEmail.js';
 import { getRandomAddress } from '../test-utils.js';
 import { mockAllForSendEmail } from '../utils/mockAllForSendEmail.js';
-import {
-  DEFAULT_CHAIN_ID,
-  getChainDefaultConfig,
-} from '../../src/config/config.js';
+import { getChainDefaultConfig } from '../../src/config/config.js';
 
 jest.unstable_mockModule('../../src/utils/subgraphQuery.js', () => ({
   checkProtectedDataValidity: jest.fn(),
@@ -173,7 +170,7 @@ describe('sendEmail', () => {
 
       const userAddress = await iexec.wallet.getAddress();
 
-      const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+      const defaultConfig = getChainDefaultConfig(421614);
       expect(defaultConfig).not.toBeNull();
 
       // --- WHEN

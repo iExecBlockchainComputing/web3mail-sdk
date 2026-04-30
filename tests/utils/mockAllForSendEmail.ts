@@ -11,11 +11,6 @@ export function mockAllForSendEmail() {
         .fn<() => Promise<Address>>()
         .mockResolvedValue(getRandomAddress()),
     },
-    ens: {
-      resolveName: jest
-        .fn<() => Promise<Address>>()
-        .mockResolvedValue(getRandomAddress()),
-    },
     orderbook: {
       fetchDatasetOrderbook: jest
         .fn<() => Promise<{ orders: any[] }>>()

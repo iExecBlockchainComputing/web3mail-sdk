@@ -8,8 +8,8 @@ import { NULL_ADDRESS } from 'iexec/utils';
 import { IExecWeb3mail } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
-  MAX_EXPECTED_SUBGRAPH_INDEXING_TIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
+  TEST_CHAIN,
   deployRandomDataset,
   getTestConfig,
   getTestDappAddress,
@@ -191,7 +191,7 @@ describe('web3mail.fetchMyContacts()', () => {
         expect(noBulkContact).toBeUndefined();
       },
       MAX_EXPECTED_BLOCKTIME +
-        MAX_EXPECTED_SUBGRAPH_INDEXING_TIME +
+        TEST_CHAIN.maxExpectedSubgraphIndexingTime +
         MAX_EXPECTED_WEB2_SERVICES_TIME
     );
 

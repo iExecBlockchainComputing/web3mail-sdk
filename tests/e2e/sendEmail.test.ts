@@ -23,10 +23,7 @@ import {
 } from '../test-utils.js';
 import { IExec } from 'iexec';
 import { NULL_ADDRESS } from 'iexec/utils';
-import {
-  DEFAULT_CHAIN_ID,
-  getChainDefaultConfig,
-} from '../../src/config/config.js';
+import { getChainDefaultConfig } from '../../src/config/config.js';
 
 describe('web3mail.sendEmail()', () => {
   let consumerWallet: HDNodeWallet;
@@ -311,8 +308,7 @@ describe('web3mail.sendEmail()', () => {
 
         //grant access to whitelist
         await dataProtector.grantAccess({
-          authorizedApp:
-            getChainDefaultConfig(DEFAULT_CHAIN_ID)?.whitelistSmartContract, //whitelist address
+          authorizedApp: getChainDefaultConfig(421614)?.whitelistSmartContract, //whitelist address
           protectedData: protectedDataForWhitelist.address,
           authorizedUser: consumerWallet.address, // consumer wallet
           numberOfAccess: 1000,

@@ -68,10 +68,10 @@ export class IExecWeb3mail {
   private options: Web3MailConfigOptions;
 
   constructor(
-    ethProvider?: EthersCompatibleProvider,
+    ethProvider: EthersCompatibleProvider,
     options?: Web3MailConfigOptions
   ) {
-    this.ethProvider = ethProvider || 'arbitrum-sepolia-testnet';
+    this.ethProvider = ethProvider;
     this.options = options || {};
   }
 

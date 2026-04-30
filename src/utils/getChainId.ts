@@ -5,7 +5,7 @@ import {
   AbstractSigner,
   Eip1193Provider,
 } from 'ethers';
-import { DEFAULT_CHAIN_ID } from '../config/config.js';
+import { tryResolveChainIdFromProviderString } from '../config/config.js';
 
 type EthersCompatibleProvider =
   | string
@@ -18,6 +18,10 @@ export async function getChainIdFromProvider(
 ): Promise<number> {
   try {
     if (typeof ethProvider === 'string') {
+      const resolved = tryResolveChainIdFromProviderString(ethProvider);
+      if (resolved !== undefined) {
+        return resolved;
+      }
       const provider = new JsonRpcProvider(ethProvider);
       const network = await provider.getNetwork();
       return Number(network.chainId);
@@ -38,6 +42,11 @@ export async function getChainIdFromProvider(
     }
   } catch (e) {
     console.warn('Failed to detect chainId:', e);
+    throw new Error(
+      `Failed to detect chainId from ethProvider: ${
+        e instanceof Error ? e.message : String(e)
+      }`
+    );
   }
-  return DEFAULT_CHAIN_ID;
+  throw new Error('Unsupported ethProvider for chain ID detection');
 }

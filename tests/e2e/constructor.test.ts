@@ -8,10 +8,7 @@ import {
   getTestWeb3SignerProvider,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
 } from '../test-utils.js';
-import {
-  DEFAULT_CHAIN_ID,
-  getChainDefaultConfig,
-} from '../../src/config/config.js';
+import { getChainDefaultConfig } from '../../src/config/config.js';
 
 describe('IExecWeb3mail()', () => {
   it('instantiates with a valid ethProvider', async () => {
@@ -30,7 +27,7 @@ describe('IExecWeb3mail()', () => {
     );
     await web3mail.init();
     const ipfsGateway = web3mail['ipfsGateway'];
-    const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+    const defaultConfig = getChainDefaultConfig(421614);
     expect(defaultConfig).not.toBeNull();
     expect(ipfsGateway).toStrictEqual(defaultConfig!.ipfsGateway);
   });
@@ -56,7 +53,7 @@ describe('IExecWeb3mail()', () => {
     );
     await web3mail.init();
     const graphQLClient = web3mail['graphQLClient'];
-    const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+    const defaultConfig = getChainDefaultConfig(421614);
     expect(defaultConfig).not.toBeNull();
     expect(graphQLClient['url']).toBe(defaultConfig!.dataProtectorSubgraph);
   });
@@ -145,10 +142,8 @@ describe('IExecWeb3mail()', () => {
   describe('When instantiating SDK with an experimental network', () => {
     const experimentalNetworkSigner = getWeb3Provider(
       Wallet.createRandom().privateKey,
-      {
-        host: 421614,
-        allowExperimentalNetworks: true,
-      }
+      421614,
+      { allowExperimentalNetworks: true }
     );
 
     describe('Without allowExperimentalNetworks', () => {
@@ -240,8 +235,7 @@ describe('IExecWeb3mail()', () => {
       expect(chainConfig.dappAddress).toBeUndefined(); // ENS not supported on this network
 
       const web3mail = new IExecWeb3mail(
-        getWeb3Provider(Wallet.createRandom().privateKey, {
-          host: chainId,
+        getWeb3Provider(Wallet.createRandom().privateKey, chainId, {
           allowExperimentalNetworks: true,
         }),
         { allowExperimentalNetworks: true }

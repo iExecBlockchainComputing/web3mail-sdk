@@ -12,7 +12,6 @@ import {
 } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
-  MAX_EXPECTED_SUBGRAPH_INDEXING_TIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
   TEST_CHAIN,
   createAndPublishAppOrders,
@@ -122,7 +121,7 @@ describe('web3mail.sendEmailCampaign()', () => {
     await waitSubgraphIndexing();
 
     web3mail = new IExecWeb3mail(...getTestConfig(consumerWallet.privateKey));
-  }, MAX_EXPECTED_BLOCKTIME + MAX_EXPECTED_SUBGRAPH_INDEXING_TIME);
+  }, MAX_EXPECTED_BLOCKTIME + TEST_CHAIN.maxExpectedSubgraphIndexingTime);
 
   describe('when using the default (not free) prod workerpool', () => {
     it(

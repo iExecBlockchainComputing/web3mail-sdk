@@ -5,8 +5,6 @@ export const DEFAULT_CONTENT_TYPE = 'text/plain';
 export const ANY_DATASET_ADDRESS = 'any';
 export const CALLBACK_WEB3MAIL = '0x5f936db7ad6d29371808e42a87015595d90509ba';
 
-export const DEFAULT_CHAIN_ID = 421614;
-
 interface ChainConfig {
   name: string;
   dappAddress?: string;
@@ -57,3 +55,27 @@ export const getChainDefaultConfig = (
 
   return config;
 };
+
+/**
+ * When `ethProvider` is a string, it may be an RPC URL, a decimal chain id, or an
+ * iExec chain host name (see each chain's `name` in CHAIN_CONFIG). RPC URLs are not
+ * resolved here (returns undefined); JsonRpcProvider handles those.
+ */
+export function tryResolveChainIdFromProviderString(
+  hint: string
+): number | undefined {
+  const trimmed = hint.trim();
+  if (/^https?:\/\//i.test(trimmed)) {
+    return undefined;
+  }
+  if (/^\d+$/.test(trimmed)) {
+    return Number(trimmed);
+  }
+  const lower = trimmed.toLowerCase();
+  for (const [id, cfg] of Object.entries(CHAIN_CONFIG)) {
+    if (cfg.name.toLowerCase() === lower) {
+      return Number(id);
+    }
+  }
+  return undefined;
+}

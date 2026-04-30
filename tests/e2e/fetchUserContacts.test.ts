@@ -4,15 +4,12 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet, Wallet } from 'ethers';
-import {
-  DEFAULT_CHAIN_ID,
-  getChainDefaultConfig,
-} from '../../src/config/config.js';
+import { getChainDefaultConfig } from '../../src/config/config.js';
 import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
-  MAX_EXPECTED_SUBGRAPH_INDEXING_TIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
+  TEST_CHAIN,
   getTestConfig,
   getTestDappAddress,
   setBalance,
@@ -97,7 +94,7 @@ describe('web3mail.fetchMyContacts()', () => {
       async () => {
         const userWithAccess = Wallet.createRandom().address;
         const authorizedWhitelist =
-          getChainDefaultConfig(DEFAULT_CHAIN_ID)!.whitelistSmartContract;
+          getChainDefaultConfig(421614)!.whitelistSmartContract;
 
         await dataProtector.grantAccess({
           authorizedApp: dappAddress,
@@ -308,7 +305,7 @@ describe('web3mail.fetchMyContacts()', () => {
         expect(noBulkContact).toBeUndefined();
       },
       MAX_EXPECTED_BLOCKTIME +
-        MAX_EXPECTED_SUBGRAPH_INDEXING_TIME +
+        TEST_CHAIN.maxExpectedSubgraphIndexingTime +
         MAX_EXPECTED_WEB2_SERVICES_TIME
     );
 

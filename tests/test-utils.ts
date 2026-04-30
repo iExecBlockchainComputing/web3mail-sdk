@@ -16,12 +16,6 @@ import {
 import { IExec, utils } from 'iexec';
 import { randomInt } from 'crypto';
 
-export const TEST_COMPASS_URL = 'http://127.0.0.1:8069';
-
-const TEST_POOL_SIGNER = new Wallet(
-  '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
-);
-
 export const TEST_CHAIN = {
   name: 'arbitrum-sepolia' as const,
   isNative: false,
@@ -35,9 +29,11 @@ export const TEST_CHAIN = {
   smsURL: 'http://127.0.0.1:13350',
   resultProxyURL: 'http://127.0.0.1:13250',
   iexecGatewayURL: 'http://127.0.0.1:3050',
-  compassUrl: TEST_COMPASS_URL,
+  compassUrl: 'http://127.0.0.1:8069',
   prodWorkerpool: '0x2956f0cb779904795a5f30d3b3ea88b714c3123f',
-  prodWorkerpoolOwnerWallet: TEST_POOL_SIGNER,
+  prodWorkerpoolOwnerWallet: new Wallet(
+    '0x6a12f56d7686e85ab0f46eb3c19cb0c75bfabf8fb04e595654fc93ad652fa7bc'
+  ),
   appOwnerWallet: new Wallet(
     '0xa911b93e50f57c156da0b8bff2277d241bcdb9345221a3e246a99c6e7cedcde5'
   ),
@@ -46,6 +42,20 @@ export const TEST_CHAIN = {
   }),
   hubAddress: '0xB2157BF2fAb286b2A4170E3491Ac39770111Da3E',
   defaultInitBalance: 1n * 10n ** 18n,
+  subgraphUrl: 'http://127.0.0.1:8000/subgraphs/name/DataProtector-v2',
+  /**
+   * [rlc-multichain](https://github.com/iExecBlockchainComputing/rlc-multichain/tree/v0.1.0) is an openzeppelin ERC20Upgradeable contract
+   *
+   * ERC20Upgradeable contract use a specific storage slot, which is:
+   * ```
+   * // keccak256(abi.encode(uint256(keccak256("openzeppelin.storage.ERC20")) - 1)) & ~bytes32(uint256(0xff))
+   * bytes32 private constant ERC20StorageLocation = 0x52c63247e1f47db19d5ce0460030c497f067ca4cebf71ba98eeadabe20bace00;
+   * ```
+   * sources: https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/v5.3.0/contracts/token/ERC20/ERC20Upgradeable.sol#L43-L44
+   */
+  erc20BalanceSlot:
+    '0x52c63247e1f47db19d5ce0460030c497f067ca4cebf71ba98eeadabe20bace00' as const,
+  maxExpectedSubgraphIndexingTime: 10_000,
 };
 
 const HUB_TOKEN_ABI = [
@@ -57,9 +67,6 @@ const HUB_TOKEN_ABI = [
     type: 'function',
   },
 ] as const;
-
-const ERC20_BALANCE_SLOT =
-  '0x52c63247e1f47db19d5ce0460030c497f067ca4cebf71ba98eeadabe20bace00';
 
 const anvilSetStorageAt = async (
   contract: string,
@@ -91,7 +98,7 @@ const anvilSetNRlcTokenBalance = async (
   const balanceSlot = keccak256(
     AbiCoder.defaultAbiCoder().encode(
       ['address', 'uint256'],
-      [address, ERC20_BALANCE_SLOT]
+      [address, TEST_CHAIN.erc20BalanceSlot]
     )
   );
   await anvilSetStorageAt(
@@ -103,11 +110,6 @@ const anvilSetNRlcTokenBalance = async (
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-export const MAX_EXPECTED_SUBGRAPH_INDEXING_TIME = 10_000;
-
-const DATAPROTECTOR_SUBGRAPH_URL =
-  'http://127.0.0.1:8000/subgraphs/name/DataProtector-v2';
-
 export const waitSubgraphIndexing = async (
   timeoutMs = 60_000
 ): Promise<void> => {
@@ -117,7 +119,7 @@ export const waitSubgraphIndexing = async (
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
-      const res = await fetch(DATAPROTECTOR_SUBGRAPH_URL, {
+      const res = await fetch(TEST_CHAIN.subgraphUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: '{ _meta { block { number } } }' }),
@@ -171,9 +173,8 @@ export const getTestConfig = (
     iexecOptions: getTestIExecOption(),
     ipfsGateway: 'http://127.0.0.1:8080',
     ipfsNode: 'http://127.0.0.1:5001',
-    dataProtectorSubgraph:
-      'http://127.0.0.1:8000/subgraphs/name/DataProtector-v2',
-    compassUrl: TEST_COMPASS_URL,
+    dataProtectorSubgraph: TEST_CHAIN.subgraphUrl,
+    compassUrl: TEST_CHAIN.compassUrl,
   };
   return [ethProvider, options];
 };
@@ -181,7 +182,7 @@ export const getTestConfig = (
 export const getTestDappAddress = async (): Promise<string> => {
   const chainId = Number(TEST_CHAIN.chainId);
   const res = await fetch(
-    `${TEST_COMPASS_URL}/${chainId}/iapps/web3mail-tdx`
+    `${TEST_CHAIN.compassUrl}/${chainId}/iapps/web3mail-tdx`
   ).then((r) => r.json());
   if (!res?.address) {
     throw new Error(`Could not resolve dapp address from test compass`);
