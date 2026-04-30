@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v2.0.0...web3mail-v2.0.1) (2026-04-30)
+
+
+### Changed
+
+* cleanup jsdoc ([#263](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/263)) ([0f64a5b](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/0f64a5b46070dbc9602499fd78231ab370845d25))
+
 ## [2.0.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/web3mail-v1.9.0...web3mail-v2.0.0) (2026-04-30)
 
 
