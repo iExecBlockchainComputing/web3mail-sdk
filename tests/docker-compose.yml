@@ -247,7 +247,7 @@ services:
       postgres_db: graphnode-db
       ipfs: ipfs:5001
       ethereum: 'arbitrum-sepolia:http://arbitrum-sepolia-fork:8545'
-      GRAPH_ETHEREUM_GENESIS_BLOCK_NUMBER: $ARBITRUM_SEPOLIA_FORK_BLOCK
+      GRAPH_ETHEREUM_GENESIS_BLOCK_NUMBER: $ARBITRUM_SEPOLIA_INDEX_BLOCK
     depends_on:
       arbitrum-sepolia-fork:
         condition: service_healthy
@@ -264,7 +264,7 @@ services:
 
   dataprotector-subgraph-deployer:
     platform: linux/amd64
-    image: iexechub/dataprotector-subgraph-deployer:3.0.0
+    image: iexechub/dataprotector-subgraph-deployer:3.1.1-main-4df5c2d
     restart: 'no'
     depends_on:
       graphnode:
@@ -272,13 +272,11 @@ services:
       ipfs:
         condition: service_started
     environment:
-      ENV: prod
       START_BLOCK: $ARBITRUM_SEPOLIA_INDEX_BLOCK
-      DATAPROTECTOR_ADDRESS: '0x168eAF6C33a77E3caD9db892452f51a5D91df621'
-      APP_REGISTRY_ADDRESS: '0x9950D94FB074182eE93fF79a50CD698C4983281F'
-      DATASET_REGISTRY_ADDRESS: '0x07cc4E1Ea30dD02796795876509a3bfC5053128d'
+      NETWORK_NAME: arbitrum-sepolia
       GRAPHNODE_URL: http://graphnode:8020
       IPFS_URL: http://ipfs:5001
+      ENV: prod
 
   stack-ready:
     image: bash
