@@ -4,16 +4,15 @@ import {
 } from '@iexec/dataprotector';
 import { beforeAll, describe, expect, it } from '@jest/globals';
 import { HDNodeWallet, Wallet } from 'ethers';
-import {
-  DEFAULT_CHAIN_ID,
-  getChainDefaultConfig,
-} from '../../src/config/config.js';
+import { getChainDefaultConfig } from '../../src/config/config.js';
 import { IExecWeb3mail, WorkflowError } from '../../src/index.js';
 import {
   MAX_EXPECTED_BLOCKTIME,
-  MAX_EXPECTED_SUBGRAPH_INDEXING_TIME,
   MAX_EXPECTED_WEB2_SERVICES_TIME,
+  TEST_CHAIN,
   getTestConfig,
+  getTestDappAddress,
+  setBalance,
   waitSubgraphIndexing,
 } from '../test-utils.js';
 
@@ -23,9 +22,12 @@ describe('web3mail.fetchMyContacts()', () => {
   let dataProtector: IExecDataProtectorCore;
   let protectedData1: ProtectedDataWithSecretProps;
   let protectedData2: ProtectedDataWithSecretProps;
+  let dappAddress: string;
 
   beforeAll(async () => {
     wallet = Wallet.createRandom();
+    await setBalance(wallet.address, 10n ** 18n);
+    dappAddress = await getTestDappAddress();
     dataProtector = new IExecDataProtectorCore(
       ...getTestConfig(wallet.privateKey)
     );
@@ -49,7 +51,7 @@ describe('web3mail.fetchMyContacts()', () => {
 
       await web3mail.init();
       // eslint-disable-next-line @typescript-eslint/dot-notation
-      const authorizedApp = web3mail['dappAddressOrENS'];
+      const authorizedApp = web3mail['dappAddress'];
 
       await dataProtector.grantAccess({
         authorizedApp: authorizedApp,
@@ -91,13 +93,11 @@ describe('web3mail.fetchMyContacts()', () => {
       'should return the user contacts for both app and whitelist',
       async () => {
         const userWithAccess = Wallet.createRandom().address;
-        const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
-        expect(defaultConfig).not.toBeNull();
-        const authorizedApp = defaultConfig!.dappAddress;
-        const authorizedWhitelist = defaultConfig!.whitelistSmartContract;
+        const authorizedWhitelist =
+          getChainDefaultConfig(421614)!.whitelistSmartContract;
 
         await dataProtector.grantAccess({
-          authorizedApp: authorizedApp,
+          authorizedApp: dappAddress,
           protectedData: protectedData1.address,
           authorizedUser: userWithAccess,
         });
@@ -107,6 +107,8 @@ describe('web3mail.fetchMyContacts()', () => {
           protectedData: protectedData2.address,
           authorizedUser: userWithAccess,
         });
+
+        await waitSubgraphIndexing();
 
         const contacts = await web3mail.fetchUserContacts({
           userAddress: userWithAccess,
@@ -122,21 +124,20 @@ describe('web3mail.fetchMyContacts()', () => {
       async () => {
         const user1 = Wallet.createRandom().address;
         const user2 = Wallet.createRandom().address;
-        const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
-        expect(defaultConfig).not.toBeNull();
-        const authorizedApp = defaultConfig!.dappAddress;
 
         await dataProtector.grantAccess({
-          authorizedApp: authorizedApp,
+          authorizedApp: dappAddress,
           protectedData: protectedData1.address,
           authorizedUser: user1,
         });
 
         await dataProtector.grantAccess({
-          authorizedApp: authorizedApp,
+          authorizedApp: dappAddress,
           protectedData: protectedData2.address,
           authorizedUser: user2,
         });
+
+        await waitSubgraphIndexing();
 
         const contactUser1 = await web3mail.fetchUserContacts({
           userAddress: user1,
@@ -153,15 +154,15 @@ describe('web3mail.fetchMyContacts()', () => {
       'Test that the protected data can be accessed by authorized user',
       async () => {
         const userWithAccess = Wallet.createRandom().address;
-        const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
-        expect(defaultConfig).not.toBeNull();
-        const authorizedApp = defaultConfig!.dappAddress;
 
         await dataProtector.grantAccess({
-          authorizedApp: authorizedApp,
+          authorizedApp: dappAddress,
           protectedData: protectedData1.address,
           authorizedUser: userWithAccess,
         });
+
+        await waitSubgraphIndexing();
+
         const contacts = await web3mail.fetchUserContacts({
           userAddress: userWithAccess,
         });
@@ -216,14 +217,10 @@ describe('web3mail.fetchMyContacts()', () => {
         // Call getTestConfig to get the default configuration
         const [ethProvider, defaultOptions] = getTestConfig(wallet.privateKey);
 
-        const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
-        expect(defaultConfig).not.toBeNull();
-        const authorizedApp = defaultConfig!.dappAddress;
-
         await dataProtector.grantAccess({
-          authorizedApp: authorizedApp,
+          authorizedApp: dappAddress,
           protectedData: protectedData1.address,
-          authorizedUser: ethProvider.address,
+          authorizedUser: await ethProvider.getAddress(),
         });
 
         const options = {
@@ -270,12 +267,9 @@ describe('web3mail.fetchMyContacts()', () => {
     it(
       'should return only contacts with bulk access when bulkOnly is true',
       async () => {
-        const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
-        expect(defaultConfig).not.toBeNull();
-
         // Grant access with allowBulk: true
         await dataProtector.grantAccess({
-          authorizedApp: defaultConfig!.dappAddress,
+          authorizedApp: dappAddress,
           protectedData: protectedDataWithBulk.address,
           authorizedUser: userWithAccess,
           allowBulk: true,
@@ -283,7 +277,7 @@ describe('web3mail.fetchMyContacts()', () => {
 
         // Grant access with allowBulk: false (or default)
         await dataProtector.grantAccess({
-          authorizedApp: defaultConfig!.dappAddress,
+          authorizedApp: dappAddress,
           protectedData: protectedDataWithoutBulk.address,
           authorizedUser: userWithAccess,
           allowBulk: false,
@@ -311,7 +305,7 @@ describe('web3mail.fetchMyContacts()', () => {
         expect(noBulkContact).toBeUndefined();
       },
       MAX_EXPECTED_BLOCKTIME +
-        MAX_EXPECTED_SUBGRAPH_INDEXING_TIME +
+        TEST_CHAIN.maxExpectedSubgraphIndexingTime +
         MAX_EXPECTED_WEB2_SERVICES_TIME
     );
 

@@ -11,9 +11,7 @@ import { generateSecureUniqueId } from '../utils/generateUniqueId.js';
 import * as ipfs from '../utils/ipfs-service.js';
 import { checkProtectedDataValidity } from '../utils/subgraphQuery.js';
 import {
-  addressOrEnsSchema,
   addressSchema,
-  booleanSchema,
   contentTypeSchema,
   emailContentSchema,
   emailSubjectSchema,
@@ -22,10 +20,7 @@ import {
   senderNameSchema,
   throwIfMissing,
 } from '../utils/validators.js';
-import {
-  checkUserVoucher,
-  filterWorkerpoolOrders,
-} from './sendEmail.models.js';
+import { filterWorkerpoolOrders } from './sendEmail.models.js';
 import { SendEmailParams, SendEmailResponse } from './types.js';
 import {
   DappAddressConsumer,
@@ -41,8 +36,8 @@ export type SendEmail = typeof sendEmail;
 export const sendEmail = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  workerpoolAddressOrEns,
-  dappAddressOrENS,
+  workerpoolAddress,
+  dappAddress,
   dappWhitelistAddress,
   ipfsNode,
   ipfsGateway,
@@ -55,7 +50,6 @@ export const sendEmail = async ({
   workerpoolMaxPrice = MAX_DESIRED_WORKERPOOL_ORDER_PRICE,
   senderName,
   protectedData,
-  useVoucher = false,
 }: IExecConsumer &
   SubgraphConsumer &
   DappAddressConsumer &
@@ -63,7 +57,7 @@ export const sendEmail = async ({
   IpfsNodeConfigConsumer &
   IpfsGatewayConfigConsumer &
   SendEmailParams): Promise<SendEmailResponse> => {
-  const vDatasetAddress = addressOrEnsSchema()
+  const vDatasetAddress = addressSchema()
     .required()
     .label('protectedData')
     .validateSync(protectedData);
@@ -89,15 +83,15 @@ export const sendEmail = async ({
 
   const vLabel = labelSchema().label('label').validateSync(label);
 
-  const vWorkerpoolAddressOrEns = addressOrEnsSchema()
+  const vWorkerpoolAddress = addressSchema()
     .required()
-    .label('WorkerpoolAddressOrEns')
-    .validateSync(workerpoolAddressOrEns);
+    .label('workerpoolAddress')
+    .validateSync(workerpoolAddress);
 
-  const vDappAddressOrENS = addressOrEnsSchema()
+  const vDappAddress = addressSchema()
     .required()
-    .label('dappAddressOrENS')
-    .validateSync(dappAddressOrENS);
+    .label('dappAddress')
+    .validateSync(dappAddress);
 
   const vDappWhitelistAddress = addressSchema()
     .required()
@@ -116,10 +110,6 @@ export const sendEmail = async ({
     .label('workerpoolMaxPrice')
     .validateSync(workerpoolMaxPrice);
 
-  const vUseVoucher = booleanSchema()
-    .label('useVoucher')
-    .validateSync(useVoucher);
-
   // Check protected data schema through subgraph
   const isValidProtectedData = await checkProtectedDataValidity(
     graphQLClient,
@@ -134,28 +124,13 @@ export const sendEmail = async ({
 
   const requesterAddress = await iexec.wallet.getAddress();
 
-  let userVoucher;
-  if (vUseVoucher) {
-    try {
-      userVoucher = await iexec.voucher.showUserVoucher(requesterAddress);
-      checkUserVoucher({ userVoucher });
-    } catch (err) {
-      if (err?.message?.startsWith('No Voucher found for address')) {
-        throw new Error(
-          'Oops, it seems your wallet is not associated with any voucher. Check on https://builder.iex.ec/'
-        );
-      }
-      throw err;
-    }
-  }
-
   try {
     // Fetch app order first to determine TEE framework
     const apporder = await iexec.orderbook
       .fetchAppOrderbook({
-        app: dappAddressOrENS,
+        app: vDappAddress,
         minTag: ['tee'],
-        workerpool: workerpoolAddressOrEns,
+        workerpool: vWorkerpoolAddress,
       })
       .then((appOrderbook) => {
         const desiredPriceAppOrderbook = appOrderbook.orders.filter(
@@ -176,7 +151,7 @@ export const sendEmail = async ({
         iexec.orderbook
           .fetchDatasetOrderbook({
             dataset: vDatasetAddress,
-            app: dappAddressOrENS,
+            app: vDappAddress,
             requester: requesterAddress,
           })
           .then((datasetOrderbook) => {
@@ -203,21 +178,19 @@ export const sendEmail = async ({
         Promise.all([
           // for app
           iexec.orderbook.fetchWorkerpoolOrderbook({
-            workerpool: workerpoolAddressOrEns,
-            app: vDappAddressOrENS,
+            workerpool: vWorkerpoolAddress,
+            app: vDappAddress,
             dataset: vDatasetAddress,
-            requester: requesterAddress, // public orders + user specific orders
-            isRequesterStrict: useVoucher, // If voucher, we only want user specific orders
+            requester: requesterAddress,
             minTag: workerpoolMinTag,
             category: 0,
           }),
           // for app whitelist
           iexec.orderbook.fetchWorkerpoolOrderbook({
-            workerpool: workerpoolAddressOrEns,
+            workerpool: vWorkerpoolAddress,
             app: vDappWhitelistAddress,
             dataset: vDatasetAddress,
-            requester: requesterAddress, // public orders + user specific orders
-            isRequesterStrict: useVoucher, // If voucher, we only want user specific orders
+            requester: requesterAddress,
             minTag: workerpoolMinTag,
             category: 0,
           }),
@@ -229,8 +202,6 @@ export const sendEmail = async ({
                 ...workerpoolOrderbookForAppWhitelist.orders,
               ],
               workerpoolMaxPrice: vWorkerpoolMaxPrice,
-              useVoucher: vUseVoucher,
-              userVoucher,
             });
 
             if (!desiredPriceWorkerpoolOrder) {
@@ -292,14 +263,14 @@ export const sendEmail = async ({
     );
 
     const requestorderToSign = await iexec.order.createRequestorder({
-      app: vDappAddressOrENS,
+      app: vDappAddress,
       category: workerpoolorder.category,
       dataset: vDatasetAddress,
       datasetmaxprice: datasetorder.datasetprice,
       appmaxprice: apporder.appprice,
       workerpoolmaxprice: workerpoolorder.workerpoolprice,
       tag: ['tee'],
-      workerpool: vWorkerpoolAddressOrEns,
+      workerpool: vWorkerpoolAddress,
       callback: CALLBACK_WEB3MAIL,
       params: {
         iexec_secrets: {
@@ -312,15 +283,12 @@ export const sendEmail = async ({
     const requestorder = await iexec.order.signRequestorder(requestorderToSign);
 
     // Match orders and compute task ID
-    const { dealid: dealId } = await iexec.order.matchOrders(
-      {
-        apporder: apporder,
-        datasetorder: datasetorder,
-        workerpoolorder: workerpoolorder,
-        requestorder: requestorder,
-      },
-      { useVoucher: vUseVoucher }
-    );
+    const { dealid: dealId } = await iexec.order.matchOrders({
+      apporder: apporder,
+      datasetorder: datasetorder,
+      workerpoolorder: workerpoolorder,
+      requestorder: requestorder,
+    });
 
     const taskId = await iexec.deal.computeTaskId(dealId, 0);
 

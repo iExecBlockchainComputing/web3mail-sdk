@@ -30,7 +30,7 @@ describe('sendEmail', () => {
   beforeEach(async () => {
     // worker env setup
     process.env.WEB3MAIL_IPFS_GATEWAY =
-      'https://ipfs-gateway.v8-bellecour.iex.ec';
+      'https://ipfs-gateway.arbitrum-sepolia-testnet.iex.ec';
     process.env.IEXEC_IN = './tests/_test_inputs_';
     process.env.IEXEC_OUT = './tests/_test_outputs_/iexec_out';
     // clean IEXEC_OUT

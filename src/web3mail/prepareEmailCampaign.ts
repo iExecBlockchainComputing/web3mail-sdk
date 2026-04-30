@@ -7,7 +7,7 @@ import {
 import { handleIfProtocolError, WorkflowError } from '../utils/errors.js';
 import * as ipfs from '../utils/ipfs-service.js';
 import {
-  addressOrEnsSchema,
+  addressSchema,
   contentTypeSchema,
   emailContentSchema,
   emailSubjectSchema,
@@ -33,8 +33,8 @@ export type PrepareEmailCampaign = typeof prepareEmailCampaign;
 export const prepareEmailCampaign = async ({
   iexec = throwIfMissing(),
   dataProtector = throwIfMissing(),
-  workerpoolAddressOrEns,
-  dappAddressOrENS,
+  workerpoolAddress,
+  dappAddress,
   ipfsNode,
   ipfsGateway,
   senderName,
@@ -53,9 +53,9 @@ export const prepareEmailCampaign = async ({
   DataProtectorConsumer &
   PrepareEmailCampaignParams): Promise<PrepareEmailCampaignResponse> => {
   try {
-    const vWorkerpoolAddressOrEns = addressOrEnsSchema()
-      .label('WorkerpoolAddressOrEns')
-      .validateSync(workerpoolAddressOrEns);
+    const vWorkerpoolAddress = addressSchema()
+      .label('workerpoolAddress')
+      .validateSync(workerpoolAddress);
 
     const vSenderName = senderNameSchema()
       .label('senderName')
@@ -77,10 +77,10 @@ export const prepareEmailCampaign = async ({
 
     const vLabel = labelSchema().label('label').validateSync(label);
 
-    const vDappAddressOrENS = addressOrEnsSchema()
+    const vDappAddress = addressSchema()
       .required()
-      .label('dappAddressOrENS')
-      .validateSync(dappAddressOrENS);
+      .label('dappAddress')
+      .validateSync(dappAddress);
 
     const vAppMaxPrice = positiveNumberSchema()
       .label('appMaxPrice')
@@ -139,10 +139,10 @@ export const prepareEmailCampaign = async ({
     // TODO: end factor this
     const { bulkRequest: campaignRequest } =
       await dataProtector.prepareBulkRequest({
-        app: vDappAddressOrENS,
+        app: vDappAddress,
         appMaxPrice: vAppMaxPrice,
         workerpoolMaxPrice: vWorkerpoolMaxPrice,
-        workerpool: vWorkerpoolAddressOrEns,
+        workerpool: vWorkerpoolAddress,
         args: vLabel,
         inputFiles: [],
         secrets,

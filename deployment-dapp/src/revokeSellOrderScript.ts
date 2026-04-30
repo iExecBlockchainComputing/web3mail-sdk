@@ -17,7 +17,7 @@ const main = async () => {
   // validate params
   const orderHash = await orderHashSchema().validate(ORDER_HASH);
 
-  //revoke sell order for Tee app (scone)
+  //revoke sell order for Tee app
   const txHash = await revokeSellOrder(iexec, orderHash);
   if (!txHash) throw Error(`Failed to revoke app sell order: ${orderHash}`);
 };

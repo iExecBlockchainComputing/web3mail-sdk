@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        environment: ['bellecour-dev', 'arbitrum-sepolia-dev']
+        environment: ['arbitrum-sepolia-dev']
     environment: ${{ matrix.environment }}
     defaults:
       run:

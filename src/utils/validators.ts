@@ -18,17 +18,6 @@ export const throwIfMissing = (): never => {
 
 const isUndefined = (value: unknown) => value === undefined;
 const isAddressTest = (value: string) => isAddress(value);
-export const isEnsTest = (value: string) =>
-  value.endsWith('.eth') && value.length > 6;
-
-export const addressOrEnsSchema = () =>
-  string()
-    .transform((value: string) => value?.toLowerCase() || value)
-    .test(
-      'is-address-or-ens',
-      '${path} should be an ethereum address or a ENS name',
-      (value) => isUndefined(value) || isAddressTest(value) || isEnsTest(value)
-    );
 
 export const addressSchema = () =>
   string()

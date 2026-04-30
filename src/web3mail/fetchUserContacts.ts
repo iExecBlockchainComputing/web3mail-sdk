@@ -6,10 +6,8 @@ import { handleIfProtocolError, WorkflowError } from '../utils/errors.js';
 import { autoPaginateRequest } from '../utils/paginate.js';
 import { getValidContact } from '../utils/subgraphQuery.js';
 import {
-  addressOrEnsSchema,
   addressSchema,
   booleanSchema,
-  isEnsTest,
   throwIfMissing,
 } from '../utils/validators.js';
 import { Contact, FetchUserContactsParams } from './types.js';
@@ -23,7 +21,7 @@ import {
 export const fetchUserContacts = async ({
   graphQLClient = throwIfMissing(),
   iexec = throwIfMissing(),
-  dappAddressOrENS = throwIfMissing(),
+  dappAddress = throwIfMissing(),
   dappWhitelistAddress = throwIfMissing(),
   userAddress,
   isUserStrict = false,
@@ -33,29 +31,29 @@ export const fetchUserContacts = async ({
   DappAddressConsumer &
   DappWhitelistAddressConsumer &
   FetchUserContactsParams): Promise<Contact[]> => {
-  const vDappAddressOrENS = addressOrEnsSchema()
-    .required()
-    .label('dappAddressOrENS')
-    .validateSync(dappAddressOrENS);
-  const vDappWhitelistAddress = addressSchema()
-    .required()
-    .label('dappWhitelistAddress')
-    .validateSync(dappWhitelistAddress);
-  const vUserAddress = addressOrEnsSchema()
-    .required()
-    .label('userAddress')
-    .validateSync(userAddress);
-  const vIsUserStrict = booleanSchema()
-    .label('isUserStrict')
-    .validateSync(isUserStrict);
-  const vBulkOnly = booleanSchema().label('bulkOnly').validateSync(bulkOnly);
-
   try {
+    const address = addressSchema()
+      .required()
+      .label('dappAddress')
+      .validateSync(dappAddress);
+    const vDappWhitelistAddress = addressSchema()
+      .required()
+      .label('dappWhitelistAddress')
+      .validateSync(dappWhitelistAddress);
+    const vUserAddress = addressSchema()
+      .required()
+      .label('userAddress')
+      .validateSync(userAddress);
+    const vIsUserStrict = booleanSchema()
+      .label('isUserStrict')
+      .validateSync(isUserStrict);
+    const vBulkOnly = booleanSchema().label('bulkOnly').validateSync(bulkOnly);
+
     const [dappOrders, whitelistOrders] = await Promise.all([
       fetchAllOrdersByApp({
         iexec,
         userAddress: vUserAddress,
-        appAddress: vDappAddressOrENS,
+        appAddress: address,
         isUserStrict: vIsUserStrict,
         bulkOnly: vBulkOnly,
       }),
@@ -70,14 +68,10 @@ export const fetchUserContacts = async ({
 
     const orders = dappOrders.concat(whitelistOrders);
     const myContacts: Omit<Contact, 'name'>[] = [];
-    let web3DappResolvedAddress = vDappAddressOrENS;
-    if (isEnsTest(vDappAddressOrENS)) {
-      web3DappResolvedAddress = await iexec.ens.resolveName(vDappAddressOrENS);
-    }
+
     orders.forEach((order) => {
       if (
-        order.order.apprestrict.toLowerCase() ===
-          web3DappResolvedAddress.toLowerCase() ||
+        order.order.apprestrict.toLowerCase() === address.toLowerCase() ||
         order.order.apprestrict.toLowerCase() ===
           vDappWhitelistAddress.toLowerCase()
       ) {

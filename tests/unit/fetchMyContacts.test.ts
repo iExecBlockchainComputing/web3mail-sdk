@@ -1,9 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { Address } from 'iexec';
-import {
-  DEFAULT_CHAIN_ID,
-  getChainDefaultConfig,
-} from '../../src/config/config.js';
+import { getChainDefaultConfig } from '../../src/config/config.js';
 import { type FetchMyContacts } from '../../src/web3mail/fetchMyContacts.js';
 import { getRandomAddress } from '../test-utils.js';
 
@@ -14,7 +11,8 @@ jest.unstable_mockModule('../../src/utils/subgraphQuery.js', () => ({
 describe('fetchMyContacts', () => {
   let testedModule: any;
   let fetchMyContacts: FetchMyContacts;
-  const defaultConfig = getChainDefaultConfig(DEFAULT_CHAIN_ID);
+  const defaultConfig = getChainDefaultConfig(421614);
+  const mockDappAddress = getRandomAddress().toLowerCase();
 
   beforeAll(async () => {
     // import tested module after all mocked modules
@@ -64,11 +62,6 @@ describe('fetchMyContacts', () => {
           .fn<() => Promise<Address>>()
           .mockResolvedValue(getRandomAddress()),
       },
-      ens: {
-        resolveName: jest
-          .fn<() => Promise<Address>>()
-          .mockResolvedValue(getRandomAddress()),
-      },
       orderbook: {
         fetchDatasetOrderbook: mockFetchDatasetOrderbook,
       },
@@ -79,13 +72,13 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: defaultConfig.dappAddress,
+      dappAddress: mockDappAddress,
       dappWhitelistAddress: defaultConfig.whitelistSmartContract,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
       dataset: 'any',
-      app: defaultConfig.dappAddress.toLowerCase(),
+      app: mockDappAddress,
       requester: userAddress,
       isAppStrict: true,
       isRequesterStrict: false,
@@ -125,11 +118,6 @@ describe('fetchMyContacts', () => {
           .fn<() => Promise<Address>>()
           .mockResolvedValue(getRandomAddress()),
       },
-      ens: {
-        resolveName: jest
-          .fn<() => Promise<Address>>()
-          .mockResolvedValue(getRandomAddress()),
-      },
       orderbook: {
         fetchDatasetOrderbook: mockFetchDatasetOrderbook,
       },
@@ -140,14 +128,14 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: defaultConfig.dappAddress,
+      dappAddress: mockDappAddress,
       dappWhitelistAddress: defaultConfig.whitelistSmartContract,
       isUserStrict: true,
     });
     const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
     expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
       dataset: 'any',
-      app: defaultConfig.dappAddress.toLowerCase(),
+      app: mockDappAddress,
       requester: userAddress,
       isAppStrict: true,
       isRequesterStrict: true,
@@ -199,11 +187,6 @@ describe('fetchMyContacts', () => {
           .fn<() => Promise<Address>>()
           .mockResolvedValue(getRandomAddress()),
       },
-      ens: {
-        resolveName: jest
-          .fn<() => Promise<Address>>()
-          .mockResolvedValue(getRandomAddress()),
-      },
       orderbook: {
         fetchDatasetOrderbook: mockFetchDatasetOrderbook,
       },
@@ -215,7 +198,7 @@ describe('fetchMyContacts', () => {
       iexec: iexec,
       // @ts-expect-error No need for graphQLClient here
       graphQLClient: {},
-      dappAddressOrENS: defaultConfig.dappAddress,
+      dappAddress: mockDappAddress,
       dappWhitelistAddress: defaultConfig.whitelistSmartContract,
     });
 
@@ -250,11 +233,6 @@ describe('fetchMyContacts', () => {
             .fn<() => Promise<Address>>()
             .mockResolvedValue(getRandomAddress()),
         },
-        ens: {
-          resolveName: jest
-            .fn<() => Promise<Address>>()
-            .mockResolvedValue(getRandomAddress()),
-        },
         orderbook: {
           fetchDatasetOrderbook: mockFetchDatasetOrderbook,
         },
@@ -265,14 +243,14 @@ describe('fetchMyContacts', () => {
         iexec: iexec,
         // @ts-expect-error No need for graphQLClient here
         graphQLClient: {},
-        dappAddressOrENS: defaultConfig.dappAddress,
+        dappAddress: mockDappAddress,
         dappWhitelistAddress: defaultConfig.whitelistSmartContract,
         bulkOnly: false,
       });
       const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
       expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
         dataset: 'any',
-        app: defaultConfig.dappAddress.toLowerCase(),
+        app: mockDappAddress,
         requester: userAddress,
         isAppStrict: true,
         isRequesterStrict: false,
@@ -314,11 +292,6 @@ describe('fetchMyContacts', () => {
             .fn<() => Promise<Address>>()
             .mockResolvedValue(getRandomAddress()),
         },
-        ens: {
-          resolveName: jest
-            .fn<() => Promise<Address>>()
-            .mockResolvedValue(getRandomAddress()),
-        },
         orderbook: {
           fetchDatasetOrderbook: mockFetchDatasetOrderbook,
         },
@@ -329,14 +302,14 @@ describe('fetchMyContacts', () => {
         iexec: iexec,
         // @ts-expect-error No need for graphQLClient here
         graphQLClient: {},
-        dappAddressOrENS: defaultConfig.dappAddress,
+        dappAddress: mockDappAddress,
         dappWhitelistAddress: defaultConfig.whitelistSmartContract,
         bulkOnly: true,
       });
       const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
       expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
         dataset: 'any',
-        app: defaultConfig.dappAddress.toLowerCase(),
+        app: mockDappAddress,
         requester: userAddress,
         isAppStrict: true,
         isRequesterStrict: false,
@@ -378,11 +351,6 @@ describe('fetchMyContacts', () => {
             .fn<() => Promise<Address>>()
             .mockResolvedValue(getRandomAddress()),
         },
-        ens: {
-          resolveName: jest
-            .fn<() => Promise<Address>>()
-            .mockResolvedValue(getRandomAddress()),
-        },
         orderbook: {
           fetchDatasetOrderbook: mockFetchDatasetOrderbook,
         },
@@ -393,7 +361,7 @@ describe('fetchMyContacts', () => {
         iexec: iexec,
         // @ts-expect-error No need for graphQLClient here
         graphQLClient: {},
-        dappAddressOrENS: defaultConfig.dappAddress,
+        dappAddress: mockDappAddress,
         dappWhitelistAddress: defaultConfig.whitelistSmartContract,
         isUserStrict: true,
         bulkOnly: true,
@@ -402,7 +370,7 @@ describe('fetchMyContacts', () => {
       const userAddress = (await iexec.wallet.getAddress()).toLowerCase();
       expect(iexec.orderbook.fetchDatasetOrderbook).toHaveBeenNthCalledWith(1, {
         dataset: 'any',
-        app: defaultConfig.dappAddress.toLowerCase(),
+        app: mockDappAddress,
         requester: userAddress,
         isAppStrict: true,
         isRequesterStrict: true,

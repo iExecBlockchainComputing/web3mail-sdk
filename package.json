@@ -20,7 +20,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc --project tsconfig.build.json",
     "check-types": "tsc --noEmit",
-    "test:prepare": "node tests/scripts/prepare-bellecour-fork-for-tests.js && node tests/scripts/prepare-iexec.js",
+    "test:prepare": "node tests/scripts/prepare-forks-for-tests.js",
     "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --testMatch \"**/tests/**/*.test.ts\" --forceExit --coverage",
     "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --testMatch \"**/tests/unit/**/*.test.ts\" -b",
     "test:unit:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --testMatch \"**/tests/unit/**/*.unit.ts\" --coverage",
@@ -46,11 +46,11 @@
   },
   "homepage": "https://github.com/iExecBlockchainComputing/web3mail-sdk#readme",
   "dependencies": {
-    "@iexec/dataprotector": "^2.0.0-beta.24",
+    "@iexec/dataprotector": "^2.0.0-beta.27",
     "buffer": "^6.0.3",
     "ethers": "^6.15.0",
     "graphql-request": "^6.1.0",
-    "iexec": "^8.24.0",
+    "iexec": "^9.0.0",
     "kubo-rpc-client": "^5.4.1",
     "yup": "^1.1.1"
   },

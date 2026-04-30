@@ -1,33 +1,53 @@
 import { writeFileSync } from 'fs';
 
-const forkUrl = 'https://bellecour.iex.ec';
+const arbitrumSepoliaForkUrl =
+  process.env.ARBITRUM_SEPOLIA_FORK_URL ||
+  'https://sepolia-rollup.arbitrum.io/rpc';
 
-fetch(forkUrl, {
-  method: 'POST',
-  body: JSON.stringify({
-    jsonrpc: 2.0,
-    method: 'eth_blockNumber',
-    params: [],
-    id: 1,
-  }),
-})
-  .then((res) => res.json())
-  .then((jsonRes) => {
-    const forkBlockNumber = parseInt(jsonRes.result.substring(2), 16);
+const arbitrumSepoliaForkBlock = await getCurrentBlockNumber(
+  arbitrumSepoliaForkUrl
+);
 
-    console.log('Creating .env file for docker-compose test-stack');
-    writeFileSync(
-      '.env',
-      `############ THIS FILE IS GENERATED ############
+console.log('Creating .env file for docker-compose test-stack');
+writeFileSync(
+  '.env',
+  `############ THIS FILE IS GENERATED ############
 # run "node prepare-test-env.js" to regenerate #
 ################################################
 
 # blockchain node to use as the reference for the local fork
-BELLECOUR_FORK_URL=${forkUrl}
+ARBITRUM_SEPOLIA_FORK_URL=${arbitrumSepoliaForkUrl}
 # block number to fork from
-BELLECOUR_FORK_BLOCK=${forkBlockNumber}`
-    );
+ARBITRUM_SEPOLIA_FORK_BLOCK=${arbitrumSepoliaForkBlock}
+# block number to index from (should be fork block + 1 to skip all existing ArbitrumInternalTxType which is not supported by a graphnode connected to anvil)
+ARBITRUM_SEPOLIA_INDEX_BLOCK=${arbitrumSepoliaForkBlock + 1}`
+);
+
+async function getCurrentBlockNumber(forkUrl) {
+  const blockNumber = await fetch(forkUrl, {
+    method: 'POST',
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: 'eth_blockNumber',
+      params: [],
+      id: 1,
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
   })
-  .catch((e) => {
-    throw Error(`Failed to get current block number from ${forkUrl}: ${e}`);
-  });
+    .then((res) => res.json())
+    .then((jsonRes) => {
+      console.log(
+        `Current block number of ${forkUrl} is ${JSON.stringify(jsonRes)}`
+      );
+      const forkBlockNumber = parseInt(jsonRes.result.substring(2), 16);
+      return forkBlockNumber;
+    })
+    .catch((e) => {
+      throw new Error(
+        `Failed to get current block number from ${forkUrl}: ${e}`
+      );
+    });
+  return blockNumber;
+}

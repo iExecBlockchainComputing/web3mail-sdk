@@ -8,7 +8,7 @@ describe('decryptContent', () => {
     const { IExec } = await import('iexec');
 
     const iexec = new IExec({
-      ethProvider: 'bellecour',
+      ethProvider: 'arbitrum-sepolia-testnet',
     });
 
     const encryptionKey = iexec.dataset.generateEncryptionKey();
@@ -26,7 +26,8 @@ describe('decryptContent', () => {
 });
 
 describe('downloadEncryptedContent', () => {
-  const DEFAULT_IPFS_GATEWAY = 'https://ipfs-gateway.v8-bellecour.iex.ec';
+  const DEFAULT_IPFS_GATEWAY =
+    'https://ipfs-gateway.arbitrum-sepolia-testnet.iex.ec';
 
   beforeEach(() => {
     process.env.WEB3MAIL_IPFS_GATEWAY = DEFAULT_IPFS_GATEWAY;
