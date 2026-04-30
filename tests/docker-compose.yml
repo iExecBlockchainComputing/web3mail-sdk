@@ -246,8 +246,7 @@ services:
       postgres_pass: password
       postgres_db: graphnode-db
       ipfs: ipfs:5001
-      # Alias arbitrum-sepolia-fork as "bellecour" so the subgraph template (hardcoded network name) works
-      ethereum: 'bellecour:http://arbitrum-sepolia-fork:8545'
+      ethereum: 'arbitrum-sepolia:http://arbitrum-sepolia-fork:8545'
       GRAPH_ETHEREUM_GENESIS_BLOCK_NUMBER: $ARBITRUM_SEPOLIA_FORK_BLOCK
     depends_on:
       arbitrum-sepolia-fork:
