@@ -13,12 +13,10 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 * **dapp:** replace mailgun with bouncer for email validation ([aad45e2](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/aad45e207451200aef1af35fc07c17263da6ac66))
-* **dapp:** replace mailgun with bouncer for email validation ([ca85791](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/ca8579116ac24fd3f9de269d6c3865e567c863b8))
 
 
 ### Changed
 
-* **dapp:** replace mailgun with bouncer for email validation ([ab36f95](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/ab36f9589dd8938564e3c4a769cfafb3fdaa5d29))
 * remove bellecour and SGX Scone support ([#260](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/260)) ([713762b](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/713762b1a17367c849243ab2877f061e48a4ff05))
 
 ## [1.0.1](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v1.0.0...dapp-v1.0.1) (2026-04-17)
