@@ -22,8 +22,8 @@ DATA_FILENAME="your_file_name.zip"
 MJ_APIKEY_PUBLIC="your_mail_jet_api_key_public"
 MJ_APIKEY_PRIVATE="your_mail_jet_api_private"
 MJ_SENDER="your_mail_jet_sender"
-# Replace the value of the variable MAILGUN_APIKEY with your own Mailgun API key
-MAILGUN_APIKEY="your_mailgun_api_key"
+# Replace the value of the variable BOUNCER_APIKEY with your own Bouncer API key
+BOUNCER_APIKEY="your_bouncer_api_key"
 
 
 # Replace the following variables with your own values:
@@ -34,7 +34,7 @@ SENDER_NAME="the_sender_name"
 CONTENT_TYPE="text/plain"
 
 IEXEC_REQUESTER_SECRET_1='{"emailSubject":"'${EMAIL_SUBJECT}'","emailContentEncryptionKey":"'${EMAIL_CONTENT_ENCRYPTION_KEY}'","emailContentMultiAddr":"'${EMAIL_CONTENT_MULTIADDR}'","senderName":"'${SENDER_NAME}'","contentType":"'${CONTENT_TYPE}'"}'
-IEXEC_APP_DEVELOPER_SECRET='{"MJ_APIKEY_PUBLIC":"'$MJ_APIKEY_PUBLIC'","MJ_APIKEY_PRIVATE":"'$MJ_APIKEY_PRIVATE'","MJ_SENDER":"'$MJ_SENDER'","MAILGUN_APIKEY":"'$MAILGUN_APIKEY'"}'
+IEXEC_APP_DEVELOPER_SECRET='{"MJ_APIKEY_PUBLIC":"'$MJ_APIKEY_PUBLIC'","MJ_APIKEY_PRIVATE":"'$MJ_APIKEY_PRIVATE'","MJ_SENDER":"'$MJ_SENDER'","BOUNCER_APIKEY":"'$BOUNCER_APIKEY'"}'
 
 docker run -it --rm \
             -v /tmp/iexec_in:/iexec_in \
