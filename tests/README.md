@@ -30,7 +30,7 @@ npm run stop-test-stack
 
 The local test stack includes the following services:
 
-- **bellecour-fork:** a blockchain node for testing
+- **arbitrum-sepolia-fork:** a blockchain node forking Arbitrum Sepolia for testing
 - **sms:** iExec Secret Management Service (iExec SMS)
 - **result-proxy-mongo:** mongoDB instance to persist data for the result proxy
 - **ipfs:** IPFS node for storing and retrieving task results

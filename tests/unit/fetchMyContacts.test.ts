@@ -34,7 +34,7 @@ describe('fetchMyContacts', () => {
     },
     orderHash:
       '0x396392835c2cbe933023dd28a3d6eedceb21c52b1dba199835a6f24cc75e7685',
-    chainId: 134,
+    chainId: 421614,
     publicationTimestamp: '2023-06-15T16:39:22.713Z',
     signer: '0xD52C27CC2c7D3fb5BA4440ffa825c12EA5658D60',
     status: 'open',
