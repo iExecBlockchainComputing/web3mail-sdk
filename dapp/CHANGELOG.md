@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v1.0.1...dapp-v2.0.0) (2026-10-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* **dapp:** the app developer secret key `MAILGUN_APIKEY` is replaced by `BOUNCER_APIKEY`; the app secret must be pushed again with the new key
+* remove bellecour and SGX Scone support ([#260](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/260))
+
+### Added
+
+* **dapp:** replace mailgun with bouncer for email validation ([aad45e2](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/aad45e207451200aef1af35fc07c17263da6ac66))
+
+
+### Changed
+
+* remove bellecour and SGX Scone support ([#260](https://github.com/iExecBlockchainComputing/web3mail-sdk/issues/260)) ([713762b](https://github.com/iExecBlockchainComputing/web3mail-sdk/commit/713762b1a17367c849243ab2877f061e48a4ff05))
+
 ## [1.0.1](https://github.com/iExecBlockchainComputing/web3mail-sdk/compare/dapp-v1.0.0...dapp-v1.0.1) (2026-04-17)
 
 

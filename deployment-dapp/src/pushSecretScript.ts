@@ -8,7 +8,7 @@ const main = async () => {
     MJ_APIKEY_PUBLIC,
     MJ_APIKEY_PRIVATE,
     MJ_SENDER,
-    MAILGUN_APIKEY,
+    BOUNCER_APIKEY,
     WEB3MAIL_WHITELISTED_APPS,
     POCO_SUBGRAPH_URL,
   } = process.env;
@@ -18,7 +18,7 @@ const main = async () => {
   if (!MJ_APIKEY_PUBLIC) throw Error('Missing env MJ_APIKEY_PUBLIC');
   if (!MJ_APIKEY_PRIVATE) throw Error('Missing env MJ_APIKEY_PRIVATE');
   if (!MJ_SENDER) throw Error('Missing env MJ_SENDER');
-  if (!MAILGUN_APIKEY) throw Error('Missing env MAILGUN_APIKEY');
+  if (!BOUNCER_APIKEY) throw Error('Missing env BOUNCER_APIKEY');
   if (WEB3MAIL_WHITELISTED_APPS === undefined)
     throw Error('Missing env WEB3MAIL_WHITELISTED_APPS');
   if (!POCO_SUBGRAPH_URL) throw Error('Missing env POCO_SUBGRAPH_URL');
@@ -40,7 +40,7 @@ const main = async () => {
     MJ_APIKEY_PUBLIC,
     MJ_APIKEY_PRIVATE,
     MJ_SENDER,
-    MAILGUN_APIKEY,
+    BOUNCER_APIKEY,
     WEB3MAIL_WHITELISTED_APPS: JSON.stringify(fullWhitelistedApps),
     POCO_SUBGRAPH_URL,
   });
