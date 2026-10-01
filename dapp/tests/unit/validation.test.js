@@ -28,7 +28,7 @@ describe('validateAppSecret function', () => {
         MJ_APIKEY_PUBLIC: 'api_public_key',
         MJ_APIKEY_PRIVATE: 'api_private_key',
         MJ_SENDER: 'sender@example.com',
-        BOUNCER_APIKEY: 'bouncer_api_key',
+        MAILGUN_APIKEY: 'mailgun_api_key',
         WEB3MAIL_WHITELISTED_APPS: JSON.parse(
           '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]'
         ),
@@ -42,7 +42,7 @@ describe('validateAppSecret function', () => {
       validateAppSecret({
         MJ_APIKEY_PRIVATE: 'api_private_key',
         MJ_SENDER: 'sender@example.com',
-        BOUNCER_APIKEY: 'bouncer_api_key',
+        MAILGUN_APIKEY: 'mailgun_api_key',
         WEB3MAIL_WHITELISTED_APPS:
           '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
       })
@@ -52,7 +52,7 @@ describe('validateAppSecret function', () => {
       validateAppSecret({
         MJ_APIKEY_PUBLIC: 'api_public_key',
         MJ_SENDER: 'sender@example.com',
-        BOUNCER_APIKEY: 'bouncer_api_key',
+        MAILGUN_APIKEY: 'mailgun_api_key',
         WEB3MAIL_WHITELISTED_APPS:
           '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
       })
@@ -62,7 +62,7 @@ describe('validateAppSecret function', () => {
       validateAppSecret({
         MJ_APIKEY_PUBLIC: 'api_public_key',
         MJ_APIKEY_PRIVATE: 'api_private_key',
-        BOUNCER_APIKEY: 'bouncer_api_key',
+        MAILGUN_APIKEY: 'mailgun_api_key',
         WEB3MAIL_WHITELISTED_APPS:
           '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
       })
@@ -76,7 +76,7 @@ describe('validateAppSecret function', () => {
         WEB3MAIL_WHITELISTED_APPS:
           '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
       })
-    ).toThrow(/"BOUNCER_APIKEY" is required/i);
+    ).toThrow(/"MAILGUN_APIKEY" is required/i);
 
     expect(() =>
       validateAppSecret({
@@ -93,13 +93,13 @@ describe('validateAppSecret function', () => {
         MJ_APIKEY_PUBLIC: 12345,
         MJ_APIKEY_PRIVATE: '',
         MJ_SENDER: 'foo',
-        BOUNCER_APIKEY: '',
+        MAILGUN_APIKEY: '',
         WEB3MAIL_WHITELISTED_APPS: '[4]',
         POCO_SUBGRAPH_URL: 'not-a-url',
       })
     ).toThrow(
       Error(
-        'App secret error: "MJ_APIKEY_PUBLIC" must be a string; "MJ_APIKEY_PRIVATE" is not allowed to be empty; "MJ_SENDER" must be a valid email; "BOUNCER_APIKEY" is not allowed to be empty; "WEB3MAIL_WHITELISTED_APPS" must be an array; "POCO_SUBGRAPH_URL" must be a valid uri'
+        'App secret error: "MJ_APIKEY_PUBLIC" must be a string; "MJ_APIKEY_PRIVATE" is not allowed to be empty; "MJ_SENDER" must be a valid email; "MAILGUN_APIKEY" is not allowed to be empty; "WEB3MAIL_WHITELISTED_APPS" must be an array; "POCO_SUBGRAPH_URL" must be a valid uri'
       )
     );
   });

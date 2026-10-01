@@ -47,7 +47,7 @@ describe('sendEmail', () => {
           MJ_APIKEY_PUBLIC: 'xxx',
           MJ_APIKEY_PRIVATE: 'xxx',
           MJ_SENDER: 'foo@bar.com',
-          BOUNCER_APIKEY: 'xxx',
+          MAILGUN_APIKEY: 'xxx',
           WEB3MAIL_WHITELISTED_APPS:
             '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
           POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
@@ -84,7 +84,7 @@ describe('sendEmail', () => {
           process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
             MJ_APIKEY_PRIVATE: 'xxx',
             MJ_SENDER: 'foo@bar.com',
-            BOUNCER_APIKEY: 'xxx',
+            MAILGUN_APIKEY: 'xxx',
             WEB3MAIL_WHITELISTED_APPS:
               '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
             POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
@@ -108,7 +108,7 @@ describe('sendEmail', () => {
           process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
             MJ_APIKEY_PUBLIC: 'xxx',
             MJ_SENDER: 'foo@bar.com',
-            BOUNCER_APIKEY: 'xxx',
+            MAILGUN_APIKEY: 'xxx',
             WEB3MAIL_WHITELISTED_APPS:
               '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
             POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
@@ -132,7 +132,7 @@ describe('sendEmail', () => {
           process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
             MJ_APIKEY_PUBLIC: 'xxx',
             MJ_APIKEY_PRIVATE: 'xxx',
-            BOUNCER_APIKEY: 'xxx',
+            MAILGUN_APIKEY: 'xxx',
             WEB3MAIL_WHITELISTED_APPS:
               '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
             POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
@@ -152,7 +152,7 @@ describe('sendEmail', () => {
           });
           expect(files.length).toBe(2);
         });
-        it('should fail if BOUNCER_APIKEY in developer secret is missing', async () => {
+        it('should fail if MAILGUN_APIKEY in developer secret is missing', async () => {
           process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
             MJ_APIKEY_PUBLIC: 'xxx',
             MJ_APIKEY_PRIVATE: 'xxx',
@@ -169,7 +169,7 @@ describe('sendEmail', () => {
           );
           expect(result).toStrictEqual({
             success: false,
-            error: 'App secret error: "BOUNCER_APIKEY" is required',
+            error: 'App secret error: "MAILGUN_APIKEY" is required',
           });
           expect(computed).toStrictEqual({
             'deterministic-output-path': `${process.env.IEXEC_OUT}/result.json`,
@@ -180,7 +180,7 @@ describe('sendEmail', () => {
           process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
             MJ_APIKEY_PUBLIC: 'xxx',
             MJ_APIKEY_PRIVATE: 'xxx',
-            BOUNCER_APIKEY: 'xxx',
+            MAILGUN_APIKEY: 'xxx',
             MJ_SENDER: 'foo@bar.com',
             POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
           });
@@ -203,7 +203,7 @@ describe('sendEmail', () => {
           process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
             MJ_APIKEY_PUBLIC: 'xxx',
             MJ_APIKEY_PRIVATE: 'xxx',
-            BOUNCER_APIKEY: 'xxx',
+            MAILGUN_APIKEY: 'xxx',
             MJ_SENDER: 'foo@bar.com',
             WEB3MAIL_WHITELISTED_APPS:
               '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
@@ -460,21 +460,21 @@ describe('sendEmail', () => {
         });
       });
 
-      describe('when bouncer is unreachable', () => {
-        it('should skip bouncer address validation', async () => {
+      describe('when mailgun is unreachable', () => {
+        it('should skip mailgun address validation', async () => {
           // this data does not pass validation
           process.env.IEXEC_DATASET_FILENAME = 'dataEmailUserDoesNotExist.zip';
-          // bouncer api key is fake
+          // mailgun api key is fake
           process.env.IEXEC_APP_DEVELOPER_SECRET = JSON.stringify({
             MJ_APIKEY_PUBLIC: 'xxx',
             MJ_APIKEY_PRIVATE: 'xxx',
             MJ_SENDER: 'foo@bar.com',
-            BOUNCER_APIKEY: 'fake',
+            MAILGUN_APIKEY: 'fake',
             WEB3MAIL_WHITELISTED_APPS:
               '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
             POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
           });
-          // check the error is not an email validation error (bouncer validation is skipped, mailjet rejects)
+          // check the error is not an email validation error (mailgun validation is skipped, mailjet rejects)
           await expect(start()).resolves.toBeUndefined();
 
           const { result, computed, files } = await readOutputs(
@@ -498,7 +498,7 @@ describe('sendEmail', () => {
             MJ_APIKEY_PUBLIC: 'xxx',
             MJ_APIKEY_PRIVATE: 'xxx',
             MJ_SENDER: 'foo@bar.com',
-            BOUNCER_APIKEY: 'xxx',
+            MAILGUN_APIKEY: 'xxx',
             WEB3MAIL_WHITELISTED_APPS:
               '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
             POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
@@ -529,7 +529,7 @@ describe('sendEmail', () => {
       (process.env.MJ_APIKEY_PUBLIC &&
         process.env.MJ_APIKEY_PRIVATE &&
         process.env.MJ_SENDER &&
-        process.env.BOUNCER_APIKEY &&
+        process.env.MAILGUN_APIKEY &&
         process.env.POCO_SUBGRAPH_URL)
     ) {
       describe('with credentials', () => {
@@ -539,7 +539,7 @@ describe('sendEmail', () => {
             MJ_APIKEY_PUBLIC,
             MJ_APIKEY_PRIVATE,
             MJ_SENDER,
-            BOUNCER_APIKEY,
+            MAILGUN_APIKEY,
             WEB3MAIL_WHITELISTED_APPS,
             POCO_SUBGRAPH_URL,
           } = process.env;
@@ -547,7 +547,7 @@ describe('sendEmail', () => {
             MJ_APIKEY_PUBLIC,
             MJ_APIKEY_PRIVATE,
             MJ_SENDER,
-            BOUNCER_APIKEY,
+            MAILGUN_APIKEY,
             WEB3MAIL_WHITELISTED_APPS,
             POCO_SUBGRAPH_URL,
           });
@@ -695,7 +695,7 @@ describe('sendEmail', () => {
         MJ_APIKEY_PUBLIC: 'xxx',
         MJ_APIKEY_PRIVATE: 'xxx',
         MJ_SENDER: 'foo@bar.com',
-        BOUNCER_APIKEY: 'xxx',
+        MAILGUN_APIKEY: 'xxx',
         WEB3MAIL_WHITELISTED_APPS:
           '["0xa638bf4665ce7bd7021a4a12416ea7a0a3272b6f"]',
         POCO_SUBGRAPH_URL: 'https://fake-poco.subgraph.iex.ec',
@@ -832,7 +832,7 @@ describe('sendEmail', () => {
       (process.env.MJ_APIKEY_PUBLIC &&
         process.env.MJ_APIKEY_PRIVATE &&
         process.env.MJ_SENDER &&
-        process.env.BOUNCER_APIKEY &&
+        process.env.MAILGUN_APIKEY &&
         process.env.POCO_SUBGRAPH_URL)
     ) {
       describe('with credentials', () => {
@@ -842,7 +842,7 @@ describe('sendEmail', () => {
             MJ_APIKEY_PUBLIC,
             MJ_APIKEY_PRIVATE,
             MJ_SENDER,
-            BOUNCER_APIKEY,
+            MAILGUN_APIKEY,
             WEB3MAIL_WHITELISTED_APPS,
             POCO_SUBGRAPH_URL,
           } = process.env;
@@ -850,7 +850,7 @@ describe('sendEmail', () => {
             MJ_APIKEY_PUBLIC,
             MJ_APIKEY_PRIVATE,
             MJ_SENDER,
-            BOUNCER_APIKEY,
+            MAILGUN_APIKEY,
             WEB3MAIL_WHITELISTED_APPS,
             POCO_SUBGRAPH_URL,
           });

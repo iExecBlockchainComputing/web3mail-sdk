@@ -59,15 +59,15 @@ async function processProtectedData({
       pocoSubgraphUrl: appDeveloperSecret.POCO_SUBGRAPH_URL,
     });
 
-    // Step 2: If not, try Bouncer
+    // Step 2: If not, try Mailgun
     if (result.isEmailValid === undefined) {
-      console.log('No prior verification found. Trying Bouncer...');
+      console.log('No prior verification found. Trying Mailgun...');
       result.isEmailValid = await validateEmailAddress({
         emailAddress: protectedData.email,
-        bouncerApiKey: appDeveloperSecret.BOUNCER_APIKEY,
+        mailgunApiKey: appDeveloperSecret.MAILGUN_APIKEY,
       });
     } else {
-      console.log('Email already verified, skipping Bouncer check.');
+      console.log('Email already verified, skipping Mailgun check.');
     }
 
     if (result.isEmailValid === false) {
@@ -89,6 +89,7 @@ async function processProtectedData({
       mailJetApiKeyPublic: appDeveloperSecret.MJ_APIKEY_PUBLIC,
       mailJetApiKeyPrivate: appDeveloperSecret.MJ_APIKEY_PRIVATE,
       mailJetSender: appDeveloperSecret.MJ_SENDER,
+      mailgunApiKey: appDeveloperSecret.MAILGUN_APIKEY,
       emailContent: requesterEmailContent,
       emailSubject: requesterSecret.emailSubject,
       contentType: requesterSecret.contentType,
